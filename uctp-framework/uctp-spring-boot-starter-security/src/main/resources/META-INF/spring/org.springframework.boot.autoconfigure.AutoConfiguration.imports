@@ -1,0 +1,3 @@
+com.newtouch.uctp.framework.security.config.UctpSecurityRpcAutoConfiguration
+com.newtouch.uctp.framework.security.config.UctpSecurityAutoConfiguration
+com.newtouch.uctp.framework.security.config.UctpWebSecurityConfigurerAdapter

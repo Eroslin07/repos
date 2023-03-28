@@ -1,0 +1,2 @@
+com.newtouch.uctp.framework.quartz.config.UctpXxlJobAutoConfiguration
+com.newtouch.uctp.framework.quartz.config.UctpAsyncAutoConfiguration

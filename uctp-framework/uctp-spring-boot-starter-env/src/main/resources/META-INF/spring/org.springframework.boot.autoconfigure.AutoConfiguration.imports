@@ -1,0 +1,2 @@
+com.newtouch.uctp.framework.env.config.UctpEnvWebAutoConfiguration
+com.newtouch.uctp.framework.env.config.UctpEnvRpcAutoConfiguration

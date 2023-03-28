@@ -1,0 +1,1 @@
+dubboExceptionFilter=com.newtouch.uctp.framework.rpc.core.dubbo.DubboProviderExceptionFilter

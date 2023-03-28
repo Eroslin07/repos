@@ -1,0 +1,2 @@
+com.newtouch.uctp.framework.redis.config.UctpRedisAutoConfiguration
+com.newtouch.uctp.framework.redis.config.UctpCacheAutoConfiguration

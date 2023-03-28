@@ -1,0 +1,3 @@
+com.newtouch.uctp.framework.tenant.config.UctpTenantRpcAutoConfiguration
+com.newtouch.uctp.framework.tenant.config.UctpTenantAutoConfiguration
+com.newtouch.uctp.framework.tenant.config.UctpTenantMQAutoConfiguration

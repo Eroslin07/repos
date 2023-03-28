@@ -1,0 +1,2 @@
+com.newtouch.uctp.framework.datasource.config.UctpDataSourceAutoConfiguration
+com.newtouch.uctp.framework.mybatis.config.UctpMybatisAutoConfiguration

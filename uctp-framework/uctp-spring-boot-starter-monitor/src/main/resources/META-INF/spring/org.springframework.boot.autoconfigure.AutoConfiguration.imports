@@ -1,0 +1,2 @@
+com.newtouch.uctp.framework.tracer.config.UctpTracerAutoConfiguration
+com.newtouch.uctp.framework.tracer.config.UctpMetricsAutoConfiguration

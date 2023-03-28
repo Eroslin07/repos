@@ -1,0 +1,2 @@
+com.newtouch.uctp.framework.idempotent.config.UctpIdempotentConfiguration
+com.newtouch.uctp.framework.lock4j.config.UctpLock4jConfiguration

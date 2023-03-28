@@ -1,0 +1,5 @@
+com.newtouch.uctp.framework.apilog.config.UctpApiLogAutoConfiguration
+com.newtouch.uctp.framework.jackson.config.UctpJacksonAutoConfiguration
+com.newtouch.uctp.framework.swagger.config.UctpSwaggerAutoConfiguration
+com.newtouch.uctp.framework.web.config.UctpWebAutoConfiguration
+com.newtouch.uctp.framework.apilog.config.UctpApiLogRpcAutoConfiguration

@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    nacos:
+      # Nacos服务地址
+      server-addr: @nacos.server-addr@
+      # Nacos服务认证用户
+      username: @nacos.username@
+      # Nacos服务认证密码
+      password: @nacos.password@
+      discovery:
+        # 服务注册地址
+        server-addr: ${spring.cloud.nacos.server-addr}
+        # 服务注册命名空间
+        namespace: @nacos.namespace@
+      config:
+        # 配置中心地址
+        server-addr: ${spring.cloud.nacos.server-addr}
+        # 服务配置命名空间
+        namespace: @nacos.namespace@
+        # 配置文件格式
+        file-extension: yaml
