@@ -79,7 +79,7 @@ dubbo:
 
 uctp:
   info:
-    version: 1.0.0
+    version: 1.0.1
     base-package: com.newtouch.uctp.module.report
   web:
     admin-ui:
