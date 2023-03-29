@@ -4,14 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.newtouch.uctp.cloud</groupId>
-        <artifactId>uctp-module-system</artifactId>
+        <artifactId>uctp-modules</artifactId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>uctp-module-system-biz</artifactId>
+    <artifactId>uctp-modules-system</artifactId>
     <packaging>jar</packaging>
 
-    <name>${project.artifactId}</name>
     <description>
         system 模块下，我们放通用业务，支撑上层的核心业务。
         例如说：用户、部门、权限、数据字典等等
@@ -32,12 +31,12 @@
         <!-- 依赖服务 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-system-api</artifactId>
+            <artifactId>uctp-api-system</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-infra-api</artifactId>
+            <artifactId>uctp-api-infra</artifactId>
             <version>${revision}</version>
         </dependency>
 
@@ -127,10 +126,10 @@
         </dependency>
 
         <!-- 服务保障相关 TODO 芋艿：暂时去掉 -->
-<!--        <dependency>-->
-<!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
-<!--            <artifactId>uctp-spring-boot-starter-protection</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
+        <!--            <artifactId>uctp-spring-boot-starter-protection</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- Test 测试相关 -->
         <dependency>

@@ -11,13 +11,8 @@
         <module>uctp-dependencies</module>
         <module>uctp-gateway</module>
         <module>uctp-framework</module>
-        <!--  各种 module 拓展 -->
-        <!--<module>uctp-module-member</module>-->
-        <module>uctp-module-bpm</module>
-        <module>uctp-module-system</module>
-        <module>uctp-module-infra</module>
-        <!--<module>uctp-module-pay</module>-->
-        <module>uctp-module-report</module>
+        <module>uctp-api</module>
+        <module>uctp-modules</module>
     </modules>
 
     <name>${project.artifactId}</name>

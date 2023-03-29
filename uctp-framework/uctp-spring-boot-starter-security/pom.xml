@@ -54,7 +54,7 @@
         <!-- 业务组件 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-system-api</artifactId> <!-- 需要使用它，进行 Token 的校验 -->
+            <artifactId>uctp-api-system</artifactId> <!-- 需要使用它，进行 Token 的校验 -->
             <version>${revision}</version>
         </dependency>
 

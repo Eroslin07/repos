@@ -44,7 +44,7 @@
         <!-- 业务组件 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-system-api</artifactId> <!-- 需要使用它，进行操作日志的记录 -->
+            <artifactId>uctp-api-system</artifactId> <!-- 需要使用它，进行操作日志的记录 -->
             <version>${revision}</version>
         </dependency>
 

@@ -4,17 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.newtouch.uctp.cloud</groupId>
-        <artifactId>uctp-module-bpm</artifactId>
+        <artifactId>uctp-modules</artifactId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>uctp-module-bpm-biz</artifactId>
 
-    <name>${project.artifactId}</name>
+    <artifactId>uctp-modules-report</artifactId>
+    <packaging>jar</packaging>
+
     <description>
-        bpm 包下，业务流程管理（Business Process Management），我们放工作流的功能，基于 Flowable 6 版本实现。
-        例如说：流程定义、表单配置、审核中心（我的申请、我的待办、我的已办）等等    </description>
-
+        report 模块，主要实现数据可视化报表等功能：
+        1. 基于「积木报表」实现，打印设计、报表设计、图形设计、大屏设计等。
+    </description>
     <dependencies>
         <!-- Spring Cloud 基础 -->
         <dependency>
@@ -22,25 +23,32 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
+        <!-- 依赖服务 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-bpm-api</artifactId>
+            <artifactId>uctp-api-report</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-api-system</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-system-api</artifactId>
+            <artifactId>uctp-api-infra</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <!-- 业务组件 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-biz-operatelog</artifactId>
+            <artifactId>uctp-spring-boot-starter-banner</artifactId>
         </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-biz-data-permission</artifactId>
+            <artifactId>uctp-spring-boot-starter-biz-operatelog</artifactId>
         </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
@@ -87,27 +95,22 @@
         </dependency>
 
         <!-- Job 定时任务相关 -->
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-job</artifactId>
-        </dependency>
-
-        <!-- 消息队列相关 -->
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-mq</artifactId>
-        </dependency>
-
-        <!-- 服务保障相关 TODO 芋艿：暂时去掉 -->
         <!--        <dependency>-->
         <!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
-        <!--            <artifactId>uctp-spring-boot-starter-protection</artifactId>-->
+        <!--            <artifactId>uctp-spring-boot-starter-job</artifactId>-->
+        <!--        </dependency>-->
+
+        <!-- 消息队列相关 -->
+        <!--        <dependency>-->
+        <!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
+        <!--            <artifactId>uctp-spring-boot-starter-mq</artifactId>-->
         <!--        </dependency>-->
 
         <!-- Test 测试相关 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- 监控相关 -->
@@ -116,10 +119,16 @@
             <artifactId>uctp-spring-boot-starter-monitor</artifactId>
         </dependency>
 
-        <!-- 工作流相关 -->
+        <!-- 积木报表-->
         <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-flowable</artifactId>
+            <groupId>org.jeecgframework.jimureport</groupId>
+            <artifactId>jimureport-spring-boot-starter</artifactId>
         </dependency>
+        <!-- 单独依赖升级版本，解决低版本validator失败问题 -->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-module-system-api</artifactId>
+            <artifactId>uctp-api-system</artifactId>
             <version>${revision}</version>
             <exclusions>
                 <exclusion>
