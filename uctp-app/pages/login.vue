@@ -70,20 +70,23 @@
 		methods: {
 			// 隐私协议
 			handlePrivacy() {
-				let site = this.globalConfig.appInfo.agreements[0]
-				uni.openDocument({
-					filePath: site.url, 
-					// 如果文件名包含中文，建议使用escape(res.tempFilePath)转码，防止ios和安卓客户端导致的差异
-					success: function(res) {
-						console.log('打开文档成功');
-					}
-				});
+				// let site = this.globalConfig.appInfo.agreements[0]
+				// uni.openDocument({
+				// 	filePath: site.url, 
+				// 	// 如果文件名包含中文，建议使用escape(res.tempFilePath)转码，防止ios和安卓客户端导致的差异
+				// 	success: function(res) {
+				// 		console.log('打开文档成功');
+				// 	}
+				// });
 				// this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
+				
+				this.$tab.navigateTo('/subPages/common/webview/privacyAgreement')
 			},
 			// 用户协议
 			handleUserAgrement() {
-				let site = this.globalConfig.appInfo.agreements[1]
-				this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
+				// let site = this.globalConfig.appInfo.agreements[1]
+				// this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
+				this.$tab.navigateTo('/subPages/common/webview/userAgreement')
 			},
 			// 点击短信验证码登录
 			shortMessage() {

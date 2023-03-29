@@ -255,7 +255,19 @@
 				"navigationBarTitleText": "车辆明细页"
 				// "enablePullDownRefresh": false
 			}
-		}]
+		}, {
+			"path": "common/webview/userAgreement",
+			"style": {
+				"navigationBarTitleText": "用户协议"
+			}
+		},{
+			"path": "common/webview/privacyAgreement",
+			"style": {
+				"navigationBarTitleText": "隐私协议"
+			}
+		}
+		
+		]
 	}],
 	"tabBar": {
 		"color": "#000000",
