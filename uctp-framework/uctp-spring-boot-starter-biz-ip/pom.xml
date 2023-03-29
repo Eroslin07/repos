@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>cn.iocoder.cloud</groupId>
+        <groupId>com.newtouch.uctp.cloud</groupId>
         <artifactId>uctp-framework</artifactId>
         <version>${revision}</version>
     </parent>
@@ -26,7 +26,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-common</artifactId>
         </dependency>
 
@@ -49,7 +49,7 @@
 
         <!-- Test 测试相关 -->
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>uctp</artifactId>
-        <groupId>cn.iocoder.cloud</groupId>
+        <groupId>com.newtouch.uctp.cloud</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -24,7 +24,7 @@
 
         <!-- 业务组件 -->
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-banner</artifactId>
             <exclusions>
                 <exclusion>
@@ -34,7 +34,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-module-system-api</artifactId>
             <version>${revision}</version>
             <exclusions>
@@ -81,7 +81,7 @@
 
         <!-- 监控相关 -->
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-monitor</artifactId>
         </dependency>
 

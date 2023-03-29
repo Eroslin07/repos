@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>cn.iocoder.cloud</groupId>
+        <groupId>com.newtouch.uctp.cloud</groupId>
         <artifactId>uctp-framework</artifactId>
         <version>${revision}</version>
     </parent>
@@ -17,7 +17,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-common</artifactId>
         </dependency>
 
@@ -29,14 +29,14 @@
 
         <!-- RPC 远程调用相关 -->
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-rpc</artifactId>
             <optional>true</optional>
         </dependency>
 
         <!-- 业务组件 -->
         <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
+            <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-module-system-api</artifactId> <!-- 需要使用它，进行 Token 的校验 -->
             <version>${revision}</version>
         </dependency>

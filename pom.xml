@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cn.iocoder.cloud</groupId>
+    <groupId>com.newtouch.uctp.cloud</groupId>
     <artifactId>uctp</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -12,11 +12,11 @@
         <module>uctp-gateway</module>
         <module>uctp-framework</module>
         <!--  各种 module 拓展 -->
-<!--        <module>uctp-module-member</module>-->
+        <!--<module>uctp-module-member</module>-->
         <module>uctp-module-bpm</module>
         <module>uctp-module-system</module>
         <module>uctp-module-infra</module>
-        <!--        <module>uctp-module-pay</module>-->
+        <!--<module>uctp-module-pay</module>-->
         <module>uctp-module-report</module>
     </modules>
 
@@ -42,7 +42,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>cn.iocoder.cloud</groupId>
+                <groupId>com.newtouch.uctp.cloud</groupId>
                 <artifactId>uctp-dependencies</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
