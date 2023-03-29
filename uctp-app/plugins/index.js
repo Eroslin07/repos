@@ -1,6 +1,7 @@
 import tab from './tab'
 import auth from './auth'
 import modal from './modal'
+import amountFormat from './amountFormat'
 
 export default {
   install(Vue) {
@@ -10,5 +11,7 @@ export default {
     Vue.prototype.$auth = auth
     // 模态框对象
     Vue.prototype.$modal = modal
+    // 金额转换
+    Vue.prototype.$amount = amountFormat
   }
 }

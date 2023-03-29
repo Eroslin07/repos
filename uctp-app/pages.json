@@ -1,97 +1,287 @@
 {
-  "pages": [{
-    "path": "pages/login",
-    "style": {
-      "navigationBarTitleText": "登录"
-    }
-  }, {
-    "path": "pages/index",
-    "style": {
-      "navigationBarTitleText": "芋道移动端框架",
-      "navigationStyle": "custom"
-    }
-  }, {
-    "path": "pages/work/index",
-    "style": {
-      "navigationBarTitleText": "工作台"
-    }
-  }, {
-    "path": "pages/mine/index",
-    "style": {
-      "navigationBarTitleText": "我的"
-    }
-  }, {
-    "path": "pages/mine/avatar/index",
-    "style": {
-      "navigationBarTitleText": "修改头像"
-    }
-  }, {
-    "path": "pages/mine/info/index",
-    "style": {
-      "navigationBarTitleText": "个人信息"
-    }
-  }, {
-    "path": "pages/mine/info/edit",
-    "style": {
-      "navigationBarTitleText": "编辑资料"
-    }
-  }, {
-    "path": "pages/mine/pwd/index",
-    "style": {
-      "navigationBarTitleText": "修改密码"
-    }
-  }, {
-    "path": "pages/mine/setting/index",
-    "style": {
-      "navigationBarTitleText": "应用设置"
-    }
-  }, {
-    "path": "pages/mine/help/index",
-    "style": {
-      "navigationBarTitleText": "常见问题"
-    }
-  }, {
-    "path": "pages/mine/about/index",
-    "style": {
-      "navigationBarTitleText": "关于我们"
-    }
-  }, {
-    "path": "pages/common/webview/index",
-    "style": {
-      "navigationBarTitleText": "浏览网页"
-    }
-  }, {
-    "path": "pages/common/textview/index",
-    "style": {
-      "navigationBarTitleText": "浏览文本"
-    }
-  }],
-  "tabBar": {
-    "color": "#000000",
-    "selectedColor": "#000000",
-    "borderStyle": "white",
-    "backgroundColor": "#ffffff",
-    "list": [{
-        "pagePath": "pages/index",
-        "iconPath": "static/images/tabbar/home.png",
-        "selectedIconPath": "static/images/tabbar/home_.png",
-        "text": "首页"
-      }, {
-        "pagePath": "pages/work/index",
-        "iconPath": "static/images/tabbar/work.png",
-        "selectedIconPath": "static/images/tabbar/work_.png",
-        "text": "工作台"
-      }, {
-        "pagePath": "pages/mine/index",
-        "iconPath": "static/images/tabbar/mine.png",
-        "selectedIconPath": "static/images/tabbar/mine_.png",
-        "text": "我的"
-      }
-    ]
-  },
-  "globalStyle": {
-    "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "RuoYi",
-    "navigationBarBackgroundColor": "#FFFFFF"
-  }
+	"pages": [{
+		"path": "pages/login",
+		"style": {
+			"navigationBarTitleText": "登录",
+			"app-plus": {
+				"titleNView": {
+					"buttons": [
+						{
+							"text": "银行LOGO",
+							"fontSrc": "",
+							"fontSize": "14px",
+							"float": "left",
+							"width": "65px"
+						}
+					]
+				}
+			}
+		}
+	}, {
+		"path": "pages/index",
+		"style": {
+			"navigationBarTitleText": "首页"
+			// "navigationStyle": "custom"
+		}
+	}, {
+		"path": "pages/work/index",
+		"style": {
+			"navigationBarTitleText": "消息"
+		}
+	}, {
+		"path": "pages/mine/index",
+		"style": {
+			"navigationBarTitleText": "我的"
+		}
+	}],
+	"subPackages": [{
+		"root": "subPages",
+		"pages": [{
+				"path": "retrievePassword",
+				"style": {
+					"navigationBarTitleText": "找回密码",
+					"navigationStyle": "custom"
+				}
+			}, {
+				"path": "register",
+				"style": {
+					"navigationBarTitleText": "注册账号"
+					// "navigationStyle": "custom"
+				}
+			}, {
+				"path": "home/bycar/index",
+				"style": {
+					"navigationBarTitleText": "我要收车"
+					// "navigationStyle": "custom"
+				}
+			}, {
+				"path": "home/bycar/agreement",
+				"style": {
+					"navigationBarTitleText": "委托收车合同签章"
+				}
+			}, {
+				"path": "common/agreement/index",
+				"style": {
+					"navigationBarTitleText": ""
+				}
+			}, {
+				"path": "home/sellingCar/index",
+				"style": {
+					"navigationBarTitleText": "我要卖车"
+					// "navigationStyle": "custom"
+				}
+			}, {
+				"path": "home/sellingCar/carInfo",
+				"style": {
+					"navigationBarTitleText": "我要卖车"
+				}
+			}, {
+				"path": "home/sellingCar/vehicleDetails",
+				"style": {
+					"navigationBarTitleText": "上传检测报告"
+				}
+			}, {
+				"path": "home/sellingCar/agreement",
+				"style": {
+					"navigationBarTitleText": "委托卖车合同签章"
+				}
+			}, {
+				"path": "home/cost/index",
+				"style": {
+					"navigationBarTitleText": "我的费用"
+					// "navigationStyle": "custom"
+				}
+			}, {
+				"path": "home/account/index",
+				"style": {
+					"navigationBarTitleText": "我的账户"
+					// "navigationStyle": "custom"
+				}
+			}, {
+				"path": "home/account/profit",
+				"style": {
+					"navigationBarTitleText": "我的利润"
+					// "navigationStyle": "custom"
+				}
+			}, {
+				"path": "home/account/bond",
+				"style": {
+					"navigationBarTitleText": "我的保证金"
+					// "navigationStyle": "custom"
+				}
+		}, {
+			"path": "home/account/withdrawal",
+			"style": {
+				"navigationBarTitleText": ""
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/progress",
+			"style": {
+				"navigationBarTitleText": ""
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/info",
+			"style": {
+				"navigationBarTitleText": ""
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/detailed",
+			"style": {
+				"navigationBarTitleText": ""
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/collection",
+			"style": {
+				"navigationBarTitleText": "目前在售车辆"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/selling",
+			"style": {
+				"navigationBarTitleText": "已销售车辆"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "mine/avatar/index",
+			"style": {
+				"navigationBarTitleText": "修改头像"
+			}
+		}, {
+			"path": "mine/info/index",
+			"style": {
+				"navigationBarTitleText": "个人信息"
+			}
+		}, {
+			"path": "mine/staff/index",
+			"style": {
+				"navigationBarTitleText": "员工管理",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text": "添加",
+							"fontSrc": "",
+							"fontSize": "14px",
+							"float": "right",
+							"width": "65px"
+						}]
+					}
+				}
+			}
+		}, {
+			"path": "mine/staff/addStaff",
+			"style": {
+				"navigationBarTitleText": "新增员工"
+			}
+		}, {
+			"path": "mine/store/index",
+			"style": {
+				"navigationBarTitleText": "门店管理"
+			}
+		}, {
+			"path": "mine/info/edit",
+			"style": {
+				"navigationBarTitleText": "编辑资料"
+			}
+		}, {
+			"path": "mine/pwd/index",
+			"style": {
+				"navigationBarTitleText": "修改密码"
+			}
+		}, {
+			"path": "mine/setting/index",
+			"style": {
+				"navigationBarTitleText": "登录设置"
+			}
+		}, {
+			"path": "mine/help/index",
+			"style": {
+				"navigationBarTitleText": "意见反馈",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text": "查看反馈结果",
+							"fontSrc": "",
+							"fontSize": "14px",
+							"float": "right",
+							"width": "85px",
+							"color": "#2aa4d9"
+						}]
+					}
+				}
+			}
+		}, {
+			"path": "mine/help/result",
+			"style": {
+				"navigationBarTitleText": "意见反馈记录"
+			}
+		}, {
+			"path": "mine/help/detail",
+			"style": {
+				"navigationBarTitleText": "反馈详情"
+			}
+		}, {
+			"path": "mine/about/index",
+			"style": {
+				"navigationBarTitleText": "系统联系人"
+			}
+		}, {
+			"path": "common/webview/index",
+			"style": {
+				"navigationBarTitleText": "浏览网页"
+			}
+		}, {
+			"path": "common/textview/index",
+			"style": {
+				"navigationBarTitleText": "浏览文本"
+			}
+		}, {
+			"path": "home/cost/myExpenseAnalysis/myExpenseAnalysis",
+			"style": {
+				"navigationBarTitleText": "我的费用分析"
+			}
+		}, {
+			"path": "home/cost/costAnalysisDetails/costAnalysisDetails",
+			"style": {
+				"navigationBarTitleText": "我的费用分析",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "common/vehicleDetails/vehicleDetails",
+			"style": {
+				"navigationBarTitleText": "车辆明细页"
+				// "enablePullDownRefresh": false
+			}
+		}]
+	}],
+	"tabBar": {
+		"color": "#000000",
+		"selectedColor": "#000000",
+		"borderStyle": "white",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/index",
+			"iconPath": "static/images/tabbar/home.png",
+			"selectedIconPath": "static/images/tabbar/home_.png",
+			"text": "首页"
+		}, {
+			"pagePath": "pages/work/index",
+			"iconPath": "static/images/tabbar/work.png",
+			"selectedIconPath": "static/images/tabbar/work_.png",
+			"text": "消息"
+		}, {
+			"pagePath": "pages/mine/index",
+			"iconPath": "static/images/tabbar/mine.png",
+			"selectedIconPath": "static/images/tabbar/mine_.png",
+			"text": "我的"
+		}]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "RuoYi",
+		"navigationBarBackgroundColor": "#FFFFFF"
+	}
 }

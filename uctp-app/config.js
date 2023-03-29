@@ -16,11 +16,11 @@ module.exports = {
     // 政策协议
     agreements: [{
         title: "隐私政策",
-        url: "https://iocoder.cn"
+        url: "/static/隐私政策.docx"
       },
       {
         title: "用户服务协议",
-        url: "https://iocoder.cn"
+        url: "/static/用户协议.docx"
       }
     ]
   }

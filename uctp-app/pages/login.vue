@@ -1,84 +1,144 @@
 <template>
 	<view class="normal-login-container">
 		<view class="logo-content align-center justify-center flex">
-			<image style="width: 100rpx;height: 100rpx;" :src="globalConfig.appInfo.logo" mode="widthFix">
-			</image>
-			<text class="title">芋道移动端登录</text>
+			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">xxx结算中心</h2>
+		</view>
+		<view class="logo-content align-center justify-center flex">
+			<h3 class="title" style="margin-right: 50%;">助力车商</h3>
+		</view>
+		<view class="logo-content align-center justify-center flex">
+			<h3 class="fxnw">经纪转经销</h3>
 		</view>
 		<view class="login-form-content">
 			<view class="input-item flex align-center">
-				<view class="iconfont icon-user icon"></view>
-				<input v-model="loginForm.username" class="input" type="text" placeholder="请输入账号" maxlength="30" />
+				<view class="title">手机号：</view>
+				<input v-model="loginForm.username" class="input" type="text" placeholder="请输入手机号" maxlength="30" />
 			</view>
-			<view class="input-item flex align-center">
-				<view class="iconfont icon-password icon"></view>
-				<input v-model="loginForm.password" type="password" class="input" placeholder="请输入密码" maxlength="20" />
+			<view class="input-item flex align-center" v-if="changing">
+				<view class="title">密码：</view>
+				<input v-model="loginForm.password" type="password" class="input" placeholder="请输入密码" maxlength="32" />
 			</view>
-			<Verify @success="pwdLogin" :mode="'pop'" :captchaType="'blockPuzzle'"
-				:imgSize="{ width: '330px', height: '155px' }" ref="verify"></Verify>
+			<view class="input-item flex align-center" style="width: 74%;margin: 0px;" v-if="captchaEnabled">
+				<view class="title">验证码：</view>
+				<input v-model="loginForm.code" type="number" class="input" placeholder="请输入验证码" maxlength="4" style="width: 89%;" />
+				<view class="login-code">
+					<view @click="getVerification" class="login-code-img" v-if="getTime">获取验证码</view>
+					<view class="login-code-img" v-else>已发送({{ time }})</view>
+				</view>
+			</view>
 			<view class="action-btn">
-				<button @click="handleLogin" class="login-btn cu-btn block bg-blue lg round">登录</button>
+				<u-checkbox-group v-model="value">
+					<u-checkbox shape="circle" activeColor="#68b4c5"></u-checkbox>
+					<view>同意
+						<text style="color: #4ba4ff;" @click="handleUserAgrement">《xx用户协议》</text>
+						<text style="color: #4ba4ff;" @click="handlePrivacy">《隐私政策》</text>
+					</view>
+				</u-checkbox-group>
+				<button @click="handleLogin" class="login-btn cu-btn block lg" style="background-color: #68b4c5;color: white;">登录</button>
+				<button @click="userRegister" class="login-btn cu-btn block lg" style="background-color: #fff;border: 1px solid #ddd;">注册</button>
 			</view>
-		</view>
-
-		<view class="xieyi text-center">
-			<text class="text-grey1">登录即代表同意</text>
-			<text @click="handleUserAgrement" class="text-blue">《用户协议》</text>
-			<text @click="handlePrivacy" class="text-blue">《隐私协议》</text>
+			<view class="register">
+				<view class="register-login">
+					<view v-if="changing" @click="shortMessage">短信验证码登录</view>
+					<view v-if="captchaEnabled" @click="handlePass">密码登录</view>
+				</view>
+				<view class="register-zhao" @click="retrievePassword">忘记密码</view>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import Verify from "@/components/verifition/Verify"
-
 	export default {
-		name: 'Login',
-		components: {
-			Verify
-		},
 		data() {
 			return {
-				captchaEnabled: true, // 验证码开关 TODO 芋艿：需要抽到配置里
+				captchaEnabled: true,
 				globalConfig: getApp().globalData.config,
+				changing: false,
+				getTime: true,
+				time: 60,
+				timer: null,
 				loginForm: {
-					username: "admin",
-					password: "admin123",
-					captchaVerification: ""
-				}
+					username: "",
+					password: "",
+					code: "",
+					uuid: ''
+				},
+				value: []
 			}
 		},
 		methods: {
 			// 隐私协议
 			handlePrivacy() {
 				let site = this.globalConfig.appInfo.agreements[0]
-				this.$tab.navigateTo(`/pages/common/webview/index?title=${site.title}&url=${site.url}`)
+				uni.openDocument({
+					filePath: site.url, 
+					// 如果文件名包含中文，建议使用escape(res.tempFilePath)转码，防止ios和安卓客户端导致的差异
+					success: function(res) {
+						console.log('打开文档成功');
+					}
+				});
+				// this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
 			},
 			// 用户协议
 			handleUserAgrement() {
 				let site = this.globalConfig.appInfo.agreements[1]
-				this.$tab.navigateTo(`/pages/common/webview/index?title=${site.title}&url=${site.url}`)
+				this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
+			},
+			// 点击短信验证码登录
+			shortMessage() {
+				this.captchaEnabled = true;
+				this.changing = false;
+			},
+			// 点击用密码登录
+			handlePass() {
+				this.captchaEnabled = false;
+				this.changing = true
+			},
+			// 点击用户注册
+			userRegister() {
+				this.$tab.navigateTo('/subPages/register');
+			},
+			// 点击忘记密码
+			retrievePassword() {
+				this.$tab.navigateTo('/subPages/retrievePassword');
+			},
+			// 获取验证码
+			getVerification() {
+				this.$modal.msg("验证码已发送");
+				this.getTime = false;
+				this.timer = setInterval(() => {
+					this.time--;
+					if (this.time == 0) {
+						this.getTime = true;
+						clearInterval(this.timer);
+					}
+				}, 1000)
 			},
 			// 登录方法
-			async handleLogin(params) {
+			async handleLogin() {
+				if (this.value.length == 0) {
+					this.$modal.msgError("请阅读并勾选用户协议")
+					return
+				}
+				this.$tab.reLaunch('/pages/index');
+				
+				//关闭定时器
+				clearInterval(this.timer);
+				return
 				if (this.loginForm.username === "") {
 					this.$modal.msgError("请输入您的账号")
 				} else if (this.loginForm.password === "") {
 					this.$modal.msgError("请输入您的密码")
+				} else if (this.loginForm.code === "" && this.captchaEnabled) {
+					this.$modal.msgError("请输入验证码")
 				} else {
-          // 显示验证码
-          if (this.captchaEnabled) {
-            this.$refs.verify.show()
-          } else { // 直接登录
-            await this.pwdLogin({})
-          }
+					this.$modal.loading("登录中，请耐心等待...")
+					this.pwdLogin()
 				}
 			},
 			// 密码登录
-			async pwdLogin(captchaParams) {
-        this.$modal.loading("登录中，请耐心等待...")
-        // 执行登录
-        this.loginForm.captchaVerification = captchaParams.captchaVerification
+			async pwdLogin() {
 				this.$store.dispatch('Login', this.loginForm).then(() => {
 					this.$modal.closeLoading()
 					this.loginSuccess()
@@ -107,33 +167,43 @@
 			width: 100%;
 			font-size: 21px;
 			text-align: center;
-			padding-top: 15%;
-
-			image {
-				border-radius: 4px;
-			}
 
 			.title {
+				padding-top: 10%;
+				/* #ifdef MP-WEIXIN */
+				padding-top: 6%;
+				/* #endif */
 				margin-left: 10px;
+				color: #fe7345;
+				font-style: italic;
+				font-weight: normal;
+			}
+
+			.fxnw {
+				padding-top: 3%;
+				color: #fe7345;
+				margin-left: 40%;
+				font-style: italic;
+				font-weight: normal;
 			}
 		}
+
 
 		.login-form-content {
 			text-align: center;
 			margin: 20px auto;
-			margin-top: 15%;
 			width: 80%;
 
 			.input-item {
 				margin: 20px auto;
-				background-color: #f5f6f7;
 				height: 45px;
 				border-radius: 20px;
 
-				.icon {
-					font-size: 38rpx;
-					margin-left: 10px;
-					color: #999;
+				.title {
+					font-size: 16px;
+					width: 90px;
+					text-align: right;
+					color: #797979;
 				}
 
 				.input {
@@ -142,27 +212,55 @@
 					line-height: 20px;
 					text-align: left;
 					padding-left: 15px;
+					border: 1px solid #797979;
+					height: 45px;
+					border-radius: 10px;
 				}
 
 			}
+			
+			.action-btn {
+				margin-top: 40px;
+				/* #ifdef MP-WEIXIN */
+				margin-top: 20px;
+				/* #endif */
+			}
 
 			.login-btn {
-				margin-top: 40px;
 				height: 45px;
+				margin-top: 10px;
 			}
 
-			.xieyi {
-				color: #333;
+			.login-code {
+				height: 38px;
+				float: right;
+
+				.login-code-img {
+					height: 38px;
+					line-height: 38px;
+					position: absolute;
+					margin-left: 10px;
+					width: 150rpx;
+					color: #50a8bc;
+				}
+			}
+
+			.register {
 				margin-top: 20px;
+				color: #68b4c5;
+				overflow: hidden;
+				/* #ifdef MP-WEIXIN */
+				font-size: 16px;
+				/* #endif */
+
+				.register-login {
+					float: left;
+				}
+
+				.register-zhao {
+					float: right;
+				}
 			}
 		}
-
-		.easyinput {
-			width: 100%;
-		}
-	}
-
-	.login-code-img {
-		height: 45px;
 	}
 </style>
