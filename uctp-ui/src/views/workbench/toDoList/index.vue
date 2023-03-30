@@ -41,16 +41,27 @@
           v-hasPermi="['system:post:create']"
           @click="handleCarDetail()"
         />
+        <XButton type="primary" preIcon="ep:zoom-in" title="反向" @click="handleReverse()" />
+        <XButton type="primary" preIcon="ep:zoom-in" title="支付" @click="handlePayment()" />
       </template>
     </XTable>
-    <MerchantApprovalPending :dialogVisible="dialogVisible" @closeDialog="closeDialog" />
-    <CollectCarPending :carVisible="carVisible" @closeCarDialog="closeCarDialog" />
+    <MerchantApprovalPending
+      v-if="dialogVisible"
+      :dialogVisible="dialogVisible"
+      @close-dialog="closeDialog"
+    />
+    <CollectCarPending
+      v-if="carVisible"
+      :carVisible="carVisible"
+      @close-car-dialog="closeCarDialog"
+    />
+    <Reverse v-if="reverseVisible" :visible="reverseVisible" @cancel-form="cancelReverse" />
+    <Payment v-if="paymentVisible" :visible="paymentVisible" @cancel-form="cancelPayment" />
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
 import { allSchemas } from './toDoList.data'
-import MerchantApprovalPending from '../components/MerchantApprovalPending.vue'
-import CollectCarPending from '../components/CollectCarPending.vue'
+import { MerchantApprovalPending, CollectCarPending, Reverse, Payment } from '../components'
 // 列表相关的变量
 const [registerTable] = useXTable({
   allSchemas: allSchemas
@@ -60,6 +71,8 @@ const { t } = useI18n() // 国际化
 
 const dialogVisible = ref(false)
 const carVisible = ref(false)
+const reverseVisible = ref(false)
+const paymentVisible = ref(false)
 // 审批
 const handleApproval = () => {
   console.log('审批')
@@ -88,11 +101,30 @@ const closeDialog = () => {
 
 // 收车详情
 const handleCarDetail = () => {
-  console.log(2222)
   carVisible.value = true
 }
 
 const closeCarDialog = () => {
   carVisible.value = false
+}
+
+// 反向弹框
+const handleReverse = () => {
+  reverseVisible.value = true
+}
+
+// 支付失败弹框
+const handlePayment = () => {
+  paymentVisible.value = true
+}
+
+// 关闭反向弹框
+const cancelReverse = () => {
+  reverseVisible.value = false
+}
+
+// 关闭支付失败弹框
+const cancelPayment = () => {
+  paymentVisible.value = false
 }
 </script>
