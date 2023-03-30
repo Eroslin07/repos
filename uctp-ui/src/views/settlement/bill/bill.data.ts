@@ -1,78 +1,60 @@
 import type { VxeCrudSchema } from '@/hooks/web/useVxeCrudSchemas'
-
+// 国际化
+const { t } = useI18n()
 // 表单校验
 export const rules = reactive({
-  name: [required]
+  name: [required],
+  code: [required],
+  sort: [required]
 })
-
 // CrudSchema
 const crudSchemas = reactive<VxeCrudSchema>({
   primaryKey: 'id',
+  // primaryTitle: '角色编号',
   primaryType: 'seq',
   action: true,
+  actionWidth: '120px',
   columns: [
     {
       title: '发票类型',
       field: 'name',
-      isSearch: true,
       dictType: DICT_TYPE.COMMON_STATUS,
       dictClass: 'number',
-      table: {
-        minWidth: 180
-      }
+      isSearch: true
     },
     {
       title: '商户',
-      field: 'status',
-      isSearch: true,
-      table: {
-        minWidth: 180
-      }
+      field: 'code',
+      isSearch: true
     },
     {
       title: '合同名称',
-      field: 'remark',
-      table: {
-        minWidth: 180
-      }
+      field: 'code'
     },
     {
       title: '合同金额',
-      field: 'createTime',
-      table: {
-        minWidth: 180
-      }
+      field: 'sort'
     },
     {
       title: '税额',
-      field: 'createTime',
-      table: {
-        minWidth: 180
-      }
+      field: 'sort'
     },
     {
-      title: '状态',
-      field: 'createTime',
-      isSearch: true,
+      title: t('common.status'),
+      field: 'status',
       dictType: DICT_TYPE.COMMON_STATUS,
       dictClass: 'number',
-      table: {
-        minWidth: 180
-      }
+      isSearch: true
     },
     {
       title: '操作人',
-      field: 'createTime',
-      table: {
-        minWidth: 180
-      }
+      field: 'sort'
     },
     {
-      title: '操作时间',
+      title: t('common.createTime'),
       field: 'createTime',
-      table: {
-        minWidth: 180
-      }
+      formatter: 'formatDate',
+      isForm: false
     }
   ]
 })

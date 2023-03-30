@@ -7,47 +7,51 @@
         <XButton
           type="primary"
           preIcon="ep:zoom-in"
-          :title="t('action.add')"
-          v-hasPermi="['system:post:create']"
+          title="开具"
+          v-hasPermi="['settlement:bill:opener']"
           @click="handleCreate()"
         />
         <XButton
-          type="primary"
-          preIcon="ep:zoom-in"
+          type="warning"
+          preIcon="ep:download"
           title="下载"
-          v-hasPermi="['system:post:create']"
-          @click="handleUpdate()"
+          v-hasPermi="['settlement:bill:export']"
+          @click="exportList('用户数据.xls')"
+        />
+      </template>
+      <template #actionbtns_default="{ row }">
+        <!-- 操作：删除 -->
+        <XTextButton
+          preIcon="ep:delete"
+          :title="t('action.del')"
+          v-hasPermi="['settlement:bill:delete']"
+          @click="deleteData(row.id)"
         />
       </template>
     </XTable>
   </ContentWrap>
 </template>
-
 <script setup lang="ts" name="Bill">
-// 业务相关的 import
 import { allSchemas } from './bill.data'
+import * as RoleApi from '@/api/system/role'
+import * as UserApi from '@/api/system/user'
 
 const { t } = useI18n() // 国际化
-const { push } = useRouter() // 路由
-
 // 列表相关的变量
-const [registerTable] = useXTable({
-  allSchemas: allSchemas
+const [registerTable, { exportList }] = useXTable({
+  allSchemas: allSchemas,
+  getListApi: RoleApi.getRolePageApi,
+  deleteApi: RoleApi.deleteRoleApi,
+  exportListApi: UserApi.exportUserApi
 })
 
 // 新增操作
-const handleCreate = () => {
-  push({
-    name: 'bpmFormEditor'
-  })
-}
-
-// 修改操作
-const handleUpdate = async () => {
-  await push({
-    name: 'bpmFormEditor'
-  })
-}
+const handleCreate = () => {}
 </script>
-
-<style scoped></style>
+<style scoped>
+.card {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+</style>
