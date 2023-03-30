@@ -9,6 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>uctp-api-bpm</module>
+        <module>uctp-api-business</module>
         <module>uctp-api-infra</module>
         <module>uctp-api-report</module>
         <module>uctp-api-system</module>

@@ -9,6 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>uctp-bpm</module>
+        <module>uctp-business</module>
         <module>uctp-infra</module>
         <module>uctp-report</module>
         <module>uctp-system</module>
