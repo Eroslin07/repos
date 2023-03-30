@@ -40,6 +40,7 @@
         <module>uctp-spring-boot-starter-biz-data-permission</module>
         <module>uctp-spring-boot-starter-biz-error-code</module>
         <module>uctp-spring-boot-starter-biz-ip</module>
+        <module>uctp-spring-boot-starter-biz-qiyuesuo</module>
 
         <module>uctp-spring-boot-starter-flowable</module>
         <module>uctp-spring-boot-starter-captcha</module>

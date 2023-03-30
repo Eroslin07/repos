@@ -133,6 +133,11 @@
             </dependency>
             <dependency>
                 <groupId>com.newtouch.uctp.cloud</groupId>
+                <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.newtouch.uctp.cloud</groupId>
                 <artifactId>uctp-spring-boot-starter-biz-weixin</artifactId>
                 <version>${revision}</version>
             </dependency>

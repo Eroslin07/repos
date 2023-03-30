@@ -58,6 +58,22 @@
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-biz-error-code</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-spring-boot-starter-biz-data-permission</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
+        </dependency>
+        <!-- 契约锁相关依赖 -->
+        <dependency>
+            <groupId>com.qiyuesuo.sdk</groupId>
+            <artifactId>sdk-java</artifactId>
+            <version>3.5.2</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/sdk-java-3.5.2.jar</systemPath>
+        </dependency>
 
         <!-- Web 相关 -->
         <dependency>
@@ -124,11 +140,32 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-biz-data-permission</artifactId>
-        </dependency>
 
     </dependencies>
+
+    <build>
+        <!-- 设置构建的 jar 包名 -->
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <!-- 打包 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version> <!-- 如果 spring.boot.version 版本修改，则这里也要跟着修改 -->
+                <configuration>
+                    <fork>true</fork>
+                    <!-- 支持引入非Maven仓库的Jar包 -->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal> <!-- 将引入的 jar 打入其中 -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

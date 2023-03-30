@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.newtouch.uctp.cloud</groupId>
+        <artifactId>uctp-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        契约锁业务封装拓展。
+        官方文档：https://open.qiyuesuo.cn/document
+    </description>
+    <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
+
+	<dependencies>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-common</artifactId>
+        </dependency>
+
+        <!-- Test 测试相关 -->
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 契约锁相关依赖 -->
+        <dependency>
+            <groupId>com.qiyuesuo.sdk</groupId>
+            <artifactId>sdk-java</artifactId>
+            <version>3.5.2</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/sdk-java-3.5.2.jar</systemPath>
+        </dependency>
+	</dependencies>
+
+</project>
