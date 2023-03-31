@@ -200,7 +200,7 @@
               <h3 style="font-weight: bold" class="mb20">合同信息</h3>
               <el-row>
                 <el-form-item label="XXX收车委托合同">
-                  <div class="colr159" @click="viewContract">查看</div>
+                  <button class="colr159" @click="viewContract">查看</button>
                 </el-form-item>
               </el-row>
               <el-row>
@@ -211,19 +211,8 @@
             </el-form>
           </el-card>
 
-          <XModal
-            v-model="contractVisible"
-            title="合同"
-            width="60%"
-            :showFooter="false"
-            style="height: 100%"
-          >
-            <iframe
-              src="https://element-plus.org/zh-CN/component/form.html#%E5%85%B8%E5%9E%8B%E8%A1%A8%E5%8D%95"
-              frameborder="0"
-              style="width: 100%; height: 100vh"
-            ></iframe>
-          </XModal>
+          <!-- 查看合同 -->
+          <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel" />
         </el-main>
       </el-container>
     </XModal>
@@ -233,6 +222,7 @@
 import { allSchemas } from '../toDoList/toDoList.data'
 import { defineProps } from 'vue'
 import { propTypes } from '@/utils/propTypes'
+import { AgreementFrame } from './index'
 // import type { FormExpose } from '@/components/Form'
 const { t } = useI18n() // 国际化
 // const message = useMessage() // 消息弹窗
@@ -287,9 +277,14 @@ const viewIdCard = () => {
 
 // 查看合同
 const viewContract = () => {
-  console.log(1111)
   contractVisible.value = true
 }
+
+// 关闭合同弹框
+const handleCancel = () => {
+  contractVisible.value = false
+}
+
 // 关闭弹框
 const closeDialog = () => {
   emit('cancleSellCar')

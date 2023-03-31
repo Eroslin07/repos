@@ -43,20 +43,31 @@
           <p>收车款：<span style="color: #63b0ff">30,000.00元</span></p>
         </div>
         <p style="font-weight: bold; margin-bottom: 10px">合同信息</p>
-        <p style="margin-bottom: 10px">XXX收车委托合同 <span style="color: #33a8db">查看</span></p>
-        <p style="margin-bottom: 10px">XXX收车合同 <span style="color: #33a8db">查看</span></p>
+        <p style="margin-bottom: 10px"
+          >XXX收车委托合同 <button class="colr159" @click="viewContract">查看</button></p
+        >
+        <p style="margin-bottom: 10px"
+          >XXX收车合同 <button class="colr159" @click="viewContract">查看</button></p
+        >
       </el-card>
+
+      <!-- 查看合同 -->
+      <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel1" />
     </XModal>
   </div>
 </template>
 
 <script setup lang="ts" name="Reverse">
+import { AgreementFrame } from './index'
 import { propTypes } from '@/utils/propTypes'
 
 const emit = defineEmits(['cancelForm'])
 
 const actionLoading = ref(false) // 遮罩层
 const dialogTitle = ref('支付失败待办') // 弹出层标题
+
+// 合同弹框
+const contractVisible = ref(false)
 
 const props = defineProps({
   visible: propTypes.bool.def(false),
@@ -67,6 +78,16 @@ const dialogVisible = computed(() => {
   const obj = props.visible
   return obj
 })
+
+// 查看合同
+const viewContract = () => {
+  contractVisible.value = true
+}
+
+// 关闭合同弹框
+const handleCancel1 = () => {
+  contractVisible.value = false
+}
 
 // 关闭操作
 const handleClose = () => {
@@ -95,5 +116,9 @@ p {
   border: 1px solid #000;
   padding: 10px;
   margin: 10px 0;
+}
+
+.colr159 {
+  color: #1592c9;
 }
 </style>

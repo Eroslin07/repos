@@ -5,6 +5,7 @@ import CollectCarPending from './CollectCarPending.vue'
 import ForwardDirection from './forwardDirection.vue'
 import SellCarPending from './SellCarPending.vue'
 import Profit from './profit.vue'
+import AgreementFrame from './agreementFrame.vue'
 
 export {
   MerchantApprovalPending,
@@ -13,5 +14,6 @@ export {
   Payment,
   ForwardDirection,
   SellCarPending,
-  Profit
+  Profit,
+  AgreementFrame
 }
