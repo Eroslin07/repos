@@ -43,6 +43,7 @@
         />
         <XButton type="primary" preIcon="ep:zoom-in" title="反向" @click="handleReverse()" />
         <XButton type="primary" preIcon="ep:zoom-in" title="支付" @click="handlePayment()" />
+        <XButton type="primary" preIcon="ep:money" title="卖车" @click="handleSellCar()" />
         <XButton type="primary" preIcon="ep:zoom-in" title="正向" @click="handleForward()" />
       </template>
     </XTable>
@@ -63,6 +64,11 @@
       :visible="forwardVisible"
       @cancel-forward="cancelForward"
     />
+    <SellCarPending
+      v-if="sellCarVisible"
+      :visible="sellCarVisible"
+      @cancle-sell-car="cancleSellCar"
+    />
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
@@ -72,7 +78,8 @@ import {
   CollectCarPending,
   Reverse,
   Payment,
-  ForwardDirection
+  ForwardDirection,
+  SellCarPending
 } from '../components'
 // 列表相关的变量
 const [registerTable] = useXTable({
@@ -86,6 +93,7 @@ const carVisible = ref(false)
 const reverseVisible = ref(false)
 const paymentVisible = ref(false)
 const forwardVisible = ref(false)
+const sellCarVisible = ref(false)
 // 审批
 const handleApproval = () => {
   console.log('审批')
@@ -149,5 +157,14 @@ const handleForward = () => {
 // 关闭正向弹框
 const cancelForward = () => {
   forwardVisible.value = false
+}
+
+// 卖车弹框
+const handleSellCar = () => {
+  sellCarVisible.value = true
+}
+// 关闭卖车弹框
+const cancleSellCar = () => {
+  sellCarVisible.value = false
 }
 </script>
