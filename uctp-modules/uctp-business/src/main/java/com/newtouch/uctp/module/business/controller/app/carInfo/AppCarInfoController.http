@@ -1,0 +1,8 @@
+### 请求 /infra/file-config/create 接口 => 成功
+GET {{appBusinessUrl}}/uctp/car-info/page
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+Authorization: Bearer {{token}}
+
+
+

@@ -119,7 +119,8 @@ uctp:
   env: # 多环境的配置项
     tag: ${HOSTNAME}
   security:
-    mock-enable: true
+    mock-enable: true # 是否开启 Token 的模拟机制
+    mock-secret: test # Token 模拟机制的 Token 前缀
   xss:
     enable: false
     exclude-urls: # 如下两个 url，仅仅是为了演示，去掉配置也没关系
