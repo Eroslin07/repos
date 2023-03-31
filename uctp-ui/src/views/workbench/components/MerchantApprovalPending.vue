@@ -11,9 +11,9 @@
         <el-header class="header">山西万国市场商户张三账号申请待办</el-header>
         <el-main>
           <div class="btn">
-            <el-button size="small" type="danger" @click="closeDialog">关闭</el-button>
-            <el-button size="small" type="primary" @submit="submitBtn">提交</el-button>
-            <el-button size="small" @click="terminationBtn">终止</el-button>
+            <el-button type="danger" @click="closeDialog">关闭</el-button>
+            <el-button type="primary" @submit="submitBtn">提交</el-button>
+            <el-button @click="terminationBtn">终止</el-button>
           </div>
           <div>单号：GZSH202303220001</div>
           <el-card class="content-box">
@@ -28,17 +28,31 @@
             <div>
               <div>身份证图片</div>
               <el-image
-                style="width: 300px; height: 100px"
-                src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                fit="fill"
+                style="width: 200px; height: 100px; margin-right: 10px"
+                src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                :zoom-rate="1.2"
+                :preview-src-list="srcList"
+                fit="cover"
+                :initial-index="0"
+              />
+              <el-image
+                style="width: 200px; height: 100px"
+                src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
+                :zoom-rate="1.2"
+                :preview-src-list="srcList"
+                fit="cover"
+                :initial-index="1"
               />
             </div>
             <div>
               <div>营业执照图片</div>
               <el-image
-                style="width: 300px; height: 100px"
-                src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                fit="fill"
+                style="width: 200px; height: 100px"
+                src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                :zoom-rate="1.2"
+                :preview-src-list="srcList"
+                fit="cover"
+                :initial-index="0"
               />
             </div>
           </el-card>
@@ -58,6 +72,12 @@ const { t } = useI18n() // 国际化
 const [] = useXTable({
   allSchemas: allSchemas
 })
+
+const srcList = [
+  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+  'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
+]
+
 const actionType = ref('detail') // 操作按钮的类型
 // const dialogVisible = ref(true) // 是否显示弹出层
 const dialogTitle = ref('商户主账号审批待办') // 弹出层标题

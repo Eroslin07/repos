@@ -11,9 +11,9 @@
         <el-header class="header">商户张三收车价格超公允值审批待办</el-header>
         <el-main>
           <div class="btn">
-            <el-button size="small" type="danger" @click="closeDialog">关闭</el-button>
-            <el-button size="small" type="primary" @click="passBtn">通过</el-button>
-            <el-button size="small" @click="returnBtn">退回</el-button>
+            <el-button type="danger" @click="closeDialog">关闭</el-button>
+            <el-button type="primary" @click="passBtn">通过</el-button>
+            <el-button @click="returnBtn">退回</el-button>
           </div>
           <el-card class="content-box">
             <div>单号：GZSH202303220001</div>
@@ -27,7 +27,7 @@
                       <el-image
                         v-for="url in urls"
                         :key="url"
-                        style="width: 40px; height: 40px; margin: 0 10px; vertical-align: top"
+                        style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
                         :src="url"
                         fit="fill"
                         :zoom-rate="1.2"
@@ -43,7 +43,7 @@
                       <el-image
                         v-for="url in urls"
                         :key="url"
-                        style="width: 40px; height: 40px; margin: 0 10px; vertical-align: top"
+                        style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
                         :src="url"
                         fit="fill"
                         :zoom-rate="1.2"
@@ -59,7 +59,7 @@
                       <el-image
                         v-for="url in urls"
                         :key="url"
-                        style="width: 40px; height: 40px; margin: 0 10px; vertical-align: top"
+                        style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
                         :src="url"
                         fit="fill"
                         :zoom-rate="1.2"
@@ -132,8 +132,33 @@
               <el-row>
                 <el-col :span="6">
                   <el-form-item label="身份证">
-                    <span> 5*****************1</span>
-                    <span>查看</span>
+                    <span class="identify" v-if="identifyShow"> 5*****************1</span>
+                    <span class="identify" v-else>512345678990102345</span>
+                    <Icon
+                      style="margin: 0 6px"
+                      icon="ep:view"
+                      v-if="identifyShow"
+                      @click="identifyShow = !identifyShow"
+                    />
+                    <Icon
+                      style="margin: 0 6px"
+                      icon="ep:hide"
+                      v-else
+                      @click="identifyShow = !identifyShow"
+                    />
+                    <span @click="viewIdCard">查看</span>
+                    <div v-if="idCardShow">
+                      <el-image
+                        v-for="item in 2"
+                        :key="item"
+                        style="width: 70px; height: 70px; margin-right: 5px"
+                        src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                        fit="cover"
+                        :zoom-rate="1.2"
+                        :preview-src-list="srcList"
+                        :initial-index="0"
+                      />
+                    </div>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
@@ -175,6 +200,12 @@ const { t } = useI18n() // 国际化
 const [] = useXTable({
   allSchemas: allSchemas
 })
+
+// 预览图片
+const srcList = [
+  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+  'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
+]
 const actionType = ref('detail') // 操作按钮的类型
 // const dialogVisible = ref(true) // 是否显示弹出层
 const dialogTitle = ref('收车价格超公允值待办') // 弹出层标题
@@ -191,6 +222,10 @@ const urls = [
   'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
   'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
 ]
+
+const identifyShow = ref(false)
+const idCardShow = ref(false)
+
 const emit = defineEmits(['closeCarDialog'])
 const props = defineProps({
   carVisible: propTypes.bool.def(false)
@@ -202,6 +237,10 @@ const carVisible = computed(() => {
 
 console.log(setDialogTile)
 
+// 查看身份证
+const viewIdCard = () => {
+  idCardShow.value = !idCardShow.value
+}
 // 关闭弹框
 const closeDialog = () => {
   emit('closeCarDialog')
@@ -236,5 +275,9 @@ const returnBtn = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.identify {
+  display: inline-block;
+  width: 136px;
 }
 </style>
