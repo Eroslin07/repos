@@ -25,7 +25,7 @@
       ref="formRef"
     >
       <template #menuIds>
-        <el-card>
+        <el-card id="treeCard">
           <template #header>
             <div class="card-header">
               全选/全不选:
@@ -179,7 +179,7 @@ onMounted(async () => {
 // getList()
 </script>
 <style scoped>
-.el-card {
+#treeCard {
   width: 100%;
   max-height: 400px;
   overflow-y: scroll;
