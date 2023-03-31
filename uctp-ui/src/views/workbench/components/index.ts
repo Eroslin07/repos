@@ -4,12 +4,14 @@ import MerchantApprovalPending from './MerchantApprovalPending.vue'
 import CollectCarPending from './CollectCarPending.vue'
 import ForwardDirection from './forwardDirection.vue'
 import SellCarPending from './SellCarPending.vue'
+import Profit from './profit.vue'
 
 export {
   MerchantApprovalPending,
   CollectCarPending,
   Reverse,
-  SellCarPending,
   Payment,
-  ForwardDirection
+  ForwardDirection,
+  SellCarPending,
+  Profit
 }

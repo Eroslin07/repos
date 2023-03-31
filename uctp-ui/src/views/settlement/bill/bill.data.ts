@@ -12,7 +12,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
   primaryKey: 'id',
   // primaryTitle: '角色编号',
   primaryType: 'seq',
-  action: true,
+  action: false,
   actionWidth: '120px',
   columns: [
     {

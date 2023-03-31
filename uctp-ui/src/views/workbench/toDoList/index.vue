@@ -26,49 +26,34 @@
           v-hasPermi="['system:post:create']"
           @click="handleExport()"
         />
-        <!-- 操作：查看详情 -->
-        <XButton
-          type="primary"
-          preIcon="ep:download"
-          title="商户详情"
-          v-hasPermi="['system:post:create']"
-          @click="handleDetail()"
-        />
-        <XButton
-          type="primary"
-          preIcon="ep:download"
-          title="收车详情"
-          v-hasPermi="['system:post:create']"
-          @click="handleCarDetail()"
-        />
-        <XButton type="primary" preIcon="ep:zoom-in" title="反向" @click="handleReverse()" />
-        <XButton type="primary" preIcon="ep:zoom-in" title="支付" @click="handlePayment()" />
-        <XButton type="primary" preIcon="ep:money" title="卖车" @click="handleSellCar()" />
-        <XButton type="primary" preIcon="ep:zoom-in" title="正向" @click="handleForward()" />
+      </template>
+      <template #application_default="{ row }">
+        <div class="application" @click="handleApplication(row)">{{ row.name }}</div>
       </template>
     </XTable>
     <MerchantApprovalPending
-      v-if="dialogVisible"
+      v-if="status == 'GZSH'"
       :dialogVisible="dialogVisible"
       @close-dialog="closeDialog"
     />
     <CollectCarPending
-      v-if="carVisible"
-      :carVisible="carVisible"
-      @close-car-dialog="closeCarDialog"
+      v-if="status == 'SCJG'"
+      :carVisible="dialogVisible"
+      @close-car-dialog="closeDialog"
     />
-    <Reverse v-if="reverseVisible" :visible="reverseVisible" @cancel-form="cancelReverse" />
-    <Payment v-if="paymentVisible" :visible="paymentVisible" @cancel-form="cancelPayment" />
+    <Reverse v-if="status == 'SCKP'" :visible="dialogVisible" @cancel-form="closeDialog" />
+    <Payment v-if="status == 'SCKZH'" :visible="dialogVisible" @cancel-form="closeDialog" />
     <ForwardDirection
-      v-if="forwardVisible"
-      :visible="forwardVisible"
-      @cancel-forward="cancelForward"
+      v-if="status == 'MCHT'"
+      :visible="dialogVisible"
+      @cancel-forward="closeDialog"
     />
     <SellCarPending
-      v-if="sellCarVisible"
-      :visible="sellCarVisible"
-      @cancle-sell-car="cancleSellCar"
+      v-if="status == 'MCKP'"
+      :visible="dialogVisible"
+      @cancle-sell-car="closeDialog"
     />
+    <Profit v-if="status == 'LRTQ'" :visible="dialogVisible" @cancel-form="closeDialog" />
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
@@ -79,21 +64,22 @@ import {
   Reverse,
   Payment,
   ForwardDirection,
-  SellCarPending
+  SellCarPending,
+  Profit
 } from '../components'
+
+import * as RoleApi from '@/api/system/role'
 // 列表相关的变量
 const [registerTable] = useXTable({
-  allSchemas: allSchemas
+  allSchemas: allSchemas,
+  getListApi: RoleApi.getRolePageApi
 })
 const { t } = useI18n() // 国际化
 // const { push } = useRouter() // 路由
 
 const dialogVisible = ref(false)
-const carVisible = ref(false)
-const reverseVisible = ref(false)
-const paymentVisible = ref(false)
-const forwardVisible = ref(false)
-const sellCarVisible = ref(false)
+
+const status = ref('')
 // 审批
 const handleApproval = () => {
   console.log('审批')
@@ -109,62 +95,24 @@ const handleExport = () => {
   console.log('导出')
 }
 
-// 查看详情
-const handleDetail = () => {
-  console.log('查看详情')
+// 点击申请单号
+const handleApplication = (row) => {
+  console.log(row)
+  // GZSH SCJG SCKP SCKZH MCHT MCKP LRTQ
+  status.value = 'GZSH'
   dialogVisible.value = true
 }
 
 // 关闭弹框
 const closeDialog = () => {
   dialogVisible.value = false
-}
-
-// 收车详情
-const handleCarDetail = () => {
-  carVisible.value = true
-}
-
-const closeCarDialog = () => {
-  carVisible.value = false
-}
-
-// 反向弹框
-const handleReverse = () => {
-  reverseVisible.value = true
-}
-
-// 支付失败弹框
-const handlePayment = () => {
-  paymentVisible.value = true
-}
-
-// 关闭反向弹框
-const cancelReverse = () => {
-  reverseVisible.value = false
-}
-
-// 关闭支付失败弹框
-const cancelPayment = () => {
-  paymentVisible.value = false
-}
-
-// 正向弹框
-const handleForward = () => {
-  forwardVisible.value = true
-}
-
-// 关闭正向弹框
-const cancelForward = () => {
-  forwardVisible.value = false
-}
-
-// 卖车弹框
-const handleSellCar = () => {
-  sellCarVisible.value = true
-}
-// 关闭卖车弹框
-const cancleSellCar = () => {
-  sellCarVisible.value = false
+  status.value = ''
 }
 </script>
+
+<style scoped>
+.application {
+  color: #51b5e0;
+  cursor: pointer;
+}
+</style>

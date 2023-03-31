@@ -9,7 +9,7 @@ export const rules = reactive({
 const crudSchemas = reactive<VxeCrudSchema>({
   primaryKey: 'id',
   primaryType: 'seq',
-  action: true,
+  action: false,
   columns: [
     {
       title: '申请单号',
@@ -17,7 +17,10 @@ const crudSchemas = reactive<VxeCrudSchema>({
       isSearch: true,
       dictClass: 'number',
       table: {
-        minWidth: 180
+        minWidth: 180,
+        slots: {
+          default: 'application_default'
+        }
       }
     },
     {
