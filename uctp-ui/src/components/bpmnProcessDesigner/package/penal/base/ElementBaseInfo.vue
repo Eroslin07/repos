@@ -13,7 +13,7 @@
           <el-input
             v-model="needProps.id"
             placeholder="请输入流标标识"
-            :disabled="needProps.id !== undefined && needProps.id.length > 0"
+            clearable
             @change="handleKeyUpdate"
           />
         </el-form-item>

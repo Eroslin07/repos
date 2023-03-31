@@ -3,6 +3,30 @@ package com.newtouch.uctp.module.bpm.service.task;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
+import java.util.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.flowable.bpmn.model.UserTask;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
+import org.flowable.task.api.TaskQuery;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.date.DateUtils;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
@@ -18,24 +42,6 @@ import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
 import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
-import lombok.extern.slf4j.Slf4j;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.TaskService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
-import org.flowable.task.api.TaskQuery;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.task.api.history.HistoricTaskInstanceQuery;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.convertMap;
@@ -56,6 +62,10 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private TaskService taskService;
     @Resource
     private HistoryService historyService;
+    @Resource
+    private RuntimeService runtimeService;
+    @Resource
+    private RepositoryService repositoryService;
 
     @Resource
     private BpmProcessInstanceService processInstanceService;
@@ -202,8 +212,15 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             throw exception(PROCESS_INSTANCE_NOT_EXISTS);
         }
 
+        List<UserTask> userTaskList = repositoryService.getBpmnModel(instance.getProcessDefinitionId()).getMainProcess().findFlowElementsOfType(UserTask.class, true);
+
+        runtimeService.createChangeActivityStateBuilder()
+                .processInstanceId(task.getProcessInstanceId())
+                .moveExecutionToActivityId(task.getExecutionId(), userTaskList.get(0).getId())
+                .changeState();
+
         // 更新流程实例为不通过
-        processInstanceService.updateProcessInstanceExtReject(instance.getProcessInstanceId(), reqVO.getReason());
+        //processInstanceService.updateProcessInstanceExtReject(instance.getProcessInstanceId(), reqVO.getReason());
 
         // 更新任务拓展表为不通过
         taskExtMapper.updateByTaskId(

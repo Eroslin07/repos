@@ -5,19 +5,21 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
-import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.util.json.JsonUtils;
-import com.newtouch.uctp.framework.common.util.monitor.TracerUtils;
-import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
-import com.newtouch.uctp.framework.operatelog.core.enums.OperateTypeEnum;
-import com.newtouch.uctp.framework.operatelog.core.service.OperateLog;
-import com.newtouch.uctp.framework.operatelog.core.service.OperateLogFrameworkService;
-import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
-import com.google.common.collect.Maps;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -28,15 +30,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
+import com.google.common.collect.Maps;
+import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.util.json.JsonUtils;
+import com.newtouch.uctp.framework.common.util.monitor.TracerUtils;
+import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
+import com.newtouch.uctp.framework.operatelog.core.enums.OperateTypeEnum;
+import com.newtouch.uctp.framework.operatelog.core.service.OperateLog;
+import com.newtouch.uctp.framework.operatelog.core.service.OperateLogFrameworkService;
+import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 
 import static com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR;
 import static com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants.SUCCESS;
@@ -334,11 +337,13 @@ public class OperateLogAspect {
         Object[] argValues = joinPoint.getArgs();
         // 拼接参数
         Map<String, Object> args = Maps.newHashMapWithExpectedSize(argValues.length);
-        for (int i = 0; i < argNames.length; i++) {
-            String argName = argNames[i];
-            Object argValue = argValues[i];
-            // 被忽略时，标记为 ignore 字符串，避免和 null 混在一起
-            args.put(argName, !isIgnoreArgs(argValue) ? argValue : "[ignore]");
+        if (Objects.nonNull(argNames)) {
+            for (int i = 0; i < argNames.length; i++) {
+                String argName = argNames[i];
+                Object argValue = argValues[i];
+                // 被忽略时，标记为 ignore 字符串，避免和 null 混在一起
+                args.put(argName, !isIgnoreArgs(argValue) ? argValue : "[ignore]");
+            }
         }
         return JsonUtils.toJsonString(args);
     }
