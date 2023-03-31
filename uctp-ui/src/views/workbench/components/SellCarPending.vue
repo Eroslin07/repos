@@ -1,5 +1,5 @@
 <template>
-  <ContentWrap>
+  <ContentWrap style="height: 100%">
     <XModal
       v-model="visible"
       :title="dialogTitle"
@@ -200,16 +200,30 @@
               <h3 style="font-weight: bold" class="mb20">合同信息</h3>
               <el-row>
                 <el-form-item label="XXX收车委托合同">
-                  <div class="colr159">查看</div>
+                  <div class="colr159" @click="viewContract">查看</div>
                 </el-form-item>
               </el-row>
               <el-row>
                 <el-form-item label="XXX收车合同">
-                  <div class="colr159">查看</div>
+                  <button type="button" class="colr159" @click="viewContract">查看</button>
                 </el-form-item>
               </el-row>
             </el-form>
           </el-card>
+
+          <XModal
+            v-model="contractVisible"
+            title="合同"
+            width="60%"
+            :showFooter="false"
+            style="height: 100%"
+          >
+            <iframe
+              src="https://element-plus.org/zh-CN/component/form.html#%E5%85%B8%E5%9E%8B%E8%A1%A8%E5%8D%95"
+              frameborder="0"
+              style="width: 100%; height: 100vh"
+            ></iframe>
+          </XModal>
         </el-main>
       </el-container>
     </XModal>
@@ -252,6 +266,8 @@ const urls = [
 const identifyShow = ref(false)
 const idCardShow = ref(false)
 
+// 合同弹框
+const contractVisible = ref(false)
 const emit = defineEmits(['cancleSellCar'])
 const props = defineProps({
   visible: propTypes.bool.def(false)
@@ -266,6 +282,12 @@ console.log(setDialogTile)
 // 查看身份证
 const viewIdCard = () => {
   idCardShow.value = !idCardShow.value
+}
+
+// 查看合同
+const viewContract = () => {
+  console.log(1111)
+  contractVisible.value = true
 }
 // 关闭弹框
 const closeDialog = () => {
