@@ -22,7 +22,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '事项',
-      field: 'name',
+      field: 'item',
       isSearch: true,
       dictClass: 'number',
       table: {
@@ -38,7 +38,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '申请人',
-      field: 'createTime',
+      field: 'applicant',
       isSearch: true,
       table: {
         minWidth: 180
@@ -56,14 +56,14 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '到达时间',
-      field: 'createTime',
+      field: 'arrivalTime',
       table: {
         minWidth: 180
       }
     },
     {
       title: '审批人',
-      field: 'createTime',
+      field: 'approver',
       table: {
         minWidth: 180
       }

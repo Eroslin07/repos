@@ -43,6 +43,7 @@
         />
         <XButton type="primary" preIcon="ep:zoom-in" title="反向" @click="handleReverse()" />
         <XButton type="primary" preIcon="ep:zoom-in" title="支付" @click="handlePayment()" />
+        <XButton type="primary" preIcon="ep:zoom-in" title="正向" @click="handleForward()" />
       </template>
     </XTable>
     <MerchantApprovalPending
@@ -57,11 +58,22 @@
     />
     <Reverse v-if="reverseVisible" :visible="reverseVisible" @cancel-form="cancelReverse" />
     <Payment v-if="paymentVisible" :visible="paymentVisible" @cancel-form="cancelPayment" />
+    <ForwardDirection
+      v-if="forwardVisible"
+      :visible="forwardVisible"
+      @cancel-forward="cancelForward"
+    />
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
 import { allSchemas } from './toDoList.data'
-import { MerchantApprovalPending, CollectCarPending, Reverse, Payment } from '../components'
+import {
+  MerchantApprovalPending,
+  CollectCarPending,
+  Reverse,
+  Payment,
+  ForwardDirection
+} from '../components'
 // 列表相关的变量
 const [registerTable] = useXTable({
   allSchemas: allSchemas
@@ -73,6 +85,7 @@ const dialogVisible = ref(false)
 const carVisible = ref(false)
 const reverseVisible = ref(false)
 const paymentVisible = ref(false)
+const forwardVisible = ref(false)
 // 审批
 const handleApproval = () => {
   console.log('审批')
@@ -126,5 +139,15 @@ const cancelReverse = () => {
 // 关闭支付失败弹框
 const cancelPayment = () => {
   paymentVisible.value = false
+}
+
+// 正向弹框
+const handleForward = () => {
+  forwardVisible.value = true
+}
+
+// 关闭正向弹框
+const cancelForward = () => {
+  forwardVisible.value = false
 }
 </script>

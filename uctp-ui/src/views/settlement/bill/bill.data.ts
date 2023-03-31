@@ -29,7 +29,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '合同名称',
-      field: 'code'
+      field: 'contractName'
     },
     {
       title: '合同金额',
@@ -37,7 +37,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '税额',
-      field: 'sort'
+      field: 'amountTax'
     },
     {
       title: t('common.status'),
@@ -48,7 +48,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '操作人',
-      field: 'sort'
+      field: 'operator'
     },
     {
       title: t('common.createTime'),
