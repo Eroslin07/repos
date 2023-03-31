@@ -17,7 +17,10 @@ const crudSchemas = reactive<VxeCrudSchema>({
       isSearch: true,
       dictClass: 'number',
       table: {
-        minWidth: 180
+        minWidth: 180,
+        slots: {
+          default: 'application_default'
+        }
       }
     },
     {

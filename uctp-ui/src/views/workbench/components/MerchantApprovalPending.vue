@@ -12,8 +12,8 @@
         <el-main>
           <div class="btn">
             <el-button type="danger" @click="closeDialog">关闭</el-button>
-            <el-button type="primary" @submit="submitBtn">提交</el-button>
-            <el-button @click="terminationBtn">终止</el-button>
+            <el-button type="primary" v-if="type == 'need'" @submit="submitBtn">提交</el-button>
+            <el-button v-if="type == 'need'" @click="terminationBtn">终止</el-button>
           </div>
           <div>单号：GZSH202303220001</div>
           <el-card class="content-box">
@@ -93,7 +93,8 @@ const setDialogTile = (type: string) => {
 const emit = defineEmits(['closeDialog'])
 
 const props = defineProps({
-  dialogVisible: propTypes.bool.def(false)
+  dialogVisible: propTypes.bool.def(false),
+  type: propTypes.bool.def(undefined)
 })
 
 const dialogVisible = computed(() => {

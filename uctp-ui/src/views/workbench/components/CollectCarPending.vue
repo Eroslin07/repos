@@ -12,8 +12,8 @@
         <el-main>
           <div class="btn">
             <el-button type="danger" @click="closeDialog">关闭</el-button>
-            <el-button type="primary" @click="passBtn">通过</el-button>
-            <el-button @click="returnBtn">退回</el-button>
+            <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
+            <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button>
           </div>
           <el-card class="content-box">
             <div>单号：GZSH202303220001</div>
@@ -228,7 +228,8 @@ const idCardShow = ref(false)
 
 const emit = defineEmits(['closeCarDialog'])
 const props = defineProps({
-  carVisible: propTypes.bool.def(false)
+  carVisible: propTypes.bool.def(false),
+  type: propTypes.bool.def(undefined)
 })
 
 const carVisible = computed(() => {

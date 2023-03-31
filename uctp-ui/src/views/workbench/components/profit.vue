@@ -15,8 +15,8 @@
             <div class="btn">
               <!-- 操作按钮 -->
               <el-button type="danger" @click="closeDialog">关闭</el-button>
-              <el-button type="primary" @click="passBtn">在线转账</el-button>
-              <el-button @click="returnBtn">退回</el-button>
+              <el-button type="primary" v-if="type == 'need'" @click="passBtn">在线转账</el-button>
+              <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button>
             </div>
           </div>
           <el-card class="content-box">
@@ -89,7 +89,8 @@ const dialogTitle = ref('利润提取待办') // 弹出层标题
 
 const emit = defineEmits(['cancelForm'])
 const props = defineProps({
-  visible: propTypes.bool.def(false)
+  visible: propTypes.bool.def(false),
+  type: propTypes.bool.def(undefined)
 })
 
 const dialogVisible = computed(() => {

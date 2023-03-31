@@ -13,7 +13,11 @@
         <div style="float: right">
           <!-- 操作按钮 -->
           <el-button type="danger" @click="handleClose">关闭</el-button>
-          <el-button type="primary" :loading="actionLoading" @click="handlePut"
+          <el-button
+            type="primary"
+            v-if="type == 'need'"
+            :loading="actionLoading"
+            @click="handlePut"
             >打印/开票</el-button
           >
         </div>
@@ -52,7 +56,8 @@ const actionLoading = ref(false) // 遮罩层
 const dialogTitle = ref('反向二手车统一发票待办') // 弹出层标题
 
 const props = defineProps({
-  visible: propTypes.bool.def(false)
+  visible: propTypes.bool.def(false),
+  type: propTypes.bool.def(undefined)
 })
 
 const dialogVisible = computed(() => {

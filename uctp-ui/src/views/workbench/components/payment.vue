@@ -13,8 +13,16 @@
         <div style="float: right">
           <!-- 操作按钮 -->
           <el-button type="danger" @click="handleClose">关闭</el-button>
-          <el-button type="primary" :loading="actionLoading" @click="handlePay">重新支付</el-button>
-          <el-button type="danger" @click="handleCancel" disabled>提交作废</el-button>
+          <el-button
+            type="primary"
+            v-if="type == 'need'"
+            :loading="actionLoading"
+            @click="handlePay"
+            >重新支付</el-button
+          >
+          <el-button type="danger" v-if="type == 'need'" @click="handleCancel" disabled
+            >提交作废</el-button
+          >
         </div>
       </div>
       <el-card class="box-card">
@@ -51,7 +59,8 @@ const actionLoading = ref(false) // 遮罩层
 const dialogTitle = ref('支付失败待办') // 弹出层标题
 
 const props = defineProps({
-  visible: propTypes.bool.def(false)
+  visible: propTypes.bool.def(false),
+  type: propTypes.bool.def(undefined)
 })
 
 const dialogVisible = computed(() => {

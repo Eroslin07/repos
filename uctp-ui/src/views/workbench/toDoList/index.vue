@@ -31,29 +31,55 @@
         <div class="application" @click="handleApplication(row)">{{ row.name }}</div>
       </template>
     </XTable>
+    <!-- 商户主账号审批待办 -->
     <MerchantApprovalPending
       v-if="status == 'GZSH'"
       :dialogVisible="dialogVisible"
+      :type="'need'"
       @close-dialog="closeDialog"
     />
+    <!-- 收车价格超公允值待办 -->
     <CollectCarPending
       v-if="status == 'SCJG'"
       :carVisible="dialogVisible"
+      :type="'need'"
       @close-car-dialog="closeDialog"
     />
-    <Reverse v-if="status == 'SCKP'" :visible="dialogVisible" @cancel-form="closeDialog" />
-    <Payment v-if="status == 'SCKZH'" :visible="dialogVisible" @cancel-form="closeDialog" />
-    <ForwardDirection
+    <!-- 反向二手车统一发票待办 -->
+    <Reverse
+      v-if="status == 'SCKP'"
+      :visible="dialogVisible"
+      :type="'need'"
+      @cancel-form="closeDialog"
+    />
+    <!-- 支付失败待办 -->
+    <Payment
+      v-if="status == 'SCKZH'"
+      :visible="dialogVisible"
+      :type="'need'"
+      @cancel-form="closeDialog"
+    />
+    <!-- 卖车价格超公允值待办 -->
+    <SellCarPending
       v-if="status == 'MCHT'"
       :visible="dialogVisible"
-      @cancel-forward="closeDialog"
-    />
-    <SellCarPending
-      v-if="status == 'MCKP'"
-      :visible="dialogVisible"
+      :type="'need'"
       @cancle-sell-car="closeDialog"
     />
-    <Profit v-if="status == 'LRTQ'" :visible="dialogVisible" @cancel-form="closeDialog" />
+    <!-- 正向二手车统一发票和增值税发票待办 -->
+    <ForwardDirection
+      v-if="status == 'MCKP'"
+      :visible="dialogVisible"
+      :type="'need'"
+      @cancel-forward="closeDialog"
+    />
+    <!-- 利润提取代办 -->
+    <Profit
+      v-if="status == 'LRTQ'"
+      :visible="dialogVisible"
+      :type="'need'"
+      @cancel-form="closeDialog"
+    />
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
