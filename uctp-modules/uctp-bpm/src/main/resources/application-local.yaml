@@ -63,10 +63,18 @@ spring:
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   redis:
+    database: 0 # 数据库索引
     host: 61.172.179.45 # 地址
     port: 16379 # 端口
-    database: 0 # 数据库索引
     password: j47qendm4bA7f7k # 密码，建议生产环境开启
+    timeout: 1800
+    # 使用lettuce作为redis的连接池
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1ms
+        max-idle: 20
+        min-idle: 0
 
 --- #################### MQ 消息队列相关配置 ####################
 spring:
