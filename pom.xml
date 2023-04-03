@@ -128,6 +128,12 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Redis 地址 -->
+                <redis.host>61.172.179.45</redis.host>
+                <!-- Redis 端口 -->
+                <redis.port>16379</redis.port>
+                <!-- Redis 密码 -->
+                <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_dev</nacos.namespace>
             </properties>
@@ -142,6 +148,12 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Redis 地址 -->
+                <redis.host>61.172.179.45</redis.host>
+                <!-- Redis 端口 -->
+                <redis.port>16379</redis.port>
+                <!-- Redis 密码 -->
+                <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_test</nacos.namespace>
             </properties>
@@ -156,6 +168,12 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Redis 地址 -->
+                <redis.host>61.172.179.45</redis.host>
+                <!-- Redis 端口 -->
+                <redis.port>16379</redis.port>
+                <!-- Redis 密码 -->
+                <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_uat</nacos.namespace>
             </properties>
@@ -170,6 +188,12 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Redis 地址 -->
+                <redis.host>61.172.179.45</redis.host>
+                <!-- Redis 端口 -->
+                <redis.port>16379</redis.port>
+                <!-- Redis 密码 -->
+                <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_prod</nacos.namespace>
             </properties>
