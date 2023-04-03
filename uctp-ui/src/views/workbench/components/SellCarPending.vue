@@ -124,10 +124,10 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="卖车金额：">
-                    <div>120,000.00元</div>
-                    <el-tag class="tag-class" size="small" type="danger"
-                      >公允值范围：80,000元—100,000元</el-tag
-                    >
+                    <div style="display: flex; flex-direction: column">
+                      <div>120,000.00元</div>
+                      <el-tag size="small" type="danger">公允值范围：80,000元—100,000元</el-tag>
+                    </div>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -146,33 +146,38 @@
               <el-row>
                 <el-col :span="6">
                   <el-form-item label="身份证">
-                    <span class="identify" v-if="identifyShow"> 5*****************1</span>
-                    <span class="identify" v-else>512345678990102345</span>
-                    <Icon
-                      style="margin: 0 6px"
-                      icon="ep:view"
-                      v-if="identifyShow"
-                      @click="identifyShow = !identifyShow"
-                    />
-                    <Icon
-                      style="margin: 0 6px"
-                      icon="ep:hide"
-                      v-else
-                      @click="identifyShow = !identifyShow"
-                    />
-                    <span @click="viewIdCard" class="colr159">查看</span>
-                    <div v-if="idCardShow">
-                      <el-image
-                        v-for="item in 2"
-                        :key="item"
-                        style="width: 70px; height: 70px; margin-right: 5px"
-                        src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
-                        fit="cover"
-                        :zoom-rate="1.2"
-                        :preview-src-list="srcList"
-                        :initial-index="0"
-                      />
+                    <div style="display: flex; flex-direction: column">
+                      <div>
+                        <span class="identify" v-if="identifyShow"> 5*****************1</span>
+                        <span class="identify" v-else>512345678990102345</span>
+                        <Icon
+                          style="margin: 0 6px"
+                          icon="ep:view"
+                          v-if="identifyShow"
+                          @click="identifyShow = !identifyShow"
+                        />
+                        <Icon
+                          style="margin: 0 6px"
+                          icon="ep:hide"
+                          v-else
+                          @click="identifyShow = !identifyShow"
+                        />
+                      </div>
+                      <div>
+                        <el-image
+                          v-for="item in 2"
+                          :key="item"
+                          style="width: 70px; height: 70px; margin-right: 5px"
+                          src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                          fit="cover"
+                          :zoom-rate="1.2"
+                          :preview-src-list="srcList"
+                          :initial-index="0"
+                        />
+                      </div>
                     </div>
+
+                    <!-- <span @click="viewIdCard" class="colr159">查看</span> -->
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
@@ -253,8 +258,8 @@ const urls = [
   'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
 ]
 
-const identifyShow = ref(false)
-const idCardShow = ref(false)
+const identifyShow = ref(true)
+// const idCardShow = ref(false)
 
 // 合同弹框
 const contractVisible = ref(false)
@@ -271,9 +276,9 @@ const visible = computed(() => {
 console.log(setDialogTile)
 
 // 查看身份证
-const viewIdCard = () => {
-  idCardShow.value = !idCardShow.value
-}
+// const viewIdCard = () => {
+//   idCardShow.value = !idCardShow.value
+// }
 
 // 查看合同
 const viewContract = () => {
@@ -323,10 +328,6 @@ const returnBtn = () => {
 .identify {
   display: inline-block;
   width: 136px;
-}
-.tag-class {
-  position: relative;
-  left: 0;
 }
 .mb20 {
   margin-bottom: 20px;
