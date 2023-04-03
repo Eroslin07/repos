@@ -20,7 +20,8 @@
 			</view>
 			<view class="input-item flex align-center" style="width: 74%;margin: 0px;" v-if="captchaEnabled">
 				<view class="title">验证码：</view>
-				<input v-model="loginForm.code" type="number" class="input" placeholder="请输入验证码" maxlength="4" style="width: 89%;" />
+				<input v-model="loginForm.code" type="number" class="input" placeholder="请输入验证码" maxlength="4"
+					style="width: 89%;" />
 				<view class="login-code">
 					<view @click="getVerification" class="login-code-img" v-if="getTime">获取验证码</view>
 					<view class="login-code-img" v-else>已发送({{ time }})</view>
@@ -34,8 +35,10 @@
 						<text style="color: #4ba4ff;" @click="handlePrivacy">《隐私政策》</text>
 					</view>
 				</u-checkbox-group>
-				<button @click="handleLogin" class="login-btn cu-btn block lg" style="background-color: #68b4c5;color: white;">登录</button>
-				<button @click="userRegister" class="login-btn cu-btn block lg" style="background-color: #fff;border: 1px solid #ddd;">注册</button>
+				<button @click="handleLogin" class="login-btn cu-btn block lg"
+					style="background-color: #68b4c5;color: white;">登录</button>
+				<button @click="userRegister" class="login-btn cu-btn block lg"
+					style="background-color: #fff;border: 1px solid #ddd;">注册</button>
 			</view>
 			<view class="register">
 				<view class="register-login">
@@ -49,6 +52,9 @@
 </template>
 
 <script>
+	import {
+		rsaEncrypt
+	} from '@/utils/rsa.js'
 	export default {
 		data() {
 			return {
@@ -79,7 +85,7 @@
 				// 	}
 				// });
 				// this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
-				
+
 				this.$tab.navigateTo('/subPages/common/webview/privacyAgreement')
 			},
 			// 用户协议
@@ -124,8 +130,12 @@
 					this.$modal.msgError("请阅读并勾选用户协议")
 					return
 				}
-				this.$tab.reLaunch('/pages/index');
 				
+				//密码加密
+				let encryptMsg = rsaEncrypt(this.loginForm.password)
+				console.log(encryptMsg)
+				this.$tab.reLaunch('/pages/index');
+
 				//关闭定时器
 				clearInterval(this.timer);
 				return
@@ -221,7 +231,7 @@
 				}
 
 			}
-			
+
 			.action-btn {
 				margin-top: 40px;
 				/* #ifdef MP-WEIXIN */
