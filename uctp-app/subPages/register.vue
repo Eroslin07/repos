@@ -2,21 +2,28 @@
 	<view class="register">
 		<!-- 自定义导航栏 -->
 		<!-- <uni-nav-bar :fixed="true" shadow left-icon="left" left-text="返回" :title="title" @clickLeft="back" /> -->
+		<u-modal :show="showModal" :content='content' showCancelButton @confirm="handleConfirm" @cancel="handleCancel"></u-modal>
 		<!-- 信息填写 -->
 		<view>
 			<uni-card :is-shadow="false" is-full style="border: none;">
 				<u--form labelPosition="left" :model="registerForm" :rules="rules" ref="valiForm" labelWidth="120px">
-					<u-form-item label="身份证号" prop="number" borderBottom>
+					<u-form-item label="身份证号" :required="true" prop="number" borderBottom>
 						<u--input v-model="registerForm.number" border="none" placeholder="请输入身份证号"></u--input>
+						<view slot="right" name="arrow-right">
+							<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple
+								:previewImage="false" width="60" height="60">
+								<text style="color: #50a8bc;">OCR</text>
+							</u-upload>
+						</view>
 					</u-form-item>
-					<u-form-item label="身份证正反面" prop="card" borderBottom>
+					<!-- <u-form-item label="身份证正反面" prop="card" borderBottom>
 						<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple
 							width="60" height="60"></u-upload>
-					</u-form-item>
-					<u-form-item label="姓名" prop="name" borderBottom>
+					</u-form-item> -->
+					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
 						<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>
 					</u-form-item>
-					<u-form-item label="手机号" prop="phone" borderBottom>
+					<u-form-item label="手机号" :required="true" prop="phone" borderBottom>
 						<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
 							<template slot="suffix">
 								<view @click="getVerification" style="color: #50a8bc;" v-if="getTime">获取验证码</view>
@@ -24,24 +31,27 @@
 							</template>
 						</u-input>
 					</u-form-item>
-					<u-form-item label="验证码" prop="code" borderBottom>
-						<u--input v-model="registerForm.code" border="none" placeholder="请输入验证码"></u--input>
+					<u-form-item label="验证码" :required="true" prop="captcha" borderBottom>
+						<u--input v-model="registerForm.captcha" border="none" placeholder="请输入验证码"></u--input>
 					</u-form-item>
-					<u-form-item label="营业执照" prop="card" borderBottom>
+					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
 						<u-upload :fileList="fileList2" @afterRead="afterRead" @delete="deletePic" name="2" multiple
 							width="60" height="60"></u-upload>
 					</u-form-item>
-					<u-form-item label="市场所在地" prop="siteNumber" borderBottom @click="showSex = true">
-						<u--input v-model="registerForm.siteNumber" disabled disabledColor="#ffffff"
+					<u-form-item label="市场所在地" :required="true" prop="marketLocation" borderBottom @click="showSex = true">
+						<u--input v-model="registerForm.marketLocation" disabled disabledColor="#ffffff"
 							placeholder="请选择市场场地编号" border="none"></u--input>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
-					<u-form-item label="输入密码" prop="password" borderBottom>
+					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
+						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号"></u--input>
+					</u-form-item>
+					<u-form-item label="输入密码" :required="true" prop="password" borderBottom>
 						<u--input v-model="registerForm.password" password border="none" placeholder="请输入8-32位(数字+字母)">
 						</u--input>
 					</u-form-item>
-					<u-form-item label="再次输入密码" prop="newPassword" borderBottom>
-						<u--input v-model="registerForm.newPassword" password border="none"
+					<u-form-item label="再次输入密码" :required="true" prop="confirmPassword" borderBottom>
+						<u--input v-model="registerForm.confirmPassword" password border="none"
 							placeholder="请输入8-32位(数字+字母)"></u--input>
 					</u-form-item>
 				</u--form>
@@ -59,9 +69,13 @@
 </template>
 
 <script>
+	import { rsaEncrypt } from '@/utils/rsa.js'
+	import { register } from '@/api/register'
 	export default {
 		data() {
 			return {
+				showModal: false,
+				content: "XXX二手车平台需要收集您的身份证号及银行账号用于验证您身份真实性，是否同意授权。",
 				title: "注册账号",
 				getTime: true,
 				time: 60,
@@ -71,15 +85,15 @@
 				// 营业执照
 				fileList2: [],
 				registerForm: {
-					phone: "",
-					code: "",
-					name: "",
-					number: "",
-					card: [],
-					businessLicense: [],
-					siteNumber: "",
-					password: "",
-					newPassword: ""
+					phone: "",           // 手机号
+					captcha: "",         // 验证码
+					name: "",            // 姓名
+					number: "",          // 身份证号
+					businessLicense: [], // 营业执照
+					marketLocation: "",  // 市场所在地
+					bankAccount: "",     // 对公银行账号
+					password: "",        // 密码
+					confirmPassword: ""      // 确认密码
 				},
 				// 校验规则
 				rules: {
@@ -100,7 +114,7 @@
 						message: '手机号格式不正确',
 						trigger: ['change', 'blur'],
 					}],
-					code: {
+					captcha: {
 						type: 'string',
 						required: true,
 						message: '请填写验证码',
@@ -141,10 +155,16 @@
 						message: '请选择营业执照',
 						trigger: ['blur', 'change']
 					},
-					siteNumber: {
+					marketLocation: {
 						type: 'string',
 						required: true,
 						message: '请填写市场场地编号',
+						trigger: ['blur', 'change']
+					},
+					bankAccount: {
+						type: 'string',
+						required: true,
+						message: '请填写对公银行账号',
 						trigger: ['blur', 'change']
 					},
 					password: [{
@@ -162,17 +182,17 @@
 						trigger: ['blur', 'change']
 					}, {
 						asyncValidator: (rules, value, callback) => {
-							if (this.registerForm.newPassword && value != this.registerForm.newPassword) {
+							if (this.registerForm.confirmPassword && value != this.registerForm.confirmPassword) {
 								callback(new Error('两次密码校验不一致'))
 							}
 							return uni.$u.test.object({
-								values: newPassword
+								values: confirmPassword
 							});
 						},
 						message: '两次密码校验不一致',
 						trigger: ["change", "blur"]
 					}],
-					newPassword: [{
+					confirmPassword: [{
 						type: 'string',
 						required: true,
 						message: '请填写密码',
@@ -199,11 +219,17 @@
 				],
 			}
 		},
+		onLoad() {
+			this.showModal = true;
+		},
 		methods: {
 			back() {
 				uni.navigateBack({
 					delta: 1
 				})
+			},
+			handleConfirm() {
+				this.showModal = false;
 			},
 			// 获取验证码
 			getVerification() {
@@ -237,7 +263,11 @@
 					const result = await this.uploadFilePromise(lists[i].url)
 					result.forEach(d => {
 						d.fileId = d.id;
-						this.registerForm.card.push(d);
+						if (event.name == 1) {
+							this.registerForm.card.push(d);
+						} else if (event.name == 2) {
+							this.registerForm.businessLicense.push(d);
+						}
 					})
 					let item = this[`fileList${event.name}`][fileListLen]
 					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
@@ -275,19 +305,29 @@
 			cancel() {
 				this.showSex = false;
 			},
-			// 保存新密码
+			// 提交审核
 			handleSave() {
 				this.$refs.valiForm.validate().then(res => {
-					if (this.registerForm.password != this.registerForm.newPassword) {
+					if (this.registerForm.password != this.registerForm.confirmPassword) {
 						this.$modal.msgError("两次密码不一致");
 						return;
 					}
-					clearInterval(this.timer);
-					this.$tab.reLaunch('/pages/login');
+					// 密码加密
+					this.registerForm.password = rsaEncrypt(this.registerForm.password);
+					this.registerForm.confirmPassword = rsaEncrypt(this.registerForm.confirmPassword);
+					register(this.registerForm).then((res) => {
+						if (res.code === 200) {
+							clearInterval(this.timer);
+							this.$tab.reLaunch('/pages/login');
+						}
+					}).catch((error) => {
+						this.$modal.msgError("注册失败");
+					})
 				})
 			},
 			// 取消
 			handleCancel() {
+				this.showModal = false;
 				clearInterval(this.timer);
 				this.$tab.reLaunch('/pages/login');
 			}
