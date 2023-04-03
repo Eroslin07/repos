@@ -1,5 +1,5 @@
 {
-    "name" : "芋道移动端",
+    "name" : "万国二手车移动端",
     "appid" : "__UNI__25A9D80",
     "description" : "",
     "versionName" : "1.0.0",
@@ -14,7 +14,9 @@
             "autoclose" : true,
             "delay" : 0
         },
-        "modules" : {},
+        "modules" : {
+            "OAuth" : {}
+        },
         "distribute" : {
             "android" : {
                 "permissions" : [
@@ -36,12 +38,16 @@
                 ]
             },
             "ios" : {},
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "oauth" : {
+                    "univerify" : {}
+                }
+            }
         }
     },
     "quickapp" : {},
     "mp-weixin" : {
-        "appid" : "wx4b260efee7670d18",
+        "appid" : "wx52552be23725ae44",
         "setting" : {
             "urlCheck" : false,
             "es6" : false,

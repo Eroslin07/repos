@@ -39,6 +39,9 @@
 					style="background-color: #68b4c5;color: white;">登录</button>
 				<button @click="userRegister" class="login-btn cu-btn block lg"
 					style="background-color: #fff;border: 1px solid #ddd;">注册</button>
+				<!-- #ifndef H5 -->
+				<button shape="circle" type="primary" link="true" open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信一键登录</button>
+				<!-- #endif -->
 			</view>
 			<view class="register">
 				<view class="register-login">
@@ -70,8 +73,19 @@
 					code: "",
 					uuid: ''
 				},
-				value: []
+				value: [],
+				wxcode: ''
 			}
+		},
+		onLoad() {
+			// #ifndef H5
+			uni.login({
+				provider: 'weixin',
+				success(res) {
+					this.wxcode = res.code;
+				}
+			})
+			// #endif
 		},
 		methods: {
 			// 隐私协议
@@ -123,6 +137,9 @@
 						clearInterval(this.timer);
 					}
 				}, 1000)
+			},
+			getphonenumber(e) {
+				console.log(e)
 			},
 			// 登录方法
 			async handleLogin() {
