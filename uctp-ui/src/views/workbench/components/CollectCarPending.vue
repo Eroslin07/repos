@@ -10,13 +10,15 @@
       <el-container>
         <el-header class="header">商户张三收车价格超公允值审批待办</el-header>
         <el-main>
-          <div class="btn">
-            <el-button type="danger" @click="closeDialog">关闭</el-button>
-            <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
-            <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button>
+          <div style="overflow: hidden; margin-bottom: 10px">
+            <div style="float: left; font-size: 16px">单号：GZSH202303220001</div>
+            <div class="btn">
+              <el-button type="danger" @click="closeDialog">关闭</el-button>
+              <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
+              <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button>
+            </div>
           </div>
           <el-card class="content-box">
-            <div>单号：GZSH202303220001</div>
             <h3 style="font-weight: bold">车辆基础信息</h3>
             <el-form>
               <el-row>
@@ -113,8 +115,10 @@
               </el-row>
               <el-row>
                 <el-form-item label="收车金额：">
-                  <div>120,000.00元</div>
-                  <el-tag class="ml-2" type="danger">公允值范围：80,000元—100,000元</el-tag>
+                  <div style="display: flex; flex-direction: column">
+                    <div>120,000.00元</div>
+                    <el-tag class="ml-2" type="danger">公允值范围：80,000元—100,000元</el-tag>
+                  </div>
                 </el-form-item>
               </el-row>
               <el-row>
@@ -132,32 +136,35 @@
               <el-row>
                 <el-col :span="6">
                   <el-form-item label="身份证">
-                    <span class="identify" v-if="identifyShow"> 5*****************1</span>
-                    <span class="identify" v-else>512345678990102345</span>
-                    <Icon
-                      style="margin: 0 6px"
-                      icon="ep:view"
-                      v-if="identifyShow"
-                      @click="identifyShow = !identifyShow"
-                    />
-                    <Icon
-                      style="margin: 0 6px"
-                      icon="ep:hide"
-                      v-else
-                      @click="identifyShow = !identifyShow"
-                    />
-                    <span @click="viewIdCard">查看</span>
-                    <div v-if="idCardShow">
-                      <el-image
-                        v-for="item in 2"
-                        :key="item"
-                        style="width: 70px; height: 70px; margin-right: 5px"
-                        src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
-                        fit="cover"
-                        :zoom-rate="1.2"
-                        :preview-src-list="srcList"
-                        :initial-index="0"
-                      />
+                    <div style="display: flex; flex-direction: column">
+                      <div>
+                        <span class="identify" v-if="identifyShow"> 5*****************1</span>
+                        <span class="identify" v-else>512345678990102345</span>
+                        <Icon
+                          style="margin: 0 6px"
+                          icon="ep:view"
+                          v-if="identifyShow"
+                          @click="identifyShow = !identifyShow"
+                        />
+                        <Icon
+                          style="margin: 0 6px"
+                          icon="ep:hide"
+                          v-else
+                          @click="identifyShow = !identifyShow"
+                        />
+                      </div>
+                      <div>
+                        <el-image
+                          v-for="item in 2"
+                          :key="item"
+                          style="width: 70px; height: 70px; margin-right: 5px"
+                          src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                          fit="cover"
+                          :zoom-rate="1.2"
+                          :preview-src-list="srcList"
+                          :initial-index="0"
+                        />
+                      </div>
                     </div>
                   </el-form-item>
                 </el-col>
@@ -223,8 +230,7 @@ const urls = [
   'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
 ]
 
-const identifyShow = ref(false)
-const idCardShow = ref(false)
+const identifyShow = ref(true)
 
 const emit = defineEmits(['closeCarDialog'])
 const props = defineProps({
@@ -238,10 +244,6 @@ const carVisible = computed(() => {
 
 console.log(setDialogTile)
 
-// 查看身份证
-const viewIdCard = () => {
-  idCardShow.value = !idCardShow.value
-}
 // 关闭弹框
 const closeDialog = () => {
   emit('closeCarDialog')
@@ -266,7 +268,6 @@ const returnBtn = () => {
 
 .btn {
   text-align: right;
-  margin-bottom: 20px;
 }
 
 .content-box {

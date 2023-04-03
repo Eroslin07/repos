@@ -8,7 +8,7 @@
       @close="closeDialog"
     >
       <el-container>
-        <el-header class="header">商户张三收车价格超公允值审批待办</el-header>
+        <el-header class="header">山西万国市场商户张三利润提取待办</el-header>
         <el-main>
           <div style="overflow: hidden; margin-bottom: 10px">
             <p style="float: left">单号：LRTQ202303220001</p>
@@ -45,7 +45,7 @@
                 </el-col>
               </el-row>
               <el-row>
-                <el-form-item label="提取账号：">
+                <el-form-item label="收款账号：">
                   <div>66XXXXXXXXXXXXXXX</div>
                 </el-form-item>
               </el-row>

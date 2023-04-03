@@ -7,6 +7,9 @@
       :showFooter="false"
       @close="handleClose"
     >
+      <p style="text-align: center; font-weight: bold; font-size: 24px"
+        >收车合同SCHT202303220001开票待办</p
+      >
       <!-- 发票单号 -->
       <div style="overflow: hidden; margin-bottom: 10px">
         <p style="float: left">单号：SCKP202303220001</p>
@@ -23,9 +26,6 @@
         </div>
       </div>
       <el-card class="box-card">
-        <p style="text-align: center; font-weight: bold; font-size: 24px"
-          >收车合同SCHT202303220001开票待办</p
-        >
         <p style="font-weight: bold; margin-bottom: 10px">发票信息</p>
         <p
           >收车合同<span style="color: #63b0ff">SCHT202303220001</span

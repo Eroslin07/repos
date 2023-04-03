@@ -7,6 +7,9 @@
       :showFooter="false"
       @close="handleClose"
     >
+      <p style="text-align: center; font-weight: bold; font-size: 24px"
+        >收车合同SCHT202303220001收车款支付失败待办</p
+      >
       <!-- 发票单号 -->
       <div style="overflow: hidden; margin-bottom: 10px">
         <p style="float: left">单号：SCKZH202303220001</p>
@@ -26,9 +29,6 @@
         </div>
       </div>
       <el-card class="box-card">
-        <p style="text-align: center; font-weight: bold; font-size: 24px"
-          >收车合同SCHT202303220001收车款支付失败待办</p
-        >
         <p style="font-weight: bold; margin-bottom: 10px">收车款信息</p>
         <p
           >您向卖车方<span style="color: #63b0ff">陈某</span>的收款账号<span style="color: #63b0ff"
