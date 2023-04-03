@@ -79,13 +79,13 @@
 							<template slot="suffix"><view>元</view></template>
 						</u-input>
 					</u-form-item>
-					<u-form-item label="卖车金额" prop="sellAmount" borderBottom>
+					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
 						<u-input v-model="carForm.sellAmount" border="none" placeholder="请输入卖车金额">
 							<template slot="suffix"><view>元</view></template>
 						</u-input>
 					</u-form-item>
 					<view @click="handleDetail">预计产生960元费用，利润5040元。明细请查看。</view>
-					<u-form-item label="卖车方式" prop="way" borderBottom>
+					<u-form-item label="卖车方式" :required="true" prop="way" borderBottom>
 						<u-radio-group
 							v-model="carForm.way"
 							placement="row"
@@ -147,14 +147,20 @@
 					ref="sellerForm"
 					labelWidth="120px"
 				>
-					<u-form-item label="身份证" prop="ID" borderBottom>
+					<u-form-item label="身份证号" :required="true" prop="ID" borderBottom>
 						<u--input v-model="sellerForm.ID" border="none" placeholder="请输入身份证号"></u--input>
+						<view slot="right" name="arrow-right">
+							<u-upload :fileList="fileList4" @afterRead="afterRead" @delete="deletePic" name="1" multiple
+								:previewImage="false" width="60" height="60">
+								<text style="color: #50a8bc;">OCR</text>
+							</u-upload>
+						</view>
 					</u-form-item>
-					<u-form-item label="姓名" prop="name" borderBottom>
+					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
 						<u--input v-model="sellerForm.name" border="none" placeholder="请输入姓名">
 						</u--input>
 					</u-form-item>
-					<u-form-item label="电话" prop="phone" borderBottom>
+					<u-form-item label="电话" :required="true" prop="phone" borderBottom>
 						<u--input v-model="sellerForm.phone" border="none" placeholder="请输入11位手机号"></u--input>
 					</u-form-item>
 				</u--form>
@@ -177,8 +183,10 @@
 				fileList1: [],
 				// 机动车登记证书信息
 				fileList2: [],
-				// c车辆图片信息
+				// 车辆图片信息
 				fileList3: [],
+				// 身份证信息
+				fileList4: [],
 				urls2: [
 					'https://cdn.uviewui.com/uview/album/1.jpg',
 					'https://cdn.uviewui.com/uview/album/2.jpg',

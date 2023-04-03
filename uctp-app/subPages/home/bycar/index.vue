@@ -19,7 +19,7 @@
 					ref="carForm"
 					labelWidth="120px"
 				>
-					<u-form-item label="上传车辆图片" prop="carFile" borderBottom>
+					<u-form-item label="上传车辆图片" :required="true" prop="carFile" borderBottom>
 						<u-upload
 							:fileList="fileList3"
 							name="3"
@@ -30,35 +30,30 @@
 							height="60"
 						></u-upload>
 					</u-form-item>
-					<u-form-item label="上传行驶证" prop="drivingLicense" borderBottom>
-						<u-upload
-							:fileList="fileList1"
-							name="1"
-							@afterRead="afterRead"
-							@delete="deletePic"
-							multiple
-							width="60"
-							height="60"
-						></u-upload>
+					<u-form-item label="上传行驶证" :required="true" prop="registerFile" borderBottom>
+						<u--input v-model="carForm.registerFile" border="none" placeholder="请上传行驶证"></u--input>
+						<view slot="right" name="arrow-right">
+							<u-upload
+								:fileList="fileList1"
+								:previewImage="false"
+								name="1"
+								@afterRead="afterRead"
+								@delete="deletePic"
+								multiple
+								width="60"
+								height="60"
+							>
+								<text style="color: #50a8bc;">OCR</text>
+							</u-upload>
+						</view>
 					</u-form-item>
-					<u-form-item label="发动机编号" prop="engineNumber" borderBottom>
+					<u-form-item label="发动机编号" :required="true" prop="engineNumber" borderBottom>
 						<u--input v-model="carForm.engineNumber" border="none" placeholder="请输入发动机编号"></u--input>
 					</u-form-item>
-					<u-form-item label="车架号(VIN)" prop="frame" borderBottom>
+					<u-form-item label="车架号(VIN)" :required="true" prop="frame" borderBottom>
 						<u--input v-model="carForm.frame" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
 					</u-form-item>
-					<u-form-item label="上传机动车登记证书" prop="registerFile" borderBottom>
-						<u-upload
-							:fileList="fileList2"
-							name="2"
-							@afterRead="afterRead"
-							@delete="deletePic"
-							multiple
-							width="60"
-							height="60"
-						></u-upload>
-					</u-form-item>
-					<u-form-item label="首次登记日期" prop="registrDate" borderBottom @click="showDate = true">
+					<u-form-item label="首次登记日期" :required="true" prop="registrDate" borderBottom @click="showDate = true">
 						<u--input
 							v-model="carForm.registrDate"
 							disabled
@@ -71,16 +66,27 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="里程数" prop="mileage" borderBottom>
+					<u-form-item label="上传机动车登记证书" :required="true" prop="drivingLicense" borderBottom>
+						<u-upload
+							:fileList="fileList2"
+							name="2"
+							@afterRead="afterRead"
+							@delete="deletePic"
+							multiple
+							width="60"
+							height="60"
+						></u-upload>
+					</u-form-item>
+					<u-form-item label="里程数" :required="true" prop="mileage" borderBottom>
 						<u--input v-model="carForm.mileage" border="none" placeholder="请输入里程数"></u--input>
 					</u-form-item>
-					<u-form-item label="品牌/年代/型号" prop="model" borderBottom>
+					<u-form-item label="品牌/年代/型号" :required="true" prop="model" borderBottom>
 						<u--input v-model="carForm.model" border="none" placeholder="请输入品牌/年代/型号"></u--input>
 					</u-form-item>
 					<u-form-item label="特别约定" prop="otherInfor" borderBottom>
 						<u--input v-model="carForm.otherInfor" border="none" placeholder="请输入其他约定"></u--input>
 					</u-form-item>
-					<u-form-item label="收车金额" prop="amount" borderBottom>
+					<u-form-item label="收车金额" :required="true" prop="amount" borderBottom>
 						<u-input v-model="carForm.amount" border="none" placeholder="请输入收车金额">
 							<template slot="suffix">
 								<view>元</view>
@@ -88,7 +94,7 @@
 						</u-input>
 					</u-form-item>
 					<view>保证金可用余额150000元</view>
-					<u-form-item label="收车方式" prop="way" borderBottom>
+					<u-form-item label="收车方式" :required="true" prop="way" borderBottom>
 						<u-radio-group
 							v-model="carForm.way"
 							placement="row"
@@ -135,27 +141,34 @@
 					ref="sellerForm"
 					labelWidth="120px"
 				>
-					<u-form-item label="是否第三方代收" prop="collection" borderBottom>
+					<u-form-item label="是否第三方代收" :required="true" prop="collection" borderBottom>
 						<u-radio-group v-model="sellerForm.collection" activeColor="#50a8bc">
 							<u-radio shape="circle" label="否" :name="0"></u-radio>
 							<u-radio shape="circle" label="是" :name="1"></u-radio>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item label="身份证" prop="ID" borderBottom>
+					<u-form-item label="身份证号" :required="true" prop="ID" borderBottom>
 						<u--input v-model="sellerForm.ID" border="none" placeholder="请输入身份证号"></u--input>
+						<view slot="right" name="arrow-right">
+							<u-upload :fileList="fileList4" @afterRead="afterRead" @delete="deletePic" name="1" multiple
+								:previewImage="false" width="60" height="60">
+								<text style="color: #50a8bc;">OCR</text>
+							</u-upload>
+						</view>
 					</u-form-item>
-					<u-form-item label="姓名" prop="name" borderBottom>
+					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
 						<u--input v-model="sellerForm.name" border="none" placeholder="请输入姓名">
 						</u--input>
 					</u-form-item>
-					<u-form-item label="电话" prop="phone" borderBottom>
+					<u-form-item label="电话" :required="true" prop="phone" borderBottom>
 						<u--input v-model="sellerForm.phone" border="none" placeholder="请输入11位手机号"></u--input>
 					</u-form-item>
-					<u-form-item label="第三方姓名" prop="thirdName" borderBottom v-if="sellerForm.collection == 1">
+					<u-form-item label="第三方姓名" :required="true" prop="thirdName" borderBottom v-if="sellerForm.collection == 1">
 						<u--input v-model="sellerForm.thirdName" border="none" placeholder="请输入第三方姓名"></u--input>
 					</u-form-item>
 					<u-form-item
 						label="收款方式"
+						:required="true"
 						prop="way"
 						borderBottom
 						@click="showSex = true"
@@ -172,10 +185,10 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="银行卡号" prop="cardNumber" borderBottom v-if="sellerForm.collection == 0">
+					<u-form-item label="银行卡号" :required="true" prop="cardNumber" borderBottom v-if="sellerForm.collection == 0">
 						<u--input v-model="sellerForm.cardNumber" border="none" placeholder="请输入银行卡号"></u--input>
 					</u-form-item>
-					<u-form-item label="第三方银行卡号" prop="thirdCardNumber" borderBottom v-if="sellerForm.collection == 1">
+					<u-form-item label="第三方银行卡号" :required="true" prop="thirdCardNumber" borderBottom v-if="sellerForm.collection == 1">
 						<u--input v-model="sellerForm.thirdCardNumber" border="none" placeholder="请输入银行卡号"></u--input>
 					</u-form-item>
 				</u--form>
@@ -202,6 +215,8 @@
 				fileList2: [],
 				// 车辆图片信息
 				fileList3: [],
+				// 身份证信息
+				fileList4: [],
 				// 车辆信息
 				carForm: {
 					registerFile: [],
