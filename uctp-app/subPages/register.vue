@@ -7,8 +7,8 @@
 		<view>
 			<uni-card :is-shadow="false" is-full style="border: none;">
 				<u--form labelPosition="left" :model="registerForm" :rules="rules" ref="valiForm" labelWidth="120px">
-					<u-form-item label="身份证号" :required="true" prop="number" borderBottom>
-						<u--input v-model="registerForm.number" border="none" placeholder="请输入身份证号"></u--input>
+					<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
+						<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
 							<text style="color: #50a8bc;" @click="handleOcr(1)">OCR</text>
 						</view>
@@ -31,16 +31,19 @@
 					<u-form-item label="验证码" :required="true" prop="captcha" borderBottom>
 						<u--input v-model="registerForm.captcha" border="none" placeholder="请输入验证码"></u--input>
 					</u-form-item>
-					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
-						<!-- <u--input v-model="registerForm.businessLicense" border="none" placeholder="请输入营业执照"></u--input>
+					<u-form-item label="商户名称" :required="true" prop="businessName" borderBottom>
+						<u--input v-model="registerForm.businessName" border="none" placeholder="请输入商户名称"></u--input>
 						<view slot="right" name="arrow-right">
 							<text style="color: #50a8bc;" @click="handleOcr(2)">OCR</text>
-						</view> -->
-						<u-upload :fileList="fileList2" @afterRead="afterRead" @delete="deletePic" name="2" multiple
-							width="60" height="60"></u-upload>
+						</view>
+						<!-- <u-upload :fileList="fileList2" @afterRead="afterRead" @delete="deletePic" name="2" multiple
+							width="60" height="60"></u-upload> -->
 					</u-form-item>
-					<u-form-item label="市场所在地" :required="true" prop="marketLocation" borderBottom @click="showSex = true">
-						<u--input v-model="registerForm.marketLocation" disabled disabledColor="#ffffff"
+					<u-form-item label="税号" :required="true" prop="taxNum" borderBottom>
+						<u--input v-model="registerForm.taxNum" border="none" placeholder="请输入姓名"></u--input>
+					</u-form-item>
+					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
+						<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
 							placeholder="请选择市场场地编号" border="none"></u--input>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
@@ -56,7 +59,7 @@
 							placeholder="请输入8-32位(数字+字母)"></u--input>
 					</u-form-item>
 				</u--form>
-				<u-picker :show="showSex" :columns="range" keyName="label" title="请选择市场所在地" @confirm="confirm"
+				<u-picker :show="showSex" :columns="range" keyName="contactName" title="请选择市场所在地" @confirm="confirm"
 					@cancel="cancel"></u-picker>
 				<view class="action-btn">
 					<button @click="handleSave" class="button">提交审核</button>
@@ -71,7 +74,14 @@
 
 <script>
 	import { rsaEncrypt } from '@/utils/rsa.js'
-	import { register } from '@/api/register'
+	import { urlTobase64 } from '@/utils/ruoyi.js'
+	import {
+		register,
+		getTenantlist,
+		getCode,
+		getIdCard,
+		getBusinessLicense
+	} from '@/api/register'
 	export default {
 		data() {
 			return {
@@ -86,14 +96,17 @@
 				// 营业执照
 				fileList2: [],
 				registerForm: {
-					phone: "",           // 手机号
-					captcha: "",         // 验证码
-					name: "",            // 姓名
-					number: "",          // 身份证号
-					businessLicense: [], // 营业执照
-					marketLocation: "",  // 市场所在地
-					bankAccount: "",     // 对公银行账号
-					password: "",        // 密码
+					idCard: "",
+					phone: "",               // 手机号
+					captcha: "",             // 验证码
+					name: "",                // 姓名
+					number: "",              // 身份证号
+					businessName: "",        // 营业执照
+					taxNum: "",
+					marketLocation: "",      // 市场所在地id
+					marketLocationValue: "", // 市场所在地
+					bankAccount: "",         // 对公银行账号
+					password: "",            // 密码
 					confirmPassword: ""      // 确认密码
 				},
 				// 校验规则
@@ -150,16 +163,22 @@
 						message: '请选择身份证反面',
 						trigger: ['blur', 'change']
 					},
-					businessLicense: {
+					businessName: {
 						type: 'string',
 						required: true,
 						message: '请选择或输入营业执照',
 						trigger: ['blur', 'change']
 					},
-					marketLocation: {
+					taxNum: {
 						type: 'string',
 						required: true,
-						message: '请填写市场场地编号',
+						message: '请输入税号',
+						trigger: ['blur', 'change']
+					},
+					marketLocationValue: {
+						type: 'string',
+						required: true,
+						message: '请选择市场场地',
 						trigger: ['blur', 'change']
 					},
 					bankAccount: [{
@@ -212,12 +231,7 @@
 					}]
 				},
 				showSex: false,
-				range: [
-					[{
-						label: '选项一',
-						id: 1
-					}],
-				],
+				range: [],
 			}
 		},
 		onLoad() {
@@ -231,6 +245,9 @@
 			},
 			handleConfirm() {
 				this.showModal = false;
+				getTenantlist().then((res) => {
+					this.range.push(res.data)
+				})
 			},
 			handleChange(data) {
 				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
@@ -238,101 +255,95 @@
 			},
 			// 获取验证码
 			getVerification() {
-				this.$modal.msg("验证码已发送");
-				this.getTime = false;
-				this.timer = setInterval(() => {
-					this.time--;
-					if (this.time == 0) {
-						this.getTime = true;
-						clearInterval(this.timer);
-					}
-				}, 1000)
+				getCode().then((res) => {
+					this.$modal.msg("验证码已发送");
+					this.getTime = false;
+					this.timer = setInterval(() => {
+						this.time--;
+						if (this.time == 0) {
+							this.getTime = true;
+							clearInterval(this.timer);
+						}
+					}, 1000)
+				}).catch((error) => {
+					this.$modal.msg("验证码发送失败");
+				})
 			},
 			// 点击OCR
 			handleOcr(index) {
+				let _this = this;
 				uni.showActionSheet({
 					title: "选择类型",
 					itemList: ['相册', '拍摄'],
-					success: (res) => {
+					success: async function(res) {
 						if (res.tapIndex == 0) {
-							this.chooseImages()
+							_this.chooseImages(index);
 						} else {
-							this.chooseVideo()
+							_this.chooseVideo(index);
 						}
 					}
 				})
 			},
 			// 上传图片
-			chooseImages() {
+			chooseImages(index) {
+				let _this = this;
 				uni.chooseImage({
+					count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], // 从相册选择
-					success: (res) => {
-						console.log(res);
+					success: async function(res) {
+						let str = await urlTobase64(res.tempFilePaths[0])
+						if (index == 1) {
+							// 识别身份证
+							this.fileList1 = res;
+							getIdCard({ IDCardUrl: str }).then((ress) => {
+								let data = JSON.parse(ress.data);
+								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+								_this.registerForm.name = data.words_result['姓名'].words;
+							})
+						} else if (index == 2) {
+							// 识别营业执照
+							this.fileList2 = res;
+							getBusinessLicense({ businessLicense: str }).then((ress) => {
+								let data = JSON.parse(ress.data);
+								
+							})
+						}
 					}
 				})
 			},
 			// 拍摄图片
-			chooseVideo() {
+			chooseVideo(index) {
+				let _this = this;
 				uni.chooseImage({
+					count: 1,
 					sourceType: ['camera'], // 使用相机
-					success: (res) => {
-						console.log(res);
-					}
-				})
-			},
-			// 删除图片
-			deletePic(event) {
-				this[`fileList${event.name}`].splice(event.index, 1)
-			},
-			// 新增图片
-			async afterRead(event) {
-				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-				let lists = [].concat(event.file)
-				let fileListLen = this[`fileList${event.name}`].length
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-				for (let i = 0; i < lists.length; i++) {
-					const result = await this.uploadFilePromise(lists[i].url)
-					result.forEach(d => {
-						d.fileId = d.id;
-						this.registerForm.businessLicense.push(d);
-					})
-					let item = this[`fileList${event.name}`][fileListLen]
-					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
-						status: 'success',
-						message: '',
-						url: result
-					}))
-					fileListLen++
-				}
-			},
-			// 上传文件
-			uploadFilePromise(url) {
-				return new Promise((resolve, reject) => {
-					let a = uni.uploadFile({
-						url: 'http://192.168.2.21:7001/upload', // 仅为示例，非真实的接口地址
-						filePath: url,
-						name: 'file',
-						formData: {
-							user: 'test'
-						},
-						success: (res) => {
-							setTimeout(() => {
-								resolve(res.data.data)
-							}, 1000)
+					success: async function(res) {
+						this.fileList1 = res;
+						let str = await urlTobase64(res.tempFilePaths[0])
+						if (index == 1) {
+							// 识别身份证
+							this.fileList1 = res;
+							getIdCard({ IDCardUrl: str }).then((ress) => {
+								let data = JSON.parse(ress.data);
+								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+								_this.registerForm.name = data.words_result['姓名'].words
+							})
+						} else if (index == 2) {
+							// 识别营业执照
+							this.fileList2 = res;
+							getBusinessLicense({ businessLicense: str }).then((ress) => {
+								let data = JSON.parse(ress.data);
+								
+							})
 						}
-					});
+					}
 				})
 			},
 			// 选择框确定
 			confirm(val) {
-				this.registerForm.siteNumber = val.value[0].label;
+				this.registerForm.marketLocation = val.value[0].id;
+				this.registerForm.marketLocationValue = val.value[0].contactName;
 				this.showSex = false;
 			},
 			// 选择框取消
