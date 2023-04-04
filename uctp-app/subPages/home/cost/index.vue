@@ -22,10 +22,26 @@
 				</view>
 
 				<view class="cost-content">
-					<view class="charts-box">
-						<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
+					<u-tabs :list="listArr" @click="tabClick"></u-tabs>
+					<view v-if="tabValue=='支出'" class="cost-item">
+						<!-- <view class="">
+							支出
+						</view> -->
+						<view class="charts-box">
+							<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
+						</view>
 					</view>
-
+					<view v-if="tabValue=='收入'" class="cost-item">
+						<!-- <view class="">
+							收入
+						</view> -->
+						<view class="charts-box">
+							<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
+						</view>
+					</view>
+					<!-- <view class="charts-box">
+						<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
+					</view> -->
 				</view>
 			</view>
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear" placeholder="请选择车辆">
@@ -93,11 +109,13 @@
 					color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4",
 						"#ea7ccc"
 					],
+					width: '50px',
+					height: '50px',
 					padding: [5, 5, 5, 5],
 					enableScroll: false,
-					legend:{
-						float:"left",
-						lineHeight:20,
+					legend: {
+						float: "left",
+						// lineHeight: 20,
 					},
 					extra: {
 						pie: {
@@ -110,7 +128,13 @@
 							borderColor: "#FFFFFF"
 						}
 					}
-				}
+				},
+				listArr: [{
+					name: '支出',
+				}, {
+					name: '收入',
+				}],
+				tabValue:'支出',
 			}
 		},
 		created() {
@@ -176,27 +200,36 @@
 					icon: 'none'
 				})
 			},
-			
+
 			// 图表数据
-			   getServerData() {
-			      //模拟从服务器获取数据时的延时
-			      setTimeout(() => {
-			        //模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			        let res = {
-			            series: [
-			              {
-			                data: [{"name":"已实际产生费用","value":50},{"name":"预计将产生费用","value":30},{"name":"已获取利润合计","value":20}]
-			              }
-			            ]
-			          };
-			        this.chartData = JSON.parse(JSON.stringify(res));
-			      }, 500);
-			    },
-		
+			getServerData() {
+				//模拟从服务器获取数据时的延时
+				setTimeout(() => {
+					//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
+					let res = {
+						series: [{
+							data: [{
+								"name": "已实际产生费用",
+								"value": 50
+							}, {
+								"name": "预计将产生费用",
+								"value": 30
+							}]
+						}]
+					};
+					this.chartData = JSON.parse(JSON.stringify(res));
+				}, 500);
+			},
+			// 切换图表
+			tabClick(item) {
+				console.log(item)
+				this.tabValue = item.name
+			},
+
 			//查看车辆明细
-			viewDetails(item){
+			viewDetails(item) {
 				uni.navigateTo({
-					url:`/subPages/common/vehicleDetails/vehicleDetails?item=`+JSON.stringify(item)
+					url: `/subPages/common/vehicleDetails/vehicleDetails?item=` + JSON.stringify(item)
 				})
 			}
 		}
@@ -214,9 +247,12 @@
 	.cost-content {
 		border: 1px solid #ccc;
 		border-radius: 3px;
-		padding: 10px;
+		// padding: 10px;
 		font-size: 14px;
 		margin: 15px auto 10px;
+		.cost-item{
+			padding:10px;
+		}
 	}
 
 	.date-box {
@@ -243,8 +279,9 @@
 	.floatR {
 		float: right;
 	}
-	 .charts-box {
-	    width: 100%;
-	    height: 300px;
-	  }
+
+	.charts-box {
+		width: 100%;
+		height: 249px;
+	}
 </style>

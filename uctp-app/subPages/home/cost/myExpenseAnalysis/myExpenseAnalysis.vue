@@ -38,7 +38,19 @@
 						</view>
 					</view>
 
-					<view class="charts-box">
+					<view class="tab-box">
+						<u-tabs :list="costList" lineWidth="0" :activeStyle="{
+						            backgroundColor:'#40ADDD',
+									color:'#fff'
+						        }" itemStyle="padding:0" @click="tabClick">
+						</u-tabs>
+					</view>
+					<view v-if="costValue==='支出'" class="charts-box">
+						<text>1</text>
+						<qiun-data-charts type="line" :opts="opts" :chartData="chartData" />
+					</view>
+					<view v-if="costValue==='收入'" class="charts-box">
+						<text>2</text>
 						<qiun-data-charts type="line" :opts="opts" :chartData="chartData" />
 					</view>
 				</view>
@@ -138,7 +150,13 @@
 							activeType: "hollow"
 						}
 					}
-				}
+				},
+				costList: [{
+					name: '支出',
+				}, {
+					name: '收入'
+				}],
+				costValue: '支出',
 			}
 		},
 		onReady() {
@@ -170,7 +188,7 @@
 			yearChange(e) {
 				this.yearDate = e.detail.value
 			},
-			
+
 			//获取图表数据
 			getServerData() {
 				//模拟从服务器获取数据时的延时
@@ -187,11 +205,14 @@
 					this.chartData = JSON.parse(JSON.stringify(res));
 				}, 500);
 			},
-			
-			checkDetail(text){
+			// 切换图表
+			tabClick(item) {
+				this.costValue = item.name;
+			},
+			checkDetail(text) {
 				console.log(text)
 				uni.navigateTo({
-					url:`/subPages/home/cost/costAnalysisDetails/costAnalysisDetails`
+					url: `/subPages/home/cost/costAnalysisDetails/costAnalysisDetails`
 				})
 			}
 		}
@@ -215,6 +236,11 @@
 		color: #40ADDD;
 	}
 
+	.tab-box {
+		float: right;
+		margin: 5px 0;
+	}
+
 	.charts-box {
 		width: 100%;
 		height: 200px;
@@ -223,7 +249,8 @@
 
 	.process-container {
 		margin-top: 10px;
-		font-size:13px;
+		font-size: 13px;
+
 		.process-box {
 			position: relative;
 			margin-top: 6px;
@@ -240,5 +267,9 @@
 			}
 		}
 
+	}
+
+	/deep/ .u-tabs__wrapper__nav__item__text span {
+		padding: 3px 8px;
 	}
 </style>

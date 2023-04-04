@@ -10,15 +10,13 @@
 			"navigationBarTitleText": "登录",
 			"app-plus": {
 				"titleNView": {
-					"buttons": [
-						{
-							"text": "银行LOGO",
-							"fontSrc": "",
-							"fontSize": "14px",
-							"float": "left",
-							"width": "65px"
-						}
-					]
+					"buttons": [{
+						"text": "银行LOGO",
+						"fontSrc": "",
+						"fontSize": "14px",
+						"float": "left",
+						"width": "65px"
+					}]
 				}
 			}
 		}
@@ -42,78 +40,78 @@
 	"subPackages": [{
 		"root": "subPages",
 		"pages": [{
-				"path": "retrievePassword",
-				"style": {
-					"navigationBarTitleText": "找回密码",
-					"navigationStyle": "custom"
-				}
-			}, {
-				"path": "register",
-				"style": {
-					"navigationBarTitleText": "注册账号"
-					// "navigationStyle": "custom"
-				}
-			}, {
-				"path": "home/bycar/index",
-				"style": {
-					"navigationBarTitleText": "我要收车"
-					// "navigationStyle": "custom"
-				}
-			}, {
-				"path": "home/bycar/agreement",
-				"style": {
-					"navigationBarTitleText": "委托收车合同签章"
-				}
-			}, {
-				"path": "common/agreement/index",
-				"style": {
-					"navigationBarTitleText": ""
-				}
-			}, {
-				"path": "home/sellingCar/index",
-				"style": {
-					"navigationBarTitleText": "我要卖车"
-					// "navigationStyle": "custom"
-				}
-			}, {
-				"path": "home/sellingCar/carInfo",
-				"style": {
-					"navigationBarTitleText": "我要卖车"
-				}
-			}, {
-				"path": "home/sellingCar/vehicleDetails",
-				"style": {
-					"navigationBarTitleText": "上传检测报告"
-				}
-			}, {
-				"path": "home/sellingCar/agreement",
-				"style": {
-					"navigationBarTitleText": "委托卖车合同签章"
-				}
-			}, {
-				"path": "home/cost/index",
-				"style": {
-					"navigationBarTitleText": "我的费用"
-					// "navigationStyle": "custom"
-				}
-			}, {
-				"path": "home/account/index",
-				"style": {
-					"navigationBarTitleText": "我的账户"
-					// "navigationStyle": "custom"
-				}
-			}, {
-				"path": "home/account/profit",
-				"style": {
-					"navigationBarTitleText": "我的利润"
-					// "navigationStyle": "custom"
-				}
-			}, {
-				"path": "home/account/bond",
-				"style": {
-					"navigationBarTitleText": "我的保证金"
-					// "navigationStyle": "custom"
-				}
+			"path": "retrievePassword",
+			"style": {
+				"navigationBarTitleText": "找回密码",
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "register",
+			"style": {
+				"navigationBarTitleText": "注册账号"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/bycar/index",
+			"style": {
+				"navigationBarTitleText": "我要收车"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/bycar/agreement",
+			"style": {
+				"navigationBarTitleText": "委托收车合同签章"
+			}
+		}, {
+			"path": "common/agreement/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		}, {
+			"path": "home/sellingCar/index",
+			"style": {
+				"navigationBarTitleText": "我要卖车"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/sellingCar/carInfo",
+			"style": {
+				"navigationBarTitleText": "我要卖车"
+			}
+		}, {
+			"path": "home/sellingCar/vehicleDetails",
+			"style": {
+				"navigationBarTitleText": "上传检测报告"
+			}
+		}, {
+			"path": "home/sellingCar/agreement",
+			"style": {
+				"navigationBarTitleText": "委托卖车合同签章"
+			}
+		}, {
+			"path": "home/cost/index",
+			"style": {
+				"navigationBarTitleText": "我的费用"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/index",
+			"style": {
+				"navigationBarTitleText": "我的账户"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/profit",
+			"style": {
+				"navigationBarTitleText": "我的利润"
+				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/bond",
+			"style": {
+				"navigationBarTitleText": "我的保证金"
+				// "navigationStyle": "custom"
+			}
 		}, {
 			"path": "home/account/withdrawal",
 			"style": {
@@ -265,14 +263,17 @@
 			"style": {
 				"navigationBarTitleText": "用户协议"
 			}
-		},{
+		}, {
 			"path": "common/webview/privacyAgreement",
 			"style": {
 				"navigationBarTitleText": "隐私协议"
 			}
-		}
-		
-		]
+		}, {
+			"path": "home/carStatus/carStatus",
+			"style": {
+				"navigationBarTitleText": "收车中"
+			}
+		}]
 	}],
 	"tabBar": {
 		"color": "#000000",
