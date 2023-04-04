@@ -11,15 +11,16 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class AppCarInfoRespVO extends AppCarInfoBaseVO {
+public class AppHomeCarInfoRespVO extends AppCarInfoBaseVO {
     @Schema(description = "创建时间")
     private Date createTime;
-
     @Schema(description = "车辆主表id")
     private String id;
     @Schema(description = "甲方(卖方)")
     private String firstParty;
     @Schema(description = "乙方(买方)")
     private String secondParty;
+    @Schema(description = "里程数")
+    private String mileage;
 
 }

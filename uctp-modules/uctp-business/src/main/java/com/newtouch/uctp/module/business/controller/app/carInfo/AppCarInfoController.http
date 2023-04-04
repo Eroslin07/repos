@@ -4,5 +4,13 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 Authorization: Bearer {{token}}
 
+{
+    "pageNo": 1,
+    "pageSize": 10,
+    "vin": null,
+    "brand": null,
+    "salesStatus": null,
+    "checkStatus": null
+}
 
 

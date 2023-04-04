@@ -9,7 +9,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class AppCarInfoPageReqVO extends PageParam {
+public class AppHomeCarInfoPageReqVO extends PageParam {
     @Schema(description = "车架号")
     private String vin;
 
@@ -22,4 +22,8 @@ public class AppCarInfoPageReqVO extends PageParam {
     @Schema(description = "检测状态")
     private Integer checkStatus;
 
+    @Schema(description = "甲方(卖方)")
+    private String firstParty;
+    @Schema(description = "乙方(买方)")
+    private String secondParty;
 }

@@ -1,9 +1,12 @@
-package com.newtouch.uctp.module.business.domain.app;
+package com.newtouch.uctp.module.business.dal.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
-import java.util.*;
-import com.baomidou.mybatisplus.annotation.*;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+
+import java.math.BigDecimal;
 
 /**
  * 车辆主表 DO
@@ -18,8 +21,7 @@ import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarInfoDO extends BaseDO {
-
+public class CarInfoDO extends TenantBaseDO {
     /**
      * 车架号
      */
@@ -35,7 +37,7 @@ public class CarInfoDO extends BaseDO {
     /**
      * 车辆型号
      */
-    private String style;
+    private String model;
     /**
      * 发动机编号
      */
@@ -43,7 +45,7 @@ public class CarInfoDO extends BaseDO {
     /**
      * 收车金额
      */
-    private String vehicleReceiptAmount;
+    private BigDecimal vehicleReceiptAmount;
     /**
      * 备注
      */
@@ -53,23 +55,6 @@ public class CarInfoDO extends BaseDO {
      */
     private Integer revision;
     /**
-     * 车辆主表id
-     */
-    @TableId
-    private Long id;
-    /**
-     * 汽车明细id
-     */
-    private Long carDetailId;
-    /**
-     * 商户id
-     */
-    private Long businessId;
-    /**
-     * 更新时间
-     */
-    private Date updatedTime;
-    /**
      * 售卖状态(0未出售 1出售中 2已出售)
      */
     private Integer salesStatus;
@@ -77,5 +62,19 @@ public class CarInfoDO extends BaseDO {
      * 检测状态(0未检测 1已检测)
      */
     private Integer checkStatus;
+    /**
+     * 车辆主表id
+     */
+    @TableId(type = IdType.ASSIGN_ID)
+    private String id;
+    /**
+     * 汽车明细id
+     */
+    private String carDetailId;
+    /**
+     * 商户id
+     */
+    private String businessId;
+
 
 }

@@ -20,7 +20,7 @@ import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
-@Tag(name =  "管理后台 - 部门")
+@Tag(name =  "管理后台 - 部门1")
 @RestController
 @RequestMapping("/system/dept")
 @Validated
@@ -30,7 +30,7 @@ public class DeptController {
     private DeptService deptService;
 
     @PostMapping("create")
-    @Operation(summary = "创建部门")
+    @Operation(summary = "创建部门1")
     @PreAuthorize("@ss.hasPermission('system:dept:create')")
     public CommonResult<Long> createDept(@Valid @RequestBody DeptCreateReqVO reqVO) {
         Long deptId = deptService.createDept(reqVO);

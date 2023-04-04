@@ -1,0 +1,1 @@
+DELETE FROM "uctp_car_info";
