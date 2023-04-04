@@ -34,21 +34,26 @@
 				<uni-card
 					v-for="(tab, tabIndex) in tabList"
 					:key="tabIndex"
-					title="VIN：LE4TG4DB1JL199517"
-					sub-title="创建时间：2023-03-16 14:10"
-					extra="车辆状态：收车拟稿中"
-					is-full
 					style="margin-top: 10px;"
 				>
 					<uni-row :gutter="30">
 						<uni-col :span="8">
-							<view style="height: 100px;border: 1px solid red;"></view>
+							<view class="car_left">
+								<view class="car_text">收车草稿</view>
+								<view style="height: 100px;border: 1px solid red;"></view>
+							</view>
 						</uni-col>
 						<uni-col :span="16">
 							<h3>宝马-宝马×12021款 sDrive20Li 时尚型</h3>
-							<view>2021年02月/2.9万公里</view>
-							<view style="color: #68b4c5;">收车价：15.13万</view>
-							<view style="color: #68b4c5;">卖车价：20.00万</view>
+							<view>2021年02月 | 2.9万公里</view>
+							<view style="color: #000;">收车价：151,300元</view>
+							<view style="color: #fa6400;">卖车价：200,000元</view>
+						</uni-col>
+						<uni-col :span="12">
+							<view style="font-size: 10px;">VIN: LE4TG4DB1JL199517</view>
+						</uni-col>
+						<uni-col :span="12">
+							<view style="font-size: 10px;">创建时间:2023-03-1514:10</view>
 						</uni-col>
 					</uni-row>
 				</uni-card>
@@ -193,5 +198,15 @@
 	/deep/ .uni-card__header-extra-text {
 		color: #169bd5 !important;
 		font-size: 14px !important;
+	}
+	
+	.car_left {
+		position: relative;
+		
+		.car_text {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
 	}
 </style>
