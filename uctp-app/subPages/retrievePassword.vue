@@ -119,7 +119,12 @@
 				} else {
 					this.validationCenter = false;
 					this.setupNewPassword = false;
-					this.$tab.reLaunch('/pages/login');
+					// #ifndef MP-WEIXIN
+					this.$tab.reLaunch('/pages/login')
+					// #endif
+					// #ifdef MP-WEIXIN
+					this.$tab.reLaunch('/pages/wx_login')
+					// #endif
 				}
 			}
 		}

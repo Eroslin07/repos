@@ -119,14 +119,6 @@
 					@cancel="showDate = false"
 					@confirm="handleDate"
 				></u-datetime-picker>
-				<!-- 保存草稿 -->
-				<u-popup :show="showPopup" mode="bottom">
-					<uni-card :is-shadow="false" is-full>
-						<button @click="handleDraft" class="button">保存草稿</button>
-						<button @click="handleGive" class="button">放弃编辑</button>
-						<button @click="handleCancel" class="button" style="margin-bottom: 10px;">取消</button>
-					</uni-card>
-				</u-popup>
 				<!-- 底部按钮 -->
 				<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
 				<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
@@ -219,7 +211,7 @@
 				fileList4: [],
 				// 车辆信息
 				carForm: {
-					registerFile: [],
+					registerFile: "",
 					drivingLicense: [],
 					carFile: [],
 					amount: '',
@@ -304,8 +296,6 @@
 				}],
 				// 是否弹出登记日期
 				showDate: false,
-				// popup弹框
-				showPopup: false,
 				// 卖家信息
 				sellerForm: {
 					collection: 0,
@@ -487,22 +477,24 @@
 			},
 			// 点击车辆信息保存
 			handleSaveCar() {
-				this.showPopup = true;
+				uni.showActionSheet({
+					itemList: ['保存草稿', '放弃编辑'],
+					success: (res) => {
+						if (res.tapIndex == 0) {
+							this.handleDraft()
+						} else {
+							this.handleGive()
+						}
+					}
+				})
 			},
 			// 放弃编辑
 			handleGive() {
-				this.showPopup = false;
 				this.$tab.reLaunch('/pages/index');
 			},
 			// 保存车辆信息草稿
 			handleDraft() {
-				this.showPopup = false;
 				this.$modal.msg("保存草稿成功");
-			},
-			// 取消车辆信息保存
-			handleCancel() {
-				this.showPopup = false;
-				this.$modal.msgError("取消保存");
 			},
 			// 收款方式选择框确定
 			confirm(val) {

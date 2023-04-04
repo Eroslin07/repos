@@ -10,10 +10,7 @@
 					<u-form-item label="身份证号" :required="true" prop="number" borderBottom>
 						<u--input v-model="registerForm.number" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple
-								:previewImage="false" width="60" height="60">
-								<text style="color: #50a8bc;">OCR</text>
-							</u-upload>
+							<text style="color: #50a8bc;" @click="handleOcr(1)">OCR</text>
 						</view>
 					</u-form-item>
 					<!-- <u-form-item label="身份证正反面" prop="card" borderBottom>
@@ -35,6 +32,10 @@
 						<u--input v-model="registerForm.captcha" border="none" placeholder="请输入验证码"></u--input>
 					</u-form-item>
 					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
+						<!-- <u--input v-model="registerForm.businessLicense" border="none" placeholder="请输入营业执照"></u--input>
+						<view slot="right" name="arrow-right">
+							<text style="color: #50a8bc;" @click="handleOcr(2)">OCR</text>
+						</view> -->
 						<u-upload :fileList="fileList2" @afterRead="afterRead" @delete="deletePic" name="2" multiple
 							width="60" height="60"></u-upload>
 					</u-form-item>
@@ -44,7 +45,7 @@
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
-						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号"></u--input>
+						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
 					</u-form-item>
 					<u-form-item label="输入密码" :required="true" prop="password" borderBottom>
 						<u--input v-model="registerForm.password" password border="none" placeholder="请输入8-32位(数字+字母)">
@@ -152,7 +153,7 @@
 					businessLicense: {
 						type: 'string',
 						required: true,
-						message: '请选择营业执照',
+						message: '请选择或输入营业执照',
 						trigger: ['blur', 'change']
 					},
 					marketLocation: {
@@ -161,12 +162,12 @@
 						message: '请填写市场场地编号',
 						trigger: ['blur', 'change']
 					},
-					bankAccount: {
+					bankAccount: [{
 						type: 'string',
 						required: true,
 						message: '请填写对公银行账号',
 						trigger: ['blur', 'change']
-					},
+					}],
 					password: [{
 						required: true,
 						message: '请填写密码',
@@ -231,6 +232,10 @@
 			handleConfirm() {
 				this.showModal = false;
 			},
+			handleChange(data) {
+				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
+				this.$set(this.registerForm, 'bankAccount', account)
+			},
 			// 获取验证码
 			getVerification() {
 				this.$modal.msg("验证码已发送");
@@ -242,6 +247,39 @@
 						clearInterval(this.timer);
 					}
 				}, 1000)
+			},
+			// 点击OCR
+			handleOcr(index) {
+				uni.showActionSheet({
+					title: "选择类型",
+					itemList: ['相册', '拍摄'],
+					success: (res) => {
+						if (res.tapIndex == 0) {
+							this.chooseImages()
+						} else {
+							this.chooseVideo()
+						}
+					}
+				})
+			},
+			// 上传图片
+			chooseImages() {
+				uni.chooseImage({
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['album'], // 从相册选择
+					success: (res) => {
+						console.log(res);
+					}
+				})
+			},
+			// 拍摄图片
+			chooseVideo() {
+				uni.chooseImage({
+					sourceType: ['camera'], // 使用相机
+					success: (res) => {
+						console.log(res);
+					}
+				})
 			},
 			// 删除图片
 			deletePic(event) {
@@ -263,11 +301,7 @@
 					const result = await this.uploadFilePromise(lists[i].url)
 					result.forEach(d => {
 						d.fileId = d.id;
-						if (event.name == 1) {
-							this.registerForm.card.push(d);
-						} else if (event.name == 2) {
-							this.registerForm.businessLicense.push(d);
-						}
+						this.registerForm.businessLicense.push(d);
 					})
 					let item = this[`fileList${event.name}`][fileListLen]
 					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
@@ -318,7 +352,12 @@
 					register(this.registerForm).then((res) => {
 						if (res.code === 200) {
 							clearInterval(this.timer);
-							this.$tab.reLaunch('/pages/login');
+							// #ifndef MP-WEIXIN
+							this.$tab.reLaunch('/pages/login')
+							// #endif
+							// #ifdef MP-WEIXIN
+							this.$tab.reLaunch('/pages/wx_login')
+							// #endif
 						}
 					}).catch((error) => {
 						this.$modal.msgError("注册失败");
@@ -329,7 +368,12 @@
 			handleCancel() {
 				this.showModal = false;
 				clearInterval(this.timer);
-				this.$tab.reLaunch('/pages/login');
+				// #ifndef MP-WEIXIN
+				this.$tab.reLaunch('/pages/login')
+				// #endif
+				// #ifdef MP-WEIXIN
+				this.$tab.reLaunch('/pages/wx_login')
+				// #endif
 			}
 		}
 	}

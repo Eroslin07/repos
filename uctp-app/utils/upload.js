@@ -41,7 +41,12 @@ const upload = config => {
             showConfirm("登录状态已过期，您可以继续留在该页面，或者重新登录?").then(res => {
               if (res.confirm) {
                 store.dispatch('LogOut').then(res => {
+                  // #ifndef MP-WEIXIN
                   uni.reLaunch({ url: '/pages/login/login' })
+                  // #endif
+                  // #ifdef MP-WEIXIN
+                  uni.reLaunch({ url: '/pages/wx_login' })
+                  // #endif
                 })
               }
             })

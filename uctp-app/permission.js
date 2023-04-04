@@ -1,11 +1,16 @@
 import { getAccessToken } from '@/utils/auth'
 
 // 登录页面
+// #ifndef MP-WEIXIN
 const loginPage = "/pages/login"
+// #endif
+// #ifdef MP-WEIXIN
+const loginPage = "/pages/wx_login"
+// #endif
 
 // 页面白名单
 const whiteList = [
-  '/pages/login', '/subPages/common/webview/index', '/subPages/retrievePassword', '/subPages/register'
+  '/pages/login', '/pages/wx_login' '/subPages/common/webview/index', '/subPages/retrievePassword', '/subPages/register'
 ]
 
 // 检查地址白名单
