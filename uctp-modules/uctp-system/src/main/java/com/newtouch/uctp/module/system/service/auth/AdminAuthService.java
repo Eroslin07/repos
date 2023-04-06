@@ -31,6 +31,8 @@ public interface AdminAuthService {
      */
     AuthLoginRespVO login(@Valid AuthLoginReqVO reqVO);
 
+    String registerAccount(AuthRegisterReqVO reqVO);
+
     /**
      * 基于 token 退出登录
      *
@@ -69,5 +71,6 @@ public interface AdminAuthService {
      * @return 登录结果
      */
     AuthLoginRespVO refreshToken(String refreshToken);
+
 
 }

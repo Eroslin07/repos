@@ -59,6 +59,8 @@ public interface TenantService {
      */
     TenantDO getTenant(Long id);
 
+    List getTenantList();
+
     /**
      * 获得租户分页
      *

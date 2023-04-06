@@ -102,4 +102,13 @@ public interface DeptService {
      */
     void validateDeptList(Collection<Long> ids);
 
+    /**
+     * 根据tenantID
+     * @param tenantId
+     * @param type
+     * @return
+     */
+    DeptDO selectDept(String tenantId,String type);
+
+    int insertDept(DeptDO deptDO);
 }
