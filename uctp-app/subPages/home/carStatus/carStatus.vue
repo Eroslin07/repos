@@ -10,8 +10,9 @@
 				<view class="cellDraft" @click="selectBtn('宝马')">宝马</view>
 			</dropdown-item>
 			<dropdown-item title=" 收车状态" ref="dateDropdown">
-				<view v-for="item in collectCarState" :key="item.value" class="cellDraft"
-					@click="selectBtn(item.label)">{{item.label}}</view>
+				<view v-for="item in newCarStatus" :key="item.value" class="cellDraft" @click="selectBtn(item.label)">
+					{{item.label}}
+				</view>
 			</dropdown-item>
 		</dropdown-menu>
 
@@ -89,11 +90,51 @@
 					},
 				],
 				tabList: [],
+				carStatsus: null,
 			}
 		},
 		components: {
 			DropdownMenu,
 			DropdownItem
+		},
+		computed: {
+			newCarStatus() {
+				if (this.carStatsus == '收车中') {
+					return this.collectCarState
+				} else if (this.carStatsus == '待售中') {
+					return [{
+							label: '待售未检测',
+							value: '待售未检测'
+						},
+						{
+							label: '待售已检测',
+							value: '待售已检测'
+						},
+					]
+				} else if (this.carStatsus == '卖车中') {
+					return [{
+						label: '卖车草稿',
+						value: '卖车草稿'
+					}, {
+						label: '卖车委托已发起',
+						value: '卖车委托已发起'
+					}, {
+						label: '卖车合同已发起',
+						value: '卖车合同已发起'
+					}, {
+						label: '卖车待付款',
+						value: '卖车待付款'
+					}, {
+						label: '卖车退回草稿',
+						value: '卖车退回草稿'
+					}]
+				} else {
+					return [{
+						label: '已售出',
+						value: '已售出'
+					}]
+				}
+			}
 		},
 		mounted() {
 			this.tabList = [];
@@ -101,10 +142,26 @@
 				this.tabList.push({})
 			}
 		},
-		onLoad(props){
+		onLoad(props) {
+			switch (props.text) {
+				case '1':
+					this.carStatsus = '收车中'
+					break;
+				case '2':
+					this.carStatsus = '待售中'
+					console.log(this.carStatsus, 'status')
+					break;
+				case '3':
+					this.carStatsus = '卖车中'
+					break;
+				case '4':
+					this.carStatsus = '已售出'
+					break;
+			}
 			uni.setNavigationBarTitle({
-				 title: props.text,
+				title: this.carStatsus,
 			})
+			// this.carStatsus = props.text
 		},
 		methods: {
 			// 搜索
@@ -159,7 +216,7 @@
 		line-height: 50px;
 		// padding: 0 15px;
 		margin: 0 15px;
-		margin-right:15px;
+		margin-right: 15px;
 		overflow-x: scroll;
 
 		.tag-item {

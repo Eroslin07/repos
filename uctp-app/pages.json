@@ -23,8 +23,9 @@
 	}, {
 		"path": "pages/index",
 		"style": {
-			"navigationBarTitleText": "首页"
+			"navigationBarTitleText": "首页",
 			// "navigationStyle": "custom"
+			"enablePullDownRefresh":true
 		}
 	}, {
 		"path": "pages/work/index",

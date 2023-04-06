@@ -32,28 +32,22 @@
 		</view>
 
 		<view class="car-status">
-			<view class="car-status-item" @click="tabCarStatus('收车中')">
-				<view class="">
-					<text>收车中</text><br/>
-					<text>12辆</text>
+			<view v-for="(item,index) in gatherData" :key="index" class="car-status-item" @click="tabCarStatus(item.salesStatus)">
+				<view class="" v-if="item.salesStatus==1">
+					<text>收车中</text><br />
+					<text>{{item.num}}辆</text>
 				</view>
-			</view>
-			<view class="car-status-item" @click="tabCarStatus('待售中')">
-				<view class="">
-					<text>待售中</text><br/>
-					<text>12辆</text>
+				<view class="" v-if="item.salesStatus==2">
+					<text>待售中</text><br />
+					<text>{{item.num}}辆</text>
 				</view>
-			</view>
-			<view class="car-status-item" @click="tabCarStatus('卖车中')">
-				<view class="">
+				<view class="" v-if="item.salesStatus==3">
 					<text>卖车中</text><br />
-					<text>12辆</text>
+					<text>{{item.num}}辆</text>
 				</view>
-			</view>
-			<view class="car-status-item last-car-item" @click="tabCarStatus('已出售')">
-				<view class="">
-					<text>已出售</text><br />
-					<text>12辆</text>
+				<view class="" v-if="item.salesStatus==4">
+					<text>已售出</text><br />
+					<text>{{item.num}}辆</text>
 				</view>
 			</view>
 		</view>
@@ -84,11 +78,18 @@
 				</uni-card>
 			</block>
 		</view>
+
+		<u-loadmore :status="status" loadingText="努力加载中..." />
 	</view>
 </template>
 
 <script>
 	import liuyunoTabs from "@/components/liuyuno-tabs/liuyuno-tabs.vue";
+	import {
+		getHomePageList,
+		getHomeCount
+	} from '@/api/home.js'
+	import cellGroup from "../uni_modules/uview-ui/libs/config/props/cellGroup";
 	export default {
 		components: {
 			liuyunoTabs
@@ -103,16 +104,73 @@
 				tabCur: 0,
 				// 标签内容
 				tabList: [],
+				formData: {
+					"pageNo": 1,
+					"pageSize": 10,
+				},
+				status: 'loadmore',
+				// currentPage: 1,
+				total: 0,
+				timer: {},
+
+				// 统计数据
+				gatherData: [],
 			}
 		},
-		onLoad: function() {},
+		onLoad: function() {
+			this.getAcount();
+		},
+
 		mounted() {
-			this.tabList = [];
-			for (let i = 0; i < 10; i++) {
-				this.tabList.push({})
+			this.getList(this.formData)
+		},
+
+		onPullDownRefresh() {
+			if (this.timer != null) {
+				clearTimeout(this.timer)
 			}
+			if (this.tabList.length == this.total) {
+				this.status = 'nomore';
+				return
+			}
+			this.status = 'loading';
+			this.timer = setTimeout(() => {
+				this.formData.pageNo += 1
+				this.getMore(this.formData)
+			}, 1000)
 		},
 		methods: {
+			// 获取list数据
+			getList(params) {
+				getHomePageList(params).then(res => {
+					this.tabList = res.data.list;
+					this.total = res.data.total;
+					if(this.total>10){
+						this.status='loadmore'
+					}else{
+						this.status='nomore'	
+					}
+				})
+			},
+			getMore(params) {
+				getHomePageList(params).then(res => {
+					this.tabList = [...this.tabList, ...res.data.list];
+					this.total = res.data.total;
+					if(this.total>this.tabList.length){
+						this.status='loadmore'
+					}else{
+						this.status='nomore'	
+					}
+				})
+			},
+
+			//获取统计数据
+			getAcount() {
+				getHomeCount().then(res => {
+					console.log(res)
+					this.gatherData = res.data
+				})
+			},
 			// 搜索
 			search(val) {
 				uni.showToast({
@@ -153,7 +211,6 @@
 			},
 			// 收车中
 			tabCarStatus(text) {
-				console.log(text)
 				this.$tab.navigateTo('/subPages/home/carStatus/carStatus?text=' + text)
 
 			}
@@ -163,6 +220,10 @@
 
 <style lang="scss" scoped>
 	.content {
+		width: 100%;
+		height: 100vh;
+		overflow-x: hidden;
+		overflow-y: scroll;
 		background-color: #f1f1f1;
 	}
 
