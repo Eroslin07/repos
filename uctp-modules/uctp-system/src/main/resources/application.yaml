@@ -163,6 +163,10 @@ uctp:
       - /rpc-api/system/tenant/id-list # 获得租户列表的时候，无需传递租户编号
       - /rpc-api/system/error-code/* # 错误码的自动创建与下载的接口，无法带上租户编号
       - /rpc-api/system/oauth2/token/check # 访问令牌校验时，无需传递租户编号；主要解决上传文件的场景，前端不会传递 tenant-id！
+      - /app-api/system/appAuth/getTenantlist
+      - /app-api/system/appAuth/orcIdCard
+      - /app-api/system/appAuth/orcBusinessLicense
+      - /app-api/system/appAuth/registerAccount
     ignore-tables:
       - system_tenant
       - system_tenant_package
@@ -185,5 +189,12 @@ uctp:
     send-maximum-quantity-per-day: 10
     begin-code: 9999 # 这里配置 9999 的原因是，测试方便。
     end-code: 9999 # 这里配置 9999 的原因是，测试方便。
+  security:
+    permit-all-urls:
+#      - /app-api/system/appAuth/appLogin
+      - /app-api/system/appAuth/getTenantlist
+      - /app-api/system/appAuth/orcIdCard
+      - /app-api/system/appAuth/orcBusinessLicense
+      - /app-api/system/appAuth/registerAccount
 
 debug: false

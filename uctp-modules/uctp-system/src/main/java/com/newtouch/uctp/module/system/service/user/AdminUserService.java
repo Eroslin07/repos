@@ -7,6 +7,7 @@ import com.newtouch.uctp.module.system.controller.admin.user.vo.profile.UserProf
 import com.newtouch.uctp.module.system.controller.admin.user.vo.user.*;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 
 import javax.validation.Valid;
 import java.io.InputStream;
@@ -209,4 +210,9 @@ public interface AdminUserService {
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
 
+
+    /**
+     * 新增用户
+     */
+    int insertUser(AdminUserDO user);
 }

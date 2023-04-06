@@ -119,4 +119,13 @@ public interface DeptService {
      */
     DeptDO getDeptByTenantIdAndParentId(Long tenantId, Long parentId);
 
+    /**
+     * 根据tenantID
+     * @param tenantId
+     * @param type
+     * @return
+     */
+    DeptDO selectDept(String tenantId,String type);
+
+    int insertDept(DeptDO deptDO);
 }

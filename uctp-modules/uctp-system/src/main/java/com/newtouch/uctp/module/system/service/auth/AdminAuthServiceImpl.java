@@ -11,23 +11,30 @@ import com.newtouch.uctp.module.system.api.sms.SmsCodeApi;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
 import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
 import com.newtouch.uctp.module.system.convert.auth.AuthConvert;
+import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
+import com.newtouch.uctp.module.system.dal.mysql.user.AdminUserMapper;
 import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
 import com.newtouch.uctp.module.system.enums.logger.LoginResultEnum;
 import com.newtouch.uctp.module.system.enums.oauth2.OAuth2ClientConstants;
 import com.newtouch.uctp.module.system.enums.sms.SmsSceneEnum;
+import com.newtouch.uctp.module.system.service.dept.DeptService;
 import com.newtouch.uctp.module.system.service.logger.LoginLogService;
 import com.newtouch.uctp.module.system.service.member.MemberService;
 import com.newtouch.uctp.module.system.service.oauth2.OAuth2TokenService;
 import com.newtouch.uctp.module.system.service.social.SocialUserService;
 import com.newtouch.uctp.module.system.service.user.AdminUserService;
+import com.newtouch.uctp.module.system.service.user.UserExtService;
+import com.newtouch.uctp.module.system.util.collection.RASClientUtil;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
 import com.xingyuv.captcha.service.CaptchaService;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -63,6 +70,12 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private CaptchaService captchaService;
     @Resource
     private SmsCodeApi smsCodeApi;
+    @Resource
+    private PasswordEncoder passwordEncoder;
+    @Resource
+    private DeptService deptService;
+    @Resource
+    private UserExtService userExtService;
 
     /**
      * 验证码的开关，默认为 true
@@ -106,6 +119,49 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         }
         // 创建 Token 令牌，记录登录日志
         return createTokenAfterLoginSuccess(user.getId(), reqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
+    }
+
+    @Override
+    public String registerAccount(AuthRegisterReqVO reqVO) {
+        //查询该手机号是否注册
+        if(userService.getUserByMobile(reqVO.getPhone())!=null){
+            throw exception(AUTH_MOBILE_IS_EXIST);
+        }
+        String decrypt = RASClientUtil.jsencryptDecryptByPrivateKeyLong(reqVO.getPassword());
+        try {
+            //根据租户id查询商户的父级id
+            DeptDO dept = deptService.selectDept(reqVO.getMarketLocation(), "商户方");
+
+            //用户主表
+            AdminUserDO userDO = new AdminUserDO();
+            userDO.setUsername(reqVO.getPhone());
+            userDO.setMobile(reqVO.getPhone());
+            userDO.setPassword(encodePassword(decrypt)); // 加密密码
+            userDO.setNickname(reqVO.getName());
+            userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            userDO.setStatus(1);
+            userService.insertUser(userDO);
+            //用户扩展表插入数据
+            UserExtDO extDO = new UserExtDO();
+            extDO.setIdCard(reqVO.getIdCard());
+            extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            extDO.setUserId(userDO.getId());
+            extDO.setBankAccount(reqVO.getBankNumber());
+            extDO.setStaffType("1");
+            userExtService.insertUser(extDO);
+
+            //插入商户信息
+            DeptDO deptDO = new DeptDO();
+            deptDO.setName(reqVO.getName());
+            deptDO.setParentId(dept.getId());
+            deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            deptDO.setSort(2);
+            deptDO.setStatus(0);
+            deptService.insertDept(deptDO);
+        }catch (Exception e){
+            throw exception(AUTH_REGISTER_ERROR);
+        }
+        return "";
     }
 
     @Override
@@ -245,5 +301,16 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private UserTypeEnum getUserType() {
         return UserTypeEnum.ADMIN;
     }
+
+    /**
+     * 对密码进行加密
+     *
+     * @param password 密码
+     * @return 加密后的密码
+     */
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
 
 }

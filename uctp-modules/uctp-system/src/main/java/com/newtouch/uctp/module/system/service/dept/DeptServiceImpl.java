@@ -286,4 +286,13 @@ public class DeptServiceImpl implements DeptService {
         return deptMapper.selectByTenantIdAndParentId(tenantId, parentId);
     }
 
+    public DeptDO selectDept(String tenantId,String type) {
+        return deptMapper.selectByTenantId(tenantId,type);
+    }
+
+    @Override
+    public int insertDept(DeptDO deptDO) {
+
+        return deptMapper.insert(deptDO);
+    }
 }

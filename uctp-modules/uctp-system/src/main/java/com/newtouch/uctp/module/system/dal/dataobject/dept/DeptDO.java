@@ -61,4 +61,13 @@ public class DeptDO extends TenantBaseDO {
      */
     private Integer status;
 
+    /**
+     * 营业执照号
+     */
+    private String tax_num;
+    /**
+     * 营业执照上传url
+     */
+    private String business_license_url;
+
 }

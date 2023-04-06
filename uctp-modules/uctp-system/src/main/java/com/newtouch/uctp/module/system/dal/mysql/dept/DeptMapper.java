@@ -30,4 +30,7 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
         return selectOne((new LambdaQueryWrapperX<DeptDO>().eq(DeptDO::getParentId, parentId).eq(DeptDO::getTenantId, tenantId)));
     }
 
+    default DeptDO selectByTenantId(String tenantId,String type){
+        return selectOne(DeptDO::getTenantId,tenantId,DeptDO::getName,type);
+    }
 }

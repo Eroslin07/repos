@@ -17,6 +17,7 @@ import com.newtouch.uctp.module.system.convert.user.UserConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.UserPostDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import com.newtouch.uctp.module.system.dal.mysql.dept.UserPostMapper;
 import com.newtouch.uctp.module.system.dal.mysql.user.AdminUserMapper;
 import com.newtouch.uctp.module.system.service.dept.DeptService;
@@ -442,6 +443,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public boolean isPasswordMatch(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    @Override
+    public int insertUser(AdminUserDO user) {
+        return userMapper.insert(user);
     }
 
     /**
