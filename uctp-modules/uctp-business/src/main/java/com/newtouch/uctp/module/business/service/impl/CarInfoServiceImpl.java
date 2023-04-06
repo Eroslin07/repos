@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
@@ -83,6 +84,12 @@ public class CarInfoServiceImpl implements CarInfoService {
         Page<AppHomeCarInfoRespVO> page = new Page<>(pageVO.getPageNo(), pageVO.getPageSize());
         page = carInfoMapper.selectAppHomePage(page, pageVO,tenantId.toString());
         return new PageResult<>(page.getRecords(), page.getTotal());
+    }
+
+    @Override
+    public List<Map<String, Object>> getCarCountGroupByStatus() {
+        List<Map<String, Object>> maps = carInfoMapper.selectCarCountGroupByStatus();
+        return maps;
     }
 
 }

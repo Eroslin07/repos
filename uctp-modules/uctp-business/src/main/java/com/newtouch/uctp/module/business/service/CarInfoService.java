@@ -7,6 +7,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 车辆主表 Service 接口
@@ -66,4 +67,11 @@ public interface CarInfoService {
      * @return
      */
     PageResult<AppHomeCarInfoRespVO> getHomeCarInfoPage(AppHomeCarInfoPageReqVO pageVO);
+
+    /**
+     * 获取APP首页车辆分类统计
+     * @return
+     */
+    List<Map<String, Object>> getCarCountGroupByStatus();
+
 }

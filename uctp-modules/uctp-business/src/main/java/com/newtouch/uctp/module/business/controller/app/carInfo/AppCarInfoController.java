@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
@@ -78,6 +79,11 @@ public class AppCarInfoController {
         return success(pageResult);
     }
 
-
+    @GetMapping("/home/count")
+    @Operation(summary = "获得APP首页统计")
+    public CommonResult<List<Map<String, Object>>> getCarCountGroupByStatus() {
+        List<Map<String, Object>> list = carInfoService.getCarCountGroupByStatus();
+        return success(list);
+    }
 
 }
