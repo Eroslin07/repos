@@ -19,13 +19,13 @@
 				current: 0,
 				swiperDotIndex: 0,
 				data: [{
-						image: '/static/images/banner/banner01.jpg'
+						image: '/static/images/car.jpg'
 					},
 					{
-						image: '/static/images/banner/banner02.jpg'
+						image: '/static/images/car.jpg'
 					},
 					{
-						image: '/static/images/banner/banner03.jpg'
+						image: '/static/images/car.jpg'
 					}
 				]
 			}
