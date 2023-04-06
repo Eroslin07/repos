@@ -36,19 +36,19 @@
 					<u-grid :border="true" col="4">
 						<u-grid-item v-for="(item,index) in gatherData" :key="index"
 							@click="tabCarStatus(item.salesStatus)">
-							<view class="car-status-item" v-if="item.salesStatus==1">
+							<view class="car-status-item" v-show="item.salesStatus==1">
 								<text>收车中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
-							<view class="car-status-item" v-if="item.salesStatus==2">
+							<view class="car-status-item" v-show="item.salesStatus==2">
 								<text>待售中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
-							<view class="car-status-item" v-if="item.salesStatus==3">
+							<view class="car-status-item" v-show="item.salesStatus==3">
 								<text>卖车中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
-							<view class="car-status-item" v-if="item.salesStatus==4">
+							<view class="car-status-item" v-show="item.salesStatus==4">
 								<text>已售出</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
@@ -171,8 +171,10 @@
 			//获取统计数据
 			getAcount() {
 				getHomeCount().then(res => {
-					console.log(res)
 					this.gatherData = res.data
+					this.gatherData.sort(function(a,b){
+						return a.salesStatus-b.salesStatus
+					})
 				}).catch((error) => {
 					for (let i = 1; i < 5; i++) {
 						this.gatherData.push({
@@ -182,6 +184,7 @@
 					}
 				})
 			},
+			
 			// 搜索
 			search(val) {
 				uni.showToast({
