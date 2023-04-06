@@ -1,15 +1,15 @@
 package com.newtouch.uctp.module.system.util.collection;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 
 public class OCRUtil {
@@ -50,7 +50,7 @@ public class OCRUtil {
              * 返回结果示例
              */
             System.err.println("result:" + result);
-            JSONObject jsonObject = new JSONObject(result);
+            JSONObject jsonObject = JSON.parseObject(result);
             String access_token = jsonObject.getString("access_token");
             return access_token;
         } catch (Exception e) {
