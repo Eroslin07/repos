@@ -61,8 +61,8 @@
 
 
 <script>
-	import DropdownMenu from '@/components/JP-dropdown-menu/JP-dropdown-menu.vue';
-	import DropdownItem from '@/components/JP-dropdown-menu/JP-dropdown-item.vue';
+	import DropdownMenu from './JP-dropdown-menu/JP-dropdown-menu.vue';
+	import DropdownItem from './JP-dropdown-menu/JP-dropdown-item.vue';
 	export default {
 		data() {
 			return {

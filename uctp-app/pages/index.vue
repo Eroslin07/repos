@@ -7,7 +7,6 @@
 		<uni-card :is-shadow="false" is-full class="searchCard">
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"
 				placeholder="请输入商户/车辆型号/单号"></u-search>
-			<!-- <liuyuno-tabs :tabData="tabs" @tabClick='tabClick' /> -->
 		</uni-card>
 
 		<view class="grid-body">
@@ -84,16 +83,12 @@
 </template>
 
 <script>
-	import liuyunoTabs from "@/components/liuyuno-tabs/liuyuno-tabs.vue";
 	import {
 		getHomePageList,
 		getHomeCount
 	} from '@/api/home.js'
 	import cellGroup from "../uni_modules/uview-ui/libs/config/props/cellGroup";
 	export default {
-		components: {
-			liuyunoTabs
-		},
 		data() {
 			return {
 				// 搜索值

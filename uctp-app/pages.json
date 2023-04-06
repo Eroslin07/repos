@@ -1,11 +1,6 @@
 {
 	"pages": [{
-		// #ifndef MP-WEIXIN
 		"path": "pages/login",
-		// #endif
-		// #ifdef MP-WEIXIN
-		"path": "pages/wx_login",
-		// #endif
 		"style": {
 			"navigationBarTitleText": "登录",
 			"app-plus": {
