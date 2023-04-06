@@ -5,7 +5,7 @@
 		</view>
 
 		<uni-card :is-shadow="false" is-full class="searchCard">
-			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"
+			<u-search v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 				placeholder="请输入商户/车辆型号/单号"></u-search>
 		</uni-card>
 
@@ -31,10 +31,11 @@
 						</uni-grid-item>
 					</uni-grid>
 				</view>
-				
+
 				<view class="car-status">
 					<u-grid :border="true" col="4">
-						<u-grid-item v-for="(item,index) in gatherData" :key="index" @click="tabCarStatus(item.salesStatus)">
+						<u-grid-item v-for="(item,index) in gatherData" :key="index"
+							@click="tabCarStatus(item.salesStatus)">
 							<view class="car-status-item" v-if="item.salesStatus==1">
 								<text>收车中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
@@ -66,12 +67,13 @@
 					</view>
 				</uni-col>
 				<uni-col :span="16">
-					<h3>宝马-宝马×12021款 sDrive20Li 时尚型</h3>
-					<view>VIN: LE4TG4DB1JL199517</view>
-					<view>2021年02月 | 2.9万公里</view>
-					<view style="color: #000;">收车价：<text style="font-weight:bold">151,300元</text></view>
+					<h3><span class="paddingR10">{{tab.brand}}</span><span>{{tab.model}}</span></h3>
+					<view>VIN: {{tab.vin}}</view>
+					<view>{{tab.year}}年 | {{tab.mileage | filterMile}}万公里</view>
+					<view style="color: #000;">收车价：<text style="font-weight:bold">{{tab.vehicleReceiptAmount}}元</text>
+					</view>
 					<view style="color: #fa6400;">卖车价：<text style="font-weight:bold">200,000元</text></view>
-					<view>创建时间:2023-03-1514:10</view>
+					<view>创建时间:{{tab.createTime}}</view>
 				</uni-col>
 			</uni-row>
 		</uni-card>
@@ -90,10 +92,11 @@
 		data() {
 			return {
 				// 搜索值
-				searchValue: "",
+				// searchValue: "",
 				// 标签内容
 				tabList: [],
 				formData: {
+					searchValue: null,
 					"pageNo": 1,
 					"pageSize": 10,
 				},
@@ -128,29 +131,39 @@
 				this.getMore(this.formData)
 			}, 1000)
 		},
+		// filters:{
+		// 	filterMIle(val){
+		// 		console.log(val,'val')
+		// 		if(val>10000){
+		// 			return parseFloat(val/10000).toFixed(2)
+		// 		}else{
+		// 			return val.toFixed(2)
+		// 		}
+		// 	}
+		// },
 		methods: {
 			// 获取list数据
 			getList(params) {
 				getHomePageList(params).then(res => {
 					this.tabList = res.data.list;
 					this.total = res.data.total;
-					if(this.total>10){
-						this.status='loadmore'
-					}else{
-						this.status='nomore'	
+					if (this.total > 10) {
+						this.status = 'loadmore'
+					} else {
+						this.status = 'nomore'
 					}
 				}).catch((error) => {
-					this.status='nomore'
+					this.status = 'nomore'
 				})
 			},
 			getMore(params) {
 				getHomePageList(params).then(res => {
 					this.tabList = [...this.tabList, ...res.data.list];
 					this.total = res.data.total;
-					if(this.total>this.tabList.length){
-						this.status='loadmore'
-					}else{
-						this.status='nomore'	
+					if (this.total > this.tabList.length) {
+						this.status = 'loadmore'
+					} else {
+						this.status = 'nomore'
 					}
 				})
 			},
@@ -175,6 +188,7 @@
 					title: '搜索：' + val,
 					icon: 'none'
 				})
+				this.getList(this.formData)
 			},
 			// 清除
 			clear(val) {
@@ -182,6 +196,7 @@
 					title: '清除：' + val,
 					icon: 'none'
 				})
+				this.getList(this.formData)
 			},
 			// 我要买车
 			buyCar() {
@@ -201,7 +216,7 @@
 			},
 			// 收车中
 			tabCarStatus(text) {
-				this.$tab.navigateTo('/subPages/home/carStatus/carStatus?text=' + text)
+				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${text}`)
 			}
 		}
 	}
@@ -244,7 +259,7 @@
 	.grid-body {
 		padding-bottom: 20px;
 		border-bottom: 1px solid #ececec;
-		
+
 		.uni-grid-item {
 			// height: 100px !important;
 		}
@@ -340,5 +355,9 @@
 			// margin-right: 0px;
 		}
 
+	}
+
+	.paddingR10 {
+		padding-right: 10px;
 	}
 </style>

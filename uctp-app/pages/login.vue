@@ -135,17 +135,15 @@
 				//密码加密
 				let encryptMsg = rsaEncrypt(this.loginForm.password)
 				console.log(encryptMsg)
-				this.$tab.reLaunch('/pages/index');
+				// this.$tab.reLaunch('/pages/index');
 
-				//关闭定时器
+				// //关闭定时器
 				clearInterval(this.timer);
-				return
+				// return
 				if (this.loginForm.username === "") {
 					this.$modal.msgError("请输入您的账号")
 				} else if (this.loginForm.password === "") {
 					this.$modal.msgError("请输入您的密码")
-				} else if (this.loginForm.code === "" && this.captchaEnabled) {
-					this.$modal.msgError("请输入验证码")
 				} else {
 					this.$modal.loading("登录中，请耐心等待...")
 					this.pwdLogin()

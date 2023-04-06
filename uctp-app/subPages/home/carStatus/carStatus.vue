@@ -1,21 +1,18 @@
 <template>
 	<view class="status-container">
-		<u-search class="search" v-model="searchValue" :showAction="false" @search="search" @clear="clear"
+		<u-search class="search" v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 			placeholder="请输入商户/车辆型号/单号">
 		</u-search>
+		<zb-dropdown-menu style="width: 100%">
+			<zb-dropdown-item name="品牌" :options="brandArr" v-model="formData.brand" @change="brandChange">
+			</zb-dropdown-item>
+			<zb-dropdown-item name="收车状态" :options="newCarStatus" v-model="formData.checkStatus" @change="changeValue">
+			</zb-dropdown-item>
+		</zb-dropdown-menu>
 
-		<!-- 下拉框 -->
-		<dropdown-menu>
-			<dropdown-item title="品牌" ref="rangeDropdown">
-				<view class="cellDraft" @click="selectBtn('宝马')">宝马</view>
-			</dropdown-item>
-			<dropdown-item title=" 收车状态" ref="dateDropdown">
-				<view v-for="item in newCarStatus" :key="item.value" class="cellDraft" @click="selectBtn(item.label)">
-					{{item.label}}
-				</view>
-			</dropdown-item>
-		</dropdown-menu>
-
+		<u-datetime-picker ref="datetimePicker" :show="timeShow" v-model="saleTime" mode="year-month"
+			@cancel="timeCancle" @confirm="timeConfirm">
+		</u-datetime-picker>
 		<!-- 筛选项 -->
 		<view class="tag-box">
 
@@ -54,6 +51,8 @@
 						</uni-col>
 					</uni-row>
 				</uni-card>
+
+				<u-loadmore :status="status" loadingText="努力加载中..." />
 			</block>
 		</view>
 	</view>
@@ -63,34 +62,70 @@
 <script>
 	import DropdownMenu from './JP-dropdown-menu/JP-dropdown-menu.vue';
 	import DropdownItem from './JP-dropdown-menu/JP-dropdown-item.vue';
+	import {
+		getHomePageList
+	} from '@/api/home.js'
 	export default {
 		data() {
 			return {
-				searchValue: '',
+				// searchValue: '',
 				value: null,
 				collectCarState: [{
-						label: '收车草稿',
-						value: '收车草稿'
+						text: '收车状态',
+						value: ''
+					}, {
+						text: '收车草稿',
+						value: 11
 					},
 					{
-						label: '收车委托已发起',
-						value: '收车委托已发起'
+						text: '收车委托已发起',
+						value: 12
 					},
 					{
-						label: '收车合同已发起',
-						value: '收车合同已发起'
+						text: '收车合同已发起',
+						value: 13
 					},
 					{
-						label: '收车支付失败',
-						value: '收车支付失败'
+						text: '收车支付失败',
+						value: 14
 					},
 					{
-						label: '收车退回草稿',
-						value: '收车退回草稿'
+						text: '收车退回草稿',
+						value: 15
 					},
 				],
 				tabList: [],
 				carStatsus: null,
+				formData: {
+					searchValue: null,
+					"pageNo": 1,
+					"pageSize": 10,
+					brand: '',
+					salesStatus: null,
+					checkStatus: '',
+				},
+				status: 'loadmore',
+				total: 0,
+				timer: {},
+
+				brandArr: [{
+						text: '品牌',
+						value: ''
+					},
+					{
+						text: '宝马',
+						value: 1
+					},
+					{
+						text: '奥迪',
+						value: 2
+					}
+				],
+
+				saleTime: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm'),
+				timeShow: false,
+
+				statusNum: null
 			}
 		},
 		components: {
@@ -103,73 +138,125 @@
 					return this.collectCarState
 				} else if (this.carStatsus == '待售中') {
 					return [{
-							label: '待售未检测',
-							value: '待售未检测'
+							text: '收车状态',
+							value: ''
+						}, {
+							text: '待售未检测',
+							value: 21
 						},
 						{
-							label: '待售已检测',
-							value: '待售已检测'
+							text: '待售已检测',
+							value: 22
 						},
 					]
 				} else if (this.carStatsus == '卖车中') {
 					return [{
-						label: '卖车草稿',
-						value: '卖车草稿'
-					}, {
-						label: '卖车委托已发起',
-						value: '卖车委托已发起'
-					}, {
-						label: '卖车合同已发起',
-						value: '卖车合同已发起'
-					}, {
-						label: '卖车待付款',
-						value: '卖车待付款'
-					}, {
-						label: '卖车退回草稿',
-						value: '卖车退回草稿'
-					}]
+							text: '收车状态',
+							value: ''
+						},
+						{
+							text: '卖车草稿',
+							value: 31
+						}, {
+							text: '卖车委托已发起',
+							value: 32
+						}, {
+							text: '卖车合同已发起',
+							value: 33
+						}, {
+							text: '卖车待付款',
+							value: 34
+						}, {
+							text: '卖车退回草稿',
+							value: 35
+						}
+					]
 				} else {
 					return [{
-						label: '已售出',
-						value: '已售出'
-					}]
+							text: '收车状态',
+							value: ''
+						},
+						{
+							text: '销售时间',
+							value: '销售时间'
+						}
+					]
 				}
 			}
 		},
 		mounted() {
-			this.tabList = [];
-			for (let i = 0; i < 10; i++) {
-				this.tabList.push({})
-			}
+			this.getList(this.formData)
 		},
 		onLoad(props) {
 			switch (props.text) {
-				case '1':
+				case 1:
 					this.carStatsus = '收车中'
 					break;
-				case '2':
+				case 2:
+					console.log(props.text)
 					this.carStatsus = '待售中'
-					console.log(this.carStatsus, 'status')
 					break;
-				case '3':
+				case 3:
 					this.carStatsus = '卖车中'
 					break;
-				case '4':
+				case 4:
 					this.carStatsus = '已售出'
 					break;
 			}
 			uni.setNavigationBarTitle({
 				title: this.carStatsus,
 			})
-			// this.carStatsus = props.text
+			this.formData.salesStatus = props.text
+			this.statusNum = props.text
+		},
+		onPullDownRefresh() {
+			if (this.timer != null) {
+				clearTimeout(this.timer)
+			}
+			if (this.tabList.length == this.total) {
+				this.status = 'nomore';
+				return
+			}
+			this.status = 'loading';
+			this.timer = setTimeout(() => {
+				this.formData.pageNo += 1
+				this.getMore(this.formData)
+			}, 1000)
 		},
 		methods: {
+			// 获取list数据
+			getList(params) {
+				getHomePageList(params).then(res => {
+					this.tabList = res.data.list;
+					this.total = res.data.total;
+					if (this.total > 10) {
+						this.status = 'loadmore'
+					} else {
+						this.status = 'nomore'
+					}
+				}).catch((error) => {
+					this.status = 'nomore'
+				})
+			},
+			getMore(params) {
+				getHomePageList(params).then(res => {
+					this.tabList = [...this.tabList, ...res.data.list];
+					this.total = res.data.total;
+					if (this.total > this.tabList.length) {
+						this.status = 'loadmore'
+					} else {
+						this.status = 'nomore'
+					}
+				})
+			},
+			
 			// 搜索
 			search(val) {
 				uni.showToast({
 					title: '搜索：' + val,
 					icon: 'none'
 				})
+				this.getList(this.formData)
 			},
 			// 清除
 			clear(val) {
@@ -177,14 +264,35 @@
 					title: '清除：' + val,
 					icon: 'none'
 				})
+				this.getList(this.formData)
+			},
+			// 品牌 
+			brandChange(val) {
+				this.getList(this.formData)
+			},
+			
+			// 销售时间
+			changeValue(val) {
+				if (val.text == '销售时间') {
+					this.timeShow = true;
+					this.formData.checkStatus=''
+				}
 			},
 
-			selectBtn(text) {
-				console.log(text)
-				setTimeout(() => {
-					this.$refs.dateDropdown.close()
-					this.$refs.rangeDropdown.close()
-				}, 100)
+			// 时间 取消
+			timeCancle() {
+				this.timeShow = false
+				this.formData.checkStatus=''
+			},
+			// 时间 确认
+			timeConfirm() {
+				this.timeShow = false
+				this.formData.checkStatus=''
+				this.$nextTick(() => {
+					uni.$u.timeFormat(this.saleTime, 'yyyy-mm'),
+						console.log(uni.$u.timeFormat(this.saleTime, 'yyyy-mm'), 333333)
+				})
+
 			}
 		}
 	}
