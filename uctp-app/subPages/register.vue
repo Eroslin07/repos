@@ -10,38 +10,36 @@
 					<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
 						<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(1)">OCR</text>
+							<text style="color: #50a8bc;" @click="handleOcr(1)">上传图片</text>
 						</view>
 					</u-form-item>
-					<!-- <u-form-item label="身份证正反面" prop="card" borderBottom>
-						<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple
-							width="60" height="60"></u-upload>
-					</u-form-item> -->
 					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
 						<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>
 					</u-form-item>
 					<u-form-item label="手机号" :required="true" prop="phone" borderBottom>
 						<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
+							<!-- #ifndef MP-WEIXIN -->
 							<template slot="suffix">
 								<view @click="getVerification" style="color: #50a8bc;" v-if="getTime">获取验证码</view>
 								<view class="login-code-img" style="color: #50a8bc;" v-else>已发送({{ time }})</view>
 							</template>
+							<!-- #endif -->
 						</u-input>
 					</u-form-item>
+					<!-- #ifndef MP-WEIXIN -->
 					<u-form-item label="验证码" :required="true" prop="captcha" borderBottom>
 						<u--input v-model="registerForm.captcha" border="none" placeholder="请输入验证码"></u--input>
 					</u-form-item>
-					<u-form-item label="商户名称" :required="true" prop="businessName" borderBottom>
-						<u--input v-model="registerForm.businessName" border="none" placeholder="请输入商户名称"></u--input>
+					<!-- #endif -->
+					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
+						<u-album :urls="registerForm.businessLicense" multipleSize="70" singleSize="70"></u-album>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(2)">OCR</text>
+							<text style="color: #50a8bc;" @click="handleOcr(2)">上传图片</text>
 						</view>
-						<!-- <u-upload :fileList="fileList2" @afterRead="afterRead" @delete="deletePic" name="2" multiple
-							width="60" height="60"></u-upload> -->
 					</u-form-item>
-					<u-form-item label="税号" :required="true" prop="taxNum" borderBottom>
+					<!-- <u-form-item label="税号" :required="true" prop="taxNum" borderBottom>
 						<u--input v-model="registerForm.taxNum" border="none" placeholder="请输入姓名"></u--input>
-					</u-form-item>
+					</u-form-item> -->
 					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
 						<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
 							placeholder="请选择市场场地编号" border="none"></u--input>
@@ -101,8 +99,7 @@
 					captcha: "",             // 验证码
 					name: "",                // 姓名
 					number: "",              // 身份证号
-					businessName: "",        // 营业执照
-					taxNum: "",
+					businessLicense: [],     // 营业执照
 					marketLocation: "",      // 市场所在地id
 					marketLocationValue: "", // 市场所在地
 					bankAccount: "",         // 对公银行账号
@@ -163,18 +160,18 @@
 						message: '请选择身份证反面',
 						trigger: ['blur', 'change']
 					},
-					businessName: {
+					businessLicense: {
 						type: 'string',
 						required: true,
-						message: '请选择或输入营业执照',
+						message: '请选择营业执照',
 						trigger: ['blur', 'change']
 					},
-					taxNum: {
-						type: 'string',
-						required: true,
-						message: '请输入税号',
-						trigger: ['blur', 'change']
-					},
+					// taxNum: {
+					// 	type: 'string',
+					// 	required: true,
+					// 	message: '请输入税号',
+					// 	trigger: ['blur', 'change']
+					// },
 					marketLocationValue: {
 						type: 'string',
 						required: true,
@@ -287,7 +284,7 @@
 			// 上传图片
 			chooseImages(index) {
 				let _this = this;
-				uni.chooseImage({
+				uni.chooseVideo({
 					count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], // 从相册选择
@@ -295,7 +292,7 @@
 						let str = await urlTobase64(res.tempFilePaths[0])
 						if (index == 1) {
 							// 识别身份证
-							this.fileList1 = res;
+							_this.fileList1 = res;
 							getIdCard({ IDCardUrl: str }).then((ress) => {
 								let data = JSON.parse(ress.data);
 								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
@@ -303,11 +300,12 @@
 							})
 						} else if (index == 2) {
 							// 识别营业执照
-							this.fileList2 = res;
-							getBusinessLicense({ businessLicense: str }).then((ress) => {
-								let data = JSON.parse(ress.data);
+							_this.fileList2 = res;
+							_this.registerForm.businessLicense = [..._this.registerForm.businessLicense, ...res.tempFilePaths];
+							// getBusinessLicense({ businessLicense: str }).then((ress) => {
+							// 	let data = JSON.parse(ress.data);
 								
-							})
+							// })
 						}
 					}
 				})
@@ -315,7 +313,7 @@
 			// 拍摄图片
 			chooseVideo(index) {
 				let _this = this;
-				uni.chooseImage({
+				uni.chooseVideo({
 					count: 1,
 					sourceType: ['camera'], // 使用相机
 					success: async function(res) {
@@ -332,10 +330,11 @@
 						} else if (index == 2) {
 							// 识别营业执照
 							this.fileList2 = res;
-							getBusinessLicense({ businessLicense: str }).then((ress) => {
-								let data = JSON.parse(ress.data);
+							_this.registerForm.businessLicense = [..._this.registerForm.businessLicense, ...res.tempFilePaths];
+							// getBusinessLicense({ businessLicense: str }).then((ress) => {
+							// 	let data = JSON.parse(ress.data);
 								
-							})
+							// })
 						}
 					}
 				})
