@@ -49,6 +49,14 @@ public interface DeptService {
     void updateDept(DeptUpdateReqVO reqVO);
 
     /**
+     * 更新租户时，修改部门
+     *
+     * @param deptDO 部门信息
+     * @return 部门编号
+     */
+    void updateTenantDept(DeptDO deptDO);
+
+    /**
      * 删除部门
      *
      * @param id 部门编号

@@ -132,6 +132,19 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public void updateTenantDept(DeptDO deptDO) {
+        // 校验正确性
+        if (deptDO.getParentId() == null) {
+            deptDO.setParentId(DeptIdEnum.ROOT.getId());
+        }
+        validateForCreateOrUpdate(deptDO.getId(), deptDO.getParentId(), deptDO.getName());
+        // 更新部门
+        deptMapper.updateById(deptDO);
+        // 发送刷新消息
+        deptProducer.sendDeptRefreshMessage();
+    }
+
+    @Override
     public void deleteDept(Long id) {
         // 校验是否存在
         validateDeptExists(id);

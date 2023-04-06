@@ -1,13 +1,15 @@
 package com.newtouch.uctp.module.system.dal.dataobject.dept;
 
-import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
-import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
+import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.enums.dept.MarketTenantDeptEnum;
 
 /**
  * 部门表
@@ -60,6 +62,13 @@ public class DeptDO extends TenantBaseDO {
      * 枚举 {@link CommonStatusEnum}
      */
     private Integer status;
+
+    /**
+     * 部门属性
+     *
+     * 枚举 {@link MarketTenantDeptEnum}
+     */
+    private Integer attr;
 
     /**
      * 营业执照号

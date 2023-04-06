@@ -107,6 +107,7 @@ public interface ErrorCodeConstants {
     ErrorCode TENANT_CAN_NOT_UPDATE_SYSTEM = new ErrorCode(1002015003, "系统租户不能进行修改、删除等操作！");
     ErrorCode TENANT_TYPE_NOT_EQ = new ErrorCode(1002015004, "租户属性与套餐属性不一致，不能保存");
     ErrorCode TENANT_TYPE_NOT_UPDATE = new ErrorCode(1002015005, "租户属性需与修改前保持一致，不允许修改！");
+    ErrorCode TENANT_NAME_CHECK = new ErrorCode(1002015001, "名字为【{}】的租户已被创建");
 
     // ========== 租户套餐 1002016000 ==========
     ErrorCode TENANT_PACKAGE_NOT_EXISTS = new ErrorCode(1002016000, "租户套餐不存在");
