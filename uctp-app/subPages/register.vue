@@ -94,11 +94,10 @@
 				// 营业执照
 				fileList2: [],
 				registerForm: {
-					idCard: "",
 					phone: "",               // 手机号
 					captcha: "",             // 验证码
 					name: "",                // 姓名
-					number: "",              // 身份证号
+					idCard: "",              // 身份证号
 					businessLicense: [],     // 营业执照
 					marketLocation: "",      // 市场所在地id
 					marketLocationValue: "", // 市场所在地
@@ -137,7 +136,7 @@
 						message: '请填写姓名',
 						trigger: ['blur', 'change']
 					},
-					number: [{
+					idCard: [{
 						type: 'string',
 						required: true,
 						message: '请填写身份证号',
@@ -154,24 +153,12 @@
 						message:"身份证格式不正确",
 						trigger: ['blur', 'change']
 					}],
-					card: {
-						type: 'string',
-						required: true,
-						message: '请选择身份证反面',
-						trigger: ['blur', 'change']
-					},
 					businessLicense: {
 						type: 'string',
 						required: true,
 						message: '请选择营业执照',
 						trigger: ['blur', 'change']
 					},
-					// taxNum: {
-					// 	type: 'string',
-					// 	required: true,
-					// 	message: '请输入税号',
-					// 	trigger: ['blur', 'change']
-					// },
 					marketLocationValue: {
 						type: 'string',
 						required: true,

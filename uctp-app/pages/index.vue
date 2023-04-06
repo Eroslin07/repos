@@ -9,74 +9,72 @@
 				placeholder="请输入商户/车辆型号/单号"></u-search>
 		</uni-card>
 
-		<view class="grid-body">
-			<uni-grid :column="4" :showBorder="false">
-				<uni-grid-item>
-					<view class="grid-item-box" @click="buyCar">图片</view>
-					<view class="text-center">我要买车</view>
-				</uni-grid-item>
-				<uni-grid-item>
-					<view class="grid-item-box" @click="sellingCar">图片</view>
-					<view class="text-center">我要卖车</view>
-				</uni-grid-item>
-				<uni-grid-item>
-					<view class="grid-item-box" @click="handleCost">图片</view>
-					<view class="text-center">我的费用</view>
-				</uni-grid-item>
-				<uni-grid-item>
-					<view class="grid-item-box" @click="handleAccount">图片</view>
-					<view class="text-center">我的账户</view>
-				</uni-grid-item>
-			</uni-grid>
-		</view>
-
-		<view class="car-status">
-			<view v-for="(item,index) in gatherData" :key="index" class="car-status-item" @click="tabCarStatus(item.salesStatus)">
-				<view class="" v-if="item.salesStatus==1">
-					<text>收车中</text><br />
-					<text>{{item.num}}辆</text>
+		<view style="background-color: #fff;">
+			<view style="border: 2px solid #fff; border-radius: 10px;margin: 0 10px;">
+				<view class="grid-body">
+					<uni-grid :column="4" :showBorder="false">
+						<uni-grid-item>
+							<view class="grid-item-box" @click="buyCar">图片</view>
+							<view class="text-center">我要买车</view>
+						</uni-grid-item>
+						<uni-grid-item>
+							<view class="grid-item-box" @click="sellingCar">图片</view>
+							<view class="text-center">我要卖车</view>
+						</uni-grid-item>
+						<uni-grid-item>
+							<view class="grid-item-box" @click="handleCost">图片</view>
+							<view class="text-center">我的费用</view>
+						</uni-grid-item>
+						<uni-grid-item>
+							<view class="grid-item-box" @click="handleAccount">图片</view>
+							<view class="text-center">我的账户</view>
+						</uni-grid-item>
+					</uni-grid>
 				</view>
-				<view class="" v-if="item.salesStatus==2">
-					<text>待售中</text><br />
-					<text>{{item.num}}辆</text>
-				</view>
-				<view class="" v-if="item.salesStatus==3">
-					<text>卖车中</text><br />
-					<text>{{item.num}}辆</text>
-				</view>
-				<view class="" v-if="item.salesStatus==4">
-					<text>已售出</text><br />
-					<text>{{item.num}}辆</text>
+				
+				<view class="car-status">
+					<u-grid :border="true" col="4">
+						<u-grid-item v-for="(item,index) in gatherData" :key="index" @click="tabCarStatus(item.salesStatus)">
+							<view class="car-status-item" v-if="item.salesStatus==1">
+								<text>收车中</text><br />
+								<text style="color: #e26e1f;">{{item.num}}辆</text>
+							</view>
+							<view class="car-status-item" v-if="item.salesStatus==2">
+								<text>待售中</text><br />
+								<text style="color: #e26e1f;">{{item.num}}辆</text>
+							</view>
+							<view class="car-status-item" v-if="item.salesStatus==3">
+								<text>卖车中</text><br />
+								<text style="color: #e26e1f;">{{item.num}}辆</text>
+							</view>
+							<view class="car-status-item" v-if="item.salesStatus==4">
+								<text>已售出</text><br />
+								<text style="color: #e26e1f;">{{item.num}}辆</text>
+							</view>
+						</u-grid-item>
+					</u-grid>
 				</view>
 			</view>
 		</view>
 
-		<view v-for="(item, index) in tabs" :key="index">
-			<block v-if="tabCur === index">
-				<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" style="margin-top: 10px;">
-					<uni-row :gutter="30">
-						<uni-col :span="8">
-							<view class="car_left">
-								<view class="car_text cell-car-draft">收车草稿</view>
-								<view style="height: 100px;border: 1px solid #eee;"></view>
-							</view>
-						</uni-col>
-						<uni-col :span="16">
-							<h3>宝马-宝马×12021款 sDrive20Li 时尚型</h3>
-							<view>2021年02月 | 2.9万公里</view>
-							<view style="color: #000;">收车价：151,300元</view>
-							<view>卖车价：<text style="color: #fa6400;font-weight:bold">200,000元</text></view>
-						</uni-col>
-						<uni-col :span="12">
-							<view style="font-size: 10px;">VIN: LE4TG4DB1JL199517</view>
-						</uni-col>
-						<uni-col :span="12">
-							<view style="font-size: 10px;">创建时间:2023-03-1514:10</view>
-						</uni-col>
-					</uni-row>
-				</uni-card>
-			</block>
-		</view>
+		<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" style="margin-top: 10px;">
+			<uni-row :gutter="30">
+				<uni-col :span="8">
+					<view class="car_left">
+						<view class="car_text cell-car-draft">收车草稿</view>
+						<view style="height: 100px;border: 1px solid #eee;"></view>
+					</view>
+				</uni-col>
+				<uni-col :span="16">
+					<h3>宝马-宝马×12021款 sDrive20Li 时尚型</h3>
+					<view>VIN: LE4TG4DB1JL199517</view>
+					<view>2021年02月 | 2.9万公里</view>
+					<view style="color: #000;">收车价：<text style="font-weight:bold">151,300元</text></view>
+					<view style="color: #fa6400;">卖车价：<text style="font-weight:bold">200,000元</text></view>
+					<view>创建时间:2023-03-1514:10</view>
+				</uni-col>
+			</uni-row>
+		</uni-card>
 
 		<u-loadmore :status="status" loadingText="努力加载中..." />
 	</view>
@@ -93,10 +91,6 @@
 			return {
 				// 搜索值
 				searchValue: "",
-				// 标签页内容
-				tabs: ["收车中12辆", "查验中12辆", "待售中12辆", "卖车中12辆", "已售出12辆"],
-				// 选中标签页
-				tabCur: 0,
 				// 标签内容
 				tabList: [],
 				formData: {
@@ -145,6 +139,8 @@
 					}else{
 						this.status='nomore'	
 					}
+				}).catch((error) => {
+					this.status='nomore'
 				})
 			},
 			getMore(params) {
@@ -164,6 +160,13 @@
 				getHomeCount().then(res => {
 					console.log(res)
 					this.gatherData = res.data
+				}).catch((error) => {
+					for (let i = 1; i < 5; i++) {
+						this.gatherData.push({
+							salesStatus: i,
+							num: 0
+						})
+					}
 				})
 			},
 			// 搜索
@@ -179,14 +182,6 @@
 					title: '清除：' + val,
 					icon: 'none'
 				})
-			},
-			// tabs切换
-			tabClick(e) {
-				this.tabCur = e;
-				this.tabList = [];
-				for (var i = 0; i < 10; i++) {
-					this.tabList.push({})
-				}
 			},
 			// 我要买车
 			buyCar() {
@@ -207,7 +202,6 @@
 			// 收车中
 			tabCarStatus(text) {
 				this.$tab.navigateTo('/subPages/home/carStatus/carStatus?text=' + text)
-
 			}
 		}
 	}
@@ -216,10 +210,10 @@
 <style lang="scss" scoped>
 	.content {
 		width: 100%;
-		height: 100vh;
+		height: 88vh;
 		overflow-x: hidden;
 		overflow-y: scroll;
-		background-color: #f1f1f1;
+		background-color: #f4f6f8;
 	}
 
 	.changing-over {
@@ -248,14 +242,17 @@
 	}
 
 	.grid-body {
+		padding-bottom: 20px;
+		border-bottom: 1px solid #ececec;
+		
 		.uni-grid-item {
 			// height: 100px !important;
 		}
 
 		.grid-item-box {
 			// flex: 1;
-			width: 16vw;
-			height: 16vw;
+			width: 52px;
+			height: 52px;
 			border: 1px solid black;
 			border-radius: 50%;
 			/* #ifndef APP-NVUE */
@@ -272,6 +269,7 @@
 		/* #ifdef H5 */
 		padding: 0 !important;
 		/* #endif */
+		border: none;
 	}
 
 	/deep/ .uni-grid {
@@ -285,6 +283,7 @@
 
 	/deep/.searchCard .uni-card {
 		padding: 0 !important;
+		border: none
 	}
 
 	/* #endif */
@@ -330,25 +329,11 @@
 	}
 
 	.car-status {
-		height: 80px;
 		margin: 10px 10px;
-		display: flex;
-		overflow: hidden;
-		align-items: center;
-		justify-content: space-around;
+		font-size: 14px;
 
 		.car-status-item {
-			width: 100%;
-			height: 100%;
-			border: 1px solid #ccc;
-			margin: 0 5px;
-			border-radius: 3px;
 			text-align: center;
-			// line-height: 80px;
-			background-color: #fff;
-			display: flex;
-			align-items: center;
-			justify-content: center;
 		}
 
 		.last-car-item {
