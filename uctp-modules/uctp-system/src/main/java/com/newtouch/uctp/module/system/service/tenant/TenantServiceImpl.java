@@ -232,9 +232,11 @@ public class TenantServiceImpl implements TenantService {
         }
         //如果租户名称发生变化
         if (ObjectUtil.notEqual(tenant.getName(), updateReqVO.getName())) {
-            DeptDO deptDO = deptService.getDeptByTenantIdAndParentId(tenant.getId(), DeptIdEnum.ROOT.getId());
-            deptDO.setName(updateReqVO.getName());
-            deptService.updateTenantDept(deptDO);
+            TenantUtils.execute(tenant.getId(), () -> {
+                DeptDO deptDO = deptService.getDeptByTenantIdAndParentId(tenant.getId(), DeptIdEnum.ROOT.getId());
+                deptDO.setName(updateReqVO.getName());
+                deptService.updateTenantDept(deptDO);
+            });
         }
     }
 
