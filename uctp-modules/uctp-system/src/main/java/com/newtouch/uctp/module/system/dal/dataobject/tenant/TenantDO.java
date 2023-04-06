@@ -1,13 +1,14 @@
 package com.newtouch.uctp.module.system.dal.dataobject.tenant;
 
-import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
+import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 
 /**
  * 租户 DO
@@ -63,6 +64,11 @@ public class TenantDO extends BaseDO {
      * TODO 芋艿：目前是预留字段，未来会支持根据域名，自动查询到对应的租户。等等
      */
     private String domain;
+    /**
+     * 租户属性
+     * 同“套餐属性”枚举一致
+     */
+    private Integer type;
     /**
      * 租户套餐编号
      *

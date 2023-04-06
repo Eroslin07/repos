@@ -3,6 +3,20 @@ package com.newtouch.uctp.module.system.service.tenant;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
@@ -16,6 +30,7 @@ import com.newtouch.uctp.module.system.controller.admin.tenant.vo.tenant.TenantE
 import com.newtouch.uctp.module.system.controller.admin.tenant.vo.tenant.TenantPageReqVO;
 import com.newtouch.uctp.module.system.controller.admin.tenant.vo.tenant.TenantUpdateReqVO;
 import com.newtouch.uctp.module.system.convert.tenant.TenantConvert;
+import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.RoleDO;
 import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantDO;
@@ -23,23 +38,14 @@ import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantPackageDO;
 import com.newtouch.uctp.module.system.dal.mysql.tenant.TenantMapper;
 import com.newtouch.uctp.module.system.enums.permission.RoleCodeEnum;
 import com.newtouch.uctp.module.system.enums.permission.RoleTypeEnum;
+import com.newtouch.uctp.module.system.enums.tenant.TenantPackageTypeEnum;
+import com.newtouch.uctp.module.system.service.dept.DeptService;
 import com.newtouch.uctp.module.system.service.permission.MenuService;
 import com.newtouch.uctp.module.system.service.permission.PermissionService;
 import com.newtouch.uctp.module.system.service.permission.RoleService;
 import com.newtouch.uctp.module.system.service.tenant.handler.TenantInfoHandler;
 import com.newtouch.uctp.module.system.service.tenant.handler.TenantMenuHandler;
 import com.newtouch.uctp.module.system.service.user.AdminUserService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.*;
@@ -73,6 +79,8 @@ public class TenantServiceImpl implements TenantService {
     private MenuService menuService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private DeptService deptService;
 
     @Override
     public List<Long> getTenantIdList() {
@@ -99,6 +107,9 @@ public class TenantServiceImpl implements TenantService {
     public Long createTenant(TenantCreateReqVO createReqVO) {
         // 校验套餐被禁用
         TenantPackageDO tenantPackage = tenantPackageService.validTenantPackage(createReqVO.getPackageId());
+        if (!Objects.equals(createReqVO.getType(), tenantPackage.getType())) {
+            throw exception(TENANT_TYPE_NOT_EQ);
+        }
 
         // 创建租户
         TenantDO tenant = TenantConvert.INSTANCE.convert(createReqVO);
@@ -134,6 +145,22 @@ public class TenantServiceImpl implements TenantService {
         return roleId;
     }
 
+    private Long createDept(TenantDO tenant) {
+        if (ObjectUtil.equals(TenantPackageTypeEnum.MARKET.getType(), tenant.getType())) {
+            //以“租户名称”作为市场名称，即作为部门（一级）名称
+            DeptDO tenantDept = new DeptDO();
+            tenantDept.setName(tenant.getName());
+            tenantDept.setTenantId(tenant.getId());
+            tenantDept.setSort(0);
+            Long tenantDeptId = deptService.createTenantDept(tenantDept);
+
+
+        }
+
+
+        return 1L;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTenant(TenantUpdateReqVO updateReqVO) {
@@ -141,6 +168,14 @@ public class TenantServiceImpl implements TenantService {
         TenantDO tenant = validateUpdateTenant(updateReqVO.getId());
         // 校验套餐被禁用
         TenantPackageDO tenantPackage = tenantPackageService.validTenantPackage(updateReqVO.getPackageId());
+        //原先的租户属性与现在的租户属性不一致
+        if (!Objects.equals(tenant.getType(), updateReqVO.getType())) {
+            throw exception(TENANT_TYPE_NOT_UPDATE);
+        }
+        //当前租户套餐与租户属性（即：套餐属性）匹配不上
+        if (!Objects.equals(updateReqVO.getType(), tenantPackage.getType())) {
+            throw exception(TENANT_TYPE_NOT_EQ);
+        }
 
         // 更新租户
         TenantDO updateObj = TenantConvert.INSTANCE.convert(updateReqVO);

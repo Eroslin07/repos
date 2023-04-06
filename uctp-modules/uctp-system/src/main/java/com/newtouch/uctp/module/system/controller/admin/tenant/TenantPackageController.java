@@ -1,5 +1,18 @@
 package com.newtouch.uctp.module.system.controller.admin.tenant;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
@@ -7,16 +20,6 @@ import com.newtouch.uctp.module.system.controller.admin.tenant.vo.packages.*;
 import com.newtouch.uctp.module.system.convert.tenant.TenantPackageConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantPackageDO;
 import com.newtouch.uctp.module.system.service.tenant.TenantPackageService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
@@ -75,6 +78,15 @@ public class TenantPackageController {
     public CommonResult<List<TenantPackageSimpleRespVO>> getTenantPackageList() {
         // 获得角色列表，只要开启状态的
         List<TenantPackageDO> list = tenantPackageService.getTenantPackageListByStatus(CommonStatusEnum.ENABLE.getStatus());
+        return success(TenantPackageConvert.INSTANCE.convertList02(list));
+    }
+
+    @GetMapping("/get-simple-type-list")
+    @Operation(summary = "根据套餐属性获取租户套餐精简信息列表", description = "只包含被开启的租户套餐，主要用于前端的下拉选项")
+    @Parameter(name = "type", description = "套餐属性", required = true, example = "1")
+    public CommonResult<List<TenantPackageSimpleRespVO>> getTenantPackageByTypeList(@RequestParam("type") Integer type) {
+        // 获得角色列表，只要开启状态的
+        List<TenantPackageDO> list = tenantPackageService.getTenantPackageListByStatusAndType(CommonStatusEnum.ENABLE.getStatus(), type);
         return success(TenantPackageConvert.INSTANCE.convertList02(list));
     }
 

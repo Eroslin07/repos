@@ -1,6 +1,20 @@
 package com.newtouch.uctp.module.system.service.dept;
 
 import cn.hutool.core.collection.CollUtil;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.*;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
@@ -12,17 +26,6 @@ import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.system.enums.dept.DeptIdEnum;
 import com.newtouch.uctp.module.system.mq.producer.dept.DeptProducer;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.*;
@@ -98,6 +101,20 @@ public class DeptServiceImpl implements DeptService {
         // 发送刷新消息
         deptProducer.sendDeptRefreshMessage();
         return dept.getId();
+    }
+
+    @Override
+    public Long createTenantDept(DeptDO deptDO) {
+        // 校验正确性
+        if (deptDO.getParentId() == null) {
+            deptDO.setParentId(DeptIdEnum.ROOT.getId());
+        }
+        validateForCreateOrUpdate(null, deptDO.getParentId(), deptDO.getName());
+        // 插入部门
+        deptMapper.insert(deptDO);
+        // 发送刷新消息
+        deptProducer.sendDeptRefreshMessage();
+        return deptDO.getId();
     }
 
     @Override
@@ -262,6 +279,11 @@ public class DeptServiceImpl implements DeptService {
                 throw exception(DEPT_NOT_ENABLE, dept.getName());
             }
         });
+    }
+
+    @Override
+    public DeptDO getDeptByTenantIdAndParentId(Long tenantId, Long parentId) {
+        return deptMapper.selectByTenantIdAndParentId(tenantId, parentId);
     }
 
 }

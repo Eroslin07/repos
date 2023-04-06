@@ -1,11 +1,13 @@
 package com.newtouch.uctp.module.system.controller.admin.tenant.vo.tenant;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import org.hibernate.validator.constraints.URL;
+import lombok.Data;
 
-import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.URL;
 
 /**
 * 租户 Base VO，提供给添加、修改、详细的子 VO 使用
@@ -32,6 +34,10 @@ public class TenantBaseVO {
     @Schema(description = "绑定域名", example = "https://www.iocoder.cn")
     @URL(message = "绑定域名的地址非 URL 格式")
     private String domain;
+
+    @Schema(description = "租户属性，参见 TenantPackageTypeEnum 枚举", required = true, example = "1" )
+    @NotNull(message = "租户属性不能为空")
+    private Integer type;
 
     @Schema(description = "租户套餐编号", required = true, example = "1024")
     @NotNull(message = "租户套餐编号不能为空")

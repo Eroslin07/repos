@@ -1,12 +1,13 @@
 package com.newtouch.uctp.module.system.dal.mysql.dept;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
-import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
 
 @Mapper
 public interface DeptMapper extends BaseMapperX<DeptDO> {
@@ -23,6 +24,10 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
 
     default Long selectCountByParentId(Long parentId) {
         return selectCount(DeptDO::getParentId, parentId);
+    }
+
+    default DeptDO selectByTenantIdAndParentId(Long tenantId, Long parentId) {
+        return selectOne((new LambdaQueryWrapperX<DeptDO>().eq(DeptDO::getParentId, parentId).eq(DeptDO::getTenantId, tenantId)));
     }
 
 }

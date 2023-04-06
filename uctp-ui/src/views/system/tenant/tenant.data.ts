@@ -1,12 +1,12 @@
 import type { VxeCrudSchema } from '@/hooks/web/useVxeCrudSchemas'
-import { getTenantPackageList, TenantPackageVO } from '@/api/system/tenantPackage'
+import { getTenantPackageByTypeList, TenantPackageVO } from '@/api/system/tenantPackage'
 import { ComponentOptions } from '@/types/components'
 
 const { t } = useI18n() // 国际化
 
 export const tenantPackageOption: ComponentOptions[] = []
 const getTenantPackageOptions = async () => {
-  const res = await getTenantPackageList()
+  const res = await getTenantPackageByTypeList(1)
   res.forEach((tenantPackage: TenantPackageVO) => {
     tenantPackageOption.push({
       key: tenantPackage.id,
@@ -22,6 +22,7 @@ getTenantPackageOptions()
 // 表单校验
 export const rules = reactive({
   name: [required],
+  type: [required],
   packageId: [required],
   contactName: [required],
   contactMobile: [required],
@@ -59,6 +60,20 @@ const crudSchemas = reactive<VxeCrudSchema>({
     {
       title: '租户名称',
       field: 'name',
+      isSearch: true
+    },
+    {
+      title: '租户状态',
+      field: 'status',
+      dictType: DICT_TYPE.COMMON_STATUS,
+      dictClass: 'number',
+      isSearch: true
+    },
+    {
+      title: '租户属性',
+      field: 'type',
+      dictType: DICT_TYPE.TENANT_PACKAGE_TYPE,
+      dictClass: 'number',
       isSearch: true
     },
     {
@@ -128,13 +143,6 @@ const crudSchemas = reactive<VxeCrudSchema>({
     {
       title: '绑定域名',
       field: 'domain'
-    },
-    {
-      title: '租户状态',
-      field: 'status',
-      dictType: DICT_TYPE.COMMON_STATUS,
-      dictClass: 'number',
-      isSearch: true
     },
     {
       title: t('table.createTime'),

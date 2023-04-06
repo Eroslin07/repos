@@ -46,6 +46,7 @@ knife4j:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true # 虽然默认为 true ，但是还是显示去指定下。
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       # 重要说明：如果将配置放到 Nacos 时，请注意将 id-type 设置为对应 DB 的类型，否则会报错；详细见 https://gitee.com/zhijiantianya/uctp-cloud/issues/I5W2N0 讨论

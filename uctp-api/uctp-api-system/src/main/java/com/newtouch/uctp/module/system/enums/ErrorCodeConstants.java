@@ -103,11 +103,14 @@ public interface ErrorCodeConstants {
     ErrorCode TENANT_DISABLE = new ErrorCode(1002015001, "名字为【{}】的租户已被禁用");
     ErrorCode TENANT_EXPIRE = new ErrorCode(1002015002, "名字为【{}】的租户已过期");
     ErrorCode TENANT_CAN_NOT_UPDATE_SYSTEM = new ErrorCode(1002015003, "系统租户不能进行修改、删除等操作！");
+    ErrorCode TENANT_TYPE_NOT_EQ = new ErrorCode(1002015004, "租户属性与套餐属性不一致，不能保存");
+    ErrorCode TENANT_TYPE_NOT_UPDATE = new ErrorCode(1002015005, "租户属性需与修改前保持一致，不允许修改！");
 
     // ========== 租户套餐 1002016000 ==========
     ErrorCode TENANT_PACKAGE_NOT_EXISTS = new ErrorCode(1002016000, "租户套餐不存在");
     ErrorCode TENANT_PACKAGE_USED = new ErrorCode(1002016001, "租户正在使用该套餐，请给租户重新设置套餐后再尝试删除");
     ErrorCode TENANT_PACKAGE_DISABLE = new ErrorCode(1002016002, "名字为【{}】的租户套餐已被禁用");
+    ErrorCode TENANT_PACKAGE_TYPE_NOT_UPDATE = new ErrorCode(1002016003, "租户套餐类型不能修改");
 
     // ========== 错误码模块 1002017000 ==========
     ErrorCode ERROR_CODE_NOT_EXISTS = new ErrorCode(1002017000, "错误码不存在");

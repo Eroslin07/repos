@@ -1,14 +1,15 @@
 package com.newtouch.uctp.module.system.dal.dataobject.tenant;
 
-import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
-import com.newtouch.uctp.framework.mybatis.core.type.JsonLongSetTypeHandler;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.util.Set;
+
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
+import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+import com.newtouch.uctp.framework.mybatis.core.type.JsonLongSetTypeHandler;
 
 /**
  * 租户套餐 DO
@@ -33,6 +34,10 @@ public class TenantPackageDO extends BaseDO {
      * 套餐名，唯一
      */
     private String name;
+    /**
+     * 套餐属性
+     */
+    private Integer type;
     /**
      * 租户状态
      *

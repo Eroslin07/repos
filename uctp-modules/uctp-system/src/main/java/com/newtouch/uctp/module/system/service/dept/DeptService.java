@@ -1,16 +1,17 @@
 package com.newtouch.uctp.module.system.service.dept;
 
 import cn.hutool.core.collection.CollUtil;
-import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
-import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
-import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
-import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
-import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
+import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
+import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
+import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
+import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 
 /**
  * 部门 Service 接口
@@ -31,6 +32,14 @@ public interface DeptService {
      * @return 部门编号
      */
     Long createDept(DeptCreateReqVO reqVO);
+
+    /**
+     * 创建租户时，创建部门
+     *
+     * @param deptDO 部门信息
+     * @return 部门编号
+     */
+    Long createTenantDept(DeptDO deptDO);
 
     /**
      * 更新部门
@@ -101,5 +110,13 @@ public interface DeptService {
      * @param ids 角色编号数组
      */
     void validateDeptList(Collection<Long> ids);
+
+    /**
+     * 根据租户ID和上级ID查找单条数据
+     * @param tenantId
+     * @param parentId
+     * @return
+     */
+    DeptDO getDeptByTenantIdAndParentId(Long tenantId, Long parentId);
 
 }

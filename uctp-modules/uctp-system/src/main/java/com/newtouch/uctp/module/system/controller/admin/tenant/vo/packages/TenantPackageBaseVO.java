@@ -3,8 +3,9 @@ package com.newtouch.uctp.module.system.controller.admin.tenant.vo.packages;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.Set;
+
+import javax.validation.constraints.NotNull;
 
 /**
 * 租户套餐 Base VO，提供给添加、修改、详细的子 VO 使用
@@ -16,6 +17,10 @@ public class TenantPackageBaseVO {
     @Schema(description = "套餐名", required = true, example = "VIP")
     @NotNull(message = "套餐名不能为空")
     private String name;
+
+    @Schema(description = "套餐属性，参见 TenantPackageTypeEnum 枚举", required = true, example = "1" )
+    @NotNull(message = "套餐属性不能为空")
+    private Integer type;
 
     @Schema(description = "状态，参见 CommonStatusEnum 枚举", required = true, example = "1" )
     @NotNull(message = "状态不能为空")

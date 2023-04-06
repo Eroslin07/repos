@@ -4,6 +4,7 @@ export interface TenantPackageVO {
   id: number
   name: string
   status: number
+  type: number
   remark: string
   creator: string
   updater: string
@@ -46,4 +47,8 @@ export const deleteTenantPackageTypeApi = (id: number) => {
 // 获取租户套餐精简信息列表
 export const getTenantPackageList = () => {
   return request.get({ url: '/system/tenant-package/get-simple-list' })
+}
+// 根据套餐属性获取租户套餐精简信息列表
+export const getTenantPackageByTypeList = (type: number) => {
+  return request.get({ url: '/system/tenant-package/get-simple-type-list?type=' + type })
 }

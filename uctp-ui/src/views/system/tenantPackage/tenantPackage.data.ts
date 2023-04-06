@@ -31,6 +31,13 @@ const crudSchemas = reactive<VxeCrudSchema>({
       isSearch: true
     },
     {
+      title: '套餐类型',
+      field: 'type',
+      dictType: DICT_TYPE.TENANT_PACKAGE_TYPE,
+      dictClass: 'number',
+      isSearch: true
+    },
+    {
       title: '菜单权限',
       field: 'menuIds',
       isTable: false,
@@ -70,4 +77,5 @@ const crudSchemas = reactive<VxeCrudSchema>({
     }
   ]
 })
+
 export const { allSchemas } = useVxeCrudSchemas(crudSchemas)

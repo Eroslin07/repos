@@ -1,13 +1,14 @@
 package com.newtouch.uctp.module.system.service.tenant;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.system.controller.admin.tenant.vo.packages.TenantPackageCreateReqVO;
 import com.newtouch.uctp.module.system.controller.admin.tenant.vo.packages.TenantPackagePageReqVO;
 import com.newtouch.uctp.module.system.controller.admin.tenant.vo.packages.TenantPackageUpdateReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantPackageDO;
-
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 租户套餐 Service 接口
@@ -69,5 +70,14 @@ public interface TenantPackageService {
      * @return 租户套餐
      */
     List<TenantPackageDO> getTenantPackageListByStatus(Integer status);
+
+    /**
+     * 根据套餐属性获得指定状态的租户套餐列表
+     *
+     * @param status 状态
+     * @param type 套餐属性
+     * @return 租户套餐
+     */
+    List<TenantPackageDO> getTenantPackageListByStatusAndType(Integer status, Integer type);
 
 }
