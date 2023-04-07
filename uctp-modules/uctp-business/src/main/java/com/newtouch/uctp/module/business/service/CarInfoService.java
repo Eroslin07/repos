@@ -74,4 +74,10 @@ public interface CarInfoService {
      */
     List<Map<String, Object>> getCarCountGroupByStatus();
 
+    /**
+     * 获取APP首页卖车分页
+     * @param pageVO
+     * @return
+     */
+    PageResult<AppSellCarInfoRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO);
 }

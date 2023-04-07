@@ -79,6 +79,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     public PageResult<AppHomeCarInfoRespVO> getHomeCarInfoPage(AppHomeCarInfoPageReqVO pageVO) {
         Page<AppHomeCarInfoRespVO> page = new Page<>(pageVO.getPageNo(), pageVO.getPageSize());
+        pageVO.formatLocalDateTime();
         page = carInfoMapper.selectAppHomePage(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
     }
@@ -89,8 +90,13 @@ public class CarInfoServiceImpl implements CarInfoService {
         return this.initRetMap(maps);
     }
 
+    @Override
+    public PageResult<AppSellCarInfoRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO) {
+        return carInfoMapper.selectAppCellCarPage(pageVO);
+    }
+
     /**
-     * 系统初始化时，可能数据不全，这里进行补齐
+     * 系统初始化时，首页统计数据可能数据不全，这里进行补齐
      * @param maps
      * @return
      */

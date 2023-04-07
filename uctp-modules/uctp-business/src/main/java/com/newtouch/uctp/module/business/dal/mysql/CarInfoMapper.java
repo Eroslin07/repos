@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppHomeCarInfoPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppHomeCarInfoRespVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -42,4 +40,7 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
                 .groupBy("SALES_STATUS"));
     }
 
+    default PageResult<AppSellCarInfoRespVO> selectAppCellCarPage(AppSellCarInfoPageReqVO pageVO){
+        return null;
+    }
 }

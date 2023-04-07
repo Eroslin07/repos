@@ -85,4 +85,11 @@ public class AppCarInfoController {
         return success(list);
     }
 
+    @GetMapping("/sell/page")
+    @Operation(summary = "获得APP卖车分页")
+    public CommonResult<PageResult<AppSellCarInfoRespVO>> getSellCarInfoPage(@Valid AppSellCarInfoPageReqVO pageVO) {
+        PageResult<AppSellCarInfoRespVO> pageResult = carInfoService.getSellCarInfoPage(pageVO);
+        return success(pageResult);
+    }
+
 }
