@@ -21,7 +21,7 @@ public interface CarInfoService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    String createCarInfo(@Valid AppCarInfoCreateReqVO createReqVO);
+    Long createCarInfo(@Valid AppCarInfoCreateReqVO createReqVO);
 
     /**
      * 更新车辆主表
@@ -35,7 +35,7 @@ public interface CarInfoService {
      *
      * @param id 编号
      */
-    void deleteCarInfo(String id);
+    void deleteCarInfo(Long id);
 
     /**
      * 获得车辆主表
@@ -43,7 +43,7 @@ public interface CarInfoService {
      * @param id 编号
      * @return 车辆主表
      */
-    CarInfoDO getCarInfo(String id);
+    CarInfoDO getCarInfo(Long id);
 
     /**
      * 获得车辆主表列表
@@ -51,7 +51,7 @@ public interface CarInfoService {
      * @param ids 编号
      * @return 车辆主表列表
      */
-    List<CarInfoDO> getCarInfoList(Collection<String> ids);
+    List<CarInfoDO> getCarInfoList(Collection<Long> ids);
 
     /**
      * 获得车辆主表分页

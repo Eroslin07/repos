@@ -44,7 +44,7 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
         AppCarInfoCreateReqVO reqVO = randomPojo(AppCarInfoCreateReqVO.class);
 
         // 调用
-        String carInfoId = carInfoService.createCarInfo(reqVO);
+        Long carInfoId = carInfoService.createCarInfo(reqVO);
         // 断言
         assertNotNull(carInfoId);
         // 校验记录的属性是否正确
@@ -84,7 +84,7 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
         CarInfoDO dbCarInfo = randomPojo(CarInfoDO.class);
         carInfoMapper.insert(dbCarInfo);// @Sql: 先插入出一条存在的数据
         // 准备参数
-        String id = dbCarInfo.getId();
+        Long id = dbCarInfo.getId();
 
         // 调用
         carInfoService.deleteCarInfo(id);
@@ -95,14 +95,14 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
     @Test
     public void testDeleteCarInfo_notExists() {
         // 准备参数
-        String id = randomStringId();
+        Long id = randomStringId();
 
         // 调用, 并断言异常
         assertServiceException(() -> carInfoService.deleteCarInfo(id), CAR_INFO_NOT_EXISTS);
     }
 
-    private String randomStringId() {
-        return IdUtil.getSnowflakeNextIdStr();
+    private Long randomStringId() {
+        return IdUtil.getSnowflakeNextId();
     }
 
     @Test

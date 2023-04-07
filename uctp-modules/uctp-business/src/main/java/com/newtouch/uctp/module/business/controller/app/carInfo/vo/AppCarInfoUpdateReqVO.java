@@ -13,5 +13,5 @@ import javax.validation.constraints.NotNull;
 public class AppCarInfoUpdateReqVO extends AppCarInfoBaseVO {
     @Schema(description = "车辆主表id", required = true)
     @NotNull(message = "车辆主表id不能为空")
-    private String id;
+    private Long id;
 }

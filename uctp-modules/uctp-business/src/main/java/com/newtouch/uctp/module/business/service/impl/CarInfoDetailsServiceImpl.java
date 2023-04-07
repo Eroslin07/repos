@@ -21,7 +21,7 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     private CarInfoDetailsMapper carInfoDetailsMapper;
 
     @Override
-    public String createCarInfoDetails(CarInfoDetailsCreateReqVO createReqVO) {
+    public Long createCarInfoDetails(CarInfoDetailsCreateReqVO createReqVO) {
         // 插入
         CarInfoDetailsDO carInfoDetails = CarInfoDetailsConvert.INSTANCE.convert(createReqVO);
         carInfoDetailsMapper.insert(carInfoDetails);

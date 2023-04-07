@@ -27,40 +27,47 @@
     <select id="selectAppHomePage"
             resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppHomeCarInfoRespVO">
         select
-            a.ID                     as id,
-            a.BRAND                  as brand,
-            a.VIN                    as vin,
-            a.YEAR                   as year,
-            a.MODEL                  as model,
-            a.ENGINE_NUM             as engineNum,
+            a.ID as id,
+            a.BRAND as brand,
+            a.VIN as vin,
+            a.YEAR as year,
+            a.MODEL as model,
+            a.ENGINE_NUM as engineNum,
             a.VEHICLE_RECEIPT_AMOUNT as vehicleReceiptAmount,
-            a.SALES_STATUS           as salesStatus,
-            a.CHECK_STATUS           as checkStatus,
-            b.MILEAGE                as mileage,
-            c.FIRST_PARTY            as firstParty,
-            c.SECOND_PARTY           as secondParty
+            a.SALES_STATUS as salesStatus,
+            a.CHECK_STATUS as checkStatus,
+            b.MILEAGE as mileage,
+            c.FIRST_PARTY as firstParty,
+            c.SECOND_PARTY as secondParty
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
         inner join uctp_contract_management c on b.CAR_ID = c.CAR_ID
         <where>
             1=1
-            <if test="pageVO.firstParty != null and pageVO.firstParty != ''">
-                c.FIRST_PARTY like #{pageVO.firstParty}
-            </if>
-            <if test="pageVO.secondParty != null and pageVO.secondParty != ''">
-                c.SECOND_PARTY like #{pageVO.secondParty}
-            </if>
-            <if test="pageVO.vin != null and pageVO.vin != ''">
-                c.VIN like #{pageVO.vin}
-            </if>
-            <if test="pageVO.brand != null and pageVO.brand != ''">
-                c.BRAND like #{pageVO.brand}
-            </if>
             <if test="pageVO.salesStatus != null">
-                c.SALES_STATUS like #{pageVO.salesStatus}
+                <bind name="pageVO.salesStatus" value="'%'+pageVO.salesStatus+'%'"/>
+                and a.SALES_STATUS like #{pageVO.salesStatus}
             </if>
             <if test="pageVO.checkStatus != null">
-                c.CHECK_STATUS like #{pageVO.checkStatus}
+                <bind name="pageVO.checkStatus" value="'%'+pageVO.checkStatus+'%'"/>
+                and a.CHECK_STATUS like #{pageVO.checkStatus}
+            </if>
+            <if test="pageVO.brand != null and pageVO.brand != ''">
+                <bind name="pageVO.brand" value="'%'+pageVO.brand+'%'"/>
+                and a.BRAND like #{pageVO.brand}
+            </if>
+            <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
+                <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
+                and (c.FIRST_PARTY like #{pageVO.searchValue}
+                or c.SECOND_PARTY like #{pageVO.searchValue}
+                or a.VIN like #{pageVO.searchValue}
+                or a.BRAND like #{pageVO.searchValue})
+            </if>
+            <if test="pageVO.pickUpTime != null and pageVO.pickUpTime.length > 0">
+                and a.PICK_UP_TIME between #{pageVO.PICK_UP_TIME[0]} and #{pageVO.PICK_UP_TIME[1]}
+            </if>
+            <if test="pageVO.salesTime != null and pageVO.salesTime.length > 0">
+                and a.SALES_TIME between #{pageVO.SALES_TIME[0]} and #{pageVO.SALES_TIME[1]}
             </if>
         </where>
         order by a.CREATE_TIME desc

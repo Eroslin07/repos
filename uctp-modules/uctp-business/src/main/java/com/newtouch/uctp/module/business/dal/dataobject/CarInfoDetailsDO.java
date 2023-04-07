@@ -26,11 +26,11 @@ public class CarInfoDetailsDO extends BaseDO {
      * id
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private String id;
+    private Long id;
     /**
      * 车辆主表id
      */
-    private String carId;
+    private Long carId;
     /**
      * 里程数,保留2位小数
      */

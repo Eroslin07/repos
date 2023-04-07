@@ -22,7 +22,7 @@ public interface CarInfoDetailsService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    String createCarInfoDetails(@Valid CarInfoDetailsCreateReqVO createReqVO);
+    Long createCarInfoDetails(@Valid CarInfoDetailsCreateReqVO createReqVO);
 
     /**
      * 更新车辆明细

@@ -30,7 +30,7 @@ public class AppCarInfoController {
 
     @PostMapping("/create")
     @Operation(summary = "创建车辆主表")
-    public CommonResult<String> createCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
+    public CommonResult<Long> createCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
         return success(carInfoService.createCarInfo(createReqVO));
     }
 
@@ -44,7 +44,7 @@ public class AppCarInfoController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除车辆主表")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<Boolean> deleteCarInfo(@RequestParam("id") String id) {
+    public CommonResult<Boolean> deleteCarInfo(@RequestParam("id") Long id) {
         carInfoService.deleteCarInfo(id);
         return success(true);
     }
@@ -52,7 +52,7 @@ public class AppCarInfoController {
     @GetMapping("/get")
     @Operation(summary = "获得车辆主表")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<AppCarInfoRespVO> getCarInfo(@RequestParam("id") String id) {
+    public CommonResult<AppCarInfoRespVO> getCarInfo(@RequestParam("id") Long id) {
         CarInfoDO carInfo = carInfoService.getCarInfo(id);
         return success(CarInfoConvert.INSTANCE.convert(carInfo));
     }
@@ -60,18 +60,17 @@ public class AppCarInfoController {
     @GetMapping("/list")
     @Operation(summary = "获得车辆主表列表")
     @Parameter(name = "ids", description = "编号列表", required = true, example = "1024")
-    public CommonResult<List<AppCarInfoRespVO>> getCarInfoList(@RequestParam("ids") Collection<String> ids) {
+    public CommonResult<List<AppCarInfoRespVO>> getCarInfoList(@RequestParam("ids") Collection<Long> ids) {
         List<CarInfoDO> list = carInfoService.getCarInfoList(ids);
         return success(CarInfoConvert.INSTANCE.convertList(list));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得车辆主表分页")
-    public CommonResult<PageResult<AppCarInfoRespVO>> getCarInfoPage(@Valid AppCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppCarInfoRespVO>> getCarInfoPage(@RequestBody @Valid AppCarInfoPageReqVO pageVO) {
         PageResult<CarInfoDO> pageResult = carInfoService.getCarInfoPage(pageVO);
         return success(CarInfoConvert.INSTANCE.convertPage(pageResult));
     }
-
     @GetMapping("/home/page")
     @Operation(summary = "获得APP首页分页")
     public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid AppHomeCarInfoPageReqVO pageVO) {

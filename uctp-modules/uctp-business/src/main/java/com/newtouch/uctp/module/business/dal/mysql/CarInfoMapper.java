@@ -33,14 +33,12 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
                 .orderByDesc(CarInfoDO::getCreateTime));
     }
 
-
     Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pg") Page<AppHomeCarInfoRespVO> page,
-                                                 @Param("pageVO") AppHomeCarInfoPageReqVO pageVO,
-                                                 @Param("tenantId") String tenantId);
+                                                 @Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
 
     default List<Map<String, Object>> selectCarCountGroupByStatus(){
         return selectMaps(new QueryWrapper<CarInfoDO>()
-                .select("count(*) num","SALES_STATUS")
+                .select("count(*) num","SALES_STATUS salesStatus")
                 .groupBy("SALES_STATUS"));
     }
 

@@ -7,6 +7,7 @@ import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 车辆主表 DO
@@ -55,26 +56,32 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private Integer revision;
     /**
-     * 售卖状态(0未出售 1出售中 2已出售)
+     * 售卖状态
      */
     private Integer salesStatus;
     /**
-     * 检测状态(0未检测 1已检测)
+     * 检测状态
      */
     private Integer checkStatus;
     /**
      * 车辆主表id
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private String id;
+    private Long id;
     /**
      * 汽车明细id
      */
-    private String carDetailId;
+    private Long carDetailId;
     /**
      * 商户id
      */
-    private String businessId;
-
-
+    private Long businessId;
+    /**
+     * 收车时间
+     */
+    private LocalDateTime pickUpTime;
+    /**
+     * 售卖时间
+     */
+    private LocalDateTime salesTime;
 }
