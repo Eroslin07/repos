@@ -2,16 +2,27 @@
 	<view class="by-car">
 		<!-- 自定义导航栏 -->
 		<!-- <u-navbar title="我要收车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
-		<uni-card :is-shadow="false" is-full>
-			<view class="text">收车信息录入</view>
-			<!-- 步骤条 -->
-			<u-steps :current="active" activeColor="#50a8bc">
-				<u-steps-item title="车辆信息"></u-steps-item>
-				<u-steps-item title="卖家信息"></u-steps-item>
-			</u-steps>
+		<u-grid col="2" :border="true" style="margin-top: 10px;">
+			<u-grid-item>
+				<u-icon
+					:customStyle="{paddingTop:20+'rpx'}"
+					name="level"
+					:size="30"
+				></u-icon>
+				<text class="grid-text">车辆信息</text>
+			</u-grid-item>
+			<u-grid-item>
+				<u-icon
+					:customStyle="{paddingTop:20+'rpx'}"
+					name="level"
+					:size="30"
+				></u-icon>
+				<text class="grid-text">卖家信息</text>
+			</u-grid-item>
+		</u-grid>
+		<uni-card>
 			<!-- 车辆信息 -->
 			<view v-if="vehicleInfor">
-				<view class="text">车辆基础信息</view>
 				<u--form
 					labelPosition="left"
 					:model="carForm"
@@ -19,32 +30,20 @@
 					ref="carForm"
 					labelWidth="120px"
 				>
+					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view class="text">车辆基础信息</view>
+					</view>
 					<u-form-item label="上传车辆图片" :required="true" prop="carFile" borderBottom>
-						<u-upload
-							:fileList="fileList3"
-							name="3"
-							@afterRead="afterRead"
-							@delete="deletePic"
-							multiple
-							width="60"
-							height="60"
-						></u-upload>
+						<u-album :urls="carForm.carFile" multipleSize="70" singleSize="70"></u-album>
+						<view slot="right" name="arrow-right">
+							<text style="color: #50a8bc;" @click="handleOcr(1)">上传图片</text>
+						</view>
 					</u-form-item>
 					<u-form-item label="上传行驶证" :required="true" prop="registerFile" borderBottom>
 						<u--input v-model="carForm.registerFile" border="none" placeholder="请上传行驶证"></u--input>
 						<view slot="right" name="arrow-right">
-							<u-upload
-								:fileList="fileList1"
-								:previewImage="false"
-								name="1"
-								@afterRead="afterRead"
-								@delete="deletePic"
-								multiple
-								width="60"
-								height="60"
-							>
-								<text style="color: #50a8bc;">OCR</text>
-							</u-upload>
+							<text style="color: #50a8bc;" @click="handleOcr(2)">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label="发动机编号" :required="true" prop="engineNumber" borderBottom>
@@ -67,15 +66,10 @@
 						></u-icon>
 					</u-form-item>
 					<u-form-item label="上传机动车登记证书" :required="true" prop="drivingLicense" borderBottom>
-						<u-upload
-							:fileList="fileList2"
-							name="2"
-							@afterRead="afterRead"
-							@delete="deletePic"
-							multiple
-							width="60"
-							height="60"
-						></u-upload>
+						<u-album :urls="carForm.drivingLicense" multipleSize="70" singleSize="70"></u-album>
+						<view slot="right" name="arrow-right">
+							<text style="color: #50a8bc;" @click="handleOcr(3)">上传图片</text>
+						</view>
 					</u-form-item>
 					<u-form-item label="里程数" :required="true" prop="mileage" borderBottom>
 						<u--input v-model="carForm.mileage" border="none" placeholder="请输入里程数"></u--input>
@@ -93,12 +87,19 @@
 							</template>
 						</u-input>
 					</u-form-item>
-					<view>保证金可用余额150000元</view>
-					<u-form-item label="收车方式" :required="true" prop="way" borderBottom>
+					<view>
+						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+							text="保证金可用余额150000元" color="#e26e1f"></u--text>
+					</view>
+					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view class="text">收车方式</view>
+					</view>
+					<u-form-item prop="way" :borderBottom="false">
 						<u-radio-group
 							v-model="carForm.way"
 							placement="row"
-							activeColor="#50a8bc"
+							activeColor="#fd6404"
 						>
 							<u-radio
 								v-for="(item, index) in sexs2"
@@ -119,9 +120,6 @@
 					@cancel="showDate = false"
 					@confirm="handleDate"
 				></u-datetime-picker>
-				<!-- 底部按钮 -->
-				<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
-				<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
 			</view>
 			<!-- 卖家信息 -->
 			<view v-if="sellerInfor">
@@ -134,7 +132,7 @@
 					labelWidth="120px"
 				>
 					<u-form-item label="是否第三方代收" :required="true" prop="collection" borderBottom>
-						<u-radio-group v-model="sellerForm.collection" activeColor="#50a8bc">
+						<u-radio-group v-model="sellerForm.collection" activeColor="#fd6404">
 							<u-radio shape="circle" label="否" :name="0"></u-radio>
 							<u-radio shape="circle" label="是" :name="1"></u-radio>
 						</u-radio-group>
@@ -142,10 +140,7 @@
 					<u-form-item label="身份证号" :required="true" prop="ID" borderBottom>
 						<u--input v-model="sellerForm.ID" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<u-upload :fileList="fileList4" @afterRead="afterRead" @delete="deletePic" name="1" multiple
-								:previewImage="false" width="60" height="60">
-								<text style="color: #50a8bc;">OCR</text>
-							</u-upload>
+							<text style="color: #50a8bc;" @click="handleOcr(4)">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
@@ -184,34 +179,42 @@
 						<u--input v-model="sellerForm.thirdCardNumber" border="none" placeholder="请输入银行卡号"></u--input>
 					</u-form-item>
 				</u--form>
+				<view style="margin: 20px 0;">
+					<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+						text="注意:在发起委托合同前，请检查您的相关信息，发起委托合同时会将信息自动带到后方合同作为重要信息使用。" color="#e26e1f"></u--text>
+				</view>
 				<!-- 收款方式选项 -->
 				<u-picker :show="showSex" :columns="range" keyName="label" title="请选择收款方式" @confirm="confirm" @cancel="cancel"></u-picker>
-				<!-- 底部按钮 -->
-				<button @click="handleEntrust" class="button" v-if="sellerInfor">确认发起</button>
-				<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
 			</view>
 		</uni-card>
+		<view class="footer">
+			<!-- 底部按钮 -->
+			<u-grid col="2">
+				<u-grid-item>
+					<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
+					<button @click="handleEntrust" class="button" v-if="sellerInfor">确认发起</button>
+				</u-grid-item>
+				<u-grid-item>
+					<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
+					<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
+				</u-grid-item>
+			</u-grid>
+		</view>
 	</view>
 </template>
 
 <script>
+	import { urlTobase64 } from '@/utils/ruoyi.js'
 	export default {
 		data() {
 			return {
 				vehicleInfor: true,
 				sellerInfor: false,
 				active: 0,
-				// 行驶证信息
-				fileList1: [],
-				// 机动车登记证书信息
-				fileList2: [],
-				// 车辆图片信息
-				fileList3: [],
-				// 身份证信息
-				fileList4: [],
 				// 车辆信息
 				carForm: {
 					registerFile: "",
+					registerFileCard: [],
 					drivingLicense: [],
 					carFile: [],
 					amount: '',
@@ -300,6 +303,7 @@
 				sellerForm: {
 					collection: 0,
 					ID: '',
+					idCard: [],
 					name: '',
 					phone: '',
 					way: '转账',
@@ -382,7 +386,13 @@
 			}
 		},
 		onBackPress(options) {
-			this.handleSaveCar();
+			if (this.active == 0) {
+				this.handleSaveCar();
+			} else if (this.active == 1) {
+				this.vehicleInfor = true;
+				this.sellerInfor = false;
+				this.active = 0;
+			}
 			return true;
 		},
 		methods: {
@@ -403,60 +413,68 @@
 				}
 				return value
 			},
-			// 删除图片
-			deletePic(event) {
-				this[`fileList${event.name}`].splice(event.index, 1)
-			},
-			// 新增图片
-			async afterRead(event) {
-				let lists = [].concat(event.file);
-				let fileListLen = this[`fileList${event.name}`].length;
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
+			// 点击OCR
+			handleOcr(index) {
+				let _this = this;
+				uni.showActionSheet({
+					title: "选择类型",
+					itemList: ['相册', '拍摄'],
+					success: async function(res) {
+						if (res.tapIndex == 0) {
+							_this.chooseImages(index);
+						} else {
+							_this.chooseVideo(index);
+						}
+					}
 				})
-				for (let i = 0; i < lists.length; i++) {
-					const result = await this.uploadFilePromise(lists[i].url)
-					result.forEach(d => {
-						d.fileId = d.id;
-						if (event.name == 1) {
-							this.carForm.registerFile.push(d);
-						} else if (event.name == 2) {
-							this.carForm.drivingLicense.push(d);
-						} else if (event.name == 3) {
-							this.carForm.carFile.push(d);
-						} else if (event.name == 4) {
-							this.carForm.IDFile.push(d);
-						}
-					})
-					let item = this[`fileList${event.name}`][fileListLen];
-					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
-						status: 'success',
-						message: '',
-						url: result
-					}))
-					fileListLen++
-				}
 			},
-			// 上传文件
-			uploadFilePromise(url) {
-				return new Promise((resolve, reject) => {
-					let a = uni.uploadFile({
-						url: 'http://192.168.2.21:7001/upload', // 仅为示例，非真实的接口地址
-						filePath: url,
-						name: 'file',
-						formData: {
-							user: 'test'
-						},
-						success: (res) => {
-							setTimeout(() => {
-								resolve(res.data.data)
-							}, 1000)
+			// 上传图片
+			chooseImages(index) {
+				let _this = this;
+				uni.chooseVideo({
+					count: 1,
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['album'], // 从相册选择
+					success: async function(res) {
+						let str = await urlTobase64(res.tempFilePaths[0])
+						if (index == 1) {
+							// 识别车辆图片
+							_this.carForm.carFile = [..._this.carForm.carFile, ...res.tempFilePaths];
+						} else if (index == 2) {
+							// 识别行驶证
+							_this.carForm.registerFileCard = [..._this.carForm.registerFileCard, ...res.tempFilePaths];
+						} else if (index == 3) {
+							// 识别机动车登记证书
+							_this.carForm.drivingLicense = [..._this.carForm.drivingLicense, ...res.tempFilePaths];
+						} else if (index == 4) {
+							// 识别身份证
+							_this.sellerForm.idCard = [..._this.carForm.idCard, ...res.tempFilePaths];
 						}
-					});
+					}
+				})
+			},
+			// 拍摄图片
+			chooseVideo(index) {
+				let _this = this;
+				uni.chooseVideo({
+					count: 1,
+					sourceType: ['camera'], // 使用相机
+					success: async function(res) {
+						let str = await urlTobase64(res.tempFilePaths[0])
+						if (index == 1) {
+							// 识别车辆图片
+							_this.carForm.carFile = [..._this.carForm.carFile, ...res.tempFilePaths];
+						} else if (index == 2) {
+							// 识别行驶证
+							_this.carForm.registerFileCard = [..._this.carForm.registerFileCard, ...res.tempFilePaths];
+						} else if (index == 3) {
+							// 识别机动车登记证书
+							_this.carForm.drivingLicense = [..._this.carForm.drivingLicense, ...res.tempFilePaths];
+						} else if (index == 4) {
+							// 识别身份证
+							_this.sellerForm.idCard = [..._this.carForm.idCard, ...res.tempFilePaths];
+						}
+					}
 				})
 			},
 			// 确认登记日期
@@ -522,6 +540,9 @@
 </script>
 
 <style lang="scss" scoped>
+	.by-car {
+		border-top: 1px solid #f3f3f3;
+	}
 	.uni-card--border {
 		border: none;
 	}
@@ -538,9 +559,19 @@
 		margin: 8px 0;
 	}
 	
-	.button {
-		margin-top: 10px;
-		background-color: #50a8bc;
-		color: #fff;
-	}
+	.footer {
+			width: 100%;
+			position: fixed;
+			bottom: 0;
+			background-color: #fff;
+			margin-bottom: 10px;
+			
+			.button {
+				width: 80%;
+				margin-top: 10px;
+				background-image: linear-gradient(to right, #fcbb2b,#ed6c21);
+				background-color: #50a8bc;
+				color: #fff;
+			}
+		}
 </style>
