@@ -152,7 +152,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
             //插入商户信息
             DeptDO deptDO = new DeptDO();
-            deptDO.setName(reqVO.getName());
+            deptDO.setName(reqVO.getBusinessName());
             deptDO.setParentId(dept.getId());
             deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             deptDO.setSort(2);

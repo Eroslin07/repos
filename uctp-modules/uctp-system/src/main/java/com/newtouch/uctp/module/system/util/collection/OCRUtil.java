@@ -93,12 +93,34 @@ public class OCRUtil {
      * 识别营业执照
      * @return
      */
-    public static String businessLicense(String filePath,String accessToken) {
+    public static String vehicleLicense(String filePath,String accessToken) {
         // 请求url
         String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_license";
         try {
 //            byte[] imgData = FileUtil.readFileByBytes(filePath);
 //            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(filePath, "UTF-8");
+
+            String param = "image=" + imgParam;
+
+            String result = HttpUtil.post(url, accessToken, param);
+            System.out.println(result);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    /**
+     * 识别行驶证
+     * @return
+     */
+    public static String businessLicense(String filePath,String accessToken) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_license";
+        try {
             String imgParam = URLEncoder.encode(filePath, "UTF-8");
 
             String param = "image=" + imgParam;

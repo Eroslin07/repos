@@ -30,6 +30,15 @@ public interface FileService {
     String createFile(String name, String path, byte[] content);
 
     /**
+     * 保存文件new
+     * @param name
+     * @param path
+     * @param content
+     * @return
+     */
+    FileDO createFileNew(String name, String path, byte[] content);
+
+    /**
      * 删除文件
      *
      * @param id 编号

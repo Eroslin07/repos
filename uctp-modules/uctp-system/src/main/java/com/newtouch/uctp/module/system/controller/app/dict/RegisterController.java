@@ -70,6 +70,19 @@ public class RegisterController {
         return success(businessLicenseDetail);
     }
 
+    @PostMapping("/orcVehicleLicense")
+    @PermitAll
+    @Operation(summary = "识别行驶证")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<String> orcVehicleLicense(@RequestBody Map map) {
+        String ak="dzb9KhZMmaTdGd3rbnmXnc0u";
+        String sk="K65GO95WOMOyloXZ4ZV72MKEX9EreG5H";
+        String vehicleLicense = String.valueOf(map.get("vehicleLicense"));
+        String accessToken = OCRUtil.getAuth(ak, sk);//获取识别前的token
+        String vehicleLicenseDetail = OCRUtil.vehicleLicense(vehicleLicense, accessToken);//调取百度识别营业执照sdk
+        return success(vehicleLicenseDetail);
+    }
+
 
     @PostMapping("/registerAccount")
     @PermitAll
