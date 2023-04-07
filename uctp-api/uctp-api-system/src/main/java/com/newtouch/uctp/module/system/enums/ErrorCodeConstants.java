@@ -54,6 +54,7 @@ public interface ErrorCodeConstants {
     ErrorCode DEPT_EXISTS_USER = new ErrorCode(1002004005, "部门中存在员工，无法删除");
     ErrorCode DEPT_NOT_ENABLE = new ErrorCode(1002004006, "部门({})不处于开启状态，不允许选择");
     ErrorCode DEPT_PARENT_IS_CHILD = new ErrorCode(1002004007, "不能设置自己的子部门为父部门");
+    ErrorCode DEPT_NOT_ADD_USER = new ErrorCode(1002004008, "该部门不能设置用户");
 
     // ========== 岗位模块 1002005000 ==========
     ErrorCode POST_NOT_FOUND = new ErrorCode(1002005000, "当前岗位不存在");

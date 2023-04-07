@@ -3,7 +3,23 @@ package com.newtouch.uctp.module.system.service.user;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
@@ -16,26 +32,17 @@ import com.newtouch.uctp.module.system.controller.admin.user.vo.user.*;
 import com.newtouch.uctp.module.system.convert.user.UserConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.UserPostDO;
+import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import com.newtouch.uctp.module.system.dal.mysql.dept.UserPostMapper;
 import com.newtouch.uctp.module.system.dal.mysql.user.AdminUserMapper;
+import com.newtouch.uctp.module.system.enums.dept.DeptIdEnum;
+import com.newtouch.uctp.module.system.enums.dept.MarketTenantDeptEnum;
+import com.newtouch.uctp.module.system.enums.tenant.TenantPackageTypeEnum;
 import com.newtouch.uctp.module.system.service.dept.DeptService;
 import com.newtouch.uctp.module.system.service.dept.PostService;
 import com.newtouch.uctp.module.system.service.permission.PermissionService;
 import com.newtouch.uctp.module.system.service.tenant.TenantService;
-import com.google.common.annotations.VisibleForTesting;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.convertList;
@@ -88,6 +95,9 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 校验正确性
         validateUserForCreateOrUpdate(null, reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
                 reqVO.getDeptId(), reqVO.getPostIds());
+
+        validateHasCreate(reqVO.getDeptId());
+
         // 插入用户
         AdminUserDO user = UserConvert.INSTANCE.convert(reqVO);
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
@@ -104,9 +114,14 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateUser(UserUpdateReqVO reqVO) {
+        validateHasCreate(reqVO.getDeptId());
         // 校验正确性
         validateUserForCreateOrUpdate(reqVO.getId(), reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
                 reqVO.getDeptId(), reqVO.getPostIds());
+        if (ObjectUtil.notEqual(userMapper.selectById(reqVO.getId()).getDeptId(), reqVO.getDeptId())) {
+            throw new RuntimeException("用户组织不能调整");
+        }
+
         // 更新用户
         AdminUserDO updateObj = UserConvert.INSTANCE.convert(reqVO);
         userMapper.updateById(updateObj);
@@ -314,6 +329,37 @@ public class AdminUserServiceImpl implements AdminUserService {
             // 校验岗位处于开启状态
             postService.validatePostList(postIds);
         });
+    }
+
+    private void validateHasCreate(Long deptId) {
+        //如果根部门不存在，添加用户直接报错
+        List<DeptDO> tenantDept = deptService.getDeptByParentId(DeptIdEnum.ROOT.getId());
+        if (org.springframework.util.CollectionUtils.isEmpty(tenantDept)) {
+            throw exception(DEPT_PARENT_NOT_EXITS);
+        }
+        //如果根部门对应的租户不存在，添加用户直接报错
+        TenantDO tenantDO = tenantService.getTenant(tenantDept.get(0).getTenantId());
+        if (tenantDO == null) {
+            throw exception(TENANT_NOT_EXISTS);
+        }
+        //当前租户是市场型
+        if (ObjectUtil.equals(TenantPackageTypeEnum.MARKET.getType(), tenantDO.getType())) {
+            //不能添加用户到根部门
+            if (ObjectUtil.equals(deptId, tenantDept.get(0).getId())) {
+                throw exception(DEPT_NOT_ADD_USER);
+            }
+            //根部门下的二级节点只能存在两个，如果没有则添加用户报错
+            List<DeptDO> deptDOList = deptService.getDeptByParentId(tenantDept.get(0).getId());
+            if (org.springframework.util.CollectionUtils.isEmpty(deptDOList)) {
+                throw exception(DEPT_PARENT_NOT_EXITS);
+            }
+            for (DeptDO deptDO : deptDOList) {
+                //二级节点部门，只能在市场方下添加用户
+                if (ObjectUtil.equals(deptId, deptDO.getId()) && !ObjectUtil.equals(MarketTenantDeptEnum.MARKET.getType(), deptDO.getAttr())) {
+                    throw exception(DEPT_NOT_ADD_USER);
+                }
+            }
+        }
     }
 
     @VisibleForTesting

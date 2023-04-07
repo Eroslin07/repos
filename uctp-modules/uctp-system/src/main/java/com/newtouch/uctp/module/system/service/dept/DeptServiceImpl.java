@@ -308,4 +308,9 @@ public class DeptServiceImpl implements DeptService {
 
         return deptMapper.insert(deptDO);
     }
+
+    @Override
+    public List<DeptDO> getDeptByParentId(Long parentId) {
+        return deptMapper.selectDeptByParentId(parentId);
+    }
 }

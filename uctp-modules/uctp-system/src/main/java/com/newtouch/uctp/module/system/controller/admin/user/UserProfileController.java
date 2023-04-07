@@ -1,8 +1,20 @@
 package com.newtouch.uctp.module.system.controller.admin.user;
 
 import cn.hutool.core.collection.CollUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
-import com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.datapermission.core.annotation.DataPermission;
 import com.newtouch.uctp.module.system.controller.admin.user.vo.profile.UserProfileRespVO;
@@ -20,16 +32,6 @@ import com.newtouch.uctp.module.system.service.permission.PermissionService;
 import com.newtouch.uctp.module.system.service.permission.RoleService;
 import com.newtouch.uctp.module.system.service.social.SocialUserService;
 import com.newtouch.uctp.module.system.service.user.AdminUserService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.List;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
@@ -96,7 +98,7 @@ public class UserProfileController {
         return success(true);
     }
 
-    @PutMapping("/update-avatar")
+    @PostMapping("/update-avatar")
     @Operation(summary = "上传用户个人头像")
     public CommonResult<String> updateUserAvatar(@RequestParam("avatarFile") MultipartFile file) throws Exception {
         if (file.isEmpty()) {
