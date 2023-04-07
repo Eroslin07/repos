@@ -10,7 +10,7 @@
 					<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
 						<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(1)">上传图片</text>
+							<text style="color: #50a8bc;" @click="handleOcr(1, 'idCard')">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
@@ -32,14 +32,20 @@
 					</u-form-item>
 					<!-- #endif -->
 					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
-						<u-album :urls="registerForm.businessLicense" multipleSize="70" singleSize="70"></u-album>
+						<view class="image">
+							<u-upload
+								v-if="fileList1.length"
+								:fileList="fileList1"
+								@delete="deletePic"
+								name="1"
+								width="70"
+								height="70"
+							></u-upload>
+						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(2)">上传图片</text>
+							<text style="color: #50a8bc;" @click="handleOcr(2, 'businessLicense')">上传图片</text>
 						</view>
 					</u-form-item>
-					<!-- <u-form-item label="税号" :required="true" prop="taxNum" borderBottom>
-						<u--input v-model="registerForm.taxNum" border="none" placeholder="请输入姓名"></u--input>
-					</u-form-item> -->
 					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
 						<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
 							placeholder="请选择市场场地编号" border="none"></u--input>
@@ -89,15 +95,14 @@
 				getTime: true,
 				time: 60,
 				timer: null,
-				// 身份证信息
-				fileList1: [],
 				// 营业执照
-				fileList2: [],
+				fileList1: [],
 				registerForm: {
 					phone: "",               // 手机号
 					captcha: "",             // 验证码
 					name: "",                // 姓名
 					idCard: "",              // 身份证号
+					idCardUrl: [],           // 身份证图片
 					businessLicense: [],     // 营业执照
 					marketLocation: "",      // 市场所在地id
 					marketLocationValue: "", // 市场所在地
@@ -254,77 +259,99 @@
 				})
 			},
 			// 点击OCR
-			handleOcr(index) {
+			handleOcr(index, type) {
 				let _this = this;
 				uni.showActionSheet({
 					title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
 						if (res.tapIndex == 0) {
-							_this.chooseImages(index);
+							_this.chooseImages(index, type);
 						} else {
-							_this.chooseVideo(index);
+							_this.chooseVideo(index, type);
 						}
 					}
 				})
 			},
 			// 上传图片
-			chooseImages(index) {
+			chooseImages(index, type) {
 				let _this = this;
-				uni.chooseVideo({
-					count: 1,
+				uni.chooseImage({
+					// count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], // 从相册选择
 					success: async function(res) {
-						let str = await urlTobase64(res.tempFilePaths[0])
-						if (index == 1) {
-							// 识别身份证
-							_this.fileList1 = res;
-							getIdCard({ IDCardUrl: str }).then((ress) => {
-								let data = JSON.parse(ress.data);
-								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
-								_this.registerForm.name = data.words_result['姓名'].words;
-							})
-						} else if (index == 2) {
-							// 识别营业执照
-							_this.fileList2 = res;
-							_this.registerForm.businessLicense = [..._this.registerForm.businessLicense, ...res.tempFilePaths];
-							// getBusinessLicense({ businessLicense: str }).then((ress) => {
-							// 	let data = JSON.parse(ress.data);
-								
-							// })
-						}
+						uni.uploadFile({
+							url: 'http://172.17.10.124:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
+							file: res.tempFiles,
+							name: 'file',
+							formData: {
+								type: type
+							},
+							success: async function(ress) {
+								let str = await urlTobase64(res.tempFilePaths[0])
+								if (index == 1) {
+									// 识别身份证
+									_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ...res.tempFilePaths];
+									getIdCard({ IDCardUrl: str }).then((ress) => {
+										let data = JSON.parse(ress.data);
+										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+										_this.registerForm.name = data.words_result['姓名'].words;
+									})
+								} else if (index == 2) {
+									// 识别营业执照
+									res.tempFilePaths.forEach((item) => {
+										_this.fileList1.push({
+											url: item
+										})
+									})
+									_this.registerForm.businessLicense = [..._this.registerForm.businessLicense, ...res.tempFilePaths];
+								}
+							}
+						});
 					}
 				})
 			},
 			// 拍摄图片
-			chooseVideo(index) {
+			chooseVideo(index, type) {
 				let _this = this;
-				uni.chooseVideo({
-					count: 1,
+				uni.chooseImage({
+					// count: 1,
 					sourceType: ['camera'], // 使用相机
 					success: async function(res) {
-						this.fileList1 = res;
-						let str = await urlTobase64(res.tempFilePaths[0])
-						if (index == 1) {
-							// 识别身份证
-							this.fileList1 = res;
-							getIdCard({ IDCardUrl: str }).then((ress) => {
-								let data = JSON.parse(ress.data);
-								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
-								_this.registerForm.name = data.words_result['姓名'].words
-							})
-						} else if (index == 2) {
-							// 识别营业执照
-							this.fileList2 = res;
-							_this.registerForm.businessLicense = [..._this.registerForm.businessLicense, ...res.tempFilePaths];
-							// getBusinessLicense({ businessLicense: str }).then((ress) => {
-							// 	let data = JSON.parse(ress.data);
-								
-							// })
-						}
+						uni.uploadFile({
+							url: 'http://172.17.10.124:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
+							file: res.tempFiles,
+							name: 'file',
+							formData: {
+								type: type
+							},
+							success: async function(ress) {
+								let str = await urlTobase64(res.tempFilePaths[0])
+								if (index == 1) {
+									// 识别身份证
+									_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ...res.tempFilePaths];
+									getIdCard({ IDCardUrl: str }).then((ress) => {
+										let data = JSON.parse(ress.data);
+										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+										_this.registerForm.name = data.words_result['姓名'].words
+									})
+								} else if (index == 2) {
+									// 识别营业执照
+									res.tempFilePaths.forEach((item) => {
+										_this.registerForm.businessLicense.push({
+											url: item
+										})
+									})
+								}
+							}
+						});
 					}
 				})
+			},
+			// 删除图片
+			deletePic(event) {
+				this[`fileList${event.name}`].splice(event.index, 1)
 			},
 			// 选择框确定
 			confirm(val) {
@@ -347,25 +374,24 @@
 					this.registerForm.password = rsaEncrypt(this.registerForm.password);
 					this.registerForm.confirmPassword = rsaEncrypt(this.registerForm.confirmPassword);
 					register(this.registerForm).then((res) => {
-						if (res.code === 200) {
-							clearInterval(this.timer);
-							// #ifndef MP-WEIXIN
-							this.$tab.reLaunch('/pages/login')
-							// #endif
-							// #ifdef MP-WEIXIN
-							this.$tab.reLaunch('/pages/wx_login')
-							// #endif
-						}
+						this.$modal.msg("已提交审核");
+						// #ifndef MP-WEIXIN
+						clearInterval(this.timer);
+						this.$tab.reLaunch('/pages/login')
+						// #endif
+						// #ifdef MP-WEIXIN
+						this.$tab.reLaunch('/pages/wx_login')
+						// #endif
 					}).catch((error) => {
-						this.$modal.msgError("注册失败");
+						this.$modal.msgError("提交审核失败");
 					})
 				})
 			},
 			// 取消
 			handleCancel() {
 				this.showModal = false;
-				clearInterval(this.timer);
 				// #ifndef MP-WEIXIN
+				clearInterval(this.timer);
 				this.$tab.reLaunch('/pages/login')
 				// #endif
 				// #ifdef MP-WEIXIN
@@ -425,5 +451,9 @@
 	.button {
 		background-color: #68b4c5;
 		color: #fff;
+	}
+	
+	/deep/ .image .u-upload__button {
+		display: none;
 	}
 </style>
