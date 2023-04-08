@@ -36,9 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.validation.Validator;
+import java.util.List;
 import java.util.Objects;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -133,6 +135,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
+    @Transactional
     public String registerAccount(AuthRegisterReqVO reqVO) {
         //查询该手机号是否注册
         if(userService.getUserByMobile(reqVO.getPhone())!=null){
@@ -169,6 +172,16 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             deptDO.setSort(2);
             deptDO.setStatus(0);
             deptService.insertDept(deptDO);
+
+//            //保存图片到中间表
+//            List<String> carUrl = reqVO.getBusinessLicense();
+//            for(int a=0;a<carUrl.size();a++){//车辆图片
+//                UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+//                businessFileDO.setId(Long.valueOf(carUrl.get(a)));
+//                businessFileDO.setMainId(infoDO.getId());
+//                businessFileDO.setFileType("1");
+//                businessFileService.insert(businessFileDO);
+//            }
         }catch (Exception e){
             throw exception(AUTH_REGISTER_ERROR);
         }

@@ -27,6 +27,9 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "发动机编号")
     private String engineNum;
 
+    @Schema(description = "运营性质")
+    private String natureOfOperat;
+
     @Schema(description = "车架号")
     private String vin;
 

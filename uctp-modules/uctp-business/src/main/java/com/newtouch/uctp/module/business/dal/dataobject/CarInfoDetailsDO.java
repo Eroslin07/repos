@@ -36,6 +36,12 @@ public class CarInfoDetailsDO extends BaseDO {
      * 里程数,保留2位小数
      */
     private BigDecimal mileage;
+
+    /**
+     * 运营性质
+     */
+    private String natureOfOperat;
+
     /**
      * 是/非事故车(1是 0非)
      */

@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @Schema(description = "管理后台 - 注册账号 Request VO")
 @Data
@@ -38,7 +39,7 @@ public class AuthRegisterReqVO {
 
 
     @Schema(description = "营业执照url", required = true, example = "")
-    private String businessLicense;
+    private List<String> businessLicense;
 
     @Schema(description = "市场所在地(租户id)", required = true, example = "130")
 //    @NotEmpty(message = "市场所在地不能为空")
