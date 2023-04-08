@@ -1,10 +1,9 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
@@ -14,12 +13,13 @@ import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.UctpBusinessFileService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +34,7 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INF
  */
 @Service
 @Validated
+@Slf4j
 public class CarInfoServiceImpl implements CarInfoService {
     @Resource
     private CarInfoMapper carInfoMapper;
@@ -114,7 +115,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     @Transactional
     public String insertSellerInfo(AppSellerInfoReqVO reqVO) {
-        String id = reqVO.getId();
+        Long id = reqVO.getId();
         CarInfoDetailsDO infoDetails = infoDetailsService.getCarInfoDetails(id);
         infoDetails.setSellerName(reqVO.getSellerName());
         infoDetails.setCollection(reqVO.getCollection());
@@ -170,7 +171,8 @@ public class CarInfoServiceImpl implements CarInfoService {
     public PageResult<AppHomeCarInfoRespVO> getHomeCarInfoPage(AppHomeCarInfoPageReqVO pageVO) {
         Page<AppHomeCarInfoRespVO> page = new Page<>(pageVO.getPageNo(), pageVO.getPageSize());
         pageVO.formatLocalDateTime();
-        page = carInfoMapper.selectAppHomePage(page, pageVO);
+        page = carInfoMapper.selectAppHomePage(pageVO);
+//        page = carInfoMapper.selectAppHomePage(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
@@ -181,8 +183,52 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
-    public PageResult<AppSellCarInfoRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO) {
+    public PageResult<AppSellCarInfoPageRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO) {
         return carInfoMapper.selectAppCellCarPage(pageVO);
+    }
+
+    @Override
+    public AppSellCarInfoRespVO getSellCarInfo(Long id) {
+        CarInfoDO carInfo = this.getCarInfo(id);
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        // TODO 获取到对应的文件列表
+//        List<String> carPicList = ListUtil.empty();
+//        List<String> drivingPicList = ListUtil.empty();
+//        List<String> registerPicList = ListUtil.empty();
+        List<String> carPicList = Arrays.asList("1","2","3");
+        List<String> drivingPicList = Arrays.asList("4","5","6");
+        List<String> registerPicList = Arrays.asList("7","8","9");
+        //TODO 获取预计费用和利润
+        BigDecimal estimatedCost = new BigDecimal("666");
+        BigDecimal profit = new BigDecimal("999");
+        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,estimatedCost,profit);
+        return carInfoRespVO;
+    }
+
+    @Override
+    public AppCarInfoAmountRespVO getCarInfoAmount(Long id,BigDecimal sellAmount) {
+//        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+        //税配置100，服务费配置200，然后合计费用300；利润=卖车金额-收车金额-税-服务费
+        //杂税不配置税率，增值税配置0.5%。税费等于卖车合同*税率
+        CarInfoDO carInfo = this.getCarInfo(id);
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        //TODO 这里从字典数据取配置的值
+        AppCarInfoAmountRespVO respVO = new AppCarInfoAmountRespVO();
+        //TODO 这里卖车金额需要前端传递过来（优先去前端传递数据），除非他已经存过一次
+        respVO.calculation(carInfo.getVehicleReceiptAmount(),ObjectUtil.isNotNull(sellAmount)?sellAmount:carInfo.getSellAmount());
+        return respVO;
+    }
+
+    @Override
+    public void saveSellCarInfo(AppSellCarInfoReqVO reqVO) {
+        validateCarInfoExists(reqVO.getId());
+        // 更新
+        CarInfoDO updateObj = CarInfoConvert.INSTANCE.convert(reqVO);
+        carInfoMapper.updateById(updateObj);
     }
 
     /**

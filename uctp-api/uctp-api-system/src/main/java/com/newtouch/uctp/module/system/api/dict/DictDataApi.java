@@ -46,4 +46,11 @@ public interface DictDataApi {
     CommonResult<DictDataRespDTO> parseDictData(@RequestParam("dictType") String dictType,
                                                 @RequestParam("label") String label);
 
+    @GetMapping(PREFIX + "/list")
+    @Operation(summary = "解析获得指定的字典数据")
+    @Parameters({
+            @Parameter(name = "dictType", description = "字典类型", example = "SEX", required = true),
+    })
+    CommonResult<DictDataRespDTO> DictDataList(@RequestParam("dictType") String dictType);
+
 }

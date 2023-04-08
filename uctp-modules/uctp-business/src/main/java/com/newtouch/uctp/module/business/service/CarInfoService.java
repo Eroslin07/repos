@@ -5,6 +5,7 @@ import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -94,5 +95,25 @@ public interface CarInfoService {
      * @param pageVO
      * @return
      */
-    PageResult<AppSellCarInfoRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO);
+    PageResult<AppSellCarInfoPageRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO);
+
+    /**
+     * 获取我要卖车详情页面
+     * @param id 车辆id
+     * @return
+     */
+    AppSellCarInfoRespVO getSellCarInfo(Long id);
+
+    /**
+     * 获取卖车详情的明细费用
+     * @param id 车辆id
+     * @return
+     */
+    AppCarInfoAmountRespVO getCarInfoAmount(Long id, BigDecimal sellAmount);
+
+    /**
+     * 保存卖车填写草稿信息
+     * @param reqVO
+     */
+    void saveSellCarInfo(AppSellCarInfoReqVO reqVO);
 }

@@ -12,4 +12,6 @@ import lombok.ToString;
 public class AppSellCarInfoPageReqVO extends PageParam {
     @Schema(description = "车架号/车辆品牌")
     private String searchValue;
+    @Schema(description = "当前登录人Id，目前不知道能不能取到值")
+    private Long businessId;
 }

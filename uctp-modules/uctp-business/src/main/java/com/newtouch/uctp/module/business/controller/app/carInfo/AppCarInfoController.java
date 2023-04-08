@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -87,8 +88,8 @@ public class AppCarInfoController {
 
     @GetMapping("/sell/page")
     @Operation(summary = "获得APP卖车分页")
-    public CommonResult<PageResult<AppSellCarInfoRespVO>> getSellCarInfoPage(@Valid AppSellCarInfoPageReqVO pageVO) {
-        PageResult<AppSellCarInfoRespVO> pageResult = carInfoService.getSellCarInfoPage(pageVO);
+    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid AppSellCarInfoPageReqVO pageVO) {
+        PageResult<AppSellCarInfoPageRespVO> pageResult = carInfoService.getSellCarInfoPage(pageVO);
         return success(pageResult);
     }
 
@@ -103,5 +104,28 @@ public class AppCarInfoController {
     @Operation(summary = "新增卖家信息")
     public CommonResult<String> insertSellerInfo(@Valid @RequestBody AppSellerInfoReqVO reqVO) {
         return success(carInfoService.insertSellerInfo(reqVO));
+    }
+    @GetMapping("/get/sell")
+    @Operation(summary = "获得APP卖车详情页")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    public CommonResult<AppSellCarInfoRespVO> getSellCarInfo(@RequestParam("id") Long id) {
+        return success(carInfoService.getSellCarInfo(id));
+    }
+
+    @GetMapping("/amount")
+    @Operation(summary = "获得APP卖车详情页中车辆明细金额数据")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @Parameter(name = "sellAmount", description = "卖车金额", required = true, example = "666")
+    public CommonResult<AppCarInfoAmountRespVO> getCarInfoAmount(@RequestParam("id") Long id,
+                                                                 @RequestParam("id") BigDecimal sellAmount) {
+        AppCarInfoAmountRespVO vo = carInfoService.getCarInfoAmount(id,sellAmount);
+        return success(vo);
+    }
+
+    @PostMapping("/save/sell")
+    @Operation(summary = "保存APP卖车填写数据")
+    public CommonResult<Boolean> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
+        carInfoService.saveSellCarInfo(reqVO);
+        return success(true);
     }
 }

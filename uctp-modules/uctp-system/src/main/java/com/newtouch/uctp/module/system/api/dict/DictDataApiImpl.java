@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.system.api.dict;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
+import com.newtouch.uctp.module.system.controller.admin.dict.vo.data.DictDataExportReqVO;
 import com.newtouch.uctp.module.system.convert.dict.DictDataConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dict.DictDataDO;
 import com.newtouch.uctp.module.system.service.dict.DictDataService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Collection;
+import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -39,6 +41,14 @@ public class DictDataApiImpl implements DictDataApi {
     public CommonResult<DictDataRespDTO> parseDictData(String dictType, String label) {
         DictDataDO dictData = dictDataService.parseDictData(dictType, label);
         return success(DictDataConvert.INSTANCE.convert02(dictData));
+    }
+
+    @Override
+    public CommonResult<DictDataRespDTO> DictDataList(String dictType) {
+        DictDataExportReqVO reqVO = new DictDataExportReqVO();
+        List<DictDataDO> dictDataList = dictDataService.getDictDataList(reqVO);
+
+        return null;
     }
 
 }

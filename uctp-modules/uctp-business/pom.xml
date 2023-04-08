@@ -140,6 +140,12 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-modules-infra</artifactId>
+            <version>1.0.1</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

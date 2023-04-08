@@ -24,6 +24,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CarInfoDO extends TenantBaseDO {
     /**
+     * 车辆主表id
+     */
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
+    /**
      * 车架号
      */
     private String vin;
@@ -64,15 +69,6 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private Integer checkStatus;
     /**
-     * 车辆主表id
-     */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Long id;
-    /**
-     * 汽车明细id
-     */
-    private Long carDetailId;
-    /**
      * 商户id
      */
     private Long businessId;
@@ -84,4 +80,13 @@ public class CarInfoDO extends TenantBaseDO {
      * 售卖时间
      */
     private LocalDateTime salesTime;
+    /**
+     * 卖车方式
+     */
+    private Integer sellType;
+    /**
+     * 卖车金额
+     */
+    private BigDecimal sellAmount;
+
 }

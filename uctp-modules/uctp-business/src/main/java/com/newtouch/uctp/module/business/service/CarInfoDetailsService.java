@@ -36,7 +36,7 @@ public interface CarInfoDetailsService {
      *
      * @param id 编号
      */
-    void deleteCarInfoDetails(String id);
+    void deleteCarInfoDetails(Long id);
 
     /**
      * 获得车辆明细
@@ -44,7 +44,7 @@ public interface CarInfoDetailsService {
      * @param id 编号
      * @return 车辆明细
      */
-    CarInfoDetailsDO getCarInfoDetails(String id);
+    CarInfoDetailsDO getCarInfoDetails(Long id);
 
     /**
      * 获得车辆明细列表

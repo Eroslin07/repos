@@ -8,6 +8,9 @@ import com.newtouch.uctp.module.business.convert.app.CarInfoDetailsConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -16,6 +19,9 @@ import java.util.List;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_DETAILS_NOT_EXISTS;
 
+@Service
+@Validated
+@Slf4j
 public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     @Resource
     private CarInfoDetailsMapper carInfoDetailsMapper;
@@ -41,27 +47,27 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     @Override
     public void updateCarInfoDetail(CarInfoDetailsDO detailsDO) {
         // 校验存在
-        validateCarInfoDetailsExists(String.valueOf(detailsDO.getId()));
+        validateCarInfoDetailsExists(detailsDO.getId());
 
         carInfoDetailsMapper.updateById(detailsDO);
     }
 
     @Override
-    public void deleteCarInfoDetails(String id) {
+    public void deleteCarInfoDetails(Long id) {
         // 校验存在
         validateCarInfoDetailsExists(id);
         // 删除
         carInfoDetailsMapper.deleteById(id);
     }
 
-    private void validateCarInfoDetailsExists(String id) {
+    private void validateCarInfoDetailsExists(Long id) {
         if (carInfoDetailsMapper.selectById(id) == null) {
             throw exception(CAR_INFO_DETAILS_NOT_EXISTS);
         }
     }
 
     @Override
-    public CarInfoDetailsDO getCarInfoDetails(String id) {
+    public CarInfoDetailsDO getCarInfoDetails(Long id) {
         return carInfoDetailsMapper.selectById(id);
     }
 

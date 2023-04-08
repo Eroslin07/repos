@@ -121,7 +121,6 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
             o.setCreateTime(null);
             o.setSalesStatus(null);
             o.setCheckStatus(null);
-            o.setCarDetailId(null);
             o.setBusinessId(null);
         });
         carInfoMapper.insert(dbCarInfo);
@@ -147,8 +146,6 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
         carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setSalesStatus(null)));
         // 测试 checkStatus 不匹配
         carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setCheckStatus(null)));
-        // 测试 carDetailId 不匹配
-        carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setCarDetailId(null)));
         // 测试 businessId 不匹配
         carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setBusinessId(null)));
         // 准备参数

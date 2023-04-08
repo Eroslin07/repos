@@ -10,7 +10,7 @@ import lombok.ToString;
 public class AppSellerInfoReqVO {
 
     @Schema(description = "车辆明细表id")
-    private String id;
+    private Long id;
 
     @Schema(description = "卖家姓名")
     private String sellerName;

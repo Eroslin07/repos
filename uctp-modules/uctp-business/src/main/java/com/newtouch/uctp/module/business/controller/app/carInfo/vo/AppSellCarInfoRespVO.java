@@ -5,22 +5,29 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.util.List;
 
-@Schema(description = "用户 APP - 首页卖车 Response VO")
+@Schema(description = "用户 APP - 车辆售卖详情 Response VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
-    @Schema(description = "创建时间")
-    private Date createTime;
     @Schema(description = "车辆主表id")
     private String id;
-    @Schema(description = "甲方(卖方)")
-    private String firstParty;
-    @Schema(description = "乙方(买方)")
-    private String secondParty;
-    @Schema(description = "里程数")
-    private String mileage;
+    @Schema(description = "车辆图片列表")
+    private List<String> carPicList;
+    @Schema(description = "行驶证列表")
+    private List<String> drivingPicList;
+    @Schema(description = "机动车登记证书列表")
+    private List<String> registerPicList;
+    @Schema(description = "预计费用(单位：元)")
+    private BigDecimal estimatedCost;
+    @Schema(description = "利润(单位：元)")
+    private BigDecimal profit;
+    @Schema(description = "卖车方式")
+    private Integer sellType;
+    @Schema(description = "卖车金额")
+    private BigDecimal sellAmount;
 
 }
