@@ -14,4 +14,5 @@ public interface ErrorCodeConstants {
     ErrorCode CAR_INFO_NOT_EXISTS = new ErrorCode(1005000011, "车辆不存在");
     ErrorCode CAR_INFO_DETAILS_NOT_EXISTS = new ErrorCode(1005000021, "车辆明细不存在");
 
+
 }

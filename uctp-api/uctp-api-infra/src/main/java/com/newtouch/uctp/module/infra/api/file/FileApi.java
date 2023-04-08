@@ -2,15 +2,17 @@ package com.newtouch.uctp.module.infra.api.file;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.infra.enums.ApiConstants;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @FeignClient(name = ApiConstants.NAME) // TODO 芋艿：fallbackFactory =
 @Tag(name =  "RPC 服务 - 文件")
@@ -56,5 +58,11 @@ public interface FileApi {
     @PostMapping(PREFIX + "/create")
     @Operation(summary = "保存文件，并返回文件的访问路径")
     CommonResult<String> createFile(@Valid @RequestBody FileCreateReqDTO createReqDTO);
+
+
+
+    @PostMapping(PREFIX + "/list")
+    @Operation(summary = "获取文件列表")
+    CommonResult<List<FileRespDTO>> fileList(@Valid @RequestParam(value = "ids") List<Long> ids);
 
 }

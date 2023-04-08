@@ -4,6 +4,8 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
 
+import java.util.List;
+
 /**
  * 文件 Service 接口
  *
@@ -54,4 +56,10 @@ public interface FileService {
      */
     byte[] getFileContent(Long configId, String path) throws Exception;
 
+    /**
+     * 获取文件列表
+     * @param ids
+     * @return
+     */
+    List<FileDO> getFileList(List<Long> ids);
 }

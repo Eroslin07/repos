@@ -31,6 +31,7 @@ public interface ErrorCodeConstants {
     ErrorCode FILE_PATH_EXISTS = new ErrorCode(1001003000, "文件路径已存在");
     ErrorCode FILE_NOT_EXISTS = new ErrorCode(1001003001, "文件不存在");
     ErrorCode FILE_IS_EMPTY = new ErrorCode(1001003002, "文件为空");
+    ErrorCode FILE_API_IS_FAIL = new ErrorCode(1001003003, "获取文件失败");
 
     // ========== 代码生成器 1001004000 ==========
     ErrorCode CODEGEN_TABLE_EXISTS = new ErrorCode(1003001000, "表定义已经存在");

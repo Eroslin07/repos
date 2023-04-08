@@ -2,17 +2,19 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
-import com.newtouch.uctp.module.business.dal.dataobject.UctpBusinessFileDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
+import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
-import com.newtouch.uctp.module.business.service.UctpBusinessFileService;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Resource
     private CarInfoMapper carInfoMapper;
     @Resource
-    private UctpBusinessFileService businessFileService;
+    private BusinessFileService businessFileService;
     @Resource
     private CarInfoDetailsService infoDetailsService;
 
@@ -85,7 +87,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         //保存图片到中间表
         List<String> carUrl = createReqVO.getCarUrl();
         for(int a=0;a<carUrl.size();a++){//车辆图片
-            UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+            BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(carUrl.get(a)));
             businessFileDO.setMainId(infoDO.getId());
             businessFileDO.setFileType("1");
@@ -94,7 +96,7 @@ public class CarInfoServiceImpl implements CarInfoService {
 
         List<String> licenseUrl = createReqVO.getDrivingLicenseUrl();
         for(int a=0;a<licenseUrl.size();a++){//行驶证图片
-            UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+            BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(licenseUrl.get(a)));
             businessFileDO.setMainId(infoDO.getId());
             businessFileDO.setFileType("2");
@@ -103,7 +105,7 @@ public class CarInfoServiceImpl implements CarInfoService {
 
         List<String> certificateUrl = createReqVO.getCertificateUrl();
         for(int a=0;a<licenseUrl.size();a++){//登记证书图片
-            UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+            BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(certificateUrl.get(a)));
             businessFileDO.setMainId(infoDO.getId());
             businessFileDO.setFileType("3");
@@ -197,13 +199,26 @@ public class CarInfoServiceImpl implements CarInfoService {
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
-        // TODO 获取到对应的文件列表
-//        List<String> carPicList = ListUtil.empty();
-//        List<String> drivingPicList = ListUtil.empty();
-//        List<String> registerPicList = ListUtil.empty();
-        List<String> carPicList = Arrays.asList("1","2","3");
-        List<String> drivingPicList = Arrays.asList("4","5","6");
-        List<String> registerPicList = Arrays.asList("7","8","9");
+        List<FileRespDTO> fileList = businessFileService.getFileByMainId(id,"");
+        List<String> carPicList = Lists.newArrayList();
+        List<String> drivingPicList = Lists.newArrayList();
+        List<String> registerPicList = Lists.newArrayList();
+        for (FileRespDTO dto : fileList) {
+//            1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证
+            switch (dto.getFileType()){
+                case "1":
+                    carPicList.add(dto.getUrl());
+                    break;
+                case "2":
+                    drivingPicList.add(dto.getUrl());
+                    break;
+                case "3":
+                    registerPicList.add(dto.getUrl());
+                    break;
+                default:
+                    break;
+            }
+        }
         //TODO 获取预计费用和利润
         BigDecimal estimatedCost = new BigDecimal("666");
         BigDecimal profit = new BigDecimal("999");

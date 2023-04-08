@@ -2,15 +2,16 @@ package com.newtouch.uctp.module.infra.api.file;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
+import com.newtouch.uctp.module.infra.convert.file.FileConvert;
+import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
 import com.newtouch.uctp.module.infra.service.file.FileService;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -27,6 +28,12 @@ public class FileApiImpl implements FileApi {
     public CommonResult<String> createFile(FileCreateReqDTO createReqDTO) {
         return success(fileService.createFile(createReqDTO.getName(), createReqDTO.getPath(),
                 createReqDTO.getContent()));
+    }
+
+    @Override
+    public CommonResult<List<FileRespDTO>> fileList(List<Long> ids) {
+        List<FileDO> fileList = fileService.getFileList(ids);
+        return success(FileConvert.INSTANCE.convertList(fileList));
     }
 
 }

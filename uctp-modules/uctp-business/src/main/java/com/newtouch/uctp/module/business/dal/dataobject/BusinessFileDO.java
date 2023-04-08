@@ -6,9 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 /**
  * 图片中间表 DO
  *
@@ -21,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UctpBusinessFileDO extends TenantBaseDO {
+public class BusinessFileDO extends TenantBaseDO {
     /**
      * id(infra_file的id)
      */

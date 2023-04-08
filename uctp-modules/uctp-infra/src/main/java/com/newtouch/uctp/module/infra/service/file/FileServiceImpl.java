@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
+import java.util.List;
+
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.infra.enums.ErrorCodeConstants.FILE_NOT_EXISTS;
 
@@ -126,6 +128,11 @@ public class FileServiceImpl implements FileService {
         FileClient client = fileConfigService.getFileClient(configId);
         Assert.notNull(client, "客户端({}) 不能为空", configId);
         return client.getContent(path);
+    }
+
+    @Override
+    public List<FileDO> getFileList(List<Long> ids) {
+        return fileMapper.selectList("id", ids);
     }
 
 }
