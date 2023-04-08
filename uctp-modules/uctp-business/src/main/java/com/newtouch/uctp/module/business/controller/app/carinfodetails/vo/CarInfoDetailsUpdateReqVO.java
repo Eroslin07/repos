@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class CarInfoDetailsUpdateReqVO extends CarInfoDetailsBaseVO{
-    @Schema(description = "id", required = true)
+    @Schema(description = "id")
     @NotNull(message = "id不能为空")
-    private String id;
+    private Long id;
 }

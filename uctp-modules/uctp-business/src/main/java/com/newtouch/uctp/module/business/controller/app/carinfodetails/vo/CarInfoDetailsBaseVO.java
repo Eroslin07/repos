@@ -19,7 +19,7 @@ public class CarInfoDetailsBaseVO {
     private Integer revision;
 
     @Schema(description = "车辆主表id")
-    private String carId;
+    private Long carId;
 
     @Schema(description = "里程数,保留2位小数")
     private BigDecimal mileage;
