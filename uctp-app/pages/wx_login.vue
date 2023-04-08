@@ -18,9 +18,9 @@
 				<!-- #ifdef MP-WEIXIN -->
 				<button shape="circle" type="primary" link="true" open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信一键登录</button>
 				<!-- #endif -->
-				<!-- <button @click="handleLogin" class="login-btn cu-btn block lg" style="background-color: #68b4c5;color: white;">微信用户一键登录</button> -->
 			</view>
 		</u-popup>
+		<u-modal :show="showModel" :content='content' :showConfirmButton="true" :showCancelButton="true" @cancel="handleCancel" @confirm="handleConfirm"></u-modal>
 	</view>
 </template>
 
@@ -28,33 +28,117 @@
 	export default {
 		data() {
 			return {
+				showModel: false,
+				content: '未查询到该账号，是否前往注册',
 				value: [],
-				show: true
+				show: true,
+				appId: 'wx52552be23725ae44',
+				wxcode: '',
+				sessionKey: null,
+				phone: null
 			}
 		},
 		onLoad() {
 			// #ifdef MP-WEIXIN
+			let _this = this;
 			uni.login({
 				provider: 'weixin',
 				success(res) {
-					this.wxcode = res.code;
+					_this.wxcode = res.code;
 				}
+			})
+			const params = {
+				appId: _this.appId,
+				secret: '2cb430095c143228a44488a87350f974',
+				grant_type: 'client_credential',
+				js_code: _this.wxcode
+			}
+			uni.request({
+				method: 'GET',
+				url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${params.appId}&secret=${params.secret}`,
+			}).then((res) => {
+				if (res.errcode) {
+					uni.showToast({
+						title: '获取用户信息失败',
+						icon: 'none',
+						duration: 2000
+					});
+					return
+				}
+				_this.sessionKey = res[1].data.access_token
 			})
 			// #endif
 		},
 		methods: {
 			getphonenumber(e) {
-				console.log(e)
-			},
-			// 登录方法
-			async handleLogin() {
 				if (this.value.length == 0) {
 					this.$modal.msgError("请阅读并勾选用户协议")
 					return
 				}
-				this.$tab.reLaunch('/pages/index');
-				return
+				let _this = this;
+				if (e.detail.errMsg.indexOf('deny') > -1) {
+					uni.showToast({
+						title: "获取手机号失败，请前往手机登录界面",
+						icon: "none"
+					})
+					return
+				} else {
+					const encryptedData = e.detail.encryptedData;
+					 if (typeof encryptedData === 'undefined' || encryptedData == null || encryptedData === '') {
+						//前往手机登录界面
+						uni.showToast({
+							title: "获取手机号失败，请前往手机登录界面",
+							icon: "none"
+						})
+						return;
+					}
+				}
+				uni.request({
+					method: 'POST',
+					url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${_this.sessionKey}`,
+					data: {
+						code: e.detail.code
+					}
+				}).then((res) => {
+					if (res.errcode) {
+						uni.showToast({
+							title: '获取用户信息失败',
+							icon: 'none',
+							duration: 2000
+						});
+						return
+					}
+					_this.phone = res[1].data.phone_info.phoneNumber;
+					_this.phoneLogin();
+				})
 			},
+			// 手机号登录
+			async phoneLogin(captchaParams) {
+			  this.$modal.loading("登录中，请耐心等待...")
+			  // 执行登录
+				this.$store.dispatch('phoneLogin', this.phone).then(() => {
+					this.$modal.closeLoading()
+					this.loginSuccess()
+				}).catch((error) => {
+					this.showModel = true;
+				})
+			},
+			// 登录成功后，处理函数
+			loginSuccess(result) {
+				// 设置用户信息
+				// this.$store.dispatch('GetInfo').then(res => {
+					this.$tab.reLaunch('/pages/index')
+				// })
+			},
+			// 取消
+			handleCancel() {
+				this.showModel = false;
+			},
+			// 确认
+			handleConfirm() {
+				this.showModel = false;
+				this.$tab.navigateTo('/subPages/register');
+			}
 		}
 	}
 </script>

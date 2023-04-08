@@ -34,10 +34,10 @@
 					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
 						<view class="image">
 							<u-upload
-								v-if="fileList1.length"
-								:fileList="fileList1"
+								v-if="fileList2.length"
+								:fileList="fileList2"
 								@delete="deletePic"
-								name="1"
+								name="2"
 								width="70"
 								height="70"
 							></u-upload>
@@ -84,7 +84,8 @@
 		getTenantlist,
 		getCode,
 		getIdCard,
-		getBusinessLicense
+		getBusinessLicense,
+		deleteImage
 	} from '@/api/register'
 	export default {
 		data() {
@@ -95,8 +96,10 @@
 				getTime: true,
 				time: 60,
 				timer: null,
-				// 营业执照
+				// 身份证
 				fileList1: [],
+				// 营业执照
+				fileList2: [],
 				registerForm: {
 					phone: "",               // 手机号
 					captcha: "",             // 验证码
@@ -265,93 +268,74 @@
 					title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
-						if (res.tapIndex == 0) {
-							_this.chooseImages(index, type);
-						} else {
-							_this.chooseVideo(index, type);
-						}
+						_this.chooseImages(index, type, res.tapIndex);
 					}
 				})
 			},
 			// 上传图片
-			chooseImages(index, type) {
+			chooseImages(index, type, tapIndex) {
 				let _this = this;
 				uni.chooseImage({
 					// count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['album'], // 从相册选择
+					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
 					success: async function(res) {
-						uni.uploadFile({
-							url: 'http://172.17.10.124:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
-							file: res.tempFiles,
-							name: 'file',
-							formData: {
-								type: type
-							},
-							success: async function(ress) {
-								let str = await urlTobase64(res.tempFilePaths[0])
-								if (index == 1) {
-									// 识别身份证
-									_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ...res.tempFilePaths];
-									getIdCard({ IDCardUrl: str }).then((ress) => {
-										let data = JSON.parse(ress.data);
-										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
-										_this.registerForm.name = data.words_result['姓名'].words;
-									})
-								} else if (index == 2) {
-									// 识别营业执照
-									res.tempFilePaths.forEach((item) => {
-										_this.fileList1.push({
-											url: item
-										})
-									})
-									_this.registerForm.businessLicense = [..._this.registerForm.businessLicense, ...res.tempFilePaths];
-								}
-							}
-						});
+						let str = await urlTobase64(res.tempFilePaths[0])
+						res.tempFilePaths.forEach((item) => {
+							_this[`fileList${index}`].push({
+								url: item,
+								status: 'uploading',
+								message: '上传中'
+							})
+						})
+						if (index == 1) {
+							// 识别身份证
+							_this.registerForm.idCardUrl = _this[`fileList${index}`];
+							getIdCard({ IDCardUrl: str }).then((ress) => {
+								let data = JSON.parse(ress.data);
+								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+								_this.registerForm.name = data.words_result['姓名'].words;
+								_this.upload(res, type, index);
+							})
+						} else if (index == 2) {
+							// 识别营业执照
+							_this.registerForm.businessLicense = _this[`fileList${index}`];
+							_this.upload(res, type, index);
+						}
 					}
 				})
 			},
-			// 拍摄图片
-			chooseVideo(index, type) {
+			upload(res, type, index) {
 				let _this = this;
-				uni.chooseImage({
-					// count: 1,
-					sourceType: ['camera'], // 使用相机
-					success: async function(res) {
-						uni.uploadFile({
-							url: 'http://172.17.10.124:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
-							file: res.tempFiles,
-							name: 'file',
-							formData: {
-								type: type
-							},
-							success: async function(ress) {
-								let str = await urlTobase64(res.tempFilePaths[0])
-								if (index == 1) {
-									// 识别身份证
-									_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ...res.tempFilePaths];
-									getIdCard({ IDCardUrl: str }).then((ress) => {
-										let data = JSON.parse(ress.data);
-										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
-										_this.registerForm.name = data.words_result['姓名'].words
-									})
-								} else if (index == 2) {
-									// 识别营业执照
-									res.tempFilePaths.forEach((item) => {
-										_this.registerForm.businessLicense.push({
-											url: item
-										})
-									})
-								}
-							}
-						});
+				uni.uploadFile({
+					url: 'http://172.17.10.127:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
+					file: res.tempFiles,
+					name: 'file',
+					formData: {
+						type: type
+					},
+					success: (ress) => {
+						let fileListLen = 0;
+						let data = JSON.parse(ress.data).data;
+						for (let i = 0; i < data.length; i++) {
+							let item = _this[`fileList${index}`][fileListLen]
+							_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
+								status: 'success',
+								message: '',
+								url: data[i].url,
+								id: data[i].id
+							}))
+							fileListLen++;
+						}
 					}
-				})
+				});
 			},
 			// 删除图片
 			deletePic(event) {
-				this[`fileList${event.name}`].splice(event.index, 1)
+				deleteImage(event.file.id).then((res) => {
+					this.$modal.msg("删除成功");
+					this[`fileList${event.name}`].splice(event.index, 1);
+				})
 			},
 			// 选择框确定
 			confirm(val) {
@@ -370,10 +354,19 @@
 						this.$modal.msgError("两次密码不一致");
 						return;
 					}
-					// 密码加密
-					this.registerForm.password = rsaEncrypt(this.registerForm.password);
-					this.registerForm.confirmPassword = rsaEncrypt(this.registerForm.confirmPassword);
-					register(this.registerForm).then((res) => {
+					let data = {
+						phone: this.registerForm.phone,
+						captcha: this.registerForm.captcha,
+						name: this.registerForm.name,
+						idCard: this.registerForm.idCard,
+						idCardUrl: this.fileList1.map((item) => { return item.id }),
+						businessLicense: this.fileList2.map((item) => { return item.id }),
+						marketLocation: this.registerForm.marketLocation,
+						bankAccount: this.registerForm.bankAccount,
+						password: rsaEncrypt(this.registerForm.password),
+						confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
+					}
+					register(data).then((res) => {
 						this.$modal.msg("已提交审核");
 						// #ifndef MP-WEIXIN
 						clearInterval(this.timer);

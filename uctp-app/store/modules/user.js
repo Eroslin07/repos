@@ -1,7 +1,7 @@
 import config from '@/config'
 import storage from '@/utils/storage'
 import constant from '@/utils/constant'
-import { login, logout, getInfo } from '@/api/login'
+import { login, wxLogin, logout, getInfo } from '@/api/login'
 import { setToken, removeToken } from '@/utils/auth'
 
 const baseUrl = config.baseUrl
@@ -45,6 +45,20 @@ const user = {
       const captchaVerification = userInfo.captchaVerification
       return new Promise((resolve, reject) => {
         login(username, password, captchaVerification).then(res => {
+          res = res.data;
+          // 设置 token
+          setToken(res)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    
+    // 微信小程序一键登录
+    phoneLogin({ commit }, userInfo) {
+      return new Promise((resolve, reject) => {
+        wxLogin(userInfo).then(res => {
           res = res.data;
           // 设置 token
           setToken(res)

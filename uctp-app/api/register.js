@@ -59,3 +59,14 @@ export function getBusinessLicense(data) {
 		'data': data
 	})
 }
+
+// 删除图片
+export function deleteImage(id) {
+	return request({
+		url: '/infra/file/delete/'+id,
+		headers: {
+			isToken: false
+		},
+		'method': 'DELETE'
+	})
+}
