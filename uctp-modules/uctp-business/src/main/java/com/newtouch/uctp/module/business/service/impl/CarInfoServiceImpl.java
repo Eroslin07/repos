@@ -71,6 +71,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         LocalDateTime current = LocalDateTime.now();
         infoDO.setPickUpTime(current);
         infoDO.setCheckStatus(0);
+        infoDO.setBusinessId(Long.valueOf("130"));
+        infoDO.setStatus(31);//草稿
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据
@@ -111,8 +113,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             businessFileDO.setFileType("3");
             businessFileService.insert(businessFileDO);
         }
-
-        return String.valueOf(infoDO.getId());
+        return String.valueOf(detailsDO.getId());
     }
 
     @Override

@@ -89,4 +89,10 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private BigDecimal sellAmount;
 
+
+    /**
+     * 状态
+     */
+    private Integer status;
+
 }
