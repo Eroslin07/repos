@@ -136,13 +136,13 @@
 			// 退出登录
 			handleLogout() {
 				this.$modal.confirm('确定注销并退出系统吗？').then(() => {
-					// #ifndef MP-WEIXIN
-					this.$tab.reLaunch('/pages/login')
-					// #endif
-					// #ifdef MP-WEIXIN
-					this.$tab.reLaunch('/pages/wx_login')
-					// #endif
-					return
+					// // #ifndef MP-WEIXIN
+					// this.$tab.reLaunch('/pages/login')
+					// // #endif
+					// // #ifdef MP-WEIXIN
+					// this.$tab.reLaunch('/pages/wx_login')
+					// // #endif
+					// return
 					this.$store.dispatch('LogOut').then(() => {
 						this.$tab.reLaunch('/pages/index')
 					})

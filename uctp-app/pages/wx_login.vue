@@ -126,9 +126,9 @@
 			// 登录成功后，处理函数
 			loginSuccess(result) {
 				// 设置用户信息
-				// this.$store.dispatch('GetInfo').then(res => {
+				this.$store.dispatch('GetInfo').then(res => {
 					this.$tab.reLaunch('/pages/index')
-				// })
+				})
 			},
 			// 取消
 			handleCancel() {

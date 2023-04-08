@@ -134,7 +134,6 @@
 				
 				//密码加密
 				let encryptMsg = rsaEncrypt(this.loginForm.password)
-				console.log(encryptMsg)
 				// this.$tab.reLaunch('/pages/index');
 
 				// //关闭定时器
