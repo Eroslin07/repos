@@ -59,6 +59,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         //车辆主表信息
         CarInfoDO infoDO = new CarInfoDO();
         infoDO.setBrand(createReqVO.getBrand());
+        infoDO.setVin(createReqVO.getVin());
         infoDO.setYear(createReqVO.getYear());
         infoDO.setModel(createReqVO.getModel());
         infoDO.setEngineNum(createReqVO.getEngineNum());
@@ -109,7 +110,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             businessFileService.insert(businessFileDO);
         }
 
-        return "success";
+        return String.valueOf(infoDO.getId());
     }
 
     @Override
@@ -123,6 +124,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         infoDetails.setSellerTel(reqVO.getSellerTel());
         infoDetails.setPayType(reqVO.getPayType());
         infoDetails.setBankCard(reqVO.getBankCard());
+
+        infoDetails.setThirdSellerName(reqVO.getThirdSellerName());
+        infoDetails.setThirdBankCard(reqVO.getThirdBankCard());
         infoDetailsService.updateCarInfoDetail(infoDetails);
         return "success";
     }

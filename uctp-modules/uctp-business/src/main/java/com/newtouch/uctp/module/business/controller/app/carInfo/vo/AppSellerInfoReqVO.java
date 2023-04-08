@@ -21,7 +21,7 @@ public class AppSellerInfoReqVO {
     @Schema(description = "卖家电话")
     private String sellerTel;
 
-    @Schema(description = "是否第三方代收")
+    @Schema(description = "是否第三方代收（1 是 0 否）")
     private String collection;
 
     @Schema(description = "卖家付款方式")
@@ -29,4 +29,10 @@ public class AppSellerInfoReqVO {
 
     @Schema(description = "银行卡号")
     private String bankCard;
+
+    @Schema(description = "第三方姓名")
+    private String thirdSellerName;
+
+    @Schema(description = "第三方银行卡号")
+    private String thirdBankCard;
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -89,6 +90,16 @@ public class CarInfoDetailsDO extends BaseDO {
      * 卖家银行卡号
      */
     private String bankCard;
+
+    /**
+     * 第三方卖家信息
+     */
+    private String thirdSellerName;
+
+    /**
+     * 第三方银行卡号
+     */
+    private String thirdBankCard;
 
 
 

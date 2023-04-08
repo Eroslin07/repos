@@ -170,6 +170,7 @@ uctp:
       - /app-api/system/appAuth/getTenantlist
       - /app-api/system/appAuth/orcIdCard
       - /app-api/system/appAuth/orcBusinessLicense
+      - /app-api/system/appAuth/orcVehicleLicense
       - /app-api/system/appAuth/registerAccount
     ignore-tables:
       - system_tenant
@@ -202,6 +203,7 @@ uctp:
       - /app-api/system/appAuth/getTenantlist
       - /app-api/system/appAuth/orcIdCard
       - /app-api/system/appAuth/orcBusinessLicense
+      - /app-api/system/appAuth/orcVehicleLicense
       - /app-api/system/appAuth/registerAccount
 
 debug: false

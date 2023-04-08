@@ -93,7 +93,7 @@ public class OCRUtil {
      * 识别营业执照
      * @return
      */
-    public static String vehicleLicense(String filePath,String accessToken) {
+    public static String businessLicense(String filePath,String accessToken) {
         // 请求url
         String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_license";
         try {
@@ -117,7 +117,7 @@ public class OCRUtil {
      * 识别行驶证
      * @return
      */
-    public static String businessLicense(String filePath,String accessToken) {
+    public static String vehicleLicense(String filePath,String accessToken) {
         // 请求url
         String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_license";
         try {
