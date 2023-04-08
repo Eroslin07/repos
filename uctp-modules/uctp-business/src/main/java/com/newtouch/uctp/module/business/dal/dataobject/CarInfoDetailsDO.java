@@ -63,4 +63,46 @@ public class CarInfoDetailsDO extends BaseDO {
      * 能源类型(1燃油 2新能源 3混动)
      */
     private Integer energyType;
+    /**
+     * 是否第三方代收
+     */
+    private String collection;
+    /**
+     * 卖家名字
+     */
+    private String sellerName;
+    /**
+     * 卖家身份证
+     */
+    private String sellerIdCard;
+    /**
+     * 卖家电话
+     */
+    private String sellerTel;
+
+    /**
+     * 付款方式
+     */
+    private String payType;
+
+    /**
+     * 卖家银行卡号
+     */
+    private String bankCard;
+
+
+
+    /**
+     * 买家电话
+     */
+    private String buyerTel;
+    /**
+     * 买家身份证
+     */
+    private String buyerIdCard;
+    /**
+     * 买家姓名
+     */
+    private String buyerName;
+
 }

@@ -39,6 +39,14 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     }
 
     @Override
+    public void updateCarInfoDetail(CarInfoDetailsDO detailsDO) {
+        // 校验存在
+        validateCarInfoDetailsExists(String.valueOf(detailsDO.getId()));
+
+        carInfoDetailsMapper.updateById(detailsDO);
+    }
+
+    @Override
     public void deleteCarInfoDetails(String id) {
         // 校验存在
         validateCarInfoDetailsExists(id);
@@ -65,6 +73,11 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     @Override
     public PageResult<CarInfoDetailsDO> getCarInfoDetailsPage(CarInfoDetailsPageReqVO pageReqVO) {
         return carInfoDetailsMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public int insertCarInfoDetail(CarInfoDetailsDO detailsDO) {
+        return carInfoDetailsMapper.insert(detailsDO);
     }
 
 

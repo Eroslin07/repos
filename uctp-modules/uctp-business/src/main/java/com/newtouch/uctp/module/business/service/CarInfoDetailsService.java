@@ -61,4 +61,8 @@ public interface CarInfoDetailsService {
      * @return 车辆明细分页
      */
     PageResult<CarInfoDetailsDO> getCarInfoDetailsPage(CarInfoDetailsPageReqVO pageReqVO);
+
+    int insertCarInfoDetail(CarInfoDetailsDO detailsDO);
+
+    void updateCarInfoDetail(CarInfoDetailsDO detailsDO);
 }

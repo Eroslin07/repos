@@ -50,7 +50,7 @@ public class AuthRegisterReqVO {
 
 
     @Schema(description = "密码", required = true, example = "buzhidao")
-    @NotEmpty(message = "密码不能为空")
+//    @NotEmpty(message = "密码不能为空")
     private String password;
 
 

@@ -92,4 +92,16 @@ public class AppCarInfoController {
         return success(pageResult);
     }
 
+
+    @PostMapping("/insertCarInfo")
+    @Operation(summary = "新增车辆信息")
+    public CommonResult<String> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
+        return success(carInfoService.insertCarInfo(createReqVO));
+    }
+
+    @PostMapping("/insertSellerInfo")
+    @Operation(summary = "新增卖家信息")
+    public CommonResult<String> insertSellerInfo(@Valid @RequestBody AppSellerInfoReqVO reqVO) {
+        return success(carInfoService.insertSellerInfo(reqVO));
+    }
 }

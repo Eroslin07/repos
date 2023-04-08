@@ -23,6 +23,21 @@ public interface CarInfoService {
      */
     Long createCarInfo(@Valid AppCarInfoCreateReqVO createReqVO);
 
+
+    /**
+     * 收车车辆新增
+     * @param createReqVO
+     * @return
+     */
+    String insertCarInfo(@Valid AppCarInfoCreateReqVO createReqVO);
+
+    /**
+     * 卖家信息
+     * @param reqVO
+     * @return
+     */
+    String insertSellerInfo(@Valid AppSellerInfoReqVO reqVO);
+
     /**
      * 更新车辆主表
      *

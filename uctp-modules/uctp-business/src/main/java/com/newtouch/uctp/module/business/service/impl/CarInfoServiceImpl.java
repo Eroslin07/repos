@@ -1,17 +1,26 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+import com.newtouch.uctp.module.business.dal.dataobject.UctpBusinessFileDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
+import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.service.UctpBusinessFileService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +37,11 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INF
 public class CarInfoServiceImpl implements CarInfoService {
     @Resource
     private CarInfoMapper carInfoMapper;
+    @Resource
+    private UctpBusinessFileService businessFileService;
+    @Resource
+    private CarInfoDetailsService infoDetailsService;
+
     @Override
     public Long createCarInfo(AppCarInfoCreateReqVO createReqVO) {
         // 插入
@@ -36,6 +50,82 @@ public class CarInfoServiceImpl implements CarInfoService {
         // 返回
         return carInfo.getId();
     }
+
+    @Override
+    @Transactional
+    public String insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
+//        SecurityFrameworkUtils.getLoginUserId();
+        //车辆主表信息
+        CarInfoDO infoDO = new CarInfoDO();
+        infoDO.setBrand(createReqVO.getBrand());
+        infoDO.setYear(createReqVO.getYear());
+        infoDO.setModel(createReqVO.getModel());
+        infoDO.setEngineNum(createReqVO.getEngineNum());
+        infoDO.setVehicleReceiptAmount(createReqVO.getVehicleReceiptAmount());
+        infoDO.setRemarks(createReqVO.getRemarks());
+        infoDO.setSalesStatus(0);
+        LocalDateTime current = LocalDateTime.now();
+        infoDO.setPickUpTime(current);
+        infoDO.setCheckStatus(0);
+        carInfoMapper.insert(infoDO);
+
+        //车辆明细数据
+        CarInfoDetailsDO detailsDO = new CarInfoDetailsDO();
+        detailsDO.setCarId(infoDO.getId());
+        detailsDO.setMileage(createReqVO.getMileage());
+        detailsDO.setAccidentVehicle(0);
+        detailsDO.setSoakingCar(0);
+        detailsDO.setBurnCar(0);
+        detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
+        detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
+        infoDetailsService.insertCarInfoDetail(detailsDO);
+
+        //保存图片到中间表
+        List<String> carUrl = createReqVO.getCarUrl();
+        for(int a=0;a<carUrl.size();a++){//车辆图片
+            UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+            businessFileDO.setId(Long.valueOf(carUrl.get(a)));
+            businessFileDO.setMainId(infoDO.getId());
+            businessFileDO.setFileType("1");
+            businessFileService.insert(businessFileDO);
+        }
+
+        List<String> licenseUrl = createReqVO.getDrivingLicenseUrl();
+        for(int a=0;a<licenseUrl.size();a++){//行驶证图片
+            UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+            businessFileDO.setId(Long.valueOf(licenseUrl.get(a)));
+            businessFileDO.setMainId(infoDO.getId());
+            businessFileDO.setFileType("2");
+            businessFileService.insert(businessFileDO);
+        }
+
+        List<String> certificateUrl = createReqVO.getCertificateUrl();
+        for(int a=0;a<licenseUrl.size();a++){//登记证书图片
+            UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+            businessFileDO.setId(Long.valueOf(certificateUrl.get(a)));
+            businessFileDO.setMainId(infoDO.getId());
+            businessFileDO.setFileType("3");
+            businessFileService.insert(businessFileDO);
+        }
+
+        return "success";
+    }
+
+    @Override
+    @Transactional
+    public String insertSellerInfo(AppSellerInfoReqVO reqVO) {
+        String id = reqVO.getId();
+        CarInfoDetailsDO infoDetails = infoDetailsService.getCarInfoDetails(id);
+        infoDetails.setSellerName(reqVO.getSellerName());
+        infoDetails.setCollection(reqVO.getCollection());
+        infoDetails.setSellerIdCard(reqVO.getSellerIdCard());
+        infoDetails.setSellerTel(reqVO.getSellerTel());
+        infoDetails.setPayType(reqVO.getPayType());
+        infoDetails.setBankCard(reqVO.getBankCard());
+        infoDetailsService.updateCarInfoDetail(infoDetails);
+        return "success";
+    }
+
 
     @Override
     public void updateCarInfo(AppCarInfoUpdateReqVO updateReqVO) {

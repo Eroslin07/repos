@@ -1,10 +1,23 @@
 package com.newtouch.uctp.module.system.controller.app.dict;
 
+import cn.hutool.core.util.StrUtil;
+import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.util.collection.SetUtils;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
+import com.newtouch.uctp.framework.security.config.SecurityProperties;
 import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
+import com.newtouch.uctp.module.system.convert.auth.AuthConvert;
+import com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO;
+import com.newtouch.uctp.module.system.dal.dataobject.permission.RoleDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
+import com.newtouch.uctp.module.system.enums.permission.MenuTypeEnum;
 import com.newtouch.uctp.module.system.service.auth.AdminAuthService;
+import com.newtouch.uctp.module.system.service.permission.PermissionService;
+import com.newtouch.uctp.module.system.service.permission.RoleService;
 import com.newtouch.uctp.module.system.service.tenant.TenantService;
+import com.newtouch.uctp.module.system.service.user.AdminUserService;
 import com.newtouch.uctp.module.system.util.collection.OCRUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,11 +27,16 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
+import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
+import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.obtainAuthorization;
+import static java.util.Collections.singleton;
 
 @Tag(name =  "管理后台 - 认证")
 @RestController
@@ -33,6 +51,17 @@ public class RegisterController {
     @Resource
     private TenantService tenantService;
 
+    @Resource
+    private AdminUserService userService;
+
+    @Resource
+    private PermissionService permissionService;
+    @Resource
+    private RoleService roleService;
+
+    @Resource
+    private SecurityProperties securityProperties;
+
 
     @PostMapping("/appLogin")
     @PermitAll
@@ -40,6 +69,46 @@ public class RegisterController {
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public CommonResult<AuthLoginRespVO> appLogin(@RequestBody @Valid AuthLoginReqVO reqVO) {
         return success(authService.login(reqVO));
+    }
+
+    @PostMapping("/wxLogin")
+    @PermitAll
+    @Operation(summary = "微信登录 使用账号密码登录")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<AuthLoginRespVO> wxLogin(@RequestBody @Valid AuthWxLoginReqVO reqVO) {
+        return success(authService.wxLogin(reqVO));
+    }
+
+
+    @GetMapping("/get-permission-info")
+    @Operation(summary = "获取登录用户的权限信息")
+    public CommonResult<AuthPermissionInfoRespVO> getPermissionInfo() {
+        // 获得用户信息
+        AdminUserDO user = userService.getUser(getLoginUserId());
+        if (user == null) {
+            return null;
+        }
+        // 获得角色列表
+        Set<Long> roleIds = permissionService.getUserRoleIdsFromCache(getLoginUserId(), singleton(CommonStatusEnum.ENABLE.getStatus()));
+        List<RoleDO> roleList = roleService.getRoleListFromCache(roleIds);
+        // 获得菜单列表
+        List<MenuDO> menuList = permissionService.getRoleMenuListFromCache(roleIds,
+                SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType(), MenuTypeEnum.BUTTON.getType()),
+                singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
+        // 拼接结果返回
+        return success(AuthConvert.INSTANCE.convert(user, roleList, menuList));
+    }
+
+    @PostMapping("/logout")
+    @PermitAll
+    @Operation(summary = "登出系统")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<Boolean> logout(HttpServletRequest request) {
+        String token = obtainAuthorization(request, securityProperties.getTokenHeader());
+        if (StrUtil.isNotBlank(token)) {
+            authService.logout(token, LoginLogTypeEnum.LOGOUT_SELF.getType());
+        }
+        return success(true);
     }
 
 

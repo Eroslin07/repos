@@ -122,6 +122,17 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
+    public AuthLoginRespVO wxLogin(AuthWxLoginReqVO reqVO) {
+        AdminUserDO user = userService.getUserByMobile(reqVO.getUsername());
+        //查询该手机号是否注册
+        if(null==user){
+            throw exception(AUTH_MOBILE_NOT_EXIST);
+        }
+        // 创建 Token 令牌，记录登录日志
+        return createTokenAfterLoginSuccess(user.getId(), reqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
+    }
+
+    @Override
     public String registerAccount(AuthRegisterReqVO reqVO) {
         //查询该手机号是否注册
         if(userService.getUserByMobile(reqVO.getPhone())!=null){

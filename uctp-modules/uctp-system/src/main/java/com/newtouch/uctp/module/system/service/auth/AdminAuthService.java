@@ -31,6 +31,13 @@ public interface AdminAuthService {
      */
     AuthLoginRespVO login(@Valid AuthLoginReqVO reqVO);
 
+    /**
+     * 微信登录
+     * @param reqVO
+     * @return
+     */
+    AuthLoginRespVO wxLogin(@Valid AuthWxLoginReqVO reqVO);
+
     String registerAccount(AuthRegisterReqVO reqVO);
 
     /**
