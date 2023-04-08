@@ -25,36 +25,36 @@
 				>
 					<u-collapse accordion>
 						<u-collapse-item
-							title="车辆图片"
-							name="drivingLicense"
+							title="行驶证"
+							name="drivingPicList"
 						>
 							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
-							<u-album :urls="urls2" maxCount="8" rowCount="4"></u-album>
+							<u-album :urls="carForm.drivingPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 						<u-collapse-item
-							title="行驶证"
-							name="registerFile"
+							title="车辆图片"
+							name="carPicList"
 						>
 							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
-							<u-album :urls="urls2" maxCount="8" rowCount="4"></u-album>
+							<u-album :urls="carForm.carPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 						<u-collapse-item
 							title="机动车登记证书"
-							name="carInfor"
+							name="registerPicList"
 						>
 							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
-							<u-album :urls="urls2" maxCount="8" rowCount="4"></u-album>
+							<u-album :urls="carForm.registerPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 					</u-collapse>
-					<u-form-item label="发动机编号" prop="engineNumber" borderBottom>
-						<u--input v-model="carForm.engineNumber" border="none" placeholder="请输入发动机编号"></u--input>
+					<u-form-item label="发动机编号" prop="engineNum" borderBottom>
+						<u--input v-model="carForm.engineNum" border="none" placeholder="请输入发动机编号"></u--input>
 					</u-form-item>
-					<u-form-item label="车架号(VIN)" prop="frame" borderBottom>
-						<u--input v-model="carForm.frame" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
+					<u-form-item label="车架号(VIN)" prop="vin" borderBottom>
+						<u--input v-model="carForm.vin" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
 					</u-form-item>
-					<u-form-item label="首次登记日期" prop="registrDate" borderBottom @click="showDate = true">
+					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom @click="showDate = true">
 						<u--input
-							v-model="carForm.registrDate"
+							v-model="carForm.firstRegistDate"
 							disabled
 							disabledColor="#ffffff"
 							placeholder="请选择登记日期"
@@ -65,17 +65,23 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="品牌/年代/型号" prop="model" borderBottom>
-						<u--input v-model="carForm.model" border="none" placeholder="请输入品牌/年代/型号"></u--input>
+					<u-form-item label="品牌" :required="true" prop="brand" borderBottom>
+						<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌"></u--input>
+					</u-form-item>
+					<u-form-item label="年份" :required="true" prop="year" borderBottom>
+						<u--input v-model="carForm.year" border="none" placeholder="请输入年份"></u--input>
+					</u-form-item>
+					<u-form-item label="型号" :required="true" prop="model" borderBottom>
+						<u--input v-model="carForm.model" border="none" placeholder="请输入型号"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" prop="mileage" borderBottom>
 						<u--input v-model="carForm.mileage" border="none" placeholder="请输入里程数"></u--input>
 					</u-form-item>
-					<u-form-item label="特殊约定" prop="otherInfor" borderBottom>
-						<u--input v-model="carForm.otherInfor" border="none" placeholder="请输入特殊约定"></u--input>
+					<u-form-item label="特殊约定" prop="remarks" borderBottom>
+						<u--input v-model="carForm.remarks" border="none" placeholder="请输入特殊约定"></u--input>
 					</u-form-item>
-					<u-form-item label="收车金额" prop="putAmount" borderBottom>
-						<u-input v-model="carForm.putAmount" border="none" placeholder="请输入收车金额">
+					<u-form-item label="收车金额" prop="vehicleReceiptAmount" borderBottom>
+						<u-input v-model="carForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额">
 							<template slot="suffix"><view>元</view></template>
 						</u-input>
 					</u-form-item>
@@ -85,9 +91,9 @@
 						</u-input>
 					</u-form-item>
 					<view @click="handleDetail">预计产生960元费用，利润5040元。明细请查看。</view>
-					<u-form-item label="卖车方式" :required="true" prop="way" borderBottom>
+					<u-form-item label="卖车方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group
-							v-model="carForm.way"
+							v-model="carForm.sellType"
 							placement="row"
 						>
 							<u-radio
@@ -104,7 +110,7 @@
 				<!-- 选择登记日期 -->
 				<u-datetime-picker
 					:show="showDate"
-					v-model="carForm.registrDate"
+					v-model="carForm.firstRegistDate"
 					mode="date"
 					:formatter="formatter"
 					@cancel="showDate = false"
@@ -125,17 +131,9 @@
 						<view>利润：5,040元</view>
 					</view>
 				</u-modal>
-				<!-- 保存草稿 -->
-				<u-popup :show="showPopup" mode="bottom">
-					<uni-card :is-shadow="false" is-full>
-						<button @click="handleDraft" class="button">保存草稿</button>
-						<button @click="handleGive" class="button">放弃编辑</button>
-						<button @click="handleCancel" class="button" style="margin-bottom: 10px;">取消</button>
-					</uni-card>
-				</u-popup>
 				<!-- 底部按钮 -->
 				<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
-				<button @click="handleSaveCar" class="button" v-if="vehicleInfor">保存</button>
+				<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
 			</view>
 			<!-- 买家信息 -->
 			<view v-if="sellerInfor">
@@ -147,21 +145,18 @@
 					ref="sellerForm"
 					labelWidth="120px"
 				>
-					<u-form-item label="身份证号" :required="true" prop="ID" borderBottom>
-						<u--input v-model="sellerForm.ID" border="none" placeholder="请输入身份证号"></u--input>
+					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
+						<u--input v-model="sellerForm.buyerIdCard" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<u-upload :fileList="fileList4" @afterRead="afterRead" @delete="deletePic" name="1" multiple
-								:previewImage="false" width="60" height="60">
-								<text style="color: #50a8bc;">OCR</text>
-							</u-upload>
+							<text style="color: #50a8bc;" @click="handleOcr(4)">上传图片</text>
 						</view>
 					</u-form-item>
-					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
-						<u--input v-model="sellerForm.name" border="none" placeholder="请输入姓名">
+					<u-form-item label="姓名" :required="true" prop="buyerName" borderBottom>
+						<u--input v-model="sellerForm.buyerName" border="none" placeholder="请输入姓名">
 						</u--input>
 					</u-form-item>
-					<u-form-item label="电话" :required="true" prop="phone" borderBottom>
-						<u--input v-model="sellerForm.phone" border="none" placeholder="请输入11位手机号"></u--input>
+					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
+						<u--input v-model="sellerForm.buyerTel" border="none" placeholder="请输入11位手机号"></u--input>
 					</u-form-item>
 				</u--form>
 				<!-- 底部按钮 -->
@@ -173,9 +168,13 @@
 </template>
 
 <script>
+	import { urlTobase64 } from '@/utils/ruoyi.js'
+	import { getIdCard } from '@/api/register'
+	import { getSellCarInfo, setSellCarInfo } from '@/api/home/sellingCar.js'
 	export default {
 		data() {
 			return {
+				carId: null,
 				vehicleInfor: true,
 				sellerInfor: false,
 				active: 0,
@@ -201,70 +200,84 @@
 				],
 				// 车辆信息
 				carForm: {
-					drivingLicense: [],
-					registerFile: [],
-					carInfor: [],
-					frame: '',
-					engineNumber: '',
-					registrDate: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd'),
+					registerPicList: [],
+					drivingPicList: [],
+					carPicList: [],
+					vin: '',
+					engineNum: '',
+					firstRegistDate: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd'),
 					model: '',
+					brand: '',
+					year: '',
 					mileage: '',
-					otherInfor: '',
-					putAmount: '',
+					remarks: '',
+					vehicleReceiptAmount: '',
 					sellAmount: '',
-					way: ''
+					sellType: 0
 				},
 				// 车辆信息校验规则
 				carRules: {
-					registerFile: {
+					drivingPicList: {
 						type: 'string',
 						required: true,
 						message: '请上传传行驶证',
 						trigger: ['blur', 'change']
 					},
-					drivingLicense: {
+					registerPicList: {
 						type: 'string',
 						required: true,
 						message: '请上传机动车登记证书',
 						trigger: ['blur', 'change']
 					},
-					carInfor: {
+					carPicList: {
 						type: 'string',
 						required: true,
 						message: '请上传车辆图片',
 						trigger: ['blur', 'change']
 					},
-					engineNumber: {
+					engineNum: {
 						type: 'string',
 						required: true,
 						message: '请填写发动机编号',
 						trigger: ['blur', 'change']
 					},
-					frame: {
+					vin: {
 						type: 'string',
 						required: true,
 						message: '请填写车架号',
 						trigger: ['blur', 'change']
 					},
-					registrDate: {
+					firstRegistDate: {
 						type: 'string',
 						required: true,
 						message: '请选择登记日期',
 						trigger: ['blur', 'change']
 					},
+					brand: {
+						type: 'string',
+						required: true,
+						message: '请填写品牌',
+						trigger: ['blur', 'change']
+					},
+					year: {
+						type: 'string',
+						required: true,
+						message: '请填写年代',
+						trigger: ['blur', 'change']
+					},
 					model: {
 						type: 'string',
 						required: true,
-						message: '请填写品牌/年代/型号',
+						message: '请填写型号',
 						trigger: ['blur', 'change']
 					},
 					mileage: {
-						type: 'string',
+						type: 'number',
 						required: true,
 						message: '请填写里程数',
 						trigger: ['blur', 'change']
 					},
-					putAmount: {
+					vehicleReceiptAmount: {
 						type: 'number',
 						required: true,
 						message: '请填写收车金额',
@@ -276,7 +289,7 @@
 						message: '请填写卖车金额',
 						trigger: ['blur', 'change']
 					},
-					way: {
+					sellType: {
 						type: 'number',
 						required: true,
 						message: '请选择卖车方式',
@@ -293,19 +306,18 @@
 				}],
 				// 是否弹出登记日期
 				showDate: false,
-				// popup弹框
-				showPopup: false,
 				// 费用明细
 				showDetail: false,
 				// 卖家信息
 				sellerForm: {
-					ID: '',
-					name: '',
-					phone: ''
+					buyerIdCard: '',
+					buyerIdCardUrl: [],
+					buyerName: '',
+					buyerTel: ''
 				},
 				// 卖家信息校验规则
 				sellerRules: {
-					ID: [{
+					buyerIdCard: [{
 						required: true,
 						message: '请填写身份证号',
 						trigger: ['blur', 'change']
@@ -321,13 +333,13 @@
 						message:"身份证格式不正确",
 						trigger: ['blur', 'change']
 					}],
-					name: {
+					buyerName: {
 						type: 'string',
 						required: true,
 						message: '请填写姓名',
 						trigger: ['blur', 'change']
 					},
-					phone: [{
+					buyerTel: [{
 						type: 'string',
 						required: true,
 						message: '请填写手机号',
@@ -346,6 +358,22 @@
 					}]
 				}
 			}
+		},
+		onBackPress(options) {
+			if (this.active == 0) {
+				this.handleSaveCar();
+			} else if (this.active == 1) {
+				this.vehicleInfor = true;
+				this.sellerInfor = false;
+				this.active = 0;
+			}
+			return true;
+		},
+		onLoad(options) {
+			this.carId = options.id;
+			getSellCarInfo({ id: options.id }).then((res) => {
+				this.carForm = res.data;
+			})
 		},
 		methods: {
 			back() {
@@ -372,6 +400,69 @@
 			// 查看委托合同
 			handleLookEntrust() {
 				
+			},
+			// 点击OCR
+			handleOcr(index) {
+				let _this = this;
+				uni.showActionSheet({
+					title: "选择类型",
+					itemList: ['相册', '拍摄'],
+					success: async function(res) {
+						_this.chooseImages(index, res.tapIndex);
+					}
+				})
+			},
+			// 上传图片
+			chooseImages(index, tapIndex) {
+				let _this = this;
+				uni.chooseImage({
+					// count: 1,
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
+					success: async function(res) {
+						let str = await urlTobase64(res.tempFilePaths[0])
+						res.tempFilePaths.forEach((item) => {
+							_this[`fileList${index}`].push({
+								url: item,
+								status: 'uploading',
+								message: '上传中'
+							})
+						})
+						// 识别身份证
+						_this.sellerForm.buyerIdCardUrl = _this[`fileList${index}`];
+						getIdCard({ IDCardUrl: str }).then((ress) => {
+							let data = JSON.parse(ress.data);
+							_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
+							_this.sellerForm.buyerName = data.words_result['姓名'].words;
+							_this.upload(res, index);
+						})
+					}
+				})
+			},
+			upload(res, index) {
+				let _this = this;
+				uni.uploadFile({
+					url: 'http://172.17.10.127:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
+					file: res.tempFiles,
+					name: 'file',
+					formData: {
+						type: type
+					},
+					success: (ress) => {
+						let fileListLen = 0;
+						let data = JSON.parse(ress.data).data;
+						for (let i = 0; i < data.length; i++) {
+							let item = _this[`fileList${index}`][fileListLen]
+							_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
+								status: 'success',
+								message: '',
+								url: data[i].url,
+								id: data[i].id
+							}))
+							fileListLen++;
+						}
+					}
+				});
 			},
 			// 删除图片
 			deletePic(event) {
@@ -421,7 +512,7 @@
 			handleDate(e) {
 				this.$nextTick(() => {
 					const timeFormat = uni.$u.timeFormat;
-					this.carForm.registrDate = timeFormat(e.value, 'yyyy-mm-dd');
+					this.carForm.firstRegistDate = timeFormat(e.value, 'yyyy-mm-dd');
 					this.showDate = false;
 				})
 			},
@@ -432,41 +523,62 @@
 			// 下一步
 			handleStep() {
 				this.$refs.carForm.validate().then(res => {
-					this.vehicleInfor = false;
-					this.sellerInfor = true;
-					this.active = 1;
+					this.handleDraft('step');
 				})
 			},
 			// 点击车辆信息保存
 			handleSaveCar() {
-				this.showPopup = true;
+				uni.showActionSheet({
+					itemList: ['保存草稿', '放弃编辑'],
+					success: (res) => {
+						if (res.tapIndex == 0) {
+							this.handleDraft()
+						} else {
+							this.handleGive()
+						}
+					}
+				})
 			},
 			// 放弃编辑
 			handleGive() {
-				this.showPopup = false;
-				this.$tab.navigateBack();
+				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
 			// 保存车辆信息草稿
-			handleDraft() {
-				this.showPopup = false;
-				this.$modal.msg("保存草稿成功");
-			},
-			// 取消车辆信息保存
-			handleCancel() {
-				this.showPopup = false;
-				this.$modal.msgError("取消保存");
+			handleDraft(val) {
+				let data = {
+					id: this.carId,
+					remarks: this.carForm.remarks,
+					sellAmount: this.carForm.sellAmount,
+					buyerIdCard: this.sellerForm.buyerIdCard,
+					buyerName: this.sellerForm.buyerName,
+					buyerTel: this.sellerForm.buyerTel,
+					sellType: this.sellerForm.sellType
+				}
+				setSellCarInfo(data).then((res) => {
+					if (val == 'step') {
+						// 保存车辆信息并进行下一步
+						this.vehicleInfor = false;
+						this.sellerInfor = true;
+						this.active = 1;
+					} else if (val == 'entrust') {
+						// 保存买家信息并确认发起
+						this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
+					} else {
+						// 保存车辆草稿信息返回首页
+						this.$modal.msg("保存草稿成功");
+						this.$tab.reLaunch('/pages/index');
+					}
+				})
 			},
 			// 点击发起委托合同
 			handleEntrust() {
 				this.$refs.sellerForm.validate().then(res => {
-					this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
+					this.handleDraft('entrust');
 				})
 			},
 			// 点击卖家信息保存
 			handleSubmit() {
-				this.$refs.sellerForm.validate().then(res => {
-					
-				})
+				this.handleDraft();
 			}
 		}
 	}

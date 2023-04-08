@@ -24,6 +24,9 @@
 </template>
 
 <script>
+	import {
+		getQiyuesuo
+	} from '@/api/home/bycar.js'
 	export default {
 		data() {
 			return {
@@ -33,7 +36,9 @@
 		methods: {
 			// 查看
 			handleLook() {
-				this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
+				getQiyuesuo().then((res) => {
+					this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车&url='+res.data);
+				})
 			},
 			// 合同签章
 			handleAffirm() {
