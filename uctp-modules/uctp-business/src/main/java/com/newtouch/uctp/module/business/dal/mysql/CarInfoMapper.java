@@ -7,6 +7,7 @@ import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,5 +43,30 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     }
 
     PageResult<AppSellCarInfoPageRespVO> selectAppCellCarPage(AppSellCarInfoPageReqVO pageVO);
+
+    AppCarInfoAndDetailVO getCarInfoAndDetails(String id);
+
+    PicResp getCarDCDetails(String id);
+
+
+    AppCarCostVO getCarCosts(String id);
+
+
+    List<AppContractarVO> getContractInfo(String carID);
+
+    List<InvoicesInfoDO> getInvoicesInfo(String carID);
+
+    CarDCVo getCarDC(String carID);
+    List<CarDCVo> getCarIds(String carID);
+    List<CarDCVo> getDrivingLicenseIds(String carID);
+    List<CarDCVo> getCertificateIds(String carID);
+
+    List<CarDCVo> getContractIds(String contractID);
+
+    int updateContractStatas(@Param("vo") CarDCVo carDCVo);
+
+    PeopleVo getPeopelInfo(String carID);
+
+
 
 }

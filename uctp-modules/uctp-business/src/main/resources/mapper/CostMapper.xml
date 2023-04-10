@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.CostMapper">
+
+    <select id="getMyCosts" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppMyCostVO" parameterType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CostExample">
+        select
+                  uci.id,
+                  uci.BRAND,
+                  uci.YEAR,
+                  uci.MODEL,
+                  uci.VIN,
+                  uci.CREATOR,
+                  case when   uci.SALES_STATUS=1 then '出售中' when uci.SALES_STATUS=2 then '已出售' else  '未出售' end salesStatus,
+                  ucd.PROFIT,
+                  ucd.CAR_SALES_AMOUNT ,
+                  ucd.VEHICLE_RECEIPT_AMOUNT
+          from uctp_car_info uci left join uctp_car_info_details ucid
+          on uci.ID =ucid.CAR_ID
+          left join uctp_cost_detail ucd on uci.ID =ucd.MAIN_ID
+          where SALES_STATUS=2
+          <if test="example.year != null and example.year!='' ">
+              and substr(uci.SALES_TIME,1,4)=#{example.year}
+              <if test=" example.mon != null and example.mon!=''">
+                and substr(uci.SALES_TIME,6,2)=#{example.mon}
+              </if>
+          </if>
+
+           <if test="example.brand != null and example.brand !=''">
+
+              and uci.brand like CONCAT('%',#{example.brand},'%')
+          </if>
+    </select>
+
+    <select id="getMyCosts1" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppMyCostVO" >
+        select
+                  uci.id,
+                  uci.BRAND,
+                  uci.YEAR,
+                  uci.MODEL,
+                  uci.VIN,
+                  uci.CREATOR,
+                  case when   uci.SALES_STATUS=1 then '出售中' when uci.SALES_STATUS=2 then '已出售' else  '未出售' end salesStatus,
+                  ucd.PROFIT,
+                  ucd.CAR_SALES_AMOUNT ,
+                  ucd.VEHICLE_RECEIPT_AMOUNT
+          from uctp_car_info uci left join uctp_car_info_details ucid
+          on uci.ID =ucid.CAR_ID
+          left join uctp_cost_detail ucd on uci.ID =ucd.MAIN_ID
+          where SALES_STATUS=2
+          <if test="year != null and year!='' ">
+              and substr(uci.SALES_TIME,1,4)=#{example.year}
+              <if test=" mon = null and mon!=''">
+                and substr(uci.SALES_TIME,6,2)=#{example.mon}
+              </if>
+          </if>
+
+           <if test="brand != null and brand !=''">
+              and uci.brand like "%"#{brand}"%"
+          </if>
+    </select>
+
+</mapper>

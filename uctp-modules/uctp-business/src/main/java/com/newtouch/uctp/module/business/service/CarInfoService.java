@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.business.service;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -116,4 +117,99 @@ public interface CarInfoService {
      * @param reqVO
      */
     void saveSellCarInfo(AppSellCarInfoReqVO reqVO);
+
+    /**
+     * 获得车辆部分明细信息
+     *
+     * @param id
+     * @return 车辆部分明细信息
+     */
+
+
+    AppCarInfoAndDetailVO getCarInfoAndDetails(String id);
+
+    /**
+     * 获得车辆信息
+     *
+     * @param id
+     * @return 车辆部分信息
+     */
+
+
+    PicResp getCarDCDetails(String id);
+
+    /**
+     * 获得车辆费用信息
+     *
+     * @param id
+     * @return 车辆费用信息
+     */
+    AppCarCostVO getCarCosts(String id);
+
+    /**
+     * 获得车辆合同主表信息
+     *
+     * @param carID
+     * @return 车辆合同主表信息
+     */
+    List<AppContractarVO> getContractInfo(String carID);
+    /**
+     * 作废合同
+     *
+     * @param carDCVo
+     *
+     */
+    String updateContractStatas(CarDCVo carDCVo);
+    /**
+     * 获得车辆发票信息
+     *
+     * @param carID
+     * @return 车辆发票信息
+     */
+    List<InvoicesInfoDO> getInvoicesInfo(String carID);
+    /**
+     * 获得车辆驾驶证，行驶证编号
+     *
+     * @param carID
+     * @return 车辆驾驶证，行驶证编号
+     */
+    CarDCVo getCarDC(String carID);
+    /**
+     * 获得车辆在业务上传表中的id集合
+     *
+     * @param carID
+     * @return 车辆在业务上传表中的id集合
+     */
+    List<CarDCVo> getCarIds(String carID);
+    /**
+     * 获得车辆驾驶证在业务上传表中的id集合
+     *
+     * @param carID
+     * @return 车辆驾驶证在业务上传表中的id集合
+     */
+    List<CarDCVo> getDrivingLicenseIds(String carID);
+    /**
+     * 获得车辆行驶证在业务上传表中的id集合
+     *
+     * @param carID
+     * @return 车辆行驶证在业务上传表中的id集合
+     */
+    List<CarDCVo> getCertificateIds(String carID);
+    /**
+     * 获得合同在业务上传表中的id集合（查询url使用）
+     *
+     * @param contractID
+     * @return 合同在业务上传表中的id集合
+     */
+    List<CarDCVo> getContractIds(String contractID);
+
+    /**
+     * 获得卖家/买家信息
+     *
+     * @param carID
+     * @return PeopleVo
+     */
+    PeopleVo getPeopelInfo(String carID);
+
+
 }

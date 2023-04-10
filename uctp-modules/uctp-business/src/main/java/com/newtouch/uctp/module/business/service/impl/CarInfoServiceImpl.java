@@ -5,6 +5,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoAndDetailVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
+import com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
@@ -19,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -286,4 +294,68 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
         return maps;
     }
+    @Override
+    public AppCarInfoAndDetailVO getCarInfoAndDetails(String id) {
+        return carInfoMapper.getCarInfoAndDetails(id);
+    }
+
+    @Override
+    public PicResp getCarDCDetails(String id) {
+        return carInfoMapper.getCarDCDetails(id);
+    }
+
+    @Override
+    public AppCarCostVO getCarCosts(String id) {
+        return carInfoMapper.getCarCosts(id);
+    }
+
+    @Override
+    public List<AppContractarVO> getContractInfo(String carID) {
+        return carInfoMapper.getContractInfo(carID);
+    }
+
+    @Override
+    public String updateContractStatas(CarDCVo carDCVo) {
+        String result="更新失败";
+        int i=carInfoMapper.updateContractStatas(carDCVo);
+        if (i>0)
+            result="更新失败";
+        return result;
+    }
+
+    @Override
+    public List<InvoicesInfoDO> getInvoicesInfo(String id) {
+        return carInfoMapper.getInvoicesInfo(id);
+    }
+
+    @Override
+    public CarDCVo getCarDC(String carID) {
+        return carInfoMapper.getCarDC(carID);
+    }
+
+    @Override
+    public List<CarDCVo> getCarIds(String carID) {
+        return carInfoMapper.getCarIds(carID);
+    }
+
+    @Override
+    public List<CarDCVo> getDrivingLicenseIds(String carID) {
+        return carInfoMapper.getDrivingLicenseIds(carID);
+    }
+
+    @Override
+    public List<CarDCVo> getCertificateIds(String carID) {
+        return carInfoMapper.getCertificateIds(carID);
+    }
+
+    @Override
+    public List<CarDCVo> getContractIds(String contractID) {
+        return carInfoMapper.getContractIds(contractID);
+    }
+
+    @Override
+    public PeopleVo getPeopelInfo(String carID) {
+        return carInfoMapper.getPeopelInfo(carID);
+    }
+
 }

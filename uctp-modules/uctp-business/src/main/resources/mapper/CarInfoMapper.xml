@@ -93,4 +93,194 @@
         </where>
         order by a.CREATE_TIME desc
     </select>
+
+
+
+
+    <select id="getCarInfoAndDetails" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoAndDetailVO">
+     select
+              uci.id,
+              uci.BRAND,
+              uci.YEAR,
+              uci.MODEL,
+              ucid.MILEAGE,
+              uci.VIN,
+              uci.CREATE_TIME as createTime,
+              ucid.CERTIFICATE_NO as certificateNo,
+              ucid.DRIVING_lICENSE as drivingLicense,
+              uci.SALES_STATUS as salesStatus,
+              uci.CHECK_STATUS as checkStatus,
+              DATEDIFF(CURDATE(), uci.CREATE_TIME) inStockTime,
+              ucid.pay_type as payType,
+              ucid.remit_type as remitType,
+              ucid.FIRST_REGIST_DATE as firsRegistration,
+              ucid.FIRST_REGIST_DATE as firstRegistDate,
+              uci.CREATOR as operator,
+              ENGINE_NUM as engineNum
+      from uctp_car_info uci left join uctp_car_info_details ucid
+      on uci.ID =ucid.CAR_ID
+      where uci.id=#{id}
+    </select>
+
+ <select id="getCarDCDetails" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.PicResp">
+     select
+
+
+              ucid.FIRST_REGIST_DATE as firstRegistDate,
+
+              ENGINE_NUM as engineNum
+      from  uctp_car_info_details ucid
+
+      where ucid.CAR_ID=#{id}
+    </select>
+
+    <select id="getCarCosts" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO">
+        select
+            MAIN_ID as mainID,
+            VEHICLE_RECEIPT_AMOUNT  as vehicleReceiptAmount,
+            TESTING_FEE as testingFee,
+            OPERATION_FEE as operationFee,
+            TRANSFER_FEE as transferFee,
+            TAXATION ,
+            OTHER_TAXATION as otherTaxation,
+            CAR_SALES_AMOUNT as carSalesAmount,
+            PROFIT,
+            case when PAY_TYPE='1' then '支付成功' when PAY_TYPE='0' then '支付失败' else '' end payType,
+            (IFNULL(VEHICLE_RECEIPT_AMOUNT,0)+IFNULL(TESTING_FEE+OPERATION_FEE,0)+IFNULL(TRANSFER_FEE+TAXATION,0)+IFNULL(OTHER_TAXATION,0) ) costCount
+        from uctp_cost_detail
+        where MAIN_ID=#{id}
+    </select>
+
+    <select id="getContractInfo1" resultType="com.newtouch.uctp.module.business.domain.app.ContractarInfoDO">
+         select
+            ID,
+            CONTRACT_ID as contractId,
+            CONTRACT_NAME as contractName,
+            CONTRACT_TYPE as contractType,
+            START_TIME as startTime,
+            END_TIME as endTime,
+            STATUS,
+            BUSINESS_ID as businessId,
+            TENANT_ID as tenantId,
+            CREATED_BY as reatedBy,
+            CREATED_TIME as createdTime,
+            UPDATED_BY as updatedBy,
+            UPDATED_TIME as updatedTime,
+            CAR_ID as carID
+        from uctp_contract_log ucl
+        where CAR_ID=#{carID}
+    </select>
+
+    <select id="getContractInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO">
+        select
+            ucm.CAR_ID as carID,
+            ucm.NUMBER as contractID,
+            ucm.NAME as contractName,
+            ucm.CONTRACT_TYPE as contractType,
+            ucm.STATUS ,
+            ucid.collection
+        from uctp_contract_management ucm left join uctp_car_info_details ucid
+        on ucid.CAR_ID =ucm.CAR_ID
+        where ucm.CAR_ID=#{carID}
+    </select>
+
+    <update id="updateContractStatas" parameterType="map">
+        update
+            uctp_contract_management set STATUS='2'
+        where NUMBER=#{vo.contractID}
+    </update>
+
+    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO">
+
+        select
+            id,
+            INVOICE_TYPE as invoiceType,
+            BUSINESS as business,
+            NAME ,
+            AMOUNT_MONEY as amountMoney,
+            TAX ,
+            STATUS,
+            TENANT_ID as tenantId,
+            CREATED_BY as reatedBy,
+            CREATED_TIME as createdTime,
+            UPDATED_BY as updatedBy,
+            UPDATED_TIME as updatedTime
+        from uctp_invoices_management uim where id =#{id}
+    </select>
+
+    <select id="getCarDC"  resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
+
+     select
+     	DRIVING_lICENSE as drivingLicense,
+     	CERTIFICATE_NO as certificateNo
+
+     from
+     uctp_car_info_details
+      where CAR_ID =#{carID}
+
+    </select>
+
+    <select id="getCarIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
+
+     select
+     	ubf.id as longId
+     from
+     uctp_car_info_details ucid inner join uctp_business_file ubf
+     on ucid.CAR_ID =ubf.MAIN_ID
+
+     where CAR_ID =#{carID}
+
+    </select>
+
+    <select id="getDrivingLicenseIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
+
+     select
+     	ubf.id as longId
+     from
+     uctp_car_info_details ucid inner join uctp_business_file ubf
+     on ucid.DRIVING_lICENSE =ubf.MAIN_ID
+
+     where CAR_ID =#{carID}
+
+    </select>
+
+    <select id="getCertificateIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
+
+
+    select
+     	ubf.id as longId
+     from
+     uctp_car_info_details ucid inner join uctp_business_file ubf
+     on ucid.CERTIFICATE_NO =ubf.MAIN_ID
+     where CAR_ID =#{carID}
+    </select>
+
+    <select id="getContractIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
+
+
+    select
+     	ubf.id as longId,
+     	ucm.number as contractID
+     from uctp_contract_management ucm inner join uctp_business_file ubf
+     on ucm.NUMBER =ubf.MAIN_ID
+     where ucm.NUMBER =#{contractID}
+    </select>
+
+    <select id="getPeopelInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.PeopleVo">
+        select
+            SELLER_ID_CARD as sellerIdCard,
+            SELLER_NAME as sellerName,
+            SELLER_TEL as sellerTel,
+            collection,
+            THIRD_SELLER_NAME as thirdSellerName,
+            REMIT_TYPE as remitType,
+            THIRD_BANK_CARD as thirdBankCard,
+            BUYER_ID_CARD as buyerIdCard,
+            BUYER_NAME as buyerName,
+            BUYER_TEL buyerTel
+        from uctp_car_info_details
+        where CAR_ID =#{carID}
+    </select>
+
+
 </mapper>

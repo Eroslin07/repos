@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.CostMapper">
+
+    <select id="getNotices" resultType="com.newtouch.uctp.module.business.domain.app.NoticeInfoDO" >
+        select
+            ID
+            ,TITLE
+            ,CONTENT
+            ,TYPE
+            ,PHONE
+            ,BUSINESS_ID as businessId
+            ,TENANT_ID as tenantId
+            ,CREATED_BY as createdBy
+            ,CREATED_TIME as createdTime
+            ,UPDATED_BY as updatedBy
+            ,UPDATED_TIME as updatedTime
+        from uctp_notice
+    </select>
+
+
+
+</mapper>

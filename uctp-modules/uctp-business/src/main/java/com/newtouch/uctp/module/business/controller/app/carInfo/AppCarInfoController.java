@@ -6,6 +6,9 @@ import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.util.DownLoadUtils;
+import com.newtouch.uctp.module.infra.api.file.FileApi;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,12 +16,18 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.newtouch.uctp.framework.common.pojo.CommonResult.error;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
 @Tag(name =  "App管理 - 车辆管理")
@@ -28,6 +37,9 @@ import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 public class AppCarInfoController {
     @Resource
     private CarInfoService carInfoService;
+
+    @Resource
+    private FileApi fileApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建车辆主表")
@@ -128,4 +140,168 @@ public class AppCarInfoController {
         carInfoService.saveSellCarInfo(reqVO);
         return success(true);
     }
+
+    @GetMapping("/getDetailds")
+    @Operation(summary = "获得车辆明细信息")
+    public CommonResult<AppCarInfoAndDetailVO> getCarInfoAndDetails(@Valid CarDCVo carDCVo) {
+
+
+        try {
+
+            //CarDCVo carDC = carInfoService.getCarDC("1644597512931184642");
+            List<CarDCVo> carIds = carInfoService.getCarIds(carDCVo.getId().toString());
+            List<Long> cars = new ArrayList<>();
+
+            for (CarDCVo carId : carIds) {
+                cars.add(carId.getLongId());
+            }
+
+            CommonResult<List<FileRespDTO>> listcarIds = fileApi.fileList(cars);
+            //车辆图片
+            List<String> carPics = new ArrayList<>();
+            for (FileRespDTO datum : listcarIds.getData()) {
+                carPics.add(datum.getUrl());
+            }
+            AppCarInfoAndDetailVO pageResult = carInfoService.getCarInfoAndDetails(carDCVo.getId().toString());
+            pageResult.setCarPic(carPics);
+            return success(pageResult);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+
+        }
+       return error(500,"服务器内部错误，请联系管理员处理");
+    }
+
+    @GetMapping("/getPics")
+    @Operation(summary = "获得车辆相关图片信息")
+    public CommonResult<PicResp>  getPics(@Valid CarDCVo carDCVo) {
+    //可以传car_id 和传行驶证，驾驶证号
+        CarDCVo carDC =carInfoService.getCarDC(carDCVo.getCertificateNo());
+        List<CarDCVo>  certificatePic=carInfoService.getCertificateIds(carDC.getCertificateNo());
+        List<CarDCVo> drivingPic =carInfoService.getDrivingLicenseIds(carDC.getDrivingLicense());
+        List<Long> certificates=new ArrayList<>();
+        List<Long> drivers=new ArrayList<>();
+
+        for (CarDCVo carDCVo1 : certificatePic) {
+            certificates.add(carDCVo1.getLongId());
+        }
+        for (CarDCVo carDCVo1 : drivingPic) {
+            drivers.add(carDCVo1.getLongId());
+        }
+        CommonResult<List<FileRespDTO>> listCertificates = fileApi.fileList(certificates);
+        CommonResult<List<FileRespDTO>> listDrivers = fileApi.fileList(drivers);
+
+        //行驶证图片
+        List<String> drivingPics=new ArrayList<>();
+        //驾驶证图片
+        List<String> certificatePics=new ArrayList<>();
+
+        for (FileRespDTO datum : listCertificates.getData()) {
+            certificatePics.add(datum.getUrl());
+        }
+
+        for (FileRespDTO datum : listDrivers.getData()) {
+            drivingPics.add(datum.getUrl());
+        }
+
+        PicResp picResp =carInfoService.getCarDCDetails(carDCVo.getId().toString());
+        picResp.setDrivingPics(drivingPics);
+        picResp.setCertificatePics(certificatePics);
+        return success(picResp);
+    }
+
+
+    @GetMapping("/getCarCosts/{id}")
+    @Operation(summary = "获得资金信息")
+    public CommonResult<AppCarCostVO> getCarCosts(@PathVariable String id) {
+        AppCarCostVO pageResult = carInfoService.getCarCosts(id);
+        return success(pageResult);
+    }
+
+    @GetMapping("/getContractInfo")
+    @Operation(summary = "获得合同主表信息")
+    public CommonResult<List<AppContractarVO>> getContractInfo(@RequestParam("carID")  String carID) {
+        List<AppContractarVO> pageResult = carInfoService.getContractInfo(carID);
+        List<AppContractarVO> pageResult1 =null;
+        for (AppContractarVO appContractarVO : pageResult) {
+           pageResult1.add(setContractUrl(appContractarVO));
+        }
+
+        return success(pageResult1);
+    }
+
+    @PostMapping("/updateContractStatas")
+    @Operation(summary = "作废合同状态")
+    public CommonResult<String> updateContractStatas(@RequestBody  CarDCVo carDCVo) {
+        return success(carInfoService.updateContractStatas(carDCVo));
+    }
+
+    @GetMapping("/downLoadContract/{filePath}")
+    @Operation(summary = "通过路径下载合同")
+    //public void downLoadContract(@PathVariable String filePath,@PathVariable String fileName,HttpServletRequest request,HttpServletResponse response) throws IOException {
+    public void downLoadContract(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        List<Map<String ,String>> list=new ArrayList<>();
+//        for (Map<String, String> map : list) {
+//            File file =new File(map.get("filePath"));
+        //File file = DownLoadUtils.getResourceFile(map.get("filePath"));
+//            DownLoadUtils.outFileByFile(map.get("fileName")+".pdf",file,false,request,response);
+//        }
+        String fName="/Users/huangr/newtouch/测试.pdf";
+        File tempFile =new File( fName.trim());
+        //File file = DownLoadUtils.getResourceFile("/Users/huangr/newtouch/测试.pdf");
+        DownLoadUtils.outFileByFile("测试.pdf",tempFile,false,request,response);
+
+    }
+
+    @GetMapping("/download-one")
+    @Operation(summary = "通过路径下载单个文件")
+    public void downLoadone(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
+       // String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
+        File file = DownLoadUtils.getResourceFile(example.getUrl());
+        DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
+        //DownLoadUtils.outFileByFile("测试",file,false,request,response);
+
+    }
+    @GetMapping("/download-more")
+    @Operation(summary = "多文件下载")
+    public void downLoadmore(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
+        File file = DownLoadUtils.getResourceFile(url);
+        DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
+        //DownLoadUtils.outFileByFile("测试",file,false,request,response);
+
+    }
+
+    @GetMapping("/getPeopleInfo")
+    @Operation(summary = "卖家/买家信息查询")
+    public CommonResult<PeopleVo> getPeopleInfo(@RequestParam("carID")  String carID) {
+        PeopleVo pageResult = carInfoService.getPeopelInfo(carID);
+        return success(pageResult);
+    }
+
+
+
+    /**
+     * 将合同的url放到实体中
+     */
+    private AppContractarVO setContractUrl(AppContractarVO appContractarVO){
+
+        CommonResult<List<FileRespDTO>> listCertificates =null;
+
+        List<Long> contractList=new ArrayList<>();
+        List<CarDCVo> contractIds= carInfoService.getContractIds(appContractarVO.getContractID()) ;//一条合同数据的ids;正常情况一个合同只会有一个pdf文件
+        for (CarDCVo contractId : contractIds) {
+            contractList.add(contractId.getLongId());
+        }
+        listCertificates= fileApi.fileList(contractList);
+        for (FileRespDTO datum : listCertificates.getData()) {
+
+            appContractarVO.setUrl(datum.getUrl());
+        }
+        return appContractarVO;
+    }
+
+
+
+
 }
