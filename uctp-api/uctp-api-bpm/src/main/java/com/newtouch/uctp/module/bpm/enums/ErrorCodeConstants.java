@@ -36,6 +36,9 @@ public interface ErrorCodeConstants {
     ErrorCode PROCESS_DEFINITION_NOT_EXISTS = new ErrorCode(1009003002, "流程定义不存在");
     ErrorCode PROCESS_DEFINITION_IS_SUSPENDED = new ErrorCode(1009003003, "流程定义处于挂起状态");
     ErrorCode PROCESS_DEFINITION_BPMN_MODEL_NOT_EXISTS = new ErrorCode(1009003004, "流程定义的模型不存在");
+    ErrorCode PROCESS_BUSI_KEY_NOT_EXISTS = new ErrorCode(1009003005, "流程业务ID不存在");
+    ErrorCode PROCESS_BUSI_RUNING = new ErrorCode(1009003006, "流程已发起，不能重复提交");
+    ErrorCode PROCESS_BUSI_APPROVALING = new ErrorCode(1009003007, "流程已不在审批中，不能提交");
 
     // ========== 流程实例 1-009-004-000 ==========
     ErrorCode PROCESS_INSTANCE_NOT_EXISTS = new ErrorCode(1009004000, "流程实例不存在");

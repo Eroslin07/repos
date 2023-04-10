@@ -1,17 +1,19 @@
 package com.newtouch.uctp.module.bpm.service.task;
 
-import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
-import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
-import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.validation.Valid;
+
 import org.flowable.engine.delegate.event.FlowableCancelledEvent;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.runtime.ProcessInstance;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
+import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
+import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
 
 /**
  * 流程实例 Service 接口
@@ -63,6 +65,15 @@ public interface BpmProcessInstanceService {
      * @return 实例的编号
      */
     String createProcessInstance(Long userId, @Valid BpmProcessInstanceCreateReqVO createReqVO);
+
+    /**
+     * 创建流程实例（提供给前端）
+     *
+     * @param userId 用户编号
+     * @param createReqVO 创建信息
+     * @return 实例的编号
+     */
+    String createProcessInstanceV2(Long userId, @Valid BpmProcessInstanceCreateReqVO createReqVO);
 
     /**
      * 创建流程实例（提供给内部）

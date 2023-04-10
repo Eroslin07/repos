@@ -2,14 +2,39 @@ package com.newtouch.uctp.module.bpm.service.task;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.delegate.event.FlowableCancelledEvent;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
 import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmProcessInstanceConvert;
 import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmProcessDefinitionExtDO;
+import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmProcessInstanceExtDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.task.BpmProcessInstanceExtMapper;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
@@ -21,23 +46,6 @@ import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
 import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
-import lombok.extern.slf4j.Slf4j;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.delegate.event.FlowableCancelledEvent;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.repository.ProcessDefinition;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.convertList;
@@ -80,6 +88,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     private BpmProcessInstanceResultEventPublisher processInstanceResultEventPublisher;
     @Resource
     private BpmMessageService messageService;
+    @Resource
+    private BpmFormDataService bpmFormDataService;
+    @Resource
+    private BpmFormMainMapper bpmFormMainMapper;
+
+
     @Override
     public ProcessInstance getProcessInstance(String id) {
         return runtimeService.createProcessInstanceQuery().processInstanceId(id).singleResult();
@@ -113,6 +127,42 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionId());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String createProcessInstanceV2(Long userId, @Valid BpmProcessInstanceCreateReqVO createReqVO) {
+        // 获得流程业务ID
+        String businessKey = StrUtil.toStringOrNull(createReqVO.getVariables().get("businessKey"));
+        if (!StringUtils.hasText(businessKey)) {
+            throw exception(PROCESS_BUSI_KEY_NOT_EXISTS);
+        }
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 0) {
+            throw exception(PROCESS_BUSI_RUNING);
+        }
+
+        // 获得流程定义
+        ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionId());
+
+        HashMap<String, Object> formDataObject = (HashMap<String, Object>) createReqVO.getVariables().get("formDataJson");
+        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataObject);
+        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataObject);
+        formMainDataObject.put("status", 1);
+        formMainDataObject.put("procDefId", definition.getId());
+        formMainDataObject.put("startUserId", userId);
+        formMainDataObject.put("submitTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        formDataObject.put(workFlowMainEntityAlias, formMainDataObject);
+        this.bpmFormDataService.saveDataObject(Long.valueOf(businessKey), formDataObject);
+
+        // 发起流程
+        String procInstId = createProcessInstance0(userId, definition, createReqVO.getVariables(), businessKey);
+        BpmFormMainDO updateBpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        updateBpmFormMainDO.setProcInstId(procInstId);
+        updateBpmFormMainDO.setDoneTime(LocalDateTime.now());
+        bpmFormMainMapper.updateById(updateBpmFormMainDO);
+
+        return procInstId;
     }
 
     @Override
