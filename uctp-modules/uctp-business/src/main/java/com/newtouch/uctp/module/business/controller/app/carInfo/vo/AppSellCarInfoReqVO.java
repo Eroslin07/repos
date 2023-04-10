@@ -24,7 +24,7 @@ public class AppSellCarInfoReqVO {
     @Schema(description = "买家电话")
     private String buyerTel;
     @Schema(description = "收款方式")
-    private Integer paymentType;
+    private Integer sellType;
     @Schema(description = "身份证正反面图片id")
     private List<Long> IdCardIds;
 
