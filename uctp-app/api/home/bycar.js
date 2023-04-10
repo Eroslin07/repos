@@ -27,10 +27,18 @@ export function setSellerInfo(data) {
 	})
 }
 
-// 
+// 合同签章
 export function getQiyuesuo() {
 	return request({
 		url: '/uctp/car-info/qiyuesuo',
+		'method': 'GET'
+	})
+}
+
+// 取消合同签章
+export function getCancelContract() {
+	return request({
+		url: '/uctp/car-info/cancelContract',
 		'method': 'GET'
 	})
 }

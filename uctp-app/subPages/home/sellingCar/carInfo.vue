@@ -25,18 +25,18 @@
 				>
 					<u-collapse accordion>
 						<u-collapse-item
-							title="行驶证"
-							name="drivingPicList"
-						>
-							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
-							<u-album :urls="carForm.drivingPicList" maxCount="4" rowCount="4"></u-album>
-						</u-collapse-item>
-						<u-collapse-item
 							title="车辆图片"
 							name="carPicList"
 						>
 							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
 							<u-album :urls="carForm.carPicList" maxCount="4" rowCount="4"></u-album>
+						</u-collapse-item>
+						<u-collapse-item
+							title="行驶证"
+							name="drivingPicList"
+						>
+							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
+							<u-album :urls="carForm.drivingPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 						<u-collapse-item
 							title="机动车登记证书"
@@ -52,6 +52,9 @@
 					<u-form-item label="车架号(VIN)" prop="vin" borderBottom>
 						<u--input v-model="carForm.vin" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
 					</u-form-item>
+					<u-form-item label="使用性质" prop="natureOfOperat" borderBottom>
+						<u--input v-model="carForm.natureOfOperat" border="none" placeholder="请输入使用性质"></u--input>
+					</u-form-item>
 					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom @click="showDate = true">
 						<u--input
 							v-model="carForm.firstRegistDate"
@@ -65,17 +68,24 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="品牌" :required="true" prop="brand" borderBottom>
+					<u-form-item label="车牌号" prop="plateNum" borderBottom>
+						<u--input v-model="carForm.plateNum" border="none" placeholder="请输入车牌号"></u--input>
+					</u-form-item>
+					<u-form-item label="品牌" prop="brand" borderBottom>
 						<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌"></u--input>
 					</u-form-item>
-					<u-form-item label="年份" :required="true" prop="year" borderBottom>
-						<u--input v-model="carForm.year" border="none" placeholder="请输入年份"></u--input>
+					<u-form-item label="年代" prop="year" borderBottom>
+						<u--input v-model="carForm.year" border="none" placeholder="请输入年代"></u--input>
 					</u-form-item>
-					<u-form-item label="型号" :required="true" prop="model" borderBottom>
+					<u-form-item label="型号" prop="model" borderBottom>
 						<u--input v-model="carForm.model" border="none" placeholder="请输入型号"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" prop="mileage" borderBottom>
-						<u--input v-model="carForm.mileage" border="none" placeholder="请输入里程数"></u--input>
+						<u-input v-model="carForm.mileage" border="none" placeholder="请输入里程数">
+							<template slot="suffix">
+								<view>万公里</view>
+							</template>
+						</u-input>
 					</u-form-item>
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<u--input v-model="carForm.remarks" border="none" placeholder="请输入特殊约定"></u--input>
@@ -86,12 +96,12 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="carForm.sellAmount" border="none" placeholder="请输入卖车金额">
+						<u-input v-model="carForm.sellAmount" border="none" @blur="handleBlur" placeholder="请输入卖车金额">
 							<template slot="suffix"><view>元</view></template>
 						</u-input>
 					</u-form-item>
-					<view @click="handleDetail">预计产生960元费用，利润5040元。明细请查看。</view>
-					<u-form-item label="卖车方式" :required="true" prop="sellType" borderBottom>
+					<view @click="handleDetail">预计产生{{ carForm.total }}元费用，利润{{ carForm.profit }}元。明细请查看。</view>
+					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group
 							v-model="carForm.sellType"
 							placement="row"
@@ -119,16 +129,15 @@
 				<!-- 费用明细 -->
 				<u-modal :show="showDetail" @confirm="showDetail = false">
 					<view>
-						<view>收车金额：150,000元</view>
-						<view>卖车金额：156,000元</view>
-						<view>过户服务费：200元</view>
-						<view>检测服务费：200元</view>
-						<view>运营服务费：200元</view>
-						<view>过户服务费：200元</view>
-						<view>增值税费用：100元</view>
-						<view>杂税费用：60元</view>
-						<view>合计费用：960元</view>
-						<view>利润：5,040元</view>
+						<view>收车金额：{{ amountDetails.vehicleReceiptAmount }}元</view>
+						<view>卖车金额：{{ amountDetails.sellAmount }}元</view>
+						<view>过户服务费：{{ amountDetails.transferSell }}元</view>
+						<view>运营服务费（卖家）：{{ amountDetails.operation }}元</view>
+						<view>过户服务费（买家）：{{ amountDetails.transferBuy }}元</view>
+						<view>增值税费用：{{ amountDetails.vat }}元</view>
+						<view>杂税费用：{{ amountDetails.tax }}元</view>
+						<view>合计费用：{{ amountDetails.total }}元</view>
+						<view>利润：{{ amountDetails.profit }}元</view>
 					</view>
 				</u-modal>
 				<!-- 底部按钮 -->
@@ -151,6 +160,18 @@
 							<text style="color: #50a8bc;" @click="handleOcr(4)">上传图片</text>
 						</view>
 					</u-form-item>
+					<u-form-item label=" " borderBottom v-if="fileList4.length != 0">
+						<view class="image">
+							<u-upload
+								v-if="fileList4.length"
+								:fileList="fileList4"
+								@delete="deletePic"
+								name="4"
+								width="70"
+								height="70"
+							></u-upload>
+						</view>
+					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="buyerName" borderBottom>
 						<u--input v-model="sellerForm.buyerName" border="none" placeholder="请输入姓名">
 						</u--input>
@@ -164,16 +185,25 @@
 				<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
 			</view>
 		</uni-card>
+		<!-- 遮罩层 -->
+		<u-overlay :show="showOverlay">
+			<view class="warp">
+				<u-loading-icon text="车辆详情加载中..." textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
+			</view>
+		</u-overlay>
 	</view>
 </template>
 
 <script>
+	import config from '@/config'
+	import { getAccessToken } from '@/utils/auth'
 	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import { getIdCard } from '@/api/register'
-	import { getSellCarInfo, setSellCarInfo } from '@/api/home/sellingCar.js'
+	import { getSellCarInfo, setSellCarInfo, getAmount } from '@/api/home/sellingCar.js'
 	export default {
 		data() {
 			return {
+				showOverlay: false,
 				carId: null,
 				vehicleInfor: true,
 				sellerInfor: false,
@@ -186,51 +216,43 @@
 				fileList3: [],
 				// 身份证信息
 				fileList4: [],
-				urls2: [
-					'https://cdn.uviewui.com/uview/album/1.jpg',
-					'https://cdn.uviewui.com/uview/album/2.jpg',
-					'https://cdn.uviewui.com/uview/album/3.jpg',
-					'https://cdn.uviewui.com/uview/album/4.jpg',
-					'https://cdn.uviewui.com/uview/album/5.jpg',
-					'https://cdn.uviewui.com/uview/album/6.jpg',
-					'https://cdn.uviewui.com/uview/album/7.jpg',
-					'https://cdn.uviewui.com/uview/album/8.jpg',
-					'https://cdn.uviewui.com/uview/album/9.jpg',
-					'https://cdn.uviewui.com/uview/album/10.jpg',
-				],
 				// 车辆信息
 				carForm: {
 					registerPicList: [],
 					drivingPicList: [],
 					carPicList: [],
 					vin: '',
+					natureOfOperat: '',
 					engineNum: '',
 					firstRegistDate: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd'),
+					plateNum: '',
 					model: '',
 					brand: '',
 					year: '',
 					mileage: '',
 					remarks: '',
 					vehicleReceiptAmount: '',
+					total: '',
+					profit: '',
 					sellAmount: '',
 					sellType: 0
 				},
 				// 车辆信息校验规则
 				carRules: {
 					drivingPicList: {
-						type: 'string',
+						type: 'array',
 						required: true,
 						message: '请上传传行驶证',
 						trigger: ['blur', 'change']
 					},
 					registerPicList: {
-						type: 'string',
+						type: 'array',
 						required: true,
 						message: '请上传机动车登记证书',
 						trigger: ['blur', 'change']
 					},
 					carPicList: {
-						type: 'string',
+						type: 'array',
 						required: true,
 						message: '请上传车辆图片',
 						trigger: ['blur', 'change']
@@ -296,6 +318,7 @@
 						trigger: ['blur', 'change']
 					}
 				},
+				amountDetails: {},
 				// 卖车方式
 				sexs: [{
 					label: '全款',
@@ -371,8 +394,14 @@
 		},
 		onLoad(options) {
 			this.carId = options.id;
+			this.showOverlay = true;
 			getSellCarInfo({ id: options.id }).then((res) => {
 				this.carForm = res.data;
+				this.carForm.sellType = 0;
+				this.showOverlay = false;
+			}).catch((error) => {
+				this.$modal.msg("查询失败");
+				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
 		},
 		methods: {
@@ -420,7 +449,6 @@
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
 					success: async function(res) {
-						let str = await urlTobase64(res.tempFilePaths[0])
 						res.tempFilePaths.forEach((item) => {
 							_this[`fileList${index}`].push({
 								url: item,
@@ -430,83 +458,60 @@
 						})
 						// 识别身份证
 						_this.sellerForm.buyerIdCardUrl = _this[`fileList${index}`];
-						getIdCard({ IDCardUrl: str }).then((ress) => {
-							let data = JSON.parse(ress.data);
-							_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
-							_this.sellerForm.buyerName = data.words_result['姓名'].words;
-							_this.upload(res, index);
-						})
+						for (let i = 0; i < res.tempFilePaths.length; i++) {
+							let str = await urlTobase64(res.tempFilePaths[i]);
+							getIdCard({ IDCardUrl: str }).then((ress) => {
+								let data = JSON.parse(ress.data);
+								if (data.words_result['公民身份号码']) {
+									_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
+									_this.sellerForm.buyerName = data.words_result['姓名'].words;
+								}
+								if (i == res.tempFilePaths.length - 1) {
+									_this.upload(res, index);
+								}
+							})
+						}
 					}
 				})
 			},
 			upload(res, index) {
 				let _this = this;
-				uni.uploadFile({
-					url: 'http://172.17.10.127:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
-					file: res.tempFiles,
-					name: 'file',
-					formData: {
-						type: type
-					},
-					success: (ress) => {
-						let fileListLen = 0;
-						let data = JSON.parse(ress.data).data;
-						for (let i = 0; i < data.length; i++) {
-							let item = _this[`fileList${index}`][fileListLen]
-							_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
-								status: 'success',
-								message: '',
-								url: data[i].url,
-								id: data[i].id
-							}))
-							fileListLen++;
+				for (let i = 0; i < res.tempFilePaths.length; i++) {
+					uni.uploadFile({
+						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						file: res.tempFiles[i],
+						name: 'file',
+						header: {
+							Authorization: 'Bearer ' + getAccessToken()
+						},
+						success: (ress) => {
+							setTimeout(() => {
+								let fileListLen = 0;
+								let data = JSON.parse(ress.data).data;
+								if (data) {
+									for (let i = 0; i < data.length; i++) {
+										let item = _this[`fileList${index}`][fileListLen]
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
+											status: 'success',
+											message: '',
+											url: data[i].url,
+											id: data[i].id
+										}))
+										fileListLen++;
+									}
+								} else {
+									_this.$modal.msg("上传失败");
+									_this[`fileList${index}`] = [];
+									_this.sellerForm.buyerIdCardUrl = [];
+								}
+							}, 1000)
 						}
-					}
-				});
+					});
+				}
 			},
 			// 删除图片
 			deletePic(event) {
 				this[`fileList${event.name}`].splice(event.index, 1)
-			},
-			// 新增图片
-			async afterRead(event) {
-				let lists = [].concat(event.file);
-				let fileListLen = this[`fileList${event.name}`].length;
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-				for (let i = 0; i < lists.length; i++) {
-					const result = await this.uploadFilePromise(lists[i].url)
-					let item = this[`fileList${event.name}`][fileListLen];
-					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
-						status: 'success',
-						message: '',
-						url: result
-					}))
-					fileListLen++
-				}
-			},
-			// 上传文件
-			uploadFilePromise(url) {
-				return new Promise((resolve, reject) => {
-					let a = uni.uploadFile({
-						url: 'http://192.168.2.21:7001/upload', // 仅为示例，非真实的接口地址
-						filePath: url,
-						name: 'file',
-						formData: {
-							user: 'test'
-						},
-						success: (res) => {
-							setTimeout(() => {
-								resolve(res.data.data)
-							}, 1000)
-						}
-					});
-				})
 			},
 			// 确认登记日期
 			handleDate(e) {
@@ -519,6 +524,17 @@
 			// 点击费用明细
 			handleDetail() {
 				this.showDetail = true;
+			},
+			handleBlur(val) {
+				let data = {
+					id: this.carId,
+					sellAmount: val
+				}
+				getAmount(data).then((res) => {
+					this.carForm.total = res.data.total;
+					this.carForm.profit = res.data.profit;
+					this.amountDetails = res.data;
+				})
 			},
 			// 下一步
 			handleStep() {
@@ -545,16 +561,19 @@
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
+				this.showOverlay = true;
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
 					sellAmount: this.carForm.sellAmount,
 					buyerIdCard: this.sellerForm.buyerIdCard,
+					idCardIds: this.fileList4.map((item) => { return item.id }),
 					buyerName: this.sellerForm.buyerName,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.sellerForm.sellType
 				}
 				setSellCarInfo(data).then((res) => {
+					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
 						this.vehicleInfor = false;
@@ -586,6 +605,13 @@
 
 <style lang="scss" scoped>
 	.selling-car {
+		.warp {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+		}
+		
 		/* #ifdef MP-WEIXIN */
 		/deep/ .uni-card--border {
 			border-bottom: none;

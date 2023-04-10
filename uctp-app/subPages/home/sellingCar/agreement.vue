@@ -24,7 +24,8 @@
 
 <script>
 	import {
-		getQiyuesuo
+		getQiyuesuo,
+		getCancelContract
 	} from '@/api/home/bycar.js'
 	export default {
 		data() {
@@ -45,11 +46,15 @@
 			},
 			// 取消合同签章
 			handleCancel() {
-				
+				getCancelContract().then((res) => {
+					this.$tab.navigateTo(`/subPages/common/webview/index?title=取消卖车合同签章&url=${res.data}`);
+				})
 			},
 			// 关闭
 			handleClose() {
-				
+				uni.navigateBack({
+					delta: 1
+				})
 			}
 		}
 	}

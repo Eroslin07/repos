@@ -18,6 +18,16 @@ export function getSellCarInfo(data) {
 	})
 }
 
+// 查询车辆明细金额数据
+export function getAmount(data) {
+	return request({
+		url: '/uctp/car-info/amount',
+		'method': 'GET',
+		params: data
+	})
+}
+
+
 // 保存卖车信息
 export function setSellCarInfo(data) {
 	return request({

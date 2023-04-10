@@ -9,8 +9,8 @@
 				v-for="(tab, tabIndex) in tabList"
 				:key="tabIndex"
 				:title="'VIN：'+tab.vin"
-				sub-title="创建时间：2023-03-16 14:10"
-				extra="车辆状态：代售已检测"
+				:sub-title="'创建时间：'+tab.createTime"
+				:extra="'车辆状态：'+tab.status"
 				is-full
 				@click="handleCard(tab.id)"
 				style="margin-top: 10px;"
@@ -20,7 +20,7 @@
 						<view style="height: 100px;border: 1px solid red;"></view>
 					</uni-col>
 					<uni-col :span="16">
-						<h3>{{tab.brand}}-{{tab.model}}</h3>
+						<h3>{{tab.brand}}-{{tab.year}}{{tab.model}}</h3>
 						<view>{{tab.year}}年 | {{tab.mileage | filterMile}}万公里</view>
 						<view style="color: #68b4c5;">{{tab.vehicleReceiptAmount}}元</view>
 					</uni-col>
@@ -30,7 +30,7 @@
 		<view class="warp" v-if="loading">
 			<u-loading-icon text="加载中..." textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
 		</view>
-		<!-- <u-modal
+		<u-modal
 			:show="show"
 			:showCancelButton="true"
 			confirmText="选择其它车辆"
@@ -39,7 +39,7 @@
 			@cancel="handleCancel"
 		>
 			<view>请先对该车辆进行检测处理，再进行卖车。</view>
-		</u-modal> -->
+		</u-modal>
 	</view>
 </template>
 
@@ -92,6 +92,7 @@
 			},
 			// 点击车辆卡片
 			handleCard(id) {
+				// this.show = true;
 				// this.$tab.navigateTo('/subPages/home/sellingCar/vehicleDetails');
 				// return
 				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id='+id);
