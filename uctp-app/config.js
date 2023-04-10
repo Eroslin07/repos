@@ -2,7 +2,10 @@
 module.exports = {
   // baseUrl: 'http://api-dashboard.uctp.cn',
   baseUrl: 'http://localhost:48080',
-  baseApi: '/admin-api',
+	// 上传路径
+	uploadUrl: 'http://172.17.10.127:48080/app-api/infra/file/upload',
+  // baseApi: '/admin-api',
+  baseApi: '/app-api',
   // 应用信息
   appInfo: {
     // 应用名称

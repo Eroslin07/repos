@@ -17,7 +17,6 @@
 				uni.setNavigationBarTitle({
 					title: '收车合同'
 				});
-				this.$tab.navigateTo(`/subPages/common/webview/index?title=契约锁&url=${options.url}`)
 			} else if (options.type == '卖车') {
 				uni.setNavigationBarTitle({
 					title: '卖车合同'

@@ -3,17 +3,7 @@
 		"path": "pages/login",
 		"style": {
 			"navigationBarTitleText": "登录",
-			"app-plus": {
-				"titleNView": {
-					"buttons": [{
-						"text": "银行LOGO",
-						"fontSrc": "",
-						"fontSize": "14px",
-						"float": "left",
-						"width": "65px"
-					}]
-				}
-			}
+			"navigationStyle": "custom"
 		}
 	}, {
 		"path": "pages/index",
