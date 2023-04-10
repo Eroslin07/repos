@@ -254,7 +254,7 @@ public class AppCarInfoController {
 
     }
 
-    @GetMapping("/download-one")
+    @PostMapping("/download-one")
     @Operation(summary = "通过路径下载单个文件")
     public void downLoadone(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
        // String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
@@ -263,12 +263,15 @@ public class AppCarInfoController {
         //DownLoadUtils.outFileByFile("测试",file,false,request,response);
 
     }
-    @GetMapping("/download-more")
+    @PostMapping ("/download-more")
     @Operation(summary = "多文件下载")
-    public void downLoadmore(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
-        File file = DownLoadUtils.getResourceFile(url);
-        DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
+    public void downLoadmore(@RequestBody DownloadMoreExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
+       // String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
+        for (DownloadExample exampleExample : example.getExamples()) {
+            File file = DownLoadUtils.getResourceFile(exampleExample.getUrl());
+            DownLoadUtils.outFileByFile(exampleExample.getName()+"."+exampleExample.getType(),file,false,request,response);
+        }
+
         //DownLoadUtils.outFileByFile("测试",file,false,request,response);
 
     }

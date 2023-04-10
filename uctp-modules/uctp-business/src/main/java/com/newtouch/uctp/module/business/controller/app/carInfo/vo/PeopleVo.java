@@ -11,7 +11,7 @@ public class PeopleVo {
     @Schema(description = "卖家身份证号")
     private String sellerIdCard;
     @Schema(description = "卖家姓名")
-    private Long sellerName;
+    private String sellerName;
     @Schema(description = "卖家电话")
     private String sellerTel;
     @Schema(description = "是否第3方代收")
@@ -26,7 +26,7 @@ public class PeopleVo {
     @Schema(description = "买家身份证号")
     private String buyerIdCard;
     @Schema(description = "买家姓名")
-    private Long buyerName;
+    private String buyerName;
     @Schema(description = "买家电话")
     private String buyerTel;
 
