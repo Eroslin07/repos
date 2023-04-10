@@ -23,9 +23,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UctpCarInfoSearchUtils {
     Log log = new Log4j2Log(UctpCarInfoSearchUtils.class);
@@ -34,7 +38,7 @@ public class UctpCarInfoSearchUtils {
      * GET请求
      *
      * @param modelId      modelId (⻋型ID) 必传
-     * @param zone         zone(城市标识ID/全国统⼀⾏政代码) 与carNo二选一
+     * @param carNo        carNo(⻋牌号)  必传
      * @param mile         mile(⻋辆⾏驶⾥程，单位是万公⾥) 必传
      * @param regDate      regDate(⻋辆上牌年-⽉或年-⽉-⽇) 必传
      * @param allLevel     allLevel(是否返回多⻋况,1是，0:否) 默认1
@@ -42,18 +46,24 @@ public class UctpCarInfoSearchUtils {
      * @param token        token(⻋300提供给客户的调⽤帐号,最长32位) 必传
      * @param coefficients coefficients车价浮动系数 默认0.2
      */
-    public HashMap CarFairValue(String modelId, String zone, String mile, String regDate, String allLevel, String token, String url, String coefficients) {
+    public HashMap CarFairValue(String modelId, String carNo, String mile, String regDate, String allLevel, String token, String url, String coefficients) throws UnsupportedEncodingException {
 //        url = "http://testapi.che300.com/service/getUsedCarPrice";
 //        token = "61f499b086392005f92009b91f8f966a";
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?token=" + token);
         urlParam.append("&modelId=" + modelId);
-        urlParam.append("&zone=" + zone);
+        urlParam.append("&carNo=" + carNo);
         urlParam.append("&mile=" + mile);
         urlParam.append("&regDate=" + regDate);
         urlParam.append("&allLevel=" + allLevel);
-        String getUrl = urlParam.toString();
+        //处理url中中文编码
+        Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
+        String getUrl = null;
+        while (matcher.find()) {
+            String tmp = matcher.group();
+            getUrl = urlParam.toString().replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
+        }
         // 创建httpClient实例对象
         HttpClient httpClient = new HttpClient();
         // 设置httpClient连接主机服务器超时时间：15000毫秒
@@ -160,19 +170,69 @@ public class UctpCarInfoSearchUtils {
         }
     }
 
-    public static void main(String[] args) {
+    /**
+     * GET请求
+     *
+     * @param brandName brandName(品牌名)
+     * @param url       url （接口地址）
+     * @param token     token(⻋300提供给客户的调⽤帐号,最长32位)
+     */
+    public void getCarBrandList(String token, String brandName, String url) throws UnsupportedEncodingException {
+
+        StringBuffer urlParam = new StringBuffer();
+
+        urlParam.append(url);
+        urlParam.append("?token=" + token);
+        urlParam.append("&brandName=" + brandName);
+
+        //处理url中中文编码
+        Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
+        String getUrl = null;
+        while (matcher.find()) {
+            String tmp = matcher.group();
+            getUrl = urlParam.toString().replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
+        }
+        // 创建httpClient实例对象
+        HttpClient httpClient = new HttpClient();
+        // 设置httpClient连接主机服务器超时时间：15000毫秒
+        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
+        // 创建GET请求方法实例对象
+        GetMethod getMethod = new GetMethod(getUrl);
+        // 设置post请求超时时间
+        getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 60000);
+        getMethod.addRequestHeader("Content-Type", "application/json");
+        try {
+            httpClient.executeMethod(getMethod);
+            String result = getMethod.getResponseBodyAsString();
+
+            getMethod.releaseConnection();
+        } catch (IOException e) {
+            log.error("GET请求发出失败，请求的地址为{}，参数为{}，错误信息为{}", url, getUrl, e.getMessage(), e);
+        }
+
+
+    }
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
         String url1 = "http://testapi.che300.com/service/getUsedCarPrice";
+
         String url2 = "http://testapi.che300.com/service/pv/exportModel";
+        String url3 = "http://testapi.che300.com/service/getCarBrandList";
         String token = "61f499b086392005f92009b91f8f966a";
-        String modelId = "1833853";
-        String zone = "28";
+        String modelId = "1128206";
+        String carNo = "川G2GG63";
         String mile = "4.0";
         String regDate = "2023-03-01";
         String allLevel = "1";
         String coefficients = "0.1";
+        String apiVersion = "v2";
+        String fromVersion = "3.5.6201";
+        String simple = "0";
         UctpCarInfoSearchUtils uctpCarInfoSearchUtils = new UctpCarInfoSearchUtils();
 //        uctpCarInfoSearchUtils.CarMotorcycleType("3.4.561", "0");
-        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, zone, mile, regDate, allLevel, token, url1, coefficients);
+        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, carNo, mile, regDate, allLevel, token, url1, coefficients);
+//        uctpCarInfoSearchUtils.CarMotorcycleType(url2, token, apiVersion, fromVersion, simple);
+        uctpCarInfoSearchUtils.getCarBrandList(token, "宝马", url3);
         System.out.println(map.toString());
     }
 }
