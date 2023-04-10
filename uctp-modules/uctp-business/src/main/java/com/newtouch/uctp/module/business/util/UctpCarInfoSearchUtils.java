@@ -60,10 +60,13 @@ public class UctpCarInfoSearchUtils {
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
         String getUrl = null;
+        String uri = urlParam.toString();
+
         while (matcher.find()) {
             String tmp = matcher.group();
-            getUrl = urlParam.toString().replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
+            uri = uri.replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
         }
+        getUrl = uri;
         // 创建httpClient实例对象
         HttpClient httpClient = new HttpClient();
         // 设置httpClient连接主机服务器超时时间：15000毫秒
@@ -105,8 +108,6 @@ public class UctpCarInfoSearchUtils {
                             dealer_low_sold_price = jsonObject.get("dealer_low_sold_price").toString();
                         }
                     }
-//                    System.out.println("dealer_high_sold_price------" + dealer_high_sold_price);
-//                    System.out.println("dealer_low_sold_price----------" + dealer_low_sold_price);
                 }
             }
             //  add():加法， subtract():减法:, multiply():乘法; divide():除法，
@@ -172,12 +173,18 @@ public class UctpCarInfoSearchUtils {
 
     /**
      * GET请求
+     * 品牌查询
      *
+     * @param token     token(⻋300提供给客户的调⽤帐号,最长32位)
      * @param brandName brandName(品牌名)
      * @param url       url （接口地址）
-     * @param token     token(⻋300提供给客户的调⽤帐号,最长32位)
+     *                  返回 json对象 {"update_time":"2016-01-27 14:28:31","initial":"B","brand_name":"宝马","brand_id":"7"}
+     *                  brand_id 品牌id
+     *                  brand_name 品牌名称
+     *                  initial 品牌名称拼音首字母
+     *                  update_time 更新时间
      */
-    public void getCarBrandList(String token, String brandName, String url) throws UnsupportedEncodingException {
+    public JSONObject getCarBrandList(String token, String brandName, String url) throws UnsupportedEncodingException {
 
         StringBuffer urlParam = new StringBuffer();
 
@@ -188,10 +195,12 @@ public class UctpCarInfoSearchUtils {
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
         String getUrl = null;
+        String uri = urlParam.toString();
         while (matcher.find()) {
             String tmp = matcher.group();
-            getUrl = urlParam.toString().replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
+            uri = uri.replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
         }
+        getUrl = uri;
         // 创建httpClient实例对象
         HttpClient httpClient = new HttpClient();
         // 设置httpClient连接主机服务器超时时间：15000毫秒
@@ -201,9 +210,23 @@ public class UctpCarInfoSearchUtils {
         // 设置post请求超时时间
         getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 60000);
         getMethod.addRequestHeader("Content-Type", "application/json");
+        JSONObject obj = new JSONObject();
         try {
             httpClient.executeMethod(getMethod);
             String result = getMethod.getResponseBodyAsString();
+            Map maps = JSON.parseObject(result);
+            for (Object map : maps.entrySet()) {
+                if (((Map.Entry) map).getKey().equals("brand_list")) {
+                    JSONArray jsonArray = (JSONArray) ((Map.Entry) map).getValue();
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                        if (jsonObject.get("brand_name").equals(brandName)) {
+                            obj = jsonObject;
+                        }
+                    }
+                }
+            }
+
 
             getMethod.releaseConnection();
         } catch (IOException e) {
@@ -211,6 +234,7 @@ public class UctpCarInfoSearchUtils {
         }
 
 
+        return obj;
     }
 
     public static void main(String[] args) throws UnsupportedEncodingException {
@@ -230,9 +254,10 @@ public class UctpCarInfoSearchUtils {
         String simple = "0";
         UctpCarInfoSearchUtils uctpCarInfoSearchUtils = new UctpCarInfoSearchUtils();
 //        uctpCarInfoSearchUtils.CarMotorcycleType("3.4.561", "0");
-        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, carNo, mile, regDate, allLevel, token, url1, coefficients);
+//        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, carNo, mile, regDate, allLevel, token, url1, coefficients);
 //        uctpCarInfoSearchUtils.CarMotorcycleType(url2, token, apiVersion, fromVersion, simple);
-        uctpCarInfoSearchUtils.getCarBrandList(token, "宝马", url3);
-        System.out.println(map.toString());
+        JSONObject obj = uctpCarInfoSearchUtils.getCarBrandList(token, "宝马", url3);
+        System.out.println(obj.toJSONString());
+//        System.out.println(map.toString());
     }
 }
