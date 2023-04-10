@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "用户 APP - 车辆售卖详情 Response VO")
@@ -31,7 +30,7 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     @Schema(description = "卖车金额")
     private BigDecimal sellAmount;
     @Schema(description = "创建时间")
-    private LocalDateTime firstRegistDate;
+    private String firstRegistDate;
     @Schema(description = "状态")
     private Integer status;
     @Schema(description = "里程数,保留2位小数")

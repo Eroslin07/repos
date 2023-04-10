@@ -7,7 +7,6 @@ import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @TableName("uctp_car_info_details")
 //@KeySequence("uctp_car_info_details_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
@@ -56,7 +55,7 @@ public class CarInfoDetailsDO extends BaseDO {
     /**
      * 首次/初次登记日期
      */
-    private LocalDateTime firstRegistDate;
+    private String firstRegistDate;
     /**
      * 行驶证编号
      */
