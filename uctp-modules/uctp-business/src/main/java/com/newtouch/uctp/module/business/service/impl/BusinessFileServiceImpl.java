@@ -4,6 +4,7 @@ package com.newtouch.uctp.module.business.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
@@ -41,8 +42,14 @@ public class BusinessFileServiceImpl implements BusinessFileService {
     }
 
     @Override
-    public List<FileRespDTO> getFileByMainId(Long mainId, String type) {
-        List<BusinessFileDO> list = businessFileMapper.getFileByMainId(mainId, type);
+    public void insertBatch(List<BusinessFileDO> fileDOList) {
+        businessFileMapper.insertBatch(fileDOList);
+    }
+
+
+    @Override
+    public List<FileRespDTO> getDTOByMainIdAndType(Long mainId, String fileType) {
+        List<BusinessFileDO> list = this.getByMainIdAndType(mainId, fileType);
         if (CollUtil.isEmpty(list)) {
             return ListUtil.empty();
         }
@@ -59,6 +66,18 @@ public class BusinessFileServiceImpl implements BusinessFileService {
             }
         });
         return dataList;
+    }
+
+    @Override
+    public List<BusinessFileDO> getByMainIdAndType(Long mainId, String fileType) {
+        return businessFileMapper.getFileByMainId(mainId, fileType);
+    }
+
+    @Override
+    public void deleteByMainIdAndType(Long mainId, String fileType) {
+        businessFileMapper.delete(new QueryWrapperX<BusinessFileDO>()
+                .eq("MAIN_ID", mainId)
+                .eq("FILE_TYPE",fileType));
     }
 
 }

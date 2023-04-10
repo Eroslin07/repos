@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -131,10 +130,4 @@ public class CarInfoDetailsDO extends BaseDO {
      * 买家姓名
      */
     private String buyerName;
-
-    /**
-     * 卖车时收款方式
-     */
-    private Integer sellType;
-
 }

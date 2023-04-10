@@ -23,7 +23,7 @@ public class AppHomeCarInfoPageReqVO extends PageParam {
     @Schema(description = "售卖状态")
     private Integer salesStatus;
     @Schema(description = "检测状态")
-    private Integer checkStatus;
+    private Integer status;
     @Schema(description = "收车时间", example = "[2022-07-01 00:00:00,2022-07-01 23:59:59]")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] pickUpTime;

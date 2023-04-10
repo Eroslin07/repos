@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
@@ -15,6 +16,9 @@ import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
+import com.newtouch.uctp.module.system.api.dict.DictDataApi;
+import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
+import com.newtouch.uctp.module.system.enums.DictTypeConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,9 @@ import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_SELL_AMOUNT_ERROR;
+import static com.newtouch.uctp.module.system.enums.DictTypeConstants.*;
+import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.DICT_TYPE_NOT_EXISTS;
 
 /**
  * 车辆主表 Service 实现类
@@ -43,7 +50,9 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Resource
     private BusinessFileService businessFileService;
     @Resource
-    private CarInfoDetailsService infoDetailsService;
+    private CarInfoDetailsService carInfoDetailsService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @Override
     public Long createCarInfo(AppCarInfoCreateReqVO createReqVO) {
@@ -84,7 +93,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         detailsDO.setBurnCar(0);
         detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
         detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
-        infoDetailsService.insertCarInfoDetail(detailsDO);
+        carInfoDetailsService.insertCarInfoDetail(detailsDO);
 
         //保存图片到中间表
         List<String> carUrl = createReqVO.getCarUrl();
@@ -120,7 +129,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Transactional
     public String insertSellerInfo(AppSellerInfoReqVO reqVO) {
         Long id = reqVO.getId();
-        CarInfoDetailsDO infoDetails = infoDetailsService.getCarInfoDetails(id);
+        CarInfoDetailsDO infoDetails = carInfoDetailsService.getCarInfoDetails(id);
         infoDetails.setSellerName(reqVO.getSellerName());
         infoDetails.setCollection(reqVO.getCollection());
         infoDetails.setSellerIdCard(reqVO.getSellerIdCard());
@@ -130,7 +139,7 @@ public class CarInfoServiceImpl implements CarInfoService {
 
         infoDetails.setThirdSellerName(reqVO.getThirdSellerName());
         infoDetails.setThirdBankCard(reqVO.getThirdBankCard());
-        infoDetailsService.updateCarInfoDetail(infoDetails);
+        carInfoDetailsService.updateCarInfoDetail(infoDetails);
         return "success";
     }
 
@@ -178,8 +187,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     public PageResult<AppHomeCarInfoRespVO> getHomeCarInfoPage(AppHomeCarInfoPageReqVO pageVO) {
         Page<AppHomeCarInfoRespVO> page = new Page<>(pageVO.getPageNo(), pageVO.getPageSize());
         pageVO.formatLocalDateTime();
-        page = carInfoMapper.selectAppHomePage(pageVO);
-//        page = carInfoMapper.selectAppHomePage(page, pageVO);
+        page = carInfoMapper.selectAppHomePage(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
@@ -191,7 +199,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Override
     public PageResult<AppSellCarInfoPageRespVO> getSellCarInfoPage(AppSellCarInfoPageReqVO pageVO) {
-        return carInfoMapper.selectAppCellCarPage(pageVO);
+        Page<AppSellCarInfoPageRespVO> page = new Page<>(pageVO.getPageNo(), pageVO.getPageSize());
+        page = carInfoMapper.selectAppCellCarPage(page, pageVO);
+        return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
     @Override
@@ -200,7 +210,12 @@ public class CarInfoServiceImpl implements CarInfoService {
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
-        List<FileRespDTO> fileList = businessFileService.getFileByMainId(id,"");
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        if (ObjectUtil.isNull(carInfoDetailsDO)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        //获取车辆相关图片
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainIdAndType(id,null);
         List<String> carPicList = Lists.newArrayList();
         List<String> drivingPicList = Lists.newArrayList();
         List<String> registerPicList = Lists.newArrayList();
@@ -220,10 +235,7 @@ public class CarInfoServiceImpl implements CarInfoService {
                     break;
             }
         }
-        //TODO 获取预计费用和利润
-        BigDecimal estimatedCost = new BigDecimal("666");
-        BigDecimal profit = new BigDecimal("999");
-        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,estimatedCost,profit);
+        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,carInfoDetailsDO);
         return carInfoRespVO;
     }
 
@@ -236,19 +248,76 @@ public class CarInfoServiceImpl implements CarInfoService {
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
-        //TODO 这里从字典数据取配置的值
-        AppCarInfoAmountRespVO respVO = new AppCarInfoAmountRespVO();
-        //TODO 这里卖车金额需要前端传递过来（优先去前端传递数据），除非他已经存过一次
-        respVO.calculation(carInfo.getVehicleReceiptAmount(),ObjectUtil.isNotNull(sellAmount)?sellAmount:carInfo.getSellAmount());
-        return respVO;
+        carInfo.setSellAmount(sellAmount);
+        //卖车金额 >= 收车金额
+        if (sellAmount.compareTo(carInfo.getVehicleReceiptAmount()) == -1) {
+            throw exception(CAR_INFO_SELL_AMOUNT_ERROR);
+        }
+        //获取默认字典表配置的车辆金额费用配置项
+        CommonResult<List<DictDataRespDTO>> dictDataRes = dictDataApi.getDictDataList(DictTypeConstants.CAR_EXPENSE_CONFIG_DEFAULT, null);
+        if (!dictDataRes.getCode().equals(0)) {
+            throw exception(DICT_TYPE_NOT_EXISTS);
+        }
+        List<DictDataRespDTO> dictDataDTOList = dictDataRes.getData();
+        if (CollUtil.isEmpty(dictDataDTOList)) {
+            throw exception(DICT_TYPE_NOT_EXISTS);
+        }
+        return this.calculation(carInfo,dictDataDTOList);
     }
 
+    private AppCarInfoAmountRespVO calculation(CarInfoDO carInfo,List<DictDataRespDTO> dictDataDTOList){
+        AppCarInfoAmountRespVO vo = new AppCarInfoAmountRespVO();
+        vo.setVehicleReceiptAmount(carInfo.getVehicleReceiptAmount());
+        vo.setSellAmount(carInfo.getSellAmount());
+        dictDataDTOList.forEach(dto -> {
+            if (dto.getValue().equalsIgnoreCase(CAR_TAX_VALUE_ADDED)) {
+                //税费 = 卖车金额 * 税率
+                BigDecimal vat = carInfo.getSellAmount().multiply(new BigDecimal(dto.getLabel()));
+                vo.setVat(vat);
+            } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_OPERATION)) {
+                vo.setOperation(new BigDecimal(dto.getLabel()));
+            } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_TRANSFER_SELL)) {
+                vo.setTransferSell(new BigDecimal(dto.getLabel()));
+            } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_TRANSFER_BUY)) {
+                vo.setTransferBuy(new BigDecimal(dto.getLabel()));
+            }
+        });
+        log.info("卖车详情的明细费用", vo);
+
+        //费用合计 = 所有服务费+税费
+        vo.setTotal(vo.getVat()
+                .add(vo.getOperation())
+                .add(vo.getTransferBuy())
+                .add(vo.getTransferSell()));
+        //利润=卖车金额-收车金额-税-服务费
+        //利润=卖车金额-收车金额-费用合计
+        vo.setProfit(vo.getSellAmount()
+                .subtract(vo.getVehicleReceiptAmount())
+                .subtract(vo.getTotal()));
+        return vo;
+    }
+
+    @Transactional
     @Override
     public void saveSellCarInfo(AppSellCarInfoReqVO reqVO) {
         validateCarInfoExists(reqVO.getId());
-        // 更新
+        // 更新卖车填写数据
         CarInfoDO updateObj = CarInfoConvert.INSTANCE.convert(reqVO);
         carInfoMapper.updateById(updateObj);
+        //保存卖车上传的身份证正反面图片
+        List<BusinessFileDO> businessFileList = businessFileService.getByMainIdAndType(updateObj.getId(), "5");
+        if (CollUtil.isNotEmpty(businessFileList)) {
+            //这里其实可以不用查询，直接删除
+            businessFileService.deleteByMainIdAndType(updateObj.getId(),"5");
+        }
+        reqVO.getIdCardIds().forEach(fileId -> {
+            BusinessFileDO businessFileDO = new BusinessFileDO();
+            businessFileDO.setId(fileId);
+            businessFileDO.setFileType("5");
+            businessFileDO.setMainId(updateObj.getId());
+            businessFileService.insert(businessFileDO);
+        });
+
     }
 
     /**
@@ -262,7 +331,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             return maps;
         }
         if (CollUtil.isEmpty(maps)) {
-            for (int i = 1; i <= 4; i++) {
+            for (int i = 0; i <= 3; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("salesStatus", i);
                 map.put("num", 0);
@@ -273,7 +342,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             maps.forEach(map->{
                 salesStatusList.add((Integer) map.get("salesStatus"));
             });
-            List<Integer> list = Arrays.asList(1, 2, 3, 4);
+            List<Integer> list = Arrays.asList(0,1, 2, 3);
             List<Integer> resList = list.stream().filter(i -> !salesStatusList.contains(i)).collect(Collectors.toList());
             if (CollUtil.isNotEmpty(resList)) {
                 for (Integer i : resList) {

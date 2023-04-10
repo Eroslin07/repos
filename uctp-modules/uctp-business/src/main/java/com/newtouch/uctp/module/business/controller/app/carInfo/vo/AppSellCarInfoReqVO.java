@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Schema(description = "用户 APP - 车辆售卖详情 Response VO")
 @Data
@@ -22,5 +23,9 @@ public class AppSellCarInfoReqVO {
     private String buyerName;
     @Schema(description = "买家电话")
     private String buyerTel;
+    @Schema(description = "收款方式")
+    private Integer paymentType;
+    @Schema(description = "身份证正反面图片id")
+    private List<Long> IdCardIds;
 
 }

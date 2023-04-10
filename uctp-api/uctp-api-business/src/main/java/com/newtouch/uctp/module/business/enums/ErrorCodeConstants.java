@@ -13,6 +13,7 @@ public interface ErrorCodeConstants {
     ErrorCode GO_VIEW_PROJECT_NOT_EXISTS = new ErrorCode(1005000000, "二手车交易平台业务异常");
     ErrorCode CAR_INFO_NOT_EXISTS = new ErrorCode(1005000011, "车辆不存在");
     ErrorCode CAR_INFO_DETAILS_NOT_EXISTS = new ErrorCode(1005000021, "车辆明细不存在");
+    ErrorCode CAR_INFO_SELL_AMOUNT_ERROR = new ErrorCode(1005000022, "卖车金额必须大于收车金额");
 
 
 }

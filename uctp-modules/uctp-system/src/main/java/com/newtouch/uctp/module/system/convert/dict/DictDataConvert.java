@@ -28,5 +28,5 @@ public interface DictDataConvert {
 
     DictDataRespDTO convert02(DictDataDO bean);
 
-
+    List<DictDataRespDTO> convertList03(List<DictDataDO> dictDataList);
 }

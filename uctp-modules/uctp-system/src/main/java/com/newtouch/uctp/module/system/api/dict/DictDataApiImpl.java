@@ -44,11 +44,14 @@ public class DictDataApiImpl implements DictDataApi {
     }
 
     @Override
-    public CommonResult<DictDataRespDTO> DictDataList(String dictType) {
+    public CommonResult<List<DictDataRespDTO>> getDictDataList(String dictType, String label) {
         DictDataExportReqVO reqVO = new DictDataExportReqVO();
+        //默认查询开启状态的
+        reqVO.setStatus(0);
+        reqVO.setDictType(dictType);
+        reqVO.setLabel(label);
         List<DictDataDO> dictDataList = dictDataService.getDictDataList(reqVO);
-
-        return null;
+        return success(DictDataConvert.INSTANCE.convertList03(dictDataList));
     }
 
 }
