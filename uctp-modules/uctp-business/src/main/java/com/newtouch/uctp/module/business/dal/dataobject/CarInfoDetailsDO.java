@@ -93,6 +93,11 @@ public class CarInfoDetailsDO extends BaseDO {
     private String payType;
 
     /**
+     * 卖家银行开户行
+     */
+    private String bankName;
+
+    /**
      * 卖家银行卡号
      */
     private String bankCard;
