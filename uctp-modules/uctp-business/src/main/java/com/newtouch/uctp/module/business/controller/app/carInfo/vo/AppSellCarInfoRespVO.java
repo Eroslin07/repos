@@ -22,12 +22,21 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     @Schema(description = "机动车登记证书列表")
     private List<String> registerPicList;
     @Schema(description = "预计费用(单位：元)")
-    private BigDecimal estimatedCost;
+    private BigDecimal total = new BigDecimal("0");
     @Schema(description = "利润(单位：元)")
-    private BigDecimal profit;
+    private BigDecimal profit = new BigDecimal("0");
     @Schema(description = "卖车方式")
     private Integer sellType;
     @Schema(description = "卖车金额")
     private BigDecimal sellAmount;
-
+    @Schema(description = "创建时间")
+    private String firstRegistDate;
+    @Schema(description = "状态")
+    private Integer status;
+    @Schema(description = "里程数,保留2位小数")
+    private BigDecimal mileage;
+    @Schema(description = "运营性质")
+    private String natureOfOperat;
+    @Schema(description = "车牌号")
+    private String plateNum;
 }

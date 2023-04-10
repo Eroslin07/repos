@@ -25,7 +25,8 @@
 
 <script>
 	import {
-		getQiyuesuo
+		getQiyuesuo,
+		getCancelContract
 	} from '@/api/home/bycar.js'
 	export default {
 		data() {
@@ -36,21 +37,25 @@
 		methods: {
 			// 查看
 			handleLook() {
-				getQiyuesuo().then((res) => {
-					this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车&url='+res.data);
-				})
+				this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
 			},
 			// 合同签章
 			handleAffirm() {
-				
+				getQiyuesuo().then((res) => {
+					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
+				})
 			},
 			// 取消合同签章
 			handleCancel() {
-
+				getCancelContract().then((res) => {
+					this.$tab.navigateTo(`/subPages/common/webview/index?title=取消收车合同签章&url=${res.data}`);
+				})
 			},
 			// 关闭
 			handleClose() {
-
+				uni.navigateBack({
+					delta: 1
+				})
 			}
 		}
 	}

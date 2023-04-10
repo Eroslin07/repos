@@ -32,9 +32,9 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
                 .orderByDesc(CarInfoDO::getCreateTime));
     }
 
-    Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
-//    Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pg") Page<AppHomeCarInfoRespVO> page,
-//                                                 @Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
+//    Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
+    Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pg") Page<AppHomeCarInfoRespVO> page,
+                                                 @Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
 
     default List<Map<String, Object>> selectCarCountGroupByStatus(){
         return selectMaps(new QueryWrapper<CarInfoDO>()
@@ -42,7 +42,7 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
                 .groupBy("SALES_STATUS"));
     }
 
-    PageResult<AppSellCarInfoPageRespVO> selectAppCellCarPage(AppSellCarInfoPageReqVO pageVO);
+    Page<AppSellCarInfoPageRespVO> selectAppCellCarPage(@Param("pg") Page<AppSellCarInfoPageRespVO> page,@Param("pageVO")AppSellCarInfoPageReqVO pageVO);
 
     AppCarInfoAndDetailVO getCarInfoAndDetails(String id);
 

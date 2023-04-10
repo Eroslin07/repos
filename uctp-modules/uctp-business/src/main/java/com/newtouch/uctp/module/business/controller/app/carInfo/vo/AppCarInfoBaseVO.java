@@ -35,11 +35,8 @@ public class AppCarInfoBaseVO {
     @Schema(description = "售卖状态")
     private Integer salesStatus;
 
-    @Schema(description = "检测状态")
-    private Integer checkStatus;
-
-    @Schema(description = "汽车明细id")
-    private String carDetailId;
+    @Schema(description = "状态")
+    private Integer status;
 
     @Schema(description = "商户id")
     private String businessId;

@@ -36,19 +36,19 @@
 					<u-grid :border="true" col="4">
 						<u-grid-item v-for="(item,index) in gatherData" :key="index"
 							@click="tabCarStatus(item.salesStatus)">
-							<view class="car-status-item" v-show="item.salesStatus==1">
+							<view class="car-status-item" v-show="item.salesStatus==0">
 								<text>收车中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
-							<view class="car-status-item" v-show="item.salesStatus==2">
+							<view class="car-status-item" v-show="item.salesStatus==1">
 								<text>待售中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
-							<view class="car-status-item" v-show="item.salesStatus==3">
+							<view class="car-status-item" v-show="item.salesStatus==2">
 								<text>卖车中</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>
-							<view class="car-status-item" v-show="item.salesStatus==4">
+							<view class="car-status-item" v-show="item.salesStatus==3">
 								<text>已售出</text><br />
 								<text style="color: #e26e1f;">{{item.num}}辆</text>
 							</view>

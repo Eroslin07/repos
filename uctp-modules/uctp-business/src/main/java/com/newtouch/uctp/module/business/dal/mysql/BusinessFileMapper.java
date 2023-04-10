@@ -19,8 +19,7 @@ public interface BusinessFileMapper extends BaseMapperX<BusinessFileDO> {
     default List<BusinessFileDO> getFileByMainId(Long mainId, String fileType){
         return selectList(new LambdaQueryWrapperX<BusinessFileDO>()
                 .eqIfPresent(BusinessFileDO::getMainId, mainId)
-//                .likeRight(BusinessFileDO::getFileType, fileType)
-                .likeIfPresent(BusinessFileDO::getFileType, fileType));
+                .eqIfPresent(BusinessFileDO::getFileType, fileType));
     }
 
 }

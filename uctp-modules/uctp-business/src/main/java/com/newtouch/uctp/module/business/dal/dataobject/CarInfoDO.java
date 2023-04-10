@@ -44,6 +44,12 @@ public class CarInfoDO extends TenantBaseDO {
      * 车辆型号
      */
     private String model;
+
+    /**
+     * 车牌号
+     */
+    private String plateNum;
+
     /**
      * 发动机编号
      */
@@ -83,7 +89,7 @@ public class CarInfoDO extends TenantBaseDO {
     /**
      * 卖车方式
      */
-    private Integer sellType;
+    private Integer paymentType;
     /**
      * 卖车金额
      */
@@ -94,5 +100,8 @@ public class CarInfoDO extends TenantBaseDO {
      * 状态
      */
     private Integer status;
-
+    /**
+     * 卖车方式
+     */
+    private Integer sellType;
 }

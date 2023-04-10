@@ -2,13 +2,10 @@ package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Schema(description = "用户 APP - 车辆主表创建 Request VO")
 @Data
@@ -34,7 +31,7 @@ public class AppCarInfoCreateReqVO{
     private String vin;
 
     @Schema(description = "首次登记时间")
-    private LocalDateTime firstRegistDate;
+    private String firstRegistDate;
 
     @Schema(description = "登记证书url")
     private List<String>  certificateUrl;

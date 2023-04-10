@@ -1,5 +1,12 @@
 <template>
 	<view class="normal-login-container">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="">
+			<view class="u-nav-slot" slot="left">
+				<view class="bank-logo"></view>
+			</view>
+		</u-navbar>
+		
 		<view class="logo-content align-center justify-center flex">
 			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">xxx结算中心</h2>
 		</view>
@@ -173,6 +180,15 @@
 
 	.normal-login-container {
 		width: 100%;
+		
+		.bank-logo {
+			margin-top: 5px;
+			width: 100px;
+			height: 50px;
+			background: url('/static/images/home/bankLogo.png');
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+		}
 
 		.logo-content {
 			width: 100%;

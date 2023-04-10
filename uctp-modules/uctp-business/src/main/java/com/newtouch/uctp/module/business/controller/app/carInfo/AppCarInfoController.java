@@ -89,6 +89,7 @@ public class AppCarInfoController {
     public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid AppHomeCarInfoPageReqVO pageVO) {
         PageResult<AppHomeCarInfoRespVO> pageResult = carInfoService.getHomeCarInfoPage(pageVO);
         return success(pageResult);
+
     }
 
     @GetMapping("/home/count")
@@ -129,7 +130,7 @@ public class AppCarInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @Parameter(name = "sellAmount", description = "卖车金额", required = true, example = "666")
     public CommonResult<AppCarInfoAmountRespVO> getCarInfoAmount(@RequestParam("id") Long id,
-                                                                 @RequestParam("id") BigDecimal sellAmount) {
+                                                                 @RequestParam("sellAmount") BigDecimal sellAmount) {
         AppCarInfoAmountRespVO vo = carInfoService.getCarInfoAmount(id,sellAmount);
         return success(vo);
     }

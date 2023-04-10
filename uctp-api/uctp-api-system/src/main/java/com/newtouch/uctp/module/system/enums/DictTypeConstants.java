@@ -26,4 +26,14 @@ public interface DictTypeConstants {
     String SMS_SEND_STATUS = "system_sms_send_status"; // 短信发送状态
     String SMS_RECEIVE_STATUS = "system_sms_receive_status"; // 短信接收状态
 
+
+    // ========== business 模块 ==========
+    String CAR_EXPENSE_CONFIG_DEFAULT = "car_expense_config_default"; // 默认车辆金额费用配置项
+
+    String CAR_TAX_VALUE_ADDED = "tax_value_added"; // 增值税率
+    String CAR_SERVICE_OPERATION = "service_operation"; // 运营服务费
+    String CAR_SERVICE_TRANSFER_SELL = "service_transfer_sell"; // 过户服务费(卖车)
+    String CAR_SERVICE_TRANSFER_BUY = "service_transfer_buy"; // 过户服务费(收车)
+
+
 }

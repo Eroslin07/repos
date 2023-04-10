@@ -20,10 +20,30 @@ public interface BusinessFileService {
     int insert(BusinessFileDO fileDO);
 
     /**
-     * 获取业务对应的文件
-     * @param id 业务Id
-     * @param type 类型
+     * 批量保存图片关联信息，适用于数据量不大的插入
      * @return
      */
-    List<FileRespDTO> getFileByMainId(Long id, String type);
+    void insertBatch(List<BusinessFileDO> fileDOList);
+
+    /**
+     * 获取业务对应的文件
+     * @param mainId 业务Id
+     * @param fileType 类型
+     * @return
+     */
+    List<FileRespDTO> getDTOByMainIdAndType(Long mainId, String fileType);
+    /**
+     * 获取业务对应的文件
+     * @param mainId 业务Id
+     * @param fileType 类型
+     * @return
+     */
+    List<BusinessFileDO> getByMainIdAndType(Long mainId, String fileType);
+
+    /**
+     * 删除业务对应的文件
+     * @param mainId 业务id
+     * @param fileType 类型
+     */
+    void deleteByMainIdAndType(Long mainId, String fileType);
 }

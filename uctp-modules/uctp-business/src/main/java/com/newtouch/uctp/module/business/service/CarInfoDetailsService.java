@@ -65,4 +65,11 @@ public interface CarInfoDetailsService {
     int insertCarInfoDetail(CarInfoDetailsDO detailsDO);
 
     void updateCarInfoDetail(CarInfoDetailsDO detailsDO);
+
+    /**
+     * 根据车辆主表id获取唯一的车辆明细表
+     * @param carId 车辆表Id
+     * @return
+     */
+    CarInfoDetailsDO getCarInfoDetailsByCarId(Long carId);
 }

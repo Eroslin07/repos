@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @TableName("uctp_car_info_details")
 //@KeySequence("uctp_car_info_details_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
@@ -57,7 +55,7 @@ public class CarInfoDetailsDO extends BaseDO {
     /**
      * 首次/初次登记日期
      */
-    private LocalDateTime firstRegistDate;
+    private String firstRegistDate;
     /**
      * 行驶证编号
      */
@@ -88,9 +86,14 @@ public class CarInfoDetailsDO extends BaseDO {
     private String sellerTel;
 
     /**
-     * 付款方式
+     * 收车时付款方式
      */
     private String payType;
+
+    /**
+     * 卖家银行开户行
+     */
+    private String bankName;
 
     /**
      * 卖家银行卡号
@@ -107,6 +110,11 @@ public class CarInfoDetailsDO extends BaseDO {
      */
     private String thirdBankCard;
 
+    /**
+     * 收车时收款方式
+     */
+    private String remitType;
+
 
 
     /**
@@ -121,5 +129,4 @@ public class CarInfoDetailsDO extends BaseDO {
      * 买家姓名
      */
     private String buyerName;
-
 }

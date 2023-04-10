@@ -1,5 +1,12 @@
 <template>
 	<view class="normal-login-container">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="登录">
+			<view class="u-nav-slot" slot="left">
+				<view class="bank-logo"></view>
+			</view>
+		</u-navbar>
+		
 		<view class="logo-content align-center justify-center flex">
 			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">xxx结算中心</h2>
 		</view>
@@ -12,15 +19,18 @@
 		<u-popup :show="show" :overlay="false">
 			<view class="action-btn">
 				<u-checkbox-group v-model="value">
-					<u-checkbox shape="circle" activeColor="#68b4c5"></u-checkbox>
-					<view>同意<text style="color: #4ba4ff;">《xx用户协议》《隐私政策》</text></view>
+					<u-checkbox shape="circle" activeColor="#fe7345"></u-checkbox>
+					<view>同意
+						<text style="color: #4ba4ff;" @click="handleUserAgrement">《xx用户协议》</text>
+						<text style="color: #4ba4ff;" @click="handlePrivacy">《隐私政策》</text>
+					</view>
 				</u-checkbox-group>
 				<!-- #ifdef MP-WEIXIN -->
-				<button shape="circle" type="primary" link="true" open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信一键登录</button>
+				<button shape="circle" type="primary" link="true" open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信用户一键登录</button>
 				<!-- #endif -->
 			</view>
 		</u-popup>
-		<u-modal :show="showModel" :content='content' :showConfirmButton="true" :showCancelButton="true" @cancel="handleCancel" @confirm="handleConfirm"></u-modal>
+		<u-modal :show="showModel" :content='content' :showConfirmButton="true" :showCancelButton="true" confirmText="是" cancelText="否" @cancel="handleCancel" @confirm="handleConfirm"></u-modal>
 	</view>
 </template>
 
@@ -29,7 +39,7 @@
 		data() {
 			return {
 				showModel: false,
-				content: '未查询到该账号，是否前往注册',
+				content: '您的手机号尚未在平台注册，是否要注册？',
 				value: [],
 				show: true,
 				appId: 'wx52552be23725ae44',
@@ -70,6 +80,14 @@
 			// #endif
 		},
 		methods: {
+			// 隐私协议
+			handlePrivacy() {
+				this.$tab.navigateTo('/subPages/common/webview/privacyAgreement')
+			},
+			// 用户协议
+			handleUserAgrement() {
+				this.$tab.navigateTo('/subPages/common/webview/userAgreement')
+			},
 			getphonenumber(e) {
 				if (this.value.length == 0) {
 					this.$modal.msgError("请阅读并勾选用户协议")
@@ -150,6 +168,15 @@
 
 	.normal-login-container {
 		width: 100%;
+		
+		.bank-logo {
+			margin-top: 5px;
+			width: 100px;
+			height: 50px;
+			background: url('/static/images/home/bankLogo.png');
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+		}
 
 		.logo-content {
 			width: 100%;
@@ -180,11 +207,12 @@
 	.action-btn {
 		padding: 20px;
 		margin-top: 20px;
-		height: 200px 
+		height: 200px;
 	}
 	
 	.login-btn {
 		height: 45px;
 		margin-top: 10px;
+		background-color: #fe7345;
 	}
 </style>

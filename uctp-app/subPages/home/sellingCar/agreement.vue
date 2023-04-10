@@ -23,6 +23,10 @@
 </template>
 
 <script>
+	import {
+		getQiyuesuo,
+		getCancelContract
+	} from '@/api/home/bycar.js'
 	export default {
 		data() {
 			return {
@@ -36,15 +40,21 @@
 			},
 			// 合同签章
 			handleAffirm() {
-				
+				getQiyuesuo().then((res) => {
+					this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
+				})
 			},
 			// 取消合同签章
 			handleCancel() {
-				
+				getCancelContract().then((res) => {
+					this.$tab.navigateTo(`/subPages/common/webview/index?title=取消卖车合同签章&url=${res.data}`);
+				})
 			},
 			// 关闭
 			handleClose() {
-				
+				uni.navigateBack({
+					delta: 1
+				})
 			}
 		}
 	}

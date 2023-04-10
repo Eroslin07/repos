@@ -22,7 +22,7 @@ public class BusinessFileDO extends TenantBaseDO {
     /**
      * id(infra_file的id)
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.INPUT)
     private Long id;
 
     /**

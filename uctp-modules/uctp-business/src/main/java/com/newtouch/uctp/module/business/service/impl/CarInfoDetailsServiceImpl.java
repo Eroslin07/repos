@@ -53,6 +53,11 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     }
 
     @Override
+    public CarInfoDetailsDO getCarInfoDetailsByCarId(Long carId) {
+        return carInfoDetailsMapper.selectOne("CAR_ID", carId);
+    }
+
+    @Override
     public void deleteCarInfoDetails(Long id) {
         // 校验存在
         validateCarInfoDetailsExists(id);

@@ -153,11 +153,11 @@
             <artifactId>uctp-api-system</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-api-infra</artifactId>
-            <version>${revision}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
+<!--            <artifactId>uctp-api-infra</artifactId>-->
+<!--            <version>${revision}</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 

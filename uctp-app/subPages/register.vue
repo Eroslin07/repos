@@ -13,6 +13,18 @@
 							<text style="color: #50a8bc;" @click="handleOcr(1, 'idCard')">上传图片</text>
 						</view>
 					</u-form-item>
+					<u-form-item label=" " borderBottom v-if="fileList1.length != 0">
+						<view class="image">
+							<u-upload
+								v-if="fileList1.length"
+								:fileList="fileList1"
+								@delete="deletePic"
+								name="1"
+								width="70"
+								height="70"
+							></u-upload>
+						</view>
+					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
 						<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>
 					</u-form-item>
@@ -46,22 +58,29 @@
 							<text style="color: #50a8bc;" @click="handleOcr(2, 'businessLicense')">上传图片</text>
 						</view>
 					</u-form-item>
+					<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom @click="showSex = true">
+						<u--input v-model="registerForm.businessName" disabled disabledColor="#ffffff"
+							placeholder="请输入公司名称" border="none"></u--input>
+					</u-form-item>
 					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
 						<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
 							placeholder="请选择市场场地编号" border="none"></u--input>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
+					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
+						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
+					</u-form-item>
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
 						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
 					</u-form-item>
-					<u-form-item label="输入密码" :required="true" prop="password" borderBottom>
+					<!-- <u-form-item label="输入密码" :required="true" prop="password" borderBottom>
 						<u--input v-model="registerForm.password" password border="none" placeholder="请输入8-32位(数字+字母)">
 						</u--input>
 					</u-form-item>
 					<u-form-item label="再次输入密码" :required="true" prop="confirmPassword" borderBottom>
 						<u--input v-model="registerForm.confirmPassword" password border="none"
 							placeholder="请输入8-32位(数字+字母)"></u--input>
-					</u-form-item>
+					</u-form-item> -->
 				</u--form>
 				<u-picker :show="showSex" :columns="range" keyName="contactName" title="请选择市场所在地" @confirm="confirm"
 					@cancel="cancel"></u-picker>
@@ -77,6 +96,7 @@
 </template>
 
 <script>
+	import config from '@/config'
 	import { rsaEncrypt } from '@/utils/rsa.js'
 	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import {
@@ -91,7 +111,7 @@
 		data() {
 			return {
 				showModal: false,
-				content: "XXX二手车平台需要收集您的身份证号及银行账号用于验证您身份真实性，是否同意授权。",
+				content: "万国二手车平台需要收集您的身份证号及银行账号用于验证您身份真实性，是否同意授权。",
 				title: "注册账号",
 				getTime: true,
 				time: 60,
@@ -107,8 +127,10 @@
 					idCard: "",              // 身份证号
 					idCardUrl: [],           // 身份证图片
 					businessLicense: [],     // 营业执照
+					businessName: "",        // 公司名称
 					marketLocation: "",      // 市场所在地id
 					marketLocationValue: "", // 市场所在地
+					bankName: "",            // 开户行
 					bankAccount: "",         // 对公银行账号
 					password: "",            // 密码
 					confirmPassword: ""      // 确认密码
@@ -162,9 +184,15 @@
 						trigger: ['blur', 'change']
 					}],
 					businessLicense: {
-						type: 'string',
+						type: 'array',
 						required: true,
 						message: '请选择营业执照',
+						trigger: ['blur', 'change']
+					},
+					businessName: {
+						type: 'string',
+						required: true,
+						message: '请填写公司名称',
 						trigger: ['blur', 'change']
 					},
 					marketLocationValue: {
@@ -179,6 +207,12 @@
 						message: '请填写对公银行账号',
 						trigger: ['blur', 'change']
 					}],
+					bankName: {
+						type: 'string',
+						required: true,
+						message: '请填写开户行',
+						trigger: ['blur', 'change']
+					},
 					password: [{
 						required: true,
 						message: '请填写密码',
@@ -280,7 +314,6 @@
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
 					success: async function(res) {
-						let str = await urlTobase64(res.tempFilePaths[0])
 						res.tempFilePaths.forEach((item) => {
 							_this[`fileList${index}`].push({
 								url: item,
@@ -291,44 +324,76 @@
 						if (index == 1) {
 							// 识别身份证
 							_this.registerForm.idCardUrl = _this[`fileList${index}`];
-							getIdCard({ IDCardUrl: str }).then((ress) => {
-								let data = JSON.parse(ress.data);
-								_this.registerForm.idCard = data.words_result['公民身份号码'].words;
-								_this.registerForm.name = data.words_result['姓名'].words;
-								_this.upload(res, type, index);
-							})
+							for (let i = 0; i < res.tempFilePaths.length; i++) {
+								let str = await urlTobase64(res.tempFilePaths[i]);
+								getIdCard({ IDCardUrl: str }).then((ress) => {
+									let data = JSON.parse(ress.data);
+									if (data.words_result['公民身份号码']) {
+										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+										_this.registerForm.name = data.words_result['姓名'].words;
+									}
+									if (i == res.tempFilePaths.length - 1) {
+										_this.upload(res, type, index);
+									}
+								})
+							}
 						} else if (index == 2) {
 							// 识别营业执照
 							_this.registerForm.businessLicense = _this[`fileList${index}`];
-							_this.upload(res, type, index);
+							for (let i = 0; i < res.tempFilePaths.length; i++) {
+								let str = await urlTobase64(res.tempFilePaths[i]);
+								getBusinessLicense({ businessLicense: str }).then((ress) => {
+									let data = JSON.parse(ress.data);
+									if (data.words_result['单位名称']) {
+										_this.registerForm.businessName = data.words_result['单位名称'].words;
+									}
+									if (i == res.tempFilePaths.length - 1) {
+										_this.upload(res, type, index);
+									}
+								})
+							}
 						}
 					}
 				})
 			},
 			upload(res, type, index) {
 				let _this = this;
-				uni.uploadFile({
-					url: 'http://172.17.10.127:48080/app-api/infra/file/upload', // 仅为示例，非真实的接口地址
-					file: res.tempFiles,
-					name: 'file',
-					formData: {
-						type: type
-					},
-					success: (ress) => {
-						let fileListLen = 0;
-						let data = JSON.parse(ress.data).data;
-						for (let i = 0; i < data.length; i++) {
-							let item = _this[`fileList${index}`][fileListLen]
-							_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
-								status: 'success',
-								message: '',
-								url: data[i].url,
-								id: data[i].id
-							}))
-							fileListLen++;
+				for (let i = 0; i < res.tempFilePaths.length; i++) {
+					uni.uploadFile({
+						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						file: res.tempFiles[i],
+						name: 'file',
+						formData: {
+							type: type
+						},
+						success: (ress) => {
+							setTimeout(() => {
+								let fileListLen = 0;
+								let data = JSON.parse(ress.data).data;
+								if (data) {
+									for (let i = 0; i < data.length; i++) {
+										let item = _this[`fileList${index}`][fileListLen]
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
+											status: 'success',
+											message: '',
+											url: data[i].url,
+											id: data[i].id
+										}))
+										fileListLen++;
+									}
+								} else {
+									_this.$modal.msg("上传失败");
+									_this[`fileList${index}`] = [];
+									if (index == 1) {
+										_this.registerForm.idCardUrl = [];
+									} else if (index == 2) {
+										_this.registerForm.businessLicense = [];
+									}
+								}
+							}, 1000);
 						}
-					}
-				});
+					});
+				}
 			},
 			// 删除图片
 			deletePic(event) {
@@ -362,9 +427,11 @@
 						idCardUrl: this.fileList1.map((item) => { return item.id }),
 						businessLicense: this.fileList2.map((item) => { return item.id }),
 						marketLocation: this.registerForm.marketLocation,
-						bankAccount: this.registerForm.bankAccount,
-						password: rsaEncrypt(this.registerForm.password),
-						confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
+						bankNumber: this.registerForm.bankAccount,
+						businessName: this.registerForm.businessName,
+						bankName: this.registerForm.bankName,
+						// password: rsaEncrypt(this.registerForm.password),
+						// confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
 					}
 					register(data).then((res) => {
 						this.$modal.msg("已提交审核");

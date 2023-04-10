@@ -18,7 +18,7 @@
         <result property="vehicleReceiptAmount" column="vehicleReceiptAmount"/>
         <result property="remarks" column="remarks"/>
         <result property="salesStatus" column="salesStatus"/>
-        <result property="checkStatus" column="checkStatus"/>
+        <result property="status" column="status"/>
         <result property="firstParty" column="firstParty"/>
         <result property="secondParty" column="secondParty"/>
     </resultMap>
@@ -32,10 +32,10 @@
         a.ENGINE_NUM as engineNum,
         a.VEHICLE_RECEIPT_AMOUNT as vehicleReceiptAmount,
         a.SALES_STATUS as salesStatus,
-        a.CHECK_STATUS as checkStatus,
+        a.STATUS as status,
         b.MILEAGE as mileage,
-        c.FIRST_PARTY as firstParty,
-        c.SECOND_PARTY as secondParty
+        b.BUYER_NAME as firstParty,
+        b.SELLER_NAME as secondParty
     </sql>
 
 
@@ -45,16 +45,15 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
-        inner join uctp_contract_management c on b.CAR_ID = c.CAR_ID
         <where>
             1=1
             <if test="pageVO.salesStatus != null">
                 <bind name="pageVO.salesStatus" value="'%'+pageVO.salesStatus+'%'"/>
                 and a.SALES_STATUS like #{pageVO.salesStatus}
             </if>
-            <if test="pageVO.checkStatus != null">
-                <bind name="pageVO.checkStatus" value="'%'+pageVO.checkStatus+'%'"/>
-                and a.CHECK_STATUS like #{pageVO.checkStatus}
+            <if test="pageVO.status != null">
+                <bind name="pageVO.status" value="'%'+pageVO.status+'%'"/>
+                and a.STATUS like #{pageVO.status}
             </if>
             <if test="pageVO.brand != null and pageVO.brand != ''">
                 <bind name="pageVO.brand" value="'%'+pageVO.brand+'%'"/>
@@ -62,8 +61,8 @@
             </if>
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
-                and (c.FIRST_PARTY like #{pageVO.searchValue}
-                or c.SECOND_PARTY like #{pageVO.searchValue}
+                and (b.BUYER_NAME like #{pageVO.searchValue}
+                or b.SELLER_NAME like #{pageVO.searchValue}
                 or a.VIN like #{pageVO.searchValue}
                 or a.BRAND like #{pageVO.searchValue})
             </if>
@@ -82,7 +81,6 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
-        inner join uctp_contract_management c on b.CAR_ID = c.CAR_ID
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
