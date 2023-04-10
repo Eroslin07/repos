@@ -88,7 +88,7 @@ public class CarInfoDetailsDO extends BaseDO {
     private String sellerTel;
 
     /**
-     * 付款方式
+     * 收车时付款方式
      */
     private String payType;
 
@@ -107,6 +107,11 @@ public class CarInfoDetailsDO extends BaseDO {
      */
     private String thirdBankCard;
 
+    /**
+     * 收车时收款方式
+     */
+    private String remitType;
+
 
 
     /**
@@ -121,5 +126,10 @@ public class CarInfoDetailsDO extends BaseDO {
      * 买家姓名
      */
     private String buyerName;
+
+    /**
+     * 卖车时收款方式
+     */
+    private Integer sellType;
 
 }

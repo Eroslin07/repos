@@ -44,6 +44,12 @@ public class CarInfoDO extends TenantBaseDO {
      * 车辆型号
      */
     private String model;
+
+    /**
+     * 车牌号
+     */
+    private String plateNum;
+
     /**
      * 发动机编号
      */
