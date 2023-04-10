@@ -1,11 +1,13 @@
 {
-	"pages": [{
-		"path": "pages/wx_login",
-		"style": {
-			"navigationBarTitleText": "登录",
-			"navigationStyle": "custom"
-		}
-	}, {
+	"pages": [
+	// 	{
+	// 	"path": "pages/wx_login",
+	// 	"style": {
+	// 		"navigationBarTitleText": "登录",
+	// 		"navigationStyle": "custom"
+	// 	}
+	// },
+	{
 		"path": "pages/login",
 		"style": {
 			"navigationBarTitleText": "登录",

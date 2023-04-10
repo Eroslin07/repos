@@ -188,7 +188,7 @@
 		<!-- 遮罩层 -->
 		<u-overlay :show="showOverlay">
 			<view class="warp">
-				<u-loading-icon text="车辆详情加载中..." textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
+				<u-loading-icon :text="textOverlay" textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
 			</view>
 		</u-overlay>
 	</view>
@@ -204,6 +204,7 @@
 		data() {
 			return {
 				showOverlay: false,
+				textOverlay: '',
 				carId: null,
 				vehicleInfor: true,
 				sellerInfor: false,
@@ -394,11 +395,15 @@
 		},
 		onLoad(options) {
 			this.carId = options.id;
+			this.textOverlay = '车辆详情加载中...';
 			this.showOverlay = true;
 			getSellCarInfo({ id: options.id }).then((res) => {
 				this.carForm = res.data;
 				this.carForm.sellType = 0;
 				this.showOverlay = false;
+				if (this.carForm.sellAmount) {
+					this.handleBlur(this.carForm.sellAmount);
+				}
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
@@ -561,6 +566,7 @@
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
+				this.textOverlay = '保存中...';
 				this.showOverlay = true;
 				let data = {
 					id: this.carId,
@@ -570,7 +576,7 @@
 					idCardIds: this.fileList4.map((item) => { return item.id }),
 					buyerName: this.sellerForm.buyerName,
 					buyerTel: this.sellerForm.buyerTel,
-					sellType: this.sellerForm.sellType
+					sellType: this.carForm.sellType
 				}
 				setSellCarInfo(data).then((res) => {
 					this.showOverlay = false;
@@ -639,6 +645,10 @@
 		
 		/deep/ .u-cell__body {
 			padding: 10px 0;
+		}
+		
+		/deep/ .image .u-upload__button {
+			display: none;
 		}
 		
 		.form-item {
