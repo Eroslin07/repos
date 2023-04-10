@@ -1,14 +1,15 @@
 package com.newtouch.uctp.module.bpm.service.task;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import org.flowable.task.api.Task;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
-import org.flowable.task.api.Task;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 流程任务实例 Service 接口
@@ -75,6 +76,14 @@ public interface BpmTaskService {
      * @param reqVO  通过请求
      */
     void approveTask(Long userId, @Valid BpmTaskApproveReqVO reqVO);
+
+    /**
+     * 通过任务
+     *
+     * @param userId 用户编号
+     * @param reqVO  通过请求
+     */
+    void approveTaskV2(Long userId, @Valid BpmTaskApproveReqVO reqVO);
 
     /**
      * 不通过任务

@@ -1,18 +1,20 @@
 package com.newtouch.uctp.module.bpm.controller.admin.task;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
-import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
+import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
@@ -39,6 +41,13 @@ public class BpmProcessInstanceController {
     @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public CommonResult<String> createProcessInstance(@Valid @RequestBody BpmProcessInstanceCreateReqVO createReqVO) {
         return success(processInstanceService.createProcessInstance(getLoginUserId(), createReqVO));
+    }
+
+    @PostMapping("/v2/create")
+    @Operation(summary = "新建流程实例V2")
+    //@PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    public CommonResult<String> createProcessInstanceV2(@Valid @RequestBody BpmProcessInstanceCreateReqVO createReqVO) {
+        return success(processInstanceService.createProcessInstanceV2(getLoginUserId(), createReqVO));
     }
 
     @GetMapping("/get")

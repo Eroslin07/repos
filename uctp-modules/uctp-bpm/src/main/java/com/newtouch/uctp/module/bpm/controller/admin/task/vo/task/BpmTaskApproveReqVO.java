@@ -1,8 +1,9 @@
 package com.newtouch.uctp.module.bpm.controller.admin.task.vo.task;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -17,5 +18,8 @@ public class BpmTaskApproveReqVO {
     @Schema(description = "审批意见", required = true, example = "不错不错！")
     @NotEmpty(message = "审批意见不能为空")
     private String reason;
+
+    @Schema(description = "变量实例")
+    private Map<String, Object> variables;
 
 }

@@ -2,10 +2,12 @@ package com.newtouch.uctp.module.bpm.service.task;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.StringUtils;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.date.DateUtils;
@@ -33,7 +36,9 @@ import com.newtouch.uctp.framework.common.util.number.NumberUtils;
 import com.newtouch.uctp.framework.common.util.object.PageUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmTaskConvert;
+import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.task.BpmTaskExtMapper;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
@@ -77,6 +82,10 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private BpmTaskExtMapper taskExtMapper;
     @Resource
     private BpmMessageService messageService;
+    @Resource
+    private BpmFormMainMapper bpmFormMainMapper;
+    @Resource
+    private BpmFormDataService bpmFormDataService;
 
     @Override
     public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageVO) {
@@ -200,6 +209,42 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         taskExtMapper.updateByTaskId(
             new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.APPROVE.getResult())
                 .setReason(reqVO.getReason()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void approveTaskV2(Long userId, BpmTaskApproveReqVO reqVO) {
+        // 校验任务存在
+        Task task = checkTask(userId, reqVO.getId());
+        // 校验流程实例存在
+        ProcessInstance instance = processInstanceService.getProcessInstance(task.getProcessInstanceId());
+        if (instance == null) {
+            throw exception(PROCESS_INSTANCE_NOT_EXISTS);
+        }
+        // 更新表单信息
+        // 获得流程业务ID
+        String businessKey = StrUtil.toStringOrNull(reqVO.getVariables().get("businessKey"));
+        if (!StringUtils.hasText(businessKey)) {
+            throw exception(PROCESS_BUSI_KEY_NOT_EXISTS);
+        }
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 1) {
+            throw exception(PROCESS_BUSI_APPROVALING);
+        }
+        HashMap<String, Object> formDataObject = (HashMap<String, Object>) reqVO.getVariables().get("formDataJson");
+        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataObject);
+        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataObject);
+        formMainDataObject.put("status", 1);
+        formMainDataObject.put("doneTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        formDataObject.put(workFlowMainEntityAlias, formMainDataObject);
+        this.bpmFormDataService.saveDataObject(Long.valueOf(businessKey), formDataObject);
+
+        // 完成任务，审批通过
+        taskService.complete(task.getId(), reqVO.getVariables());
+        // 更新任务拓展表为通过
+        taskExtMapper.updateByTaskId(
+                new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.APPROVE.getResult())
+                        .setReason(reqVO.getReason()));
     }
 
     @Override

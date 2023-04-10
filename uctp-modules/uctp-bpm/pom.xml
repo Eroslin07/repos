@@ -120,6 +120,13 @@
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-flowable</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
     </dependencies>
 
     <build>

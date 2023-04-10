@@ -1,20 +1,22 @@
 package com.newtouch.uctp.module.bpm.controller.admin.task;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
-import com.newtouch.uctp.module.bpm.service.task.BpmTaskService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
+import com.newtouch.uctp.module.bpm.service.task.BpmTaskService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.getLoginUserId;
@@ -56,6 +58,14 @@ public class BpmTaskController {
     @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> approveTask(@Valid @RequestBody BpmTaskApproveReqVO reqVO) {
         taskService.approveTask(getLoginUserId(), reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/v2/approve")
+    @Operation(summary = "通过任务")
+    //@PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    public CommonResult<Boolean> approveTaskV2(@Valid @RequestBody BpmTaskApproveReqVO reqVO) {
+        taskService.approveTaskV2(getLoginUserId(), reqVO);
         return success(true);
     }
 
