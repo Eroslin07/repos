@@ -5,7 +5,7 @@
       :direction="direction"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      size="70%"
+      size="80%"
       @close="dravwerClose"
     >
       <template #title>
@@ -27,7 +27,7 @@
             >
               <el-scrollbar class="scrollbar_init">
                 <keep-alive>
-                  <component :is="item.compName"></component>
+                  <component :is="item.compName" :status="status"></component>
                 </keep-alive>
               </el-scrollbar>
             </el-tab-pane>
@@ -73,6 +73,10 @@ const props = defineProps({
   drawerTitle: {
     type: String,
     default: '收车合同审批-节点3'
+  },
+  status: {
+    type: String,
+    default: ''
   }
 })
 const drawerVisible = computed(() => {

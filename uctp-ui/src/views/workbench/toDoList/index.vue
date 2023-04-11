@@ -1,6 +1,6 @@
 <template>
   <ContentWrap>
-    <Drawer :visible="drawerVisible" @handle-close-drawer="handleCloseDrawer" />
+    <Drawer :visible="drawerVisible" :status="status" @handle-close-drawer="handleCloseDrawer" />
     <!-- 列表 -->
     <XTable @register="registerTable">
       <!-- 操作：审批 -->
@@ -32,70 +32,12 @@
         <div class="application" @click="handleApplication(row)">{{ row.serialNo }}</div>
       </template>
     </XTable>
-    <!-- 商户主账号审批待办 -->
-    <MerchantApprovalPending
-      v-if="status == 'GZSH'"
-      :dialogVisible="dialogVisible"
-      :type="'need'"
-      @close-dialog="closeDialog"
-    />
-    <!-- 收车价格超公允值待办 -->
-    <CollectCarPending
-      v-if="status == 'SCJG'"
-      :carVisible="dialogVisible"
-      :type="'need'"
-      @close-car-dialog="closeDialog"
-    />
-    <!-- 反向二手车统一发票待办 -->
-    <Reverse
-      v-if="status == 'SCKP'"
-      :visible="dialogVisible"
-      :type="'need'"
-      @cancel-form="closeDialog"
-    />
-    <!-- 支付失败待办 -->
-    <Payment
-      v-if="status == 'SCKZH'"
-      :visible="dialogVisible"
-      :type="'need'"
-      @cancel-form="closeDialog"
-    />
-    <!-- 卖车价格超公允值待办 -->
-    <SellCarPending
-      v-if="status == 'MCHT'"
-      :visible="dialogVisible"
-      :type="'need'"
-      @cancle-sell-car="closeDialog"
-    />
-    <!-- 正向二手车统一发票和增值税发票待办 -->
-    <ForwardDirection
-      v-if="status == 'MCKP'"
-      :visible="dialogVisible"
-      :type="'need'"
-      @cancel-forward="closeDialog"
-    />
-    <!-- 利润提取代办 -->
-    <Profit
-      v-if="status == 'LRTQ'"
-      :visible="dialogVisible"
-      :type="'need'"
-      @cancel-form="closeDialog"
-    />
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
 import { ref } from 'vue'
 import { allSchemas } from './toDoList.data'
 import { Drawer } from '@/components/Drawer'
-import {
-  MerchantApprovalPending,
-  CollectCarPending,
-  Reverse,
-  Payment,
-  ForwardDirection,
-  SellCarPending,
-  Profit
-} from '../components'
 import * as ToDoList from '@/api/workbench/toDoList'
 
 // 列表相关的变量
@@ -105,7 +47,7 @@ const [registerTable] = useXTable({
 })
 const { t } = useI18n() // 国际化
 
-const dialogVisible = ref(false)
+// const dialogVisible = ref(false)
 const status = ref('')
 
 // 抽屉
@@ -137,10 +79,10 @@ const handleApplication = (row) => {
 }
 
 // 关闭弹框
-const closeDialog = () => {
-  dialogVisible.value = false
-  status.value = ''
-}
+// const closeDialog = () => {
+//   dialogVisible.value = false
+//   status.value = ''
+// }
 </script>
 
 <style scoped>

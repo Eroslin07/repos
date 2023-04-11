@@ -1,226 +1,226 @@
 <template>
   <ContentWrap style="height: 100%">
-    <XModal
+    <!-- <XModal
       v-model="visible"
       :title="dialogTitle"
       :fullscreen="true"
       :showFooter="false"
       @close="closeDialog"
-    >
-      <el-container>
-        <el-header class="header">商户张三卖车价格超公允值审批待办</el-header>
-        <el-main>
-          <div class="btn">
-            <el-button type="danger" @click="closeDialog">关闭</el-button>
-            <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
-            <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button>
-          </div>
-          <el-card class="content-box">
-            <div>单号：GZSH202303220001</div>
-            <h3 style="font-weight: bold" class="mb20">车辆基础信息</h3>
-            <el-form>
-              <el-row>
-                <el-col :span="6">
-                  <el-form-item label="行驶证：">
+    > -->
+    <el-container>
+      <el-header class="header">商户张三卖车价格超公允值审批待办</el-header>
+      <el-main>
+        <div class="btn">
+          <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
+          <!-- <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
+          <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button> -->
+        </div>
+        <el-card class="content-box">
+          <div>单号：GZSH202303220001</div>
+          <h3 style="font-weight: bold" class="mb20">车辆基础信息</h3>
+          <el-form>
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="行驶证：">
+                  <div>
+                    <span>2张</span>
+                    <el-image
+                      v-for="url in urls"
+                      :key="url"
+                      style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
+                      :src="url"
+                      fit="fill"
+                      :zoom-rate="1.2"
+                      :preview-src-list="urls"
+                    />
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="机动车登记证：">
+                  <div>
+                    <span>2张</span>
+                    <el-image
+                      v-for="url in urls"
+                      :key="url"
+                      style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
+                      :src="url"
+                      fit="fill"
+                      :zoom-rate="1.2"
+                      :preview-src-list="urls"
+                    />
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="车辆图片：">
+                  <div>
+                    <span>2张</span>
+                    <el-image
+                      v-for="url in urls"
+                      :key="url"
+                      style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
+                      :src="url"
+                      fit="fill"
+                      :zoom-rate="1.2"
+                      :preview-src-list="urls"
+                    />
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6"><div></div></el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="车架号：">
+                  <div> LE4TG4DB1JL199517</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="发动机编号：">
+                  <div> 98596482</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6" v-if="false">
+                <el-form-item label="首次登记日期：">
+                  <div> 2013-09-08</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6" style="padding-right: 10px">
+                <el-form-item label="品牌/年代/型号：">
+                  <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="宝马-宝马X1 2021款 sDrive20Li 时尚型"
+                    placement="top-start"
+                  >
+                    <div class="carInfo"> 宝马-宝马X1 2021款 sDrive20Li 时尚型</div>
+                  </el-tooltip>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="里程数：">
+                  <div>200公里</div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6" v-if="false">
+                <el-form-item label="里程数：">
+                  <div>200公里</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="其它信息：">
+                  <div>甲方XXXX，乙方XXXX</div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="收车金额：">
+                  <div>30,000.00元</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="卖车金额：">
+                  <div style="display: flex; flex-direction: column">
+                    <div>120,000.00元</div>
+                    <el-tag size="small" type="danger">公允值范围：80,000元—100,000元</el-tag>
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item label="收车方式 ：">
+                <div>全款</div>
+              </el-form-item>
+            </el-row>
+
+            <h3 style="font-weight: bold" class="mb20">卖家信息</h3>
+            <el-row>
+              <el-form-item label="是否第三方代收： ">
+                <div>否</div>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="身份证">
+                  <div style="display: flex; flex-direction: column">
                     <div>
-                      <span>2张</span>
-                      <el-image
-                        v-for="url in urls"
-                        :key="url"
-                        style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
-                        :src="url"
-                        fit="fill"
-                        :zoom-rate="1.2"
-                        :preview-src-list="urls"
+                      <span class="identify" v-if="identifyShow"> 5*****************1</span>
+                      <span class="identify" v-else>512345678990102345</span>
+                      <Icon
+                        style="margin: 0 6px"
+                        icon="ep:view"
+                        v-if="identifyShow"
+                        @click="identifyShow = !identifyShow"
+                      />
+                      <Icon
+                        style="margin: 0 6px"
+                        icon="ep:hide"
+                        v-else
+                        @click="identifyShow = !identifyShow"
                       />
                     </div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="机动车登记证：">
                     <div>
-                      <span>2张</span>
                       <el-image
-                        v-for="url in urls"
-                        :key="url"
-                        style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
-                        :src="url"
-                        fit="fill"
+                        v-for="item in 2"
+                        :key="item"
+                        style="width: 70px; height: 70px; margin-right: 5px"
+                        src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                        fit="cover"
                         :zoom-rate="1.2"
-                        :preview-src-list="urls"
+                        :preview-src-list="srcList"
+                        :initial-index="0"
                       />
                     </div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="车辆图片：">
-                    <div>
-                      <span>2张</span>
-                      <el-image
-                        v-for="url in urls"
-                        :key="url"
-                        style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
-                        :src="url"
-                        fit="fill"
-                        :zoom-rate="1.2"
-                        :preview-src-list="urls"
-                      />
-                    </div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6"><div></div></el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="6">
-                  <el-form-item label="车架号：">
-                    <div> LE4TG4DB1JL199517</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="发动机编号：">
-                    <div> 98596482</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6" v-if="false">
-                  <el-form-item label="首次登记日期：">
-                    <div> 2013-09-08</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6" style="padding-right: 10px">
-                  <el-form-item label="品牌/年代/型号：">
-                    <el-tooltip
-                      class="box-item"
-                      effect="dark"
-                      content="宝马-宝马X1 2021款 sDrive20Li 时尚型"
-                      placement="top-start"
-                    >
-                      <div class="carInfo"> 宝马-宝马X1 2021款 sDrive20Li 时尚型</div>
-                    </el-tooltip>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="里程数：">
-                    <div>200公里</div>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="6" v-if="false">
-                  <el-form-item label="里程数：">
-                    <div>200公里</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="其它信息：">
-                    <div>甲方XXXX，乙方XXXX</div>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="6">
-                  <el-form-item label="收车金额：">
-                    <div>30,000.00元</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="卖车金额：">
-                    <div style="display: flex; flex-direction: column">
-                      <div>120,000.00元</div>
-                      <el-tag size="small" type="danger">公允值范围：80,000元—100,000元</el-tag>
-                    </div>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-form-item label="收车方式 ：">
-                  <div>全款</div>
-                </el-form-item>
-              </el-row>
+                  </div>
 
-              <h3 style="font-weight: bold" class="mb20">卖家信息</h3>
-              <el-row>
-                <el-form-item label="是否第三方代收： ">
-                  <div>否</div>
+                  <!-- <span @click="viewIdCard" class="colr159">查看</span> -->
                 </el-form-item>
-              </el-row>
-              <el-row>
-                <el-col :span="6">
-                  <el-form-item label="身份证">
-                    <div style="display: flex; flex-direction: column">
-                      <div>
-                        <span class="identify" v-if="identifyShow"> 5*****************1</span>
-                        <span class="identify" v-else>512345678990102345</span>
-                        <Icon
-                          style="margin: 0 6px"
-                          icon="ep:view"
-                          v-if="identifyShow"
-                          @click="identifyShow = !identifyShow"
-                        />
-                        <Icon
-                          style="margin: 0 6px"
-                          icon="ep:hide"
-                          v-else
-                          @click="identifyShow = !identifyShow"
-                        />
-                      </div>
-                      <div>
-                        <el-image
-                          v-for="item in 2"
-                          :key="item"
-                          style="width: 70px; height: 70px; margin-right: 5px"
-                          src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
-                          fit="cover"
-                          :zoom-rate="1.2"
-                          :preview-src-list="srcList"
-                          :initial-index="0"
-                        />
-                      </div>
-                    </div>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="姓名：">
+                  <div>陈某</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="电话：">
+                  <div>15328756760</div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="收款方式：">
+                  <div>转账</div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item label="收款信息：">
+                <div>68XXXXXXXXXXXXXXXX</div>
+              </el-form-item>
+            </el-row>
 
-                    <!-- <span @click="viewIdCard" class="colr159">查看</span> -->
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="姓名：">
-                    <div>陈某</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="电话：">
-                    <div>15328756760</div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="收款方式：">
-                    <div>转账</div>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-form-item label="收款信息：">
-                  <div>68XXXXXXXXXXXXXXXX</div>
-                </el-form-item>
-              </el-row>
+            <h3 style="font-weight: bold" class="mb20">合同信息</h3>
+            <el-row>
+              <el-form-item label="XXX收车委托合同">
+                <button class="colr159" @click="viewContract">查看</button>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="XXX收车合同">
+                <button type="button" class="colr159" @click="viewContract">查看</button>
+              </el-form-item>
+            </el-row>
+          </el-form>
+        </el-card>
 
-              <h3 style="font-weight: bold" class="mb20">合同信息</h3>
-              <el-row>
-                <el-form-item label="XXX收车委托合同">
-                  <button class="colr159" @click="viewContract">查看</button>
-                </el-form-item>
-              </el-row>
-              <el-row>
-                <el-form-item label="XXX收车合同">
-                  <button type="button" class="colr159" @click="viewContract">查看</button>
-                </el-form-item>
-              </el-row>
-            </el-form>
-          </el-card>
-
-          <!-- 查看合同 -->
-          <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel" />
-        </el-main>
-      </el-container>
-    </XModal>
+        <!-- 查看合同 -->
+        <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel" />
+      </el-main>
+    </el-container>
+    <!-- </XModal> -->
   </ContentWrap>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
@@ -263,17 +263,17 @@ const identifyShow = ref(true)
 
 // 合同弹框
 const contractVisible = ref(false)
-const emit = defineEmits(['cancleSellCar'])
+// const emit = defineEmits(['cancleSellCar'])
 const props = defineProps({
-  visible: propTypes.bool.def(false),
+  // visible: propTypes.bool.def(false),
   type: propTypes.bool.def(undefined)
 })
 
-const visible = computed(() => {
-  return props.visible
-})
+// const visible = computed(() => {
+//   return props.visible
+// })
 
-console.log(setDialogTile)
+console.log(setDialogTile, props)
 
 // 查看身份证
 // const viewIdCard = () => {
@@ -291,19 +291,19 @@ const handleCancel = () => {
 }
 
 // 关闭弹框
-const closeDialog = () => {
-  emit('cancleSellCar')
-}
+// const closeDialog = () => {
+//   emit('cancleSellCar')
+// }
 
 // 通过
-const passBtn = () => {
-  emit('cancleSellCar')
-}
+// const passBtn = () => {
+//   emit('cancleSellCar')
+// }
 
 // 退回
-const returnBtn = () => {
-  emit('cancleSellCar')
-}
+// const returnBtn = () => {
+//   emit('cancleSellCar')
+// }
 </script>
 <style lang="scss" scoped>
 .header {
