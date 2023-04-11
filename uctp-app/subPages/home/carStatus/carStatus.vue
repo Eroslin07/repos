@@ -6,7 +6,7 @@
 		<zb-dropdown-menu style="width: 100%">
 			<zb-dropdown-item name="品牌" :options="brandArr" v-model="formData.brand" @change="brandChange">
 			</zb-dropdown-item>
-			<zb-dropdown-item name="收车状态" :options="newCarStatus" v-model="formData.checkStatus" @change="changeValue">
+			<zb-dropdown-item name="收车状态" :options="newCarStatus" v-model="checkStatus" @change="changeValue">
 			</zb-dropdown-item>
 		</zb-dropdown-menu>
 
@@ -68,8 +68,7 @@
 	export default {
 		data() {
 			return {
-				// searchValue: '',
-				value: null,
+				// 状态值数组
 				collectCarState: [{
 						text: '收车状态',
 						value: ''
@@ -94,7 +93,10 @@
 						value: 15
 					},
 				],
+
+				// 列表
 				tabList: [],
+				//收车状态
 				carStatsus: null,
 				formData: {
 					searchValue: null,
@@ -102,12 +104,17 @@
 					"pageSize": 10,
 					brand: '',
 					salesStatus: null,
-					checkStatus: '',
+					pickUpTime: null,
+					salesTime: null,
 				},
+
+				//选中状态值
+				checkStatus: '',
+				// 加载更多
 				status: 'loadmore',
 				total: 0,
 				timer: {},
-
+				// 品牌数组
 				brandArr: [{
 						text: '品牌',
 						value: ''
@@ -122,10 +129,12 @@
 					}
 				],
 
+				// 时间
 				saleTime: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm'),
+				// 时间选择器
 				timeShow: false,
-
-				statusNum: null
+				// 收车状态码
+				// statusNum: null
 			}
 		},
 		components: {
@@ -179,6 +188,10 @@
 						{
 							text: '销售时间',
 							value: '销售时间'
+						},
+						{
+							text: '收车时间',
+							value: '收车时间'
 						}
 					]
 				}
@@ -188,7 +201,7 @@
 			this.getList(this.formData)
 		},
 		onLoad(props) {
-			switch (props.text) {
+			switch (props.text * 1) {
 				case 1:
 					this.carStatsus = '收车中'
 					break;
@@ -207,7 +220,7 @@
 				title: this.carStatsus,
 			})
 			this.formData.salesStatus = props.text
-			this.statusNum = props.text
+			// this.statusNum = props.text
 		},
 		onPullDownRefresh() {
 			if (this.timer != null) {
@@ -249,7 +262,7 @@
 					}
 				})
 			},
-			
+
 			// 搜索
 			search(val) {
 				uni.showToast({
@@ -270,27 +283,35 @@
 			brandChange(val) {
 				this.getList(this.formData)
 			},
-			
-			// 销售时间
-			changeValue(val) {
-				if (val.text == '销售时间') {
-					this.timeShow = true;
-					this.formData.checkStatus=''
-				}
-			},
 
+			// 销售/收车时间
+			changeValue(val) {
+				if (val.value) {
+					this.timeShow = true;
+				}
+
+			},
 			// 时间 取消
 			timeCancle() {
 				this.timeShow = false
-				this.formData.checkStatus=''
+				this.checkStatus = ''
 			},
 			// 时间 确认
 			timeConfirm() {
 				this.timeShow = false
-				this.formData.checkStatus=''
+
 				this.$nextTick(() => {
-					uni.$u.timeFormat(this.saleTime, 'yyyy-mm'),
-						console.log(uni.$u.timeFormat(this.saleTime, 'yyyy-mm'), 333333)
+					let selectTime = uni.$u.timeFormat(this.saleTime, 'yyyy-mm') + '-01' + ' ' + '00:00:00'
+					if (this.checkStatus === '销售时间') {
+						this.formData.salesTime = [selectTime, selectTime]
+					} else if (this.checkStatus === '收车时间') {
+						this.formData.pickUpTime = [selectTime, selectTime]
+					} else {
+						this.formData.salesTime = ''
+						this.formData.pickUpTime = ''
+					};
+					this.getList(this.formData)
+					this.formData.checkStatus = ''
 				})
 
 			}

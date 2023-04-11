@@ -1,5 +1,7 @@
 <template>
   <ContentWrap>
+    <el-button @click="drawerVisible = true">打开</el-button>
+    <Drawer :visible="drawerVisible" @handle-close-drawer="handleCloseDrawer" />
     <!-- 列表 -->
     <XTable @register="registerTable">
       <!-- 操作：审批 -->
@@ -83,6 +85,7 @@
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
+import { ref } from 'vue'
 import { allSchemas } from './toDoList.data'
 import {
   MerchantApprovalPending,
@@ -93,8 +96,8 @@ import {
   SellCarPending,
   Profit
 } from '../components'
-
 import * as RoleApi from '@/api/system/role'
+
 // 列表相关的变量
 const [registerTable] = useXTable({
   allSchemas: allSchemas,
@@ -104,8 +107,13 @@ const { t } = useI18n() // 国际化
 // const { push } = useRouter() // 路由
 
 const dialogVisible = ref(false)
-
 const status = ref('')
+
+// 抽屉
+const drawerVisible = ref(false)
+const handleCloseDrawer = () => {
+  drawerVisible.value = false
+}
 // 审批
 const handleApproval = () => {
   console.log('审批')

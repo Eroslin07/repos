@@ -1,10 +1,10 @@
 import type { App } from 'vue'
 // 需要全局引入一些组件，如ElScrollbar，不然一些下拉项样式有问题
-import { ElLoading, ElScrollbar, ElButton } from 'element-plus'
+import { ElLoading, ElScrollbar, ElButton, ElDrawer } from 'element-plus'
 
 const plugins = [ElLoading]
 
-const components = [ElScrollbar, ElButton]
+const components = [ElScrollbar, ElButton, ElDrawer]
 
 export const setupElementPlus = (app: App<Element>) => {
   plugins.forEach((plugin) => {
