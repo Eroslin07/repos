@@ -159,7 +159,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         String procInstId = createProcessInstance0(userId, definition, createReqVO.getVariables(), businessKey);
         BpmFormMainDO updateBpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
         updateBpmFormMainDO.setProcInstId(procInstId);
-        updateBpmFormMainDO.setDoneTime(LocalDateTime.now());
+        updateBpmFormMainDO.setDoneTime(updateBpmFormMainDO.getSubmitTime());
         bpmFormMainMapper.updateById(updateBpmFormMainDO);
 
         return procInstId;
@@ -291,6 +291,10 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
                 .setStatus(BpmProcessInstanceStatusEnum.FINISH.getStatus())
                 .setResult(BpmProcessInstanceResultEnum.APPROVE.getResult()); // 如果正常完全，说明审批通过
         processInstanceExtMapper.updateByProcessInstanceId(instanceExtDO);
+
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, instance.getId());
+        bpmFormMainDO.setStatus(2);
+        bpmFormMainMapper.updateById(bpmFormMainDO);
 
         // 发送流程被通过的消息
         messageService.sendMessageWhenProcessInstanceApprove(BpmProcessInstanceConvert.INSTANCE.convert2ApprovedReq(instance));

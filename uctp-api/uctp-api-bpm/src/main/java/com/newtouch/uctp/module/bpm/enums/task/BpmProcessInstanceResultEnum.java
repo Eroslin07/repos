@@ -1,8 +1,9 @@
 package com.newtouch.uctp.module.bpm.enums.task;
 
-import com.newtouch.uctp.framework.common.util.object.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import com.newtouch.uctp.framework.common.util.object.ObjectUtils;
 
 /**
  * 流程实例的结果
@@ -20,7 +21,8 @@ public enum BpmProcessInstanceResultEnum {
 
     // ========== 流程任务独有的状态 ==========
 
-    BACK(5, "退回/驳回");
+    BACK(5, "退回/驳回"),
+    INVALID(-1, "作废/终止");
 
     /**
      * 结果

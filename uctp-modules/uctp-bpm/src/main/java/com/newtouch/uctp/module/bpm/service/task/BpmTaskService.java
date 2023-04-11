@@ -137,4 +137,10 @@ public interface BpmTaskService {
      */
     void updateTaskExtAssign(Task task);
 
+    /**
+     * 作废（终止）任务
+     * @param reqVO
+     */
+    void invalidTask(Long userId, BpmTaskInvalidReqVO reqVO);
+
 }

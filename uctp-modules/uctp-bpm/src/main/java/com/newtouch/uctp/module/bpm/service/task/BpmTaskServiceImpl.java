@@ -235,6 +235,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataObject);
         Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataObject);
         formMainDataObject.put("status", 1);
+        formMainDataObject.put("procInstId", task.getProcessInstanceId());
+        formMainDataObject.put("submitTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(bpmFormMainDO.getSubmitTime()));
         formMainDataObject.put("doneTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
         formDataObject.put(workFlowMainEntityAlias, formMainDataObject);
         this.bpmFormDataService.saveDataObject(Long.valueOf(businessKey), formDataObject);
@@ -367,6 +369,26 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                     BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
             }
         });
+    }
+
+    @Override
+    public void invalidTask(Long userId, BpmTaskInvalidReqVO reqVO) {
+        Task task = getTask(reqVO.getId());
+        if (task == null) {
+            throw exception(TASK_COMPLETE_FAIL_NOT_EXISTS);
+        }
+
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, task.getProcessInstanceId());
+        if (bpmFormMainDO.getStatus() != 1) {
+            throw exception(PROCESS_INSTANCE_INVALIA_FAIL_NOT_SELF);
+        }
+        bpmFormMainDO.setStatus(BpmProcessInstanceResultEnum.INVALID.getResult());
+        bpmFormMainMapper.updateById(bpmFormMainDO);
+
+        // 更新任务拓展表为不通过
+        taskExtMapper.updateByTaskId(
+                new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.INVALID.getResult())
+                        .setEndTime(LocalDateTime.now()).setReason(reqVO.getReason()));
     }
 
     private Task getTask(String id) {

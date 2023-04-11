@@ -85,4 +85,10 @@ public class BpmTaskController {
         return success(true);
     }
 
+    @PutMapping("/invalid")
+    @Operation(summary = "作废（终止）任务")
+    public CommonResult<Boolean> invalidTask(@Valid @RequestBody BpmTaskInvalidReqVO reqVO) {
+        taskService.invalidTask(getLoginUserId(), reqVO);
+        return success(true);
+    }
 }
