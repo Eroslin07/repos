@@ -1,16 +1,17 @@
 <template>
 	<view class="withdrawal">
-		<view class="header">
-			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<h3 style="margin-left: 15px;">招商银行(****1167)</h3>
-		</view>
-		<uni-card :is-shadow="false" is-full>
+		<uni-card>
+			<view>到账银行卡</view>
+			<view>兴业银行（***1167）</view>
+		</uni-card>
+		<uni-card>
 			<view>
 				<view>提现金额</view>
-				<u--input
-					placeholder="请输入内容"
-					border="bottom"
+				<u-input
+					border="none"
 					clearable
+					:customStyle="{'height': '50px'}"
+					fontSize="24px"
 				>
 					<u--text
 						text="￥"
@@ -18,11 +19,14 @@
 						margin="0 3px 0 0"
 						type="tips"
 					></u--text>
-				</u--input>
+					<template slot="suffix">
+						<view style="color: #fa6401;">全部提现</view>
+					</template>
+				</u-input>
 			</view>
+			<view>可用利润余额13,000.00元。</view>
 		</uni-card>
 		<view style="padding: 20px;">
-			<view>可用利润余额13,000.00元，<text style="color: #50a8bc;">全部提现</text></view>
 			<view v-if="type == 2">
 				<u-upload
 					:fileList="fileList1"
@@ -35,7 +39,7 @@
 			</view>
 			<button v-if="type == 1" class="button" @click="handleDefine">确定</button>
 			<button v-if="type == 2" class="button" @click="handleSubmit">提交申请</button>
-			<button class="button" @click="handleCancel">取消</button>
+			<button style="background-color: #fff;" @click="handleCancel">取消</button>
 		</view>
 	</view>
 </template>
@@ -52,11 +56,11 @@
 			this.type = options.type;
 			if (options.type == 1) {
 				uni.setNavigationBarTitle({
-					title: '我的保证金提现'
+					title: '保证金提现'
 				});
 			} else if (options.type == 2) {
 				uni.setNavigationBarTitle({
-					title: '我的利润提现'
+					title: '利润提现'
 				});
 			}
 		},
@@ -123,15 +127,12 @@
 
 <style lang="scss" scoped>
 	.withdrawal {
-		.header {
-			padding: 20px;
-			background-color: #f2f2f2;
-		}
+		border-top: 1px solid #ccc;
 		
 		.button {
-			background-color: #50a8bc;
+			background-color: #fa6401;
 			color: #fff;
-			margin-top: 10px;
+			margin: 10px 0;
 		}
 	}
 </style>

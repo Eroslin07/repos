@@ -2,25 +2,31 @@
 	<view class="bond">
 		<!-- 自定义导航栏 -->
 		<!-- <u-navbar title="我的保证金" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
-		<uni-card :is-shadow="false" is-full style="border-bottom: none;">
-			<u-row justify="space-between" customStyle="margin-bottom: 10px">
-				<u-col span="3">
-					<h3>100,500元</h3>
-				</u-col>
-				<u-col span="3">
-					<view class="demo-layout">
-						<u-button type="warning" :plain="true" text="提现" @click="handleWithdrawal"></u-button>
-						<u-button :plain="true" text="充值" class="button" @click="handleRecharge"></u-button>
-					</view>
-				</u-col>
-			</u-row>
+		<uni-card>
+			<view><u--text suffixIcon="eye" iconStyle="font-size: 18px" text="可用余额"></u--text></view>
+			<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">100,500<text style="font-size: 12px;">元</text></view>
+			<view style="margin-bottom: 16px;"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="冻结余额 100,000 元"></u--text></view>
+			<u-grid col="2">
+				<u-grid-item>
+					<button class="button" @click="handleWithdrawal" style="background-color: #fff;">提现</button>
+				</u-grid-item>
+				<u-grid-item>
+					<button class="button" @click="handleRecharge" style="background-color: #fa6401;color: #fff;">充值</button>
+				</u-grid-item>
+			</u-grid>
 		</uni-card>
-		<uni-card :is-shadow="false" is-full style="border-bottom: none;">
-			<view style="margin-bottom: 10px;overflow: hidden;">
-				<view class="title" style="float: left;">保证金明细</view>
-				<view class="title" style="float: right;color: #75c2ff;">筛选</view>
-			</view>
+		<uni-card>
 			<u-list style="height: 100%;">
+				<view style="line-height: 45px;">
+					<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #ddd;">
+						<u-col span="4">
+							<view class="title">保证金交易明细</view>
+						</u-col>
+						<u-col span="4">
+							<view style="text-align: right;">全部 ></view>
+						</u-col>
+					</u-row>
+				</view>
 				<u-list-item v-for="(item, index) in indexList" :key="index">
 					<view @click="handleClick(item.title)">
 						<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #ddd;">
@@ -29,8 +35,7 @@
 								<view class="note">2023-03-17</view>
 							</u-col>
 							<u-col span="4">
-								<view class="title">+100,000</view>
-								<view class="note">余额：100,500元</view>
+								<view class="title" style="text-align: right;">+100,000 ></view>
 							</u-col>
 						</u-row>
 					</view>
@@ -98,14 +103,8 @@
 
 <style lang="scss" scoped>
 	.button {
-		margin-top: 10px;
+		width: 80%;
 	}
-	
-	/* #ifdef MP-WEIXIN */
-	/deep/ .u-button {
-		margin-top: 10px !important;
-	}
-	/* #endif */
 	
 	.title {
 		color: #000;
