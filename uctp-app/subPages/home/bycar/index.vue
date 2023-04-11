@@ -151,7 +151,7 @@
 						<view class="text">车辆价款</view>
 					</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额">
+						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额" @blur="handleBlur" @focus="handleFocus">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -237,14 +237,14 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom v-if="sellerForm.collection == 0">
+					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
 						<u--input v-model="sellerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
 					</u-form-item>
 					<u-form-item label="银行卡号" :required="true" prop="bankCard" borderBottom v-if="sellerForm.collection == 0">
-						<u--input v-model="sellerForm.bankCard" border="none" placeholder="请输入银行卡号"></u--input>
+						<u--input v-model="sellerForm.bankCard" border="none" placeholder="请输入银行卡号" @change="handleChange"></u--input>
 					</u-form-item>
 					<u-form-item label="第三方银行卡号" :required="true" prop="thirdBankCard" borderBottom v-if="sellerForm.collection == 1">
-						<u--input v-model="sellerForm.thirdBankCard" border="none" placeholder="请输入银行卡号"></u--input>
+						<u--input v-model="sellerForm.thirdBankCard" border="none" placeholder="请输入银行卡号" @change="handleChange"></u--input>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
@@ -483,18 +483,30 @@
 						message: '请填写开户行',
 						trigger: ['blur', 'change']
 					},
-					bankCard: {
+					bankCard: [{
 						type: 'string',
 						required: true,
 						message: '请填写银行卡号',
 						trigger: ['blur', 'change']
-					},
-					thirdBankCard: {
+					}, {
+						pattern: /^(\d{4}\s){3}\d{4}$|^(\d{4}\s){4}\d{3}$/,
+						type: 'string',
+						required: true,
+						message: '请填写正确的银行卡号',
+						trigger: ['blur', 'change']
+					}],
+					thirdBankCard: [{
 						type: 'string',
 						required: true,
 						message: '请填写第三方收款人银行卡号',
 						trigger: ['blur', 'change']
-					},
+					}, {
+						pattern: /^(\d{4}\s){3}\d{4}$|^(\d{4}\s){4}\d{3}$/,
+						type: 'string',
+						required: true,
+						message: '请填写正确的银行卡号',
+						trigger: ['blur', 'change']
+					}],
 					thirdSellerName: {
 						type: 'string',
 						required: true,
@@ -540,6 +552,24 @@
 					return `${value}日`
 				}
 				return value
+			},
+			handleChange(data) {
+				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+				if (this.sellerForm.collection == 0) {
+					this.$set(this.sellerForm, 'bankCard', account);
+				} else if (this.sellerForm.collection == 1) {
+					this.$set(this.sellerForm, 'thirdBankCard', account);
+				}
+			},
+			// 失去焦点
+			handleBlur(val) {
+				let amount = this.$amount.getComdify(val);
+				this.$set(this.sellerForm, 'vehicleReceiptAmount', amount);
+			},
+			// 聚焦
+			handleFocus() {
+				let amount = this.$amount.getDelcommafy(this.sellerForm.vehicleReceiptAmount);
+				this.$set(this.sellerForm, 'vehicleReceiptAmount', amount);
 			},
 			// 点击OCR
 			handleOcr(index) {
@@ -678,6 +708,12 @@
 			// 下一步
 			handleStep() {
 				this.$refs.carForm.validate().then(res => {
+					if (this.carId) {
+						this.vehicleInfor = false;
+						this.sellerInfor = true;
+						this.active = 1;
+						return;
+					}
 					this.handleDraft('step');
 				})
 			},

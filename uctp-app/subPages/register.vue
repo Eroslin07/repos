@@ -68,7 +68,7 @@
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
-						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
+						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
 					</u-form-item>
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
 						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
