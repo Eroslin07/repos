@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.business.service;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO;
 
 import javax.validation.Valid;
@@ -39,6 +40,10 @@ public interface CarInfoService {
      * @return
      */
     String insertSellerInfo(@Valid AppSellerInfoReqVO reqVO);
+
+    CarInfoDO selectCarInfoByID(String id);
+
+    CarInfoDetailsDO seleCarInfoDetail(String id);
 
     /**
      * 更新车辆主表

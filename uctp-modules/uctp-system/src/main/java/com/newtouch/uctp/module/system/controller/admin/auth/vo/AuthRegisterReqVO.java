@@ -27,7 +27,7 @@ public class AuthRegisterReqVO {
     private String idCard;
 
     @Schema(description = "身份证url", required = true, example = "")
-    private String idCardUrl;
+    private List<String> idCardUrl;
 
     @Schema(description = "姓名", required = true, example = "张三")
 //    @NotEmpty(message = "姓名不能为空")
@@ -41,23 +41,30 @@ public class AuthRegisterReqVO {
     @Schema(description = "营业执照url", required = true, example = "")
     private List<String> businessLicense;
 
+    @Schema(description = "公司名称", required = true, example = "XX车行")
+    private String businessName;
+
     @Schema(description = "市场所在地(租户id)", required = true, example = "130")
 //    @NotEmpty(message = "市场所在地不能为空")
     private String marketLocation;
+
+    @Schema(description = "开户行", required = true, example = "XX银行")
+    private String bankName;
+
 
     @Schema(description = "银行卡账号", required = true, example = "211")
 //    @NotEmpty(message = "银行卡账号不能为空")
     private String bankNumber;
 
 
-    @Schema(description = "密码", required = true, example = "buzhidao")
-//    @NotEmpty(message = "密码不能为空")
-    private String password;
 
 
-    @Schema(description = "商户名称", required = true, example = "XX车行")
-    private String businessName;
+//    @Schema(description = "税号", required = true, example = "123456")
+//    private String taxNum;
 
-    @Schema(description = "税号", required = true, example = "123456")
-    private String taxNum;
+
+//    @Schema(description = "密码", required = true, example = "buzhidao")
+////    @NotEmpty(message = "密码不能为空")
+//    private String password;
+
 }

@@ -81,8 +81,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         infoDO.setVin(createReqVO.getVin());
         infoDO.setYear(createReqVO.getYear());
         infoDO.setModel(createReqVO.getModel());
+        infoDO.setPlateNum(createReqVO.getPlateNum());
         infoDO.setEngineNum(createReqVO.getEngineNum());
-        infoDO.setVehicleReceiptAmount(createReqVO.getVehicleReceiptAmount());
+//        infoDO.setVehicleReceiptAmount(createReqVO.getVehicleReceiptAmount());
         infoDO.setRemarks(createReqVO.getRemarks());
         infoDO.setSalesStatus(0);
         LocalDateTime current = LocalDateTime.now();
@@ -98,6 +99,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         detailsDO.setMileage(createReqVO.getMileage());
         detailsDO.setAccidentVehicle(0);
         detailsDO.setSoakingCar(0);
+        detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
         detailsDO.setBurnCar(0);
         detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
         detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
@@ -136,19 +138,48 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     @Transactional
     public String insertSellerInfo(AppSellerInfoReqVO reqVO) {
+        //更新车辆明细表
         Long id = reqVO.getId();
         CarInfoDetailsDO infoDetails = carInfoDetailsService.getCarInfoDetails(id);
         infoDetails.setSellerName(reqVO.getSellerName());
-        infoDetails.setCollection(reqVO.getCollection());
+        infoDetails.setCollection(reqVO.getCollection());//是否第三方代收
         infoDetails.setSellerIdCard(reqVO.getSellerIdCard());
         infoDetails.setSellerTel(reqVO.getSellerTel());
-        infoDetails.setPayType(reqVO.getPayType());
+        infoDetails.setRemitType(reqVO.getRemitType());//卖家收款方式
+        infoDetails.setPayType(reqVO.getPayType());//平台付款方式
         infoDetails.setBankCard(reqVO.getBankCard());
-
+        infoDetails.setBankName(reqVO.getBankName());
         infoDetails.setThirdSellerName(reqVO.getThirdSellerName());
         infoDetails.setThirdBankCard(reqVO.getThirdBankCard());
         carInfoDetailsService.updateCarInfoDetail(infoDetails);
+
+
+        //更新车辆主表
+        CarInfoDO carInfoDO = carInfoMapper.selectById(infoDetails.getCarId());
+        carInfoDO.setVehicleReceiptAmount(reqVO.getVehicleReceiptAmount());
+        carInfoMapper.updateById(carInfoDO);
+
+        for(int a=0;a<reqVO.getIdCardUrl().size();a++){//卖家身份证图片
+            BusinessFileDO businessFileDO = new BusinessFileDO();
+            businessFileDO.setId(Long.valueOf(reqVO.getIdCardUrl().get(a)));
+            businessFileDO.setMainId(id);//车辆明细表id
+            businessFileDO.setFileType("4");
+            businessFileService.insert(businessFileDO);
+        }
+
+        carInfoDetailsService.updateCarInfoDetail(infoDetails);
         return "success";
+    }
+
+    @Override
+    public CarInfoDO selectCarInfoByID(String id) {
+        CarInfoDetailsDO infoDetails = carInfoDetailsService.getCarInfoDetails(Long.valueOf(id));
+        return carInfoMapper.selectById(infoDetails.getCarId());
+    }
+
+    @Override
+    public CarInfoDetailsDO seleCarInfoDetail(String id) {
+        return carInfoDetailsService.getCarInfoDetails(Long.valueOf(id));
     }
 
 

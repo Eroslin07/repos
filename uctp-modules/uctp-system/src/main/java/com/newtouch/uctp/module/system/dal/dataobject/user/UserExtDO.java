@@ -39,6 +39,12 @@ public class UserExtDO extends TenantBaseDO {
      * 对公银行账号
      */
     private String bankAccount;
+
+
+    /**
+     * 开户行
+     */
+    private String bankName;
     /**
      * 商户ID
      */

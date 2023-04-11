@@ -1,11 +1,18 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo;
 
+import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
+import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.response.ContractPageResult;
+import com.qiyuesuo.sdk.v2.response.SdkResponse;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
@@ -16,14 +23,17 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +128,15 @@ public class AppCarInfoController {
     public CommonResult<String> insertSellerInfo(@Valid @RequestBody AppSellerInfoReqVO reqVO) {
         return success(carInfoService.insertSellerInfo(reqVO));
     }
+
+    @GetMapping("/getCarInfoByVIN")
+    @Operation(summary = "根据VIN获取回显车辆信息")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") Long id) {
+
+        return success(carInfoService.getSellCarInfo(id));
+    }
+
     @GetMapping("/get/sell")
     @Operation(summary = "获得APP卖车详情页")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
@@ -305,7 +324,121 @@ public class AppCarInfoController {
         return appContractarVO;
     }
 
+    @PostMapping("/getCarSeriesList")
+    @PermitAll
+    @Operation(summary = "查询车系")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public Map getCarSeriesList(@RequestBody Map map) {
+        String brand_id = String.valueOf(map.get("brand_id"));//品牌
+        Map SeriesMap=new HashMap<>();
+        try {
+            String url = "http://testapi.che300.com/service/getCarSeriesList";
+            String token = "61f499b086392005f92009b91f8f966a";
+            SeriesMap = UctpCarInfoSearchUtils.getCarSeriesList(token, brand_id, url);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return SeriesMap;
+    }
 
+
+    @PostMapping("/getCarModelList")
+    @PermitAll
+    @Operation(summary = "查询车型")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public Map getCarModelList(@RequestBody Map map) {
+        String seriesId = String.valueOf(map.get("seriesId"));//车系
+        Map SeriesMap=new HashMap<>();
+        try {
+            String url = "http://testapi.che300.com/service/getCarModelList";
+            String token = "61f499b086392005f92009b91f8f966a";
+            SeriesMap = UctpCarInfoSearchUtils.getCarModelList(token, seriesId, url);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return SeriesMap;
+    }
+
+
+    @PostMapping("/searchFairValue")
+    @PermitAll
+    @Operation(summary = "查询公允价值")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public HashMap searchFairValue(@RequestBody Map map) {
+//        String vehicleReceiptAmount = String.valueOf(map.get("vehicleReceiptAmount"));//收车金额
+        String carId = String.valueOf(map.get("carId"));
+
+        CarInfoDO carInfoDO = carInfoService.selectCarInfoByID(carId);
+        CarInfoDetailsDO carInfoDetailsDO = carInfoService.seleCarInfoDetail(carId);
+        HashMap fairValue = null;
+        try {
+            String token = "61f499b086392005f92009b91f8f966a";
+            String modelId = String.valueOf(map.get("modelId"));//车型id
+            String zone =carInfoDO.getPlateNum();//车牌
+            String mile= String.valueOf(carInfoDetailsDO.getMileage());//里程
+            String regDate= String.valueOf(carInfoDetailsDO.getFirstRegistDate());//首次登记时间
+            String allLevel="1";//(是否返回多⻋况,1是，0:否) 默认1
+
+            String url1 = "http://testapi.che300.com/service/getUsedCarPrice";
+            String coefficients="0.2";
+
+
+            fairValue = UctpCarInfoSearchUtils.CarFairValue(modelId, zone, mile, regDate, allLevel, token, url1, coefficients);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return fairValue;
+    }
+
+
+
+//    static Map<String,Long> map=new HashMap<>();
+//    static Map<String,String> map1=new HashMap<>();
+
+//    @GetMapping("/qiyuesuo")
+//    @Operation(summary = "发起合同")
+//    public CommonResult<String> qiyuesuo() throws Exception {
+//        System.out.println("1111");
+//        String url = "https://openapi.qiyuesuo.cn";
+//        String accessKey ="q4xKsNcFI8";
+//        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
+//        QiYueSuoUtil qiYueSuoUtil = new QiYueSuoUtil(url, accessKey, accessSecret);
+//        try {
+//            SdkResponse<Contract> response = qiYueSuoUtil.signSealDraft("二手车","成都新致云服测试公司","罗一秀","13708206115","罗聪","17396202169");
+//            Contract result = response.getResult();
+//            Long id = result.getId();
+//            File file = new File("/Users/qinjingjing/app/用户协议.docx");
+//            qiYueSuoUtil.addDocumentByFile(id, file, "用户协议","docx");
+//            qiYueSuoUtil.send(id);
+//            System.out.println(id);
+//            map.put("id",id);
+//            SdkResponse<ContractPageResult> pageResponse = qiYueSuoUtil.gerenateSignUrl(id, "17396202169");
+//            ContractPageResult pageResult = pageResponse.getResult();
+//            String pageUrl = pageResult.getPageUrl();
+//            System.out.println(pageUrl);
+//            map1.put("url",pageUrl);
+//            return success(pageUrl);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//
+//
+//    @PutMapping("/cancelContract")
+//    @Operation(summary = "作废合同")
+//    public CommonResult<String> cancelContract(@Valid @RequestBody UserProfileUpdateReqVO reqVO) throws Exception {
+//        System.out.println("1111");
+//        String url = "https://openapi.qiyuesuo.cn";
+//        String accessKey ="q4xKsNcFI8";
+//        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
+//        QiYueSuoUtil qiYueSuoUtil = new QiYueSuoUtil(url, accessKey, accessSecret);
+//        Long id = map.get("id");
+//        String pageUrl1 = map1.get("url");
+//        qiYueSuoUtil.withdrawOrVoidContract(id,"请求作废合同");
+////        String pageUrl1 ="https://cloud.qiyuesuo.cn/contract/sign/3078989971495846817?hide_menu=true&ignoreClientRedirect=true&isInline=true";
+//        return success(pageUrl1);
+//    }
 
 
 }

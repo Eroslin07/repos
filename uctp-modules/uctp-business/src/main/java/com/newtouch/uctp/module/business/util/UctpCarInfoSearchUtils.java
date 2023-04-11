@@ -33,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UctpCarInfoSearchUtils {
-    Log log = new Log4j2Log(UctpCarInfoSearchUtils.class);
+    static Log log = new Log4j2Log(UctpCarInfoSearchUtils.class);
 
     /**
      * GET请求
@@ -47,7 +47,7 @@ public class UctpCarInfoSearchUtils {
      * @param token        token(⻋300提供给客户的调⽤帐号,最长32位) 必传
      * @param coefficients coefficients车价浮动系数 默认0.2
      */
-    public HashMap CarFairValue(String modelId, String carNo, String mile, String regDate, String allLevel, String token, String url, String coefficients) throws UnsupportedEncodingException {
+    public static HashMap CarFairValue(String modelId, String carNo, String mile, String regDate, String allLevel, String token, String url, String coefficients) throws UnsupportedEncodingException {
 //        url = "http://testapi.che300.com/service/getUsedCarPrice";
 //        token = "61f499b086392005f92009b91f8f966a";
         StringBuffer urlParam = new StringBuffer();
@@ -186,7 +186,7 @@ public class UctpCarInfoSearchUtils {
      *                  update_time 更新时间
      */
 
-    public JSONObject getCarBrandList(String token, String brandName, String url) throws UnsupportedEncodingException {
+    public static JSONObject getCarBrandList(String token, String brandName, String url) throws UnsupportedEncodingException {
 
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
@@ -251,7 +251,7 @@ public class UctpCarInfoSearchUtils {
      *                status           状态码 1:表示成功 0:表示失败
      */
 
-    public Map getCarSeriesList(String token, String brandId, String url) throws UnsupportedEncodingException {
+    public static Map getCarSeriesList(String token, String brandId, String url) throws UnsupportedEncodingException {
 
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
@@ -311,7 +311,7 @@ public class UctpCarInfoSearchUtils {
      *                 url 是 string，最长 255
      */
 
-    public Map getCarModelList(String token, String seriesId, String url) throws UnsupportedEncodingException {
+    public static Map getCarModelList(String token, String seriesId, String url) throws UnsupportedEncodingException {
 
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);

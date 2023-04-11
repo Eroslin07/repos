@@ -24,8 +24,6 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "发动机编号")
     private String engineNum;
 
-    @Schema(description = "运营性质")
-    private String natureOfOperat;
 
     @Schema(description = "车架号")
     private String vin;
@@ -33,12 +31,11 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "首次登记时间")
     private String firstRegistDate;
 
-    @Schema(description = "登记证书url")
-    private List<String>  certificateUrl;
+    @Schema(description = "车牌号")
+    private String plateNum;
 
-
-    @Schema(description = "里程数")
-    private BigDecimal mileage;
+    @Schema(description = "运营性质（使用性质）")
+    private String natureOfOperat;
 
     @Schema(description = "车辆品牌")
     private String brand;
@@ -49,14 +46,17 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "车辆型号")
     private String model;
 
-    @Schema(description = "收车金额")
-    private BigDecimal vehicleReceiptAmount;
+    @Schema(description = "登记证书url")
+    private List<String>  certificateUrl;
+
+
+    @Schema(description = "里程数")
+    private BigDecimal mileage;
+
 
     @Schema(description = "备注（特别约定）")
     private String remarks;
 
-    @Schema(description = "收车方式")
-    private String vehicleReceiptType;
 
 
 }

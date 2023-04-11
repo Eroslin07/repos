@@ -141,16 +141,15 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         if(userService.getUserByMobile(reqVO.getPhone())!=null){
             throw exception(AUTH_MOBILE_IS_EXIST);
         }
-        String decrypt = RASClientUtil.jsencryptDecryptByPrivateKeyLong(reqVO.getPassword());
+//        String decrypt = RASClientUtil.jsencryptDecryptByPrivateKeyLong(reqVO.getPassword());
         try {
             //根据租户id查询商户的父级id
             DeptDO dept = deptService.selectDept(reqVO.getMarketLocation(), "商户方");
-
             //用户主表
             AdminUserDO userDO = new AdminUserDO();
             userDO.setUsername(reqVO.getPhone());
             userDO.setMobile(reqVO.getPhone());
-            userDO.setPassword(encodePassword(decrypt)); // 加密密码
+//            userDO.setPassword(encodePassword(decrypt)); // 加密密码
             userDO.setNickname(reqVO.getName());
             userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             userDO.setStatus(1);
@@ -160,6 +159,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             extDO.setIdCard(reqVO.getIdCard());
             extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             extDO.setUserId(userDO.getId());
+            extDO.setBankName(reqVO.getBankName());
             extDO.setBankAccount(reqVO.getBankNumber());
             extDO.setStaffType("1");
             userExtService.insertUser(extDO);
@@ -176,7 +176,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 //            //保存图片到中间表
 //            List<String> carUrl = reqVO.getBusinessLicense();
 //            for(int a=0;a<carUrl.size();a++){//车辆图片
-//                UctpBusinessFileDO businessFileDO = new UctpBusinessFileDO();
+//                UctpBusinessFileDO businessFileDO = new BusinessFileDO();
 //                businessFileDO.setId(Long.valueOf(carUrl.get(a)));
 //                businessFileDO.setMainId(infoDO.getId());
 //                businessFileDO.setFileType("1");

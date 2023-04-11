@@ -163,7 +163,6 @@ public class RegisterController {
     }
 
 
-
     @GetMapping("/getTenantlist")
     @Operation(summary = "获得租户下拉")
 //    @PreAuthorize("@ss.hasPermission('system:tenant:getTenantlist')")
