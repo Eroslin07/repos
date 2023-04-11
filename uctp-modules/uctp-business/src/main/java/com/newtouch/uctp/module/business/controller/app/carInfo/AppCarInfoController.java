@@ -161,9 +161,77 @@ public class AppCarInfoController {
         return success(true);
     }
 
+
+
     @GetMapping("/getDetailds")
     @Operation(summary = "获得车辆明细信息")
-    public CommonResult<AppCarInfoAndDetailVO> getCarInfoAndDetails(@Valid CarDCVo carDCVo) {
+    public CommonResult<CarDetailRespVO> getCarInfoAndDetails(@Valid CarDCVo carDCVo) {
+            CarDetailRespVO pageResult = carInfoService.getCarInfoAndDetails(carDCVo);
+            return success(pageResult);
+    }
+
+
+
+
+    @PostMapping("/updateContractStatas")
+    @Operation(summary = "作废合同状态")
+    public CommonResult<String> updateContractStatas(@RequestBody  CarDCVo carDCVo) {
+        return success(carInfoService.updateContractStatas(carDCVo));
+    }
+
+
+    @PostMapping("/downloadFile")
+    @Operation(summary = "通过路径下载单个文件/多文件下载需前端轮询")
+    public void downLoadone(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        File file = DownLoadUtils.getResourceFile(example.getUrl());
+        DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
+    }
+    @PostMapping ("/download-more")
+    @Operation(summary = "多文件下载")
+    public void downLoadmore(@RequestBody DownloadMoreExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
+       // String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
+        for (DownloadExample exampleExample : example.getExamples()) {
+            File file = DownLoadUtils.getResourceFile(exampleExample.getUrl());
+            DownLoadUtils.outFileByFile(exampleExample.getName()+"."+exampleExample.getType(),file,false,request,response);
+        }
+
+
+    }
+
+
+/*
+
+    @GetMapping("/getCarCosts/{id}")
+    @Operation(summary = "获得资金信息")
+    public CommonResult<AppCarCostVO> getCarCosts(@PathVariable String id) {
+        AppCarCostVO pageResult = carInfoService.getCarCosts(id);
+        return success(pageResult);
+    }
+
+    @GetMapping("/getContractInfo")
+    @Operation(summary = "获得合同主表信息")
+    public CommonResult<List<AppContractarVO>> getContractInfo(@RequestParam("carID")  String carID) {
+        List<AppContractarVO> pageResult = carInfoService.getContractInfo(carID);
+        List<AppContractarVO> pageResult1 =null;
+        for (AppContractarVO appContractarVO : pageResult) {
+            pageResult1.add(setContractUrl(appContractarVO));
+        }
+
+        return success(pageResult1);
+    }
+
+    @GetMapping("/getPeopleInfo")
+    @Operation(summary = "卖家/买家信息查询")
+    public CommonResult<PeopleVo> getPeopleInfo(@RequestParam("carID")  String carID) {
+        PeopleVo pageResult = carInfoService.getPeopelInfo(carID);
+        return success(pageResult);
+    }
+
+
+
+    @GetMapping("/getDetailds1")
+    @Operation(summary = "获得车辆明细信息")
+    public CommonResult<AppCarInfoAndDetailVO> getCarInfoAndDetails1(@Valid CarDCVo carDCVo) {
 
 
         try {
@@ -182,20 +250,20 @@ public class AppCarInfoController {
             for (FileRespDTO datum : listcarIds.getData()) {
                 carPics.add(datum.getUrl());
             }
-            AppCarInfoAndDetailVO pageResult = carInfoService.getCarInfoAndDetails(carDCVo.getId().toString());
+            AppCarInfoAndDetailVO pageResult = carInfoService.getCarInfoAndDetail(carDCVo.getId().toString());
             pageResult.setCarPic(carPics);
             return success(pageResult);
         }catch (NullPointerException e){
             e.printStackTrace();
 
         }
-       return error(500,"服务器内部错误，请联系管理员处理");
+        return error(500,"服务器内部错误，请联系管理员处理");
     }
 
     @GetMapping("/getPics")
     @Operation(summary = "获得车辆相关图片信息")
     public CommonResult<PicResp>  getPics(@Valid CarDCVo carDCVo) {
-    //可以传car_id 和传行驶证，驾驶证号
+        //可以传car_id 和传行驶证，驾驶证号
         CarDCVo carDC =carInfoService.getCarDC(carDCVo.getCertificateNo());
         List<CarDCVo>  certificatePic=carInfoService.getCertificateIds(carDC.getCertificateNo());
         List<CarDCVo> drivingPic =carInfoService.getDrivingLicenseIds(carDC.getDrivingLicense());
@@ -230,83 +298,8 @@ public class AppCarInfoController {
         return success(picResp);
     }
 
+    //将合同的url放到实体中
 
-    @GetMapping("/getCarCosts/{id}")
-    @Operation(summary = "获得资金信息")
-    public CommonResult<AppCarCostVO> getCarCosts(@PathVariable String id) {
-        AppCarCostVO pageResult = carInfoService.getCarCosts(id);
-        return success(pageResult);
-    }
-
-    @GetMapping("/getContractInfo")
-    @Operation(summary = "获得合同主表信息")
-    public CommonResult<List<AppContractarVO>> getContractInfo(@RequestParam("carID")  String carID) {
-        List<AppContractarVO> pageResult = carInfoService.getContractInfo(carID);
-        List<AppContractarVO> pageResult1 =null;
-        for (AppContractarVO appContractarVO : pageResult) {
-           pageResult1.add(setContractUrl(appContractarVO));
-        }
-
-        return success(pageResult1);
-    }
-
-    @PostMapping("/updateContractStatas")
-    @Operation(summary = "作废合同状态")
-    public CommonResult<String> updateContractStatas(@RequestBody  CarDCVo carDCVo) {
-        return success(carInfoService.updateContractStatas(carDCVo));
-    }
-
-    @GetMapping("/downLoadContract/{filePath}")
-    @Operation(summary = "通过路径下载合同")
-    //public void downLoadContract(@PathVariable String filePath,@PathVariable String fileName,HttpServletRequest request,HttpServletResponse response) throws IOException {
-    public void downLoadContract(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        List<Map<String ,String>> list=new ArrayList<>();
-//        for (Map<String, String> map : list) {
-//            File file =new File(map.get("filePath"));
-        //File file = DownLoadUtils.getResourceFile(map.get("filePath"));
-//            DownLoadUtils.outFileByFile(map.get("fileName")+".pdf",file,false,request,response);
-//        }
-        String fName="/Users/huangr/newtouch/测试.pdf";
-        File tempFile =new File( fName.trim());
-        //File file = DownLoadUtils.getResourceFile("/Users/huangr/newtouch/测试.pdf");
-        DownLoadUtils.outFileByFile("测试.pdf",tempFile,false,request,response);
-
-    }
-
-    @PostMapping("/download-one")
-    @Operation(summary = "通过路径下载单个文件")
-    public void downLoadone(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
-       // String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
-        File file = DownLoadUtils.getResourceFile(example.getUrl());
-        DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
-        //DownLoadUtils.outFileByFile("测试",file,false,request,response);
-
-    }
-    @PostMapping ("/download-more")
-    @Operation(summary = "多文件下载")
-    public void downLoadmore(@RequestBody DownloadMoreExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
-       // String url="http://61.172.179.54:9000/uctp-cloud/9be70b12034965ccfeabfbd36965720787ceca730afaa2ae915ef7e6ffb1f850.jpg";
-        for (DownloadExample exampleExample : example.getExamples()) {
-            File file = DownLoadUtils.getResourceFile(exampleExample.getUrl());
-            DownLoadUtils.outFileByFile(exampleExample.getName()+"."+exampleExample.getType(),file,false,request,response);
-        }
-
-        //DownLoadUtils.outFileByFile("测试",file,false,request,response);
-
-    }
-
-    @GetMapping("/getPeopleInfo")
-    @Operation(summary = "卖家/买家信息查询")
-    public CommonResult<PeopleVo> getPeopleInfo(@RequestParam("carID")  String carID) {
-        PeopleVo pageResult = carInfoService.getPeopelInfo(carID);
-        return success(pageResult);
-    }
-
-
-
-    /**
-     * 将合同的url放到实体中
-     */
     private AppContractarVO setContractUrl(AppContractarVO appContractarVO){
 
         CommonResult<List<FileRespDTO>> listCertificates =null;
@@ -390,6 +383,7 @@ public class AppCarInfoController {
         return fairValue;
     }
 
+*/
 
 
 //    static Map<String,Long> map=new HashMap<>();

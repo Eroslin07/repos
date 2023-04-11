@@ -17,33 +17,10 @@ public class DownloadExample {
     @Schema(description = "远程url")
     private String url;
 
-    @Schema(description = "名称")
+    @Schema(description = "文件名称")
     private String name;
 
-    @Schema(description = "类型")
+    @Schema(description = "类型(如：pdf,word,png,jpg等等)")
     private String type;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

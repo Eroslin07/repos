@@ -54,7 +54,7 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
 
     List<AppContractarVO> getContractInfo(String carID);
 
-    List<InvoicesInfoDO> getInvoicesInfo(String carID);
+    List<AppCarInvoiceVo> getInvoicesInfo(String carID);
 
     CarDCVo getCarDC(String carID);
     List<CarDCVo> getCarIds(String carID);
@@ -67,6 +67,7 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
 
     PeopleVo getPeopelInfo(String carID);
 
+    List<CarDCVo> getInvoiceIds(String id);
 
 
 }

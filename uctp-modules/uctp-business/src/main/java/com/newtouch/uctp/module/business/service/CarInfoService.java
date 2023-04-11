@@ -123,15 +123,15 @@ public interface CarInfoService {
      */
     void saveSellCarInfo(AppSellCarInfoReqVO reqVO);
 
+
+     AppCarInfoAndDetailVO getCarInfoAndDetail(String id);
     /**
      * 获得车辆部分明细信息
      *
-     * @param id
+     * @param carDCVo
      * @return 车辆部分明细信息
      */
-
-
-    AppCarInfoAndDetailVO getCarInfoAndDetails(String id);
+    CarDetailRespVO getCarInfoAndDetails(CarDCVo carDCVo);
 
     /**
      * 获得车辆信息
@@ -171,7 +171,7 @@ public interface CarInfoService {
      * @param carID
      * @return 车辆发票信息
      */
-    List<InvoicesInfoDO> getInvoicesInfo(String carID);
+    List<AppCarInvoiceVo> getInvoicesInfo(String carID);
     /**
      * 获得车辆驾驶证，行驶证编号
      *
@@ -215,6 +215,13 @@ public interface CarInfoService {
      * @return PeopleVo
      */
     PeopleVo getPeopelInfo(String carID);
+    /**
+     * 获得发票在业务上传表中的id集合（查询url使用）
+     *
+     * @param id
+     * @return 发票在业务上传表中的id集合
+     */
+    List<CarDCVo> getInvoiceIds(String id);
 
 
 }
