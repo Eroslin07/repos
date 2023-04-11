@@ -13,7 +13,7 @@ import java.util.List;
 */
 @Data
 @ToString(callSuper = true)
-public class AppCarInfoAndDetailVO {
+public class AppCarInfoAndDetailVO extends PeopleVo {
 
 
     @Schema(description = "车辆ID")
@@ -73,6 +73,9 @@ public class AppCarInfoAndDetailVO {
 
     @Schema(description = "发动机编号")
     private String engineNum;
+
+    @Schema(description = "车辆驾驶证/行驶证图片")
+    private PicResp pics;
 
 
 }

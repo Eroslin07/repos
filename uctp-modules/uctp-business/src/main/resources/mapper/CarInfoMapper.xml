@@ -114,10 +114,36 @@
               ucid.FIRST_REGIST_DATE as firsRegistration,
               ucid.FIRST_REGIST_DATE as firstRegistDate,
               uci.CREATOR as operator,
-              ENGINE_NUM as engineNum
+              ENGINE_NUM as engineNum,
+              SELLER_ID_CARD as sellerIdCard,
+              SELLER_NAME as sellerName,
+              SELLER_TEL as sellerTel,
+              collection,
+              THIRD_SELLER_NAME as thirdSellerName,
+              REMIT_TYPE as remitType,
+              THIRD_BANK_CARD as thirdBankCard,
+              BUYER_ID_CARD as buyerIdCard,
+              BUYER_NAME as buyerName,
+              BUYER_TEL buyerTel
       from uctp_car_info uci left join uctp_car_info_details ucid
       on uci.ID =ucid.CAR_ID
       where uci.id=#{id}
+    </select>
+
+    <select id="getPeopelInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.PeopleVo">
+        select
+            SELLER_ID_CARD as sellerIdCard,
+            SELLER_NAME as sellerName,
+            SELLER_TEL as sellerTel,
+            collection,
+            THIRD_SELLER_NAME as thirdSellerName,
+            REMIT_TYPE as remitType,
+            THIRD_BANK_CARD as thirdBankCard,
+            BUYER_ID_CARD as buyerIdCard,
+            BUYER_NAME as buyerName,
+            BUYER_TEL buyerTel
+        from uctp_car_info_details
+        where CAR_ID =#{carID}
     </select>
 
  <select id="getCarDCDetails" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.PicResp">
@@ -149,25 +175,7 @@
         where MAIN_ID=#{id}
     </select>
 
-    <select id="getContractInfo1" resultType="com.newtouch.uctp.module.business.domain.app.ContractarInfoDO">
-         select
-            ID,
-            CONTRACT_ID as contractId,
-            CONTRACT_NAME as contractName,
-            CONTRACT_TYPE as contractType,
-            START_TIME as startTime,
-            END_TIME as endTime,
-            STATUS,
-            BUSINESS_ID as businessId,
-            TENANT_ID as tenantId,
-            CREATED_BY as reatedBy,
-            CREATED_TIME as createdTime,
-            UPDATED_BY as updatedBy,
-            UPDATED_TIME as updatedTime,
-            CAR_ID as carID
-        from uctp_contract_log ucl
-        where CAR_ID=#{carID}
-    </select>
+
 
     <select id="getContractInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO">
         select
@@ -180,6 +188,20 @@
         from uctp_contract_management ucm left join uctp_car_info_details ucid
         on ucid.CAR_ID =ucm.CAR_ID
         where ucm.CAR_ID=#{carID}
+    </select>
+
+    <select id="getContractInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo">
+        select
+            uim.id invoiceId,
+            uim.INVOICE_TYPE as invoiceType,
+            uim.status,
+            uim.CONTRACT_NO as contractNo,
+            uim.name,
+            uim.AMOUNT_MONEY amountMoney,
+            tax
+        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID
+        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.`NUMBER`
+        where uci.ID =#{id}
     </select>
 
     <update id="updateContractStatas" parameterType="map">
@@ -204,6 +226,25 @@
             UPDATED_BY as updatedBy,
             UPDATED_TIME as updatedTime
         from uctp_invoices_management uim where id =#{id}
+    </select>
+
+    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo">
+       select
+            uim.id invoiceId,
+            uim.INVOICE_TYPE as invoiceType,
+            uim.business,
+            uim.status,
+            uim.CONTRACT_NO as contractNo,
+            uim.name,
+            uim.AMOUNT_MONEY amountMoney,
+            uim.tax,
+            uim.CREATED_BY as createdBy,
+            uim.CREATED_TIME as createdTime,
+            uim.UPDATED_BY as updatedBy,
+            uim.UPDATED_TIME as updatedTime
+        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID
+        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.`NUMBER`
+        where uci.ID =#{id}
     </select>
 
     <select id="getCarDC"  resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
@@ -264,21 +305,15 @@
      where ucm.NUMBER =#{contractID}
     </select>
 
-    <select id="getPeopelInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.PeopleVo">
+    <select id="getInvoiceIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
         select
-            SELLER_ID_CARD as sellerIdCard,
-            SELLER_NAME as sellerName,
-            SELLER_TEL as sellerTel,
-            collection,
-            THIRD_SELLER_NAME as thirdSellerName,
-            REMIT_TYPE as remitType,
-            THIRD_BANK_CARD as thirdBankCard,
-            BUYER_ID_CARD as buyerIdCard,
-            BUYER_NAME as buyerName,
-            BUYER_TEL buyerTel
-        from uctp_car_info_details
-        where CAR_ID =#{carID}
+        	ubf.id as longId,
+        from uctp_invoices_management uim inner join uctp_business_file ubf
+        on uim.id =ubf.MAIN_ID
+        where uim.id =#{id}
     </select>
+
+
 
 
 </mapper>
