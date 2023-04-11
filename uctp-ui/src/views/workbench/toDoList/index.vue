@@ -1,6 +1,5 @@
 <template>
   <ContentWrap>
-    <el-button @click="drawerVisible = true">打开</el-button>
     <Drawer :visible="drawerVisible" @handle-close-drawer="handleCloseDrawer" />
     <!-- 列表 -->
     <XTable @register="registerTable">
@@ -30,7 +29,7 @@
         />
       </template>
       <template #application_default="{ row }">
-        <div class="application" @click="handleApplication(row)">{{ row.name }}</div>
+        <div class="application" @click="handleApplication(row)">{{ row.serialNo }}</div>
       </template>
     </XTable>
     <!-- 商户主账号审批待办 -->
@@ -87,6 +86,7 @@
 <script setup lang="ts" name="ToDoList">
 import { ref } from 'vue'
 import { allSchemas } from './toDoList.data'
+import { Drawer } from '@/components/Drawer'
 import {
   MerchantApprovalPending,
   CollectCarPending,
@@ -96,15 +96,14 @@ import {
   SellCarPending,
   Profit
 } from '../components'
-import * as RoleApi from '@/api/system/role'
+import * as ToDoList from '@/api/workbench/toDoList'
 
 // 列表相关的变量
 const [registerTable] = useXTable({
   allSchemas: allSchemas,
-  getListApi: RoleApi.getRolePageApi
+  getListApi: ToDoList.getToDoList
 })
 const { t } = useI18n() // 国际化
-// const { push } = useRouter() // 路由
 
 const dialogVisible = ref(false)
 const status = ref('')
@@ -134,7 +133,7 @@ const handleApplication = (row) => {
   console.log(row)
   // GZSH SCJG SCKP SCKZH MCHT MCKP LRTQ
   status.value = 'GZSH'
-  dialogVisible.value = true
+  drawerVisible.value = true //打开抽屉
 }
 
 // 关闭弹框

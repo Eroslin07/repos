@@ -7,15 +7,14 @@ export const rules = reactive({
 
 // CrudSchema
 const crudSchemas = reactive<VxeCrudSchema>({
-  primaryKey: 'id',
-  primaryType: 'seq',
+  // primaryKey: 'id',
+  // primaryType: 'seq',
   action: false,
   columns: [
     {
       title: '申请单号',
-      field: 'name',
+      field: 'serialNo',
       isSearch: true,
-      dictClass: 'number',
       table: {
         minWidth: 180,
         slots: {
@@ -25,7 +24,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '事项',
-      field: 'item',
+      field: 'title',
       isSearch: true,
       dictClass: 'number',
       table: {
@@ -34,14 +33,14 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '商户',
-      field: 'status',
+      field: 'merchantName',
       table: {
         minWidth: 180
       }
     },
     {
       title: '申请人',
-      field: 'applicant',
+      field: 'startUserName',
       isSearch: true,
       table: {
         minWidth: 180
@@ -49,10 +48,9 @@ const crudSchemas = reactive<VxeCrudSchema>({
     },
     {
       title: '申请时间',
-      field: 'createTime',
+      field: 'submitTime',
       isSearch: true,
-      dictClass: 'number',
-      dictType: DICT_TYPE.COMMON_STATUS,
+      formatter: 'formatDate',
       table: {
         minWidth: 180
       }
@@ -60,13 +58,14 @@ const crudSchemas = reactive<VxeCrudSchema>({
     {
       title: '到达时间',
       field: 'arrivalTime',
+      formatter: 'formatDate',
       table: {
         minWidth: 180
       }
     },
     {
       title: '审批人',
-      field: 'approver',
+      field: 'assigneeUserName',
       table: {
         minWidth: 180
       }
