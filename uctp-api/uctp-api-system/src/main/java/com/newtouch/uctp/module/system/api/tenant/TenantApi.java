@@ -1,15 +1,18 @@
 package com.newtouch.uctp.module.system.api.tenant;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.system.enums.ApiConstants;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.system.api.tenant.dto.TenantRespDTO;
+import com.newtouch.uctp.module.system.enums.ApiConstants;
 
 @FeignClient(name = ApiConstants.NAME) // TODO 芋艿：fallbackFactory =
 @Tag(name =  "RPC 服务 - 多租户")
@@ -25,5 +28,10 @@ public interface TenantApi {
     @Operation(summary = "校验租户是否合法")
     @Parameter(name = "id", description = "租户编号", required = true, example = "1024")
     CommonResult<Boolean> validTenant(@RequestParam("id") Long id);
+
+    @GetMapping(PREFIX + "/get")
+    @Operation(summary = "获得租户")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    CommonResult<TenantRespDTO> getTenant(@RequestParam("id") Long id);
 
 }

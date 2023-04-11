@@ -276,6 +276,11 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public DeptDO getDeptByName(String name) {
+        return deptMapper.selectOne(DeptDO::getName, name);
+    }
+
+    @Override
     public void validateDeptList(Collection<Long> ids) {
         if (CollUtil.isEmpty(ids)) {
             return;

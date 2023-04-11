@@ -1,13 +1,18 @@
 package com.newtouch.uctp.module.system.api.tenant;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.system.service.tenant.TenantService;
+import cn.hutool.core.bean.BeanUtil;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.system.api.tenant.dto.TenantRespDTO;
+import com.newtouch.uctp.module.system.service.tenant.TenantService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -29,6 +34,11 @@ public class TenantApiImpl implements TenantApi {
     public CommonResult<Boolean> validTenant(Long id) {
         tenantService.validTenant(id);
         return success(true);
+    }
+
+    @Override
+    public CommonResult<TenantRespDTO> getTenant(Long id) {
+        return success(BeanUtil.toBean(tenantService.getTenant(id), TenantRespDTO.class));
     }
 
 }

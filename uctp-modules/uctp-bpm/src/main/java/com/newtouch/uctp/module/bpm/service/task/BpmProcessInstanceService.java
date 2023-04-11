@@ -155,4 +155,5 @@ public interface BpmProcessInstanceService {
      */
     void updateProcessInstanceExtReject(String id, String reason);
 
+    BpmCreateBaseInfoRespVO getCreateBaseInfoPre(BpmCreateBaseInfoReqVO reqVO);
 }

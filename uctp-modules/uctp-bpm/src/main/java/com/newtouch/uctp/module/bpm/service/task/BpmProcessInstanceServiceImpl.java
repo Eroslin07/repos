@@ -28,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
+import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmProcessInstanceConvert;
@@ -44,6 +45,8 @@ import com.newtouch.uctp.module.bpm.service.definition.BpmProcessDefinitionServi
 import com.newtouch.uctp.module.bpm.service.message.BpmMessageService;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
+import com.newtouch.uctp.module.system.api.tenant.TenantApi;
+import com.newtouch.uctp.module.system.api.tenant.dto.TenantRespDTO;
 import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 
@@ -92,6 +95,8 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     private BpmFormDataService bpmFormDataService;
     @Resource
     private BpmFormMainMapper bpmFormMainMapper;
+    @Resource
+    private TenantApi tenantApi;
 
 
     @Override
@@ -326,6 +331,23 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         // 发送流程实例的状态事件
         processInstanceResultEventPublisher.sendProcessInstanceResultEvent(
                 BpmProcessInstanceConvert.INSTANCE.convert(this, processInstance, instanceExtDO.getResult()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BpmCreateBaseInfoRespVO getCreateBaseInfoPre(BpmCreateBaseInfoReqVO reqVO) {
+        BpmCreateBaseInfoRespVO respVO = new BpmCreateBaseInfoRespVO();
+        Long tenantId = TenantContextHolder.getTenantId();
+        TenantRespDTO tenantRespDTO = tenantApi.getTenant(tenantId).getData();
+        String tenantName = tenantRespDTO.getName();
+        if (StringUtils.hasText(reqVO.getMerchantName())) {
+            //deptApi.get
+        }
+
+
+
+
+        return respVO;
     }
 
     private void deleteProcessInstance(String id, String reason) {

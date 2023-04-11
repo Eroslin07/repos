@@ -65,4 +65,13 @@ public class BpmProcessInstanceController {
         processInstanceService.cancelProcessInstance(getLoginUserId(), cancelReqVO);
         return success(true);
     }
+
+    @PostMapping("/create-base-info")
+    @Operation(summary = "获取流程发起前，需要提交的基本信息")
+    public CommonResult<BpmCreateBaseInfoRespVO> getCreateBaseInfoPre(@Valid @RequestBody BpmCreateBaseInfoReqVO reqVO) {
+        BpmCreateBaseInfoRespVO respVO = processInstanceService.getCreateBaseInfoPre(reqVO);
+        return success(respVO);
+    }
+
+
 }

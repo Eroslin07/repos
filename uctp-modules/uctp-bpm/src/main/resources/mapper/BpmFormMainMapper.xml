@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper">
+    <resultMap id="bpmTaskTodoRespVO" type="com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskTodoRespVO">
+        <id property="taskId" column="task_id"/>
+        <result property="businessKey" column="business_key"/>
+        <result property="procInstId" column="proc_inst_id"/>
+        <result property="procDefId" column="proc_def_id"/>
+        <result property="serialNo" column="serial_no"/>
+        <result property="title" column="title"/>
+        <result property="merchantName" column="merchant_name"/>
+        <result property="startUserName" column="start_user_name"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="arrivalTime" column="arrival_time"/>
+        <result property="assigneeUserId" column="assignee_user_id"/>
+        <result property="assigneeUserName" column="assignee_user_name"/>
+    </resultMap>
+
+    <select id="getBpmTaskTodo" resultMap="bpmTaskTodoRespVO" parameterType="com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskTodoReqVO">
+        select task.ID_ as task_id,fm.id as business_key,fm.proc_inst_id,fm.proc_def_id,
+               fm.serial_no,fm.title,d.name as merchant_name,cu.nickname as start_user_name,fm.submit_time,
+               task.CREATE_TIME_ as arrival_time, task.ASSIGNEE_ as assignee_user_id, u.nickname as assignee_user_name
+        from bpm_form_main fm
+                 inner join act_ru_task task on fm.proc_inst_id = task.PROC_INST_ID_
+                 left join system_dept d on fm.merchant_id = d.id
+                 left join system_users u on task.ASSIGNEE_ = u.id
+                 left join system_users cu on fm.start_user_id = cu.id
+        where fm.status = 1
+        <if test="todoReqVO.startUserName != null and todoReqVO.startUserName != ''">
+            and cu.nickname like concat('%', #{todoReqVO.startUserName}, '%')
+        </if>
+        <if test="todoReqVO.applyDate != null">
+            and DATE_FORMAT(fm.submit_time, '%Y-%m-%d') = DATE_FORMAT(#{todoReqVO.applyDate}, '%Y-%m-%d')
+        </if>
+        <if test="todoReqVO.title != null and todoReqVO.title != ''">
+            and fm.title like concat('%', #{todoReqVO.title}, '%')
+        </if>
+        <if test="todoReqVO.merchantName != null and todoReqVO.merchantName != ''">
+            and d.name like concat('%', #{todoReqVO.merchantName}, '%')
+        </if>
+        <if test="todoReqVO.serialNo != null and todoReqVO.serialNo != ''">
+            and fm.serial_no like concat('%', #{todoReqVO.serialNo}, '%')
+        </if>
+    </select>
+</mapper>

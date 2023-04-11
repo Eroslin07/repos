@@ -30,10 +30,12 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.date.DateUtils;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
 import com.newtouch.uctp.framework.common.util.object.PageUtils;
+import com.newtouch.uctp.framework.mybatis.core.util.MyBatisUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmTaskConvert;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
@@ -389,6 +391,13 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         taskExtMapper.updateByTaskId(
                 new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.INVALID.getResult())
                         .setEndTime(LocalDateTime.now()).setReason(reqVO.getReason()));
+    }
+
+    @Override
+    public PageResult<BpmTaskTodoRespVO> getTodoTaskPageV2(Long loginUserId, BpmTaskTodoReqVO pageVO) {
+        Page<BpmTaskTodoRespVO> page = MyBatisUtils.buildPage(pageVO);
+        bpmFormMainMapper.getBpmTaskTodo(page, pageVO);
+        return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
     private Task getTask(String id) {

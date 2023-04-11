@@ -143,4 +143,5 @@ public interface BpmTaskService {
      */
     void invalidTask(Long userId, BpmTaskInvalidReqVO reqVO);
 
+    PageResult<BpmTaskTodoRespVO> getTodoTaskPageV2(Long loginUserId, BpmTaskTodoReqVO pageVO);
 }

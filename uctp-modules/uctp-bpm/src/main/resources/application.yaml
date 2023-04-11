@@ -133,5 +133,8 @@ uctp:
       - com.newtouch.uctp.module.bpm.enums.ErrorCodeConstants
   tenant: # 多租户相关配置项
     enable: true
+    ignore-tables:
+      - system_tenant
+      - act_ru_task
 
 debug: false
