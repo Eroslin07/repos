@@ -10,7 +10,7 @@
 					<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
 						<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(1, 'idCard')">上传图片</text>
+							<text style="color: #fd6601;" @click="handleOcr(1, 'idCard')">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label=" " borderBottom v-if="fileList1.length != 0">
@@ -32,8 +32,8 @@
 						<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
 							<!-- #ifndef MP-WEIXIN -->
 							<template slot="suffix">
-								<view @click="getVerification" style="color: #50a8bc;" v-if="getTime">获取验证码</view>
-								<view class="login-code-img" style="color: #50a8bc;" v-else>已发送({{ time }})</view>
+								<view @click="getVerification" style="color: #fd6601;" v-if="getTime">获取验证码</view>
+								<view class="login-code-img" style="color: #fd6601;" v-else>已发送({{ time }})</view>
 							</template>
 							<!-- #endif -->
 						</u-input>
@@ -55,7 +55,7 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(2, 'businessLicense')">上传图片</text>
+							<text style="color: #fd6601;" @click="handleOcr(2, 'businessLicense')">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom @click="showSex = true">
@@ -88,7 +88,7 @@
 					<button @click="handleSave" class="button">提交审核</button>
 				</view>
 				<view class="action-btn">
-					<button @click="handleCancel" class="button">取消</button>
+					<button @click="handleCancel" class="button" style="background-color: #fff; color: #000;">取消</button>
 				</view>
 			</uni-card>
 		</view>
@@ -205,6 +205,12 @@
 						type: 'string',
 						required: true,
 						message: '请填写对公银行账号',
+						trigger: ['blur', 'change']
+					}, {
+						pattern: /^(\d{4}\s){3}\d{4}$|^(\d{4}\s){4}\d{3}$/,
+						type: 'string',
+						required: true,
+						message: '请填写正确的银行卡号',
 						trigger: ['blur', 'change']
 					}],
 					bankName: {
@@ -509,7 +515,7 @@
 	}
 
 	.button {
-		background-color: #68b4c5;
+		background-color: #fd6601;
 		color: #fff;
 	}
 	

@@ -21,6 +21,16 @@
 			"enablePullDownRefresh":true
 		}
 	}, {
+		"path": "pages/cost/index",
+		"style": {
+			"navigationBarTitleText": "费用分析"
+		}
+	}, {
+		"path": "pages/account/index",
+		"style": {
+			"navigationBarTitleText": "资金管理"
+		}
+	}, {
 		"path": "pages/work/index",
 		"style": {
 			"navigationBarTitleText": "消息"
@@ -280,10 +290,15 @@
 			"selectedIconPath": "static/images/tabbar/home_.png",
 			"text": "首页"
 		}, {
-			"pagePath": "pages/work/index",
+			"pagePath": "pages/cost/index",
 			"iconPath": "static/images/tabbar/work.png",
 			"selectedIconPath": "static/images/tabbar/work_.png",
-			"text": "消息"
+			"text": "费用分析"
+		}, {
+			"pagePath": "pages/account/index",
+			"iconPath": "static/images/tabbar/work.png",
+			"selectedIconPath": "static/images/tabbar/work_.png",
+			"text": "资金管理"
 		}, {
 			"pagePath": "pages/mine/index",
 			"iconPath": "static/images/tabbar/mine.png",

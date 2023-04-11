@@ -63,7 +63,7 @@
 			}
 		},
 		onBackPress(options) {
-			this.$tab.navigateTo('/subPages/home/account/index');
+			this.$tab.switchTab('/pages/account/index');
 			return true;
 		},
 		methods: {

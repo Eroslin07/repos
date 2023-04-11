@@ -2,19 +2,48 @@
 	<view class="selling-car">
 		<!-- 自定义导航栏 -->
 		<!-- <u-navbar title="我要卖车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
-		<uni-card :is-shadow="false" is-full>
-			<view class="text">卖车信息录入</view>
-			<!-- 步骤条 -->
-			<u-steps :current="active">
-				<u-steps-item title="车辆信息"></u-steps-item>
-				<u-steps-item title="买家信息"></u-steps-item>
-			</u-steps>
+		<u-grid col="2" :border="true" style="margin-top: 10px;">
+			<u-grid-item>
+				<u-icon
+					:customStyle="{paddingTop:20+'rpx'}"
+					name="level"
+					:color="active == 0 ? '#fd6601' : ''"
+					:size="30"
+				></u-icon>
+				<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
+			</u-grid-item>
+			<u-grid-item>
+				<u-icon
+					:customStyle="{paddingTop:20+'rpx'}"
+					name="level"
+					:color="active == 1 ? '#fd6601' : ''"
+					:size="30"
+				></u-icon>
+				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">买家信息</text>
+			</u-grid-item>
+		</u-grid>
+		<uni-card>
 			<!-- 车辆信息 -->
 			<view v-if="vehicleInfor">
-				<view class="text">车辆基础信息</view>
+				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+					<view class="text">车辆基础信息</view>
+				</view>
 				<view class="look-over">
-					<text @click="handleCollection" style="margin-right: 5px;">查看收车合同</text>
-					<text @click="handleLookEntrust" style="margin-left: 5px;">查看委托合同</text>
+					<u-grid col="2">
+						<u-grid-item>
+							<uni-card @click="handleCollection">
+								<u--text style="font-size:12px;" prefixIcon="level" iconStyle="font-size: 30px; color: #e26e1f"
+									text="收车合同"></u--text>
+							</uni-card>
+						</u-grid-item>
+						<u-grid-item>
+							<uni-card @click="handleLookEntrust">
+								<u--text style="font-size:12px;" prefixIcon="level" iconStyle="font-size: 30px; color: #e26e1f"
+									text="委托合同"></u--text>
+							</uni-card>
+						</u-grid-item>
+					</u-grid>
 				</view>
 				<u--form
 					labelPosition="left"
@@ -28,21 +57,18 @@
 							title="车辆图片"
 							name="carPicList"
 						>
-							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
 							<u-album :urls="carForm.carPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 						<u-collapse-item
 							title="行驶证"
 							name="drivingPicList"
 						>
-							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
 							<u-album :urls="carForm.drivingPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 						<u-collapse-item
 							title="机动车登记证书"
 							name="registerPicList"
 						>
-							<text slot="value" class="u-page__item__title__slot-title" style="color: #50a8bc;">查看</text>
 							<u-album :urls="carForm.registerPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 					</u-collapse>
@@ -100,7 +126,10 @@
 							<template slot="suffix"><view>元</view></template>
 						</u-input>
 					</u-form-item>
-					<view @click="handleDetail">预计产生{{ carForm.total }}元费用，利润{{ carForm.profit }}元。明细请查看。</view>
+					<view @click="handleDetail">
+						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+							:text="'预计产生'+carForm.total+'元费用，利润'+carForm.profit+'元。查看明细'" color="#e26e1f"></u--text>
+					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group
 							v-model="carForm.sellType"
@@ -140,9 +169,6 @@
 						<view>利润：{{ amountDetails.profit }}元</view>
 					</view>
 				</u-modal>
-				<!-- 底部按钮 -->
-				<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
-				<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
 			</view>
 			<!-- 买家信息 -->
 			<view v-if="sellerInfor">
@@ -180,11 +206,25 @@
 						<u--input v-model="sellerForm.buyerTel" border="none" placeholder="请输入11位手机号"></u--input>
 					</u-form-item>
 				</u--form>
-				<!-- 底部按钮 -->
-				<button @click="handleEntrust" class="button" v-if="sellerInfor">确认发起</button>
-				<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
+				<view style="margin: 20px 0;">
+					<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+						text="注意:在发起委托合同前，请检查您的相关信息,发起委托合同时会将信息自动带到后方合同作为重要信息使用。" color="#e26e1f"></u--text>
+				</view>
 			</view>
 		</uni-card>
+		<view class="footer">
+			<!-- 底部按钮 -->
+			<u-grid col="2">
+				<u-grid-item>
+					<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
+					<button @click="handleEntrust" class="button" v-if="sellerInfor">确认发起</button>
+				</u-grid-item>
+				<u-grid-item>
+					<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
+					<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
+				</u-grid-item>
+			</u-grid>
+		</view>
 		<!-- 遮罩层 -->
 		<u-overlay :show="showOverlay">
 			<view class="warp">
@@ -611,6 +651,9 @@
 
 <style lang="scss" scoped>
 	.selling-car {
+		border-top: 1px solid #f3f3f3;
+		padding-bottom: 80px;
+		
 		.warp {
 			display: flex;
 			align-items: center;
@@ -639,8 +682,7 @@
 		}
 		
 		.look-over {
-			color: #50a8bc;
-			text-align: center;
+			color: #000;
 		}
 		
 		/deep/ .u-cell__body {
@@ -661,10 +703,20 @@
 			}
 		}
 		
-		.button {
-			background-color: #50a8bc;
-			color: #fff;
-			margin-top: 10px;
+		.footer {
+			width: 100%;
+			position: fixed;
+			bottom: 0;
+			background-color: #fff;
+			padding-bottom: 10px;
+			
+			.button {
+				width: 80%;
+				margin-top: 10px;
+				background-image: linear-gradient(to right, #fcbb2b,#ed6c21);
+				background-color: #50a8bc;
+				color: #fff;
+			}
 		}
 	}
 </style>

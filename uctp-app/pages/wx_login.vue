@@ -21,8 +21,8 @@
 				<u-checkbox-group v-model="value">
 					<u-checkbox shape="circle" activeColor="#fe7345"></u-checkbox>
 					<view>同意
-						<text style="color: #4ba4ff;" @click="handleUserAgrement">《xx用户协议》</text>
-						<text style="color: #4ba4ff;" @click="handlePrivacy">《隐私政策》</text>
+						<text style="color: #fe7345;" @click="handleUserAgrement">《xx用户协议》</text>
+						<text style="color: #fe7345;" @click="handlePrivacy">《隐私政策》</text>
 					</view>
 				</u-checkbox-group>
 				<!-- #ifdef MP-WEIXIN -->

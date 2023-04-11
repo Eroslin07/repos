@@ -36,14 +36,14 @@
 			</view>
 			<view class="action-btn">
 				<u-checkbox-group v-model="value">
-					<u-checkbox shape="circle" activeColor="#68b4c5"></u-checkbox>
+					<u-checkbox shape="circle" activeColor="#fd6601"></u-checkbox>
 					<view>同意
-						<text style="color: #4ba4ff;" @click="handleUserAgrement">《xx用户协议》</text>
-						<text style="color: #4ba4ff;" @click="handlePrivacy">《隐私政策》</text>
+						<text style="color: #fd6601;" @click="handleUserAgrement">《xx用户协议》</text>
+						<text style="color: #fd6601;" @click="handlePrivacy">《隐私政策》</text>
 					</view>
 				</u-checkbox-group>
 				<button @click="handleLogin" class="login-btn cu-btn block lg"
-					style="background-color: #68b4c5;color: white;">登录</button>
+					style="background-color: #fd6601;color: white;">登录</button>
 				<button @click="userRegister" class="login-btn cu-btn block lg"
 					style="background-color: #fff;border: 1px solid #ddd;">注册</button>
 			</view>
@@ -84,22 +84,10 @@
 		methods: {
 			// 隐私协议
 			handlePrivacy() {
-				// let site = this.globalConfig.appInfo.agreements[0]
-				// uni.openDocument({
-				// 	filePath: site.url, 
-				// 	// 如果文件名包含中文，建议使用escape(res.tempFilePath)转码，防止ios和安卓客户端导致的差异
-				// 	success: function(res) {
-				// 		console.log('打开文档成功');
-				// 	}
-				// });
-				// this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
-
 				this.$tab.navigateTo('/subPages/common/webview/privacyAgreement')
 			},
 			// 用户协议
 			handleUserAgrement() {
-				// let site = this.globalConfig.appInfo.agreements[1]
-				// this.$tab.navigateTo(`/subPages/common/webview/index?title=${site.title}&url=${site.url}`)
 				this.$tab.navigateTo('/subPages/common/webview/userAgreement')
 			},
 			// 点击短信验证码登录
@@ -268,13 +256,12 @@
 					position: absolute;
 					margin-left: 10px;
 					width: 150rpx;
-					color: #50a8bc;
+					color: #fd6601;
 				}
 			}
 
 			.register {
 				margin-top: 20px;
-				color: #68b4c5;
 				overflow: hidden;
 				/* #ifdef MP-WEIXIN */
 				font-size: 16px;

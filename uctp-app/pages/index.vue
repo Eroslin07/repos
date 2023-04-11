@@ -12,7 +12,7 @@
 		<view style="background-color: #fff;">
 			<view style="border: 2px solid #fff; border-radius: 10px;margin: 0 10px;">
 				<view class="grid-body">
-					<uni-grid :column="4" :showBorder="false">
+					<uni-grid :column="2" :showBorder="false">
 						<uni-grid-item>
 							<view class="grid-item-box" @click="buyCar">图片</view>
 							<view class="text-center">我要买车</view>
@@ -20,14 +20,6 @@
 						<uni-grid-item>
 							<view class="grid-item-box" @click="sellingCar">图片</view>
 							<view class="text-center">我要卖车</view>
-						</uni-grid-item>
-						<uni-grid-item>
-							<view class="grid-item-box" @click="handleCost">图片</view>
-							<view class="text-center">我的费用</view>
-						</uni-grid-item>
-						<uni-grid-item>
-							<view class="grid-item-box" @click="handleAccount">图片</view>
-							<view class="text-center">我的账户</view>
 						</uni-grid-item>
 					</uni-grid>
 				</view>
@@ -69,7 +61,7 @@
 				<uni-col :span="16">
 					<h3><span class="paddingR10">{{tab.brand}}</span><span>{{tab.model}}</span></h3>
 					<view>VIN: {{tab.vin}}</view>
-					<view>{{tab.year}}年 | {{tab.mileage | filterMile}}万公里</view>
+					<view>{{tab.year}}年 | {{tab.mileage}}万公里</view>
 					<view style="color: #000;">收车价：<text style="font-weight:bold">{{tab.vehicleReceiptAmount}}元</text>
 					</view>
 					<view style="color: #fa6400;">卖车价：<text style="font-weight:bold">200,000元</text></view>
@@ -176,7 +168,7 @@
 						return a.salesStatus-b.salesStatus
 					})
 				}).catch((error) => {
-					for (let i = 1; i < 5; i++) {
+					for (let i = 0; i < 4; i++) {
 						this.gatherData.push({
 							salesStatus: i,
 							num: 0
@@ -208,14 +200,6 @@
 			// 我要卖车
 			sellingCar() {
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
-			},
-			// 我的费用
-			handleCost() {
-				this.$tab.navigateTo('/subPages/home/cost/index');
-			},
-			// 我的账户
-			handleAccount() {
-				this.$tab.navigateTo('/subPages/home/account/index');
 			},
 			// 收车中
 			tabCarStatus(text) {
@@ -264,7 +248,7 @@
 		border-bottom: 1px solid #ececec;
 
 		.uni-grid-item {
-			// height: 100px !important;
+			height: 100px !important;
 		}
 
 		.grid-item-box {
@@ -296,7 +280,7 @@
 
 	/* #ifdef MP-WEIXIN */
 	/deep/.grid-body .uni-grid-item {
-		// height: 100px !important;
+		height: 100px !important;
 	}
 
 	/deep/.searchCard .uni-card {
