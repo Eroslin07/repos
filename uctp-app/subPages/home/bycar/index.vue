@@ -4,25 +4,17 @@
 		<!-- <u-navbar title="我要收车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
 			<u-grid-item>
-				<u-icon
-					:customStyle="{paddingTop:20+'rpx'}"
-					name="level"
-					:color="active == 0 ? '#fd6601' : ''"
-					:size="30"
-				></u-icon>
+				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
+				<image v-show="active == 1" src="../../../static/images/bycar/car1.png" class="form-image"></image>
 				<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
 			</u-grid-item>
 			<u-grid-item>
-				<u-icon
-					:customStyle="{paddingTop:20+'rpx'}"
-					name="level"
-					:color="active == 1 ? '#fd6601' : ''"
-					:size="30"
-				></u-icon>
-				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">卖家信息</text>
+				<image v-show="active == 0" src="../../../static/images/bycar/car3.png" class="form-image"></image>
+				<image v-show="active == 1" src="../../../static/images/bycar/car2.png" class="form-image"></image>
+				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">交易信息</text>
 			</u-grid-item>
 		</u-grid>
-		<uni-card>
+		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
 			<view v-if="vehicleInfor">
 				<u--form
@@ -36,34 +28,97 @@
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
 						<view class="text">车辆基础信息</view>
 					</view>
-					<u-form-item label="上传车辆图片" :required="true" prop="carUrl" borderBottom>
+					<u-form-item label="上传车辆图片" :required="true" prop="carUrl">
+					</u-form-item>
+					<u-form-item borderBottom>
 						<view class="image">
-							<u-upload
-								v-if="fileList2.length"
-								:fileList="fileList2"
-								@delete="deletePic"
-								name="2"
-								width="70"
-								height="70"
-							></u-upload>
-						</view>
-						<view slot="right" name="arrow-right">
-							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(2)"></image>
+							<u-grid col="2">
+								<u-grid-item>
+									<u-upload
+										v-if="fileList2.length"
+										:fileList="fileList2"
+										@delete="deletePic"
+										name="2"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/bycar/headstock.png" 
+										mode="widthFix" style="width: 150px;" @click="handleOcr(2)"></image>
+									<image
+										v-if="fileList2.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(2)"></image>
+								</u-grid-item>
+								<u-grid-item>
+									<u-upload
+										v-if="fileList5.length"
+										:fileList="fileList5"
+										@delete="deletePic"
+										name="5"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/bycar/tailstock.png" 
+										mode="widthFix" style="width: 150px;" @click="handleOcr(5)"></image>
+									<image
+										v-if="fileList5.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(5)"></image>
+								</u-grid-item>
+								<u-grid-item>
+									<u-upload
+										v-if="fileList6.length"
+										:fileList="fileList6"
+										@delete="deletePic"
+										name="6"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/bycar/car_left.png" 
+										mode="widthFix" style="width: 150px;" @click="handleOcr(6)"></image>
+									<image
+										v-if="fileList6.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(6)"></image>
+								</u-grid-item>
+								<u-grid-item>
+									<u-upload
+										v-if="fileList7.length"
+										:fileList="fileList7"
+										@delete="deletePic"
+										name="7"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/bycar/car_right.png" 
+										mode="widthFix" style="width: 150px;" @click="handleOcr(7)"></image>
+									<image
+										v-if="fileList7.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(7)"></image>
+								</u-grid-item>
+							</u-grid>
 						</view>
 					</u-form-item>
-					<u-form-item label="上传行驶证" :required="true" prop="drivingLicenseUrl" borderBottom>
-						<view class="image">
+					<u-form-item label="上传行驶证" :required="true" prop="drivingLicenseUrl">
+					</u-form-item>
+					<u-form-item label=" " borderBottom>
+						<view class="image" style="position: relative;">
 							<u-upload
 								v-if="fileList1.length"
 								:fileList="fileList1"
 								@delete="deletePic"
 								name="1"
-								width="70"
-								height="70"
+								width="150"
 							></u-upload>
-						</view>
-						<view slot="right" name="arrow-right">
-							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(1)"></image>
+							<image v-else src=".../../../static/images/bycar/business.png" 
+								mode="widthFix" style="width: 150px;" @click="handleOcr(1)"></image>
+							<image
+								v-if="fileList1.length == 0"
+								src="../../../static/images/take.png"
+								class="icon-image"
+								style="left: 75px;"
+								@click="handleOcr(1)"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label="发动机编号" :required="true" prop="engineNum" borderBottom>
@@ -71,9 +126,6 @@
 					</u-form-item>
 					<u-form-item label="车架号(VIN)" :required="true" prop="vin" borderBottom>
 						<u--input v-model="carForm.vin" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
-					</u-form-item>
-					<u-form-item label="使用性质" :required="true" prop="natureOfOperat" borderBottom>
-						<u--input v-model="carForm.natureOfOperat" border="none" placeholder="请输入使用性质"></u--input>
 					</u-form-item>
 					<u-form-item label="首次登记日期" :required="true" prop="firstRegistDate" borderBottom @click="showDate = true">
 						<u--input
@@ -91,19 +143,37 @@
 					<u-form-item label="车牌号" :required="true" prop="licensePlateNum" borderBottom>
 						<u--input v-model="carForm.licensePlateNum" border="none" placeholder="请输入车牌号"></u--input>
 					</u-form-item>
-					<u-form-item label="上传机动车登记证书" :required="true" prop="certificateUrl" borderBottom>
-						<view class="image">
+					<u-form-item label="使用性质" :required="true" prop="natureOfOperat" borderBottom>
+						<u--input v-model="carForm.natureOfOperat" border="none" placeholder="请输入使用性质"></u--input>
+					</u-form-item>
+					<u-form-item label="品牌/车型" :required="true" prop="brand" borderBottom>
+						<view @click="showModel = true">
+							<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌/车系/车型"></u--input>
+						</view>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
+					<u-form-item label="上传机动车登记证书" :required="true" prop="certificateUrl">
+					</u-form-item>
+					<u-form-item label=" " borderBottom>
+						<view class="image" style="position: relative;">
 							<u-upload
 								v-if="fileList3.length"
 								:fileList="fileList3"
 								@delete="deletePic"
 								name="3"
-								width="70"
-								height="70"
+								width="150"
 							></u-upload>
-						</view>
-						<view slot="right" name="arrow-right">
-							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(3)"></image>
+							<image v-else src=".../../../static/images/bycar/registration.png"
+								mode="widthFix" style="width: 150px;" @click="handleOcr(3)"></image>
+							<image
+								v-if="fileList3.length == 0"
+								src="../../../static/images/take.png"
+								class="icon-image"
+								style="left: 75px;"
+								@click="handleOcr(3)"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label="登记证号" :required="true" prop="licensePlateNum" borderBottom>
@@ -118,15 +188,6 @@
 								<view style="color: #fd6601;">万公里</view>
 							</template>
 						</u-input>
-					</u-form-item>
-					<u-form-item label="品牌/车型" :required="true" prop="brand" borderBottom>
-						<view @click="showModel = true">
-							<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌/车型"></u--input>
-						</view>
-						<u-icon
-							slot="right"
-							name="arrow-right"
-						></u-icon>
 					</u-form-item>
 					<!-- <u-form-item label="年代" :required="true" prop="year" borderBottom>
 						<u--input v-model="carForm.year" border="none" placeholder="请输入年代"></u--input>
@@ -147,7 +208,7 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="年检签证有效期至" prop="firstRegistDate" borderBottom @click="showDate = true">
+					<u-form-item label="年检签证有效期" prop="firstRegistDate" borderBottom @click="showDate = true">
 						<u--input
 							v-model="carForm.firstRegistDate"
 							disabled
@@ -168,7 +229,7 @@
 							v-model="carForm.firstRegistDate"
 							disabled
 							disabledColor="#ffffff"
-							placeholder="请选择登记日期"
+							placeholder="请选择"
 							border="none"
 						></u--input>
 						<u-icon
@@ -266,6 +327,42 @@
 								height="70"
 							></u-upload>
 						</view>
+						<view class="image">
+							<u-grid col="2">
+								<u-grid-item>
+									<u-upload
+										v-if="fileList4.length"
+										:fileList="fileList4"
+										@delete="deletePic"
+										name="4"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/home/ghm.png"
+										mode="widthFix" style="width: 150px;" @click="handleOcr(1, 'idCard')"></image>
+									<image
+										v-if="fileList4.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(4)"></image>
+								</u-grid-item>
+								<u-grid-item>
+									<u-upload
+										v-if="fileList8.length"
+										:fileList="fileList8"
+										@delete="deletePic"
+										name="8"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/home/rxm.png"
+										mode="widthFix" style="width: 150px;" @click="handleOcr(2, 'idCard')"></image>
+									<image
+										v-if="fileList8.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(8)"></image>
+								</u-grid-item>
+							</u-grid>
+						</view>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="sellerName" borderBottom>
 						<u--input v-model="sellerForm.sellerName" border="none" placeholder="请输入姓名">
@@ -314,9 +411,48 @@
 				<u-picker :show="showSex" :columns="range" keyName="label" title="请选择收款方式" @confirm="confirm" @cancel="cancel"></u-picker>
 			</view>
 		</uni-card>
+		<view class="fenge" v-if="vehicleInfor"></view>
+		<uni-card :is-shadow="false" is-full style="border: none;">
+			<view v-if="vehicleInfor">
+				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+					<view class="text">车辆手续及备件</view>
+				</view>
+				<u--form
+					labelPosition="left"
+					labelWidth="120px"
+				>
+					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404">
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="item.name == 11 ? showKey = true : ''">
+							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
+							<view style="margin-left: 10px;">
+								<u--input
+									v-model="carForm.key"
+									disabled
+									v-if="item.name == 11"
+									disabledColor="#ffffff"
+									placeholder="请选择"
+									border="none"
+								></u--input>
+								<u--input v-model="carForm.other" v-if="item.name == 12" border="none" placeholder="请输入"></u--input>
+							</view>
+							<u-icon
+								v-if="item.name == 11"
+								slot="right"
+								name="arrow-right"
+							></u-icon>
+						</u-form-item>
+					</u-checkbox-group>
+				</u--form>
+			</view>
+			<u-picker :show="showKey" :columns="rangeKey" keyName="label" @confirm="confirmKey" @cancel="showKey = false"></u-picker>
+		</uni-card>
 		<view class="footer">
 			<!-- 底部按钮 -->
-			<u-grid col="2">
+			<u-grid col="3">
+				<u-grid-item>
+					<button @click="handleStep" class="button" style="background-image: none;color: #000;">删除</button>
+				</u-grid-item>
 				<u-grid-item>
 					<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
 					<button @click="handleEntrust" class="button" v-if="sellerInfor">确认发起</button>
@@ -363,10 +499,14 @@
 				fileList1: [],
 				// 车辆图片信息
 				fileList2: [],
+				fileList5: [],
+				fileList6: [],
+				fileList7: [],
 				// 机动证书信息
 				fileList3: [],
 				// 身份证
 				fileList4: [],
+				fileList8: [],
 				// 车辆信息
 				carForm: {
 					drivingLicenseUrl: [],
@@ -378,10 +518,11 @@
 					licensePlateNum: '',
 					engineNum: '',
 					brand: '',
-					// year: '',
-					model: '',
 					remarks: '',
 					mileage: '',
+					checkboxValue: [],
+					key: '',
+					other: '',
 				},
 				// 车辆信息校验规则
 				carRules: {
@@ -427,18 +568,6 @@
 						message: '请填写品牌',
 						trigger: ['blur', 'change']
 					},
-					year: {
-						type: 'string',
-						required: true,
-						message: '请填写年代',
-						trigger: ['blur', 'change']
-					},
-					model: {
-						type: 'string',
-						required: true,
-						message: '请填写型号',
-						trigger: ['blur', 'change']
-					},
 					mileage: {
 						type: 'string',
 						required: true,
@@ -472,6 +601,28 @@
 				showModel: false,
 				// 车系
 				seriesList: [],
+				// 车辆手续
+				checkboxList: [
+					{ label: '行驶证正、副本', name: 1},
+					{ label: '购车发票', name: 2 },
+					{ label: '机动车登记证', name: 3 },
+					{ label: '购置税完税凭证', name: 4 },
+					{ label: '备胎', name: 5 },
+					{ label: '车船使用税完税凭证', name: 6 },
+					{ label: '交强险保单', name: 7 },
+					{ label: '商业险保单', name: 8 },
+					{ label: '千斤顶', name: 9 },
+					{ label: '说明书', name: 10 },
+					{ label: '钥匙', name: 11 },
+					{ label: '其他', name: 12 },
+				],
+				showKey: false,
+				rangeKey: [
+					[{
+						label: '转账',
+						id: 1
+					}],
+				],
 				// 卖家信息
 				sellerForm: {
 					vehicleReceiptAmount: '',
@@ -594,7 +745,8 @@
 				showOverlay: false,
 				carId: null,
 				modelId: null,
-				modelName: null
+				modelName: null,
+				date: null,
 			}
 		},
 		onBackPress(options) {
@@ -608,6 +760,7 @@
 			return true;
 		},
 		mounted() {
+			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
 			// this.carBrandList()
 		},
 		methods: {
@@ -661,7 +814,7 @@
 			chooseImages(index, tapIndex) {
 				let _this = this;
 				uni.chooseImage({
-					// count: 1,
+					count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
 					success: async function(res) {
@@ -685,7 +838,6 @@
 										_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
 										_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
 										_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-										_this.carForm.model = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
 										// _this.carForm.firstRegistDate = data.words_result['注册日期'].words;
 										_this.carForm.firstRegistDate = '2019-02-20';
 										// 根据品牌查询id
@@ -696,15 +848,15 @@
 									}
 								})
 							}
-						} else if (index == 2) {
+						} else if (index == 2 || index == 5 || index == 6 || index == 7) {
 							// 识别车辆图片
-							_this.carForm.carUrl = _this[`fileList${index}`];
+							_this.carForm.carUrl = [..._this.carForm.carUrl, ..._this[`fileList${index}`]];
 							_this.upload(res, index);
 						} else if (index == 3) {
 							// 识别机动车登记证书
 							_this.carForm.certificateUrl = _this[`fileList${index}`];
 							_this.upload(res, index);
-						} else if (index == 4) {
+						} else if (index == 4 || index == 8) {
 							// 识别身份证
 							_this.sellerForm.sellerIdCardUrl = _this[`fileList${index}`];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
@@ -714,6 +866,14 @@
 									if (data.words_result['公民身份号码']) {
 										_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
 										_this.sellerForm.sellerName = data.words_result['姓名'].words;
+									}
+									if (data.words_result['失效日期']) {
+										if (_this.date > data.words_result['失效日期'].words) {
+											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+											  _this.handleCancel();
+												return;
+											})
+										}
 									}
 									if (i == res.tempFilePaths.length - 1) {
 										_this.upload(res, index);
@@ -852,8 +1012,9 @@
 			// 保存车辆信息草稿
 			handleDraft(val) {
 				this.showOverlay = true;
+				let list = [...this.fileList1, ...this.fileList5, ...this.fileList6, ...this.fileList7];
 				let data = {
-					carUrl: this.fileList2.map((item) => { return item.id }),
+					carUrl: list.map((item) => { return item.id }),
 					drivingLicenseUrl: this.fileList1.map((item) => { return item.id }),
 					engineNum: this.carForm.engineNum,
 					vin: this.carForm.vin,
@@ -863,8 +1024,6 @@
 					certificateUrl: this.fileList3.map((item) => { return item.id }),
 					mileage: this.carForm.mileage,
 					brand: this.carForm.brand,
-					// year: this.carForm.year,
-					model: this.carForm.model,
 					remarks: this.carForm.remarks
 				}
 				setCarInfo(data).then((res) => {
@@ -902,6 +1061,11 @@
 			cancel() {
 				this.showSex = false;
 			},
+			// 确认钥匙框
+			confirmKey(val) {
+				this.carForm.key = val.value[0].label;
+				this.showKey = false;
+			},
 			// 点击发起委托合同
 			handleEntrust() {
 				this.$refs.sellerForm.validate().then(res => {
@@ -911,13 +1075,14 @@
 			// 点击卖家信息保存
 			handleSubmit(val) {
 				this.showOverlay = true;
+				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.carId,
 					vehicleReceiptAmount: this.sellerForm.vehicleReceiptAmount,
 					collection: this.sellerForm.collection,
 					payType: this.sellerForm.payType,
 					sellerIdCard: this.sellerForm.sellerIdCard,
-					idCardUrl: this.fileList4.map((item) => { return item.id }),
+					idCardUrl: this.list.map((item) => { return item.id }),
 					sellerName: this.sellerForm.sellerName,
 					thirdSellerName: this.sellerForm.collection == 1 ? this.sellerForm.thirdSellerName : null,
 					sellerTel: this.sellerForm.sellerTel,
@@ -948,6 +1113,10 @@
 		padding-bottom: 80px;
 	}
 	
+	.grid-text {
+		margin-top: 6px;
+	}
+	
 	.uni-card--border {
 		border: none;
 	}
@@ -964,8 +1133,21 @@
 		margin: 8px 0;
 	}
 	
+	.image {
+		width: 100%;
+	}
+	
 	/deep/ .image .u-upload__button {
 		display: none;
+	}
+	
+	/deep/ .u-grid-item {
+		margin-bottom: 10px;
+	}
+	
+	.fenge {
+		height: 20px;
+		background-color: #fafafa;
 	}
 	
 	.footer {
@@ -979,7 +1161,7 @@
 			width: 80%;
 			margin-top: 10px;
 			background-image: linear-gradient(to right, #fcbb2b,#ed6c21);
-			background-color: #50a8bc;
+			background-color: #fff;
 			color: #fff;
 		}
 	}

@@ -94,3 +94,12 @@
     height: 32px;
     vertical-align: middle;
   }
+	
+  .icon-image {
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }

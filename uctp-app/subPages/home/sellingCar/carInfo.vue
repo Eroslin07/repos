@@ -420,7 +420,8 @@
 						message: '手机号格式不正确',
 						trigger: ['change', 'blur'],
 					}]
-				}
+				},
+				date: null,
 			}
 		},
 		onBackPress(options) {
@@ -448,6 +449,9 @@
 				this.$modal.msg("查询失败");
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
+		},
+		mounted() {
+			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
 		},
 		methods: {
 			back() {
@@ -510,6 +514,14 @@
 								if (data.words_result['公民身份号码']) {
 									_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
 									_this.sellerForm.buyerName = data.words_result['姓名'].words;
+								}
+								if (data.words_result['失效日期']) {
+									if (_this.date > data.words_result['失效日期'].words) {
+										showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+										  _this.handleCancel();
+											return;
+										})
+									}
 								}
 								if (i == res.tempFilePaths.length - 1) {
 									_this.upload(res, index);
