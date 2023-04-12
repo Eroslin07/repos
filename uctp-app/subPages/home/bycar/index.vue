@@ -48,7 +48,7 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(2)">上传图片</text>
+							<text style="color: #fd6601;" @click="handleOcr(2)">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label="上传行驶证" :required="true" prop="drivingLicenseUrl" borderBottom>
@@ -63,7 +63,7 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(1)">上传图片</text>
+							<text style="color: #fd6601;" @click="handleOcr(1)">上传图片</text>
 						</view>
 					</u-form-item>
 					<u-form-item label="发动机编号" :required="true" prop="engineNum" borderBottom>
@@ -103,24 +103,78 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(3)">上传图片</text>
+							<text style="color: #fd6601;" @click="handleOcr(3)">上传图片</text>
 						</view>
+					</u-form-item>
+					<u-form-item label="登记证号" :required="true" prop="licensePlateNum" borderBottom>
+						<u--input v-model="carForm.licensePlateNum" border="none" placeholder="请输入登记证号"></u--input>
+					</u-form-item>
+					<u-form-item label="颜色" :required="true" prop="licensePlateNum" borderBottom>
+						<u--input v-model="carForm.licensePlateNum" border="none" placeholder="请输入颜色"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" :required="true" prop="mileage" borderBottom>
 						<u-input v-model="carForm.mileage" border="none" placeholder="请输入里程数">
 							<template slot="suffix">
-								<view>万公里</view>
+								<view style="color: #fd6601;">万公里</view>
 							</template>
 						</u-input>
 					</u-form-item>
-					<u-form-item label="品牌" :required="true" prop="brand" borderBottom>
-						<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌"></u--input>
+					<u-form-item label="品牌/车型" :required="true" prop="brand" borderBottom>
+						<view @click="showModel = true">
+							<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌/车型"></u--input>
+						</view>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
 					</u-form-item>
-					<u-form-item label="年代" :required="true" prop="year" borderBottom>
+					<!-- <u-form-item label="年代" :required="true" prop="year" borderBottom>
 						<u--input v-model="carForm.year" border="none" placeholder="请输入年代"></u--input>
-					</u-form-item>
-					<u-form-item label="型号" :required="true" prop="model" borderBottom>
+					</u-form-item> -->
+					<!-- <u-form-item label="型号" :required="true" prop="model" borderBottom>
 						<u--input v-model="carForm.model" border="none" placeholder="请输入型号"></u--input>
+					</u-form-item> -->
+					<u-form-item label="使用年限至" prop="firstRegistDate" borderBottom @click="showDate = true">
+						<u--input
+							v-model="carForm.firstRegistDate"
+							disabled
+							disabledColor="#ffffff"
+							placeholder="请选择"
+							border="none"
+						></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
+					<u-form-item label="年检签证有效期至" prop="firstRegistDate" borderBottom @click="showDate = true">
+						<u--input
+							v-model="carForm.firstRegistDate"
+							disabled
+							disabledColor="#ffffff"
+							placeholder="请选择"
+							border="none"
+						></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
+					<u-form-item label="保险险种" prop="remarks" borderBottom>
+						<u--input v-model="carForm.remarks" border="none" placeholder="请输入其他约定"></u--input>
+					</u-form-item>
+					<u-form-item label="保险期至" prop="firstRegistDate" borderBottom @click="showDate = true">
+						<u--input
+							v-model="carForm.firstRegistDate"
+							disabled
+							disabledColor="#ffffff"
+							placeholder="请选择登记日期"
+							border="none"
+						></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
 					</u-form-item>
 					<u-form-item label="特别约定" prop="remarks" borderBottom>
 						<u--input v-model="carForm.remarks" border="none" placeholder="请输入其他约定"></u--input>
@@ -135,6 +189,11 @@
 					@cancel="showDate = false"
 					@confirm="handleDate"
 				></u-datetime-picker>
+				<u-popup v-if="showModel" :show="showModel" :customStyle="{ 'width': '240px' }" mode="right" @close="showModel = false">
+					<view>
+						<model-list :seriesList="seriesList" :title="'宝马'" @handleClose="handleClose" />
+					</view>
+				</u-popup>
 			</view>
 			<!-- 卖家信息 -->
 			<view v-if="sellerInfor">
@@ -281,13 +340,20 @@
 	import config from '@/config'
 	import { getAccessToken } from '@/utils/auth'
 	import { urlTobase64 } from '@/utils/ruoyi.js'
+	import modelList from '@/subPages/home/bycar/modelList.vue'
 	import { getIdCard, deleteImage } from '@/api/register'
 	import {
 		getVehicleLicense,
 		setCarInfo,
-		setSellerInfo
+		setSellerInfo,
+		getFairValue,
+		getCarSeriesList,
+		getCarBrandList
 	} from '@/api/home/bycar.js'
 	export default {
+		components: {
+			modelList
+		},
 		data() {
 			return {
 				vehicleInfor: true,
@@ -312,7 +378,7 @@
 					licensePlateNum: '',
 					engineNum: '',
 					brand: '',
-					year: '',
+					// year: '',
 					model: '',
 					remarks: '',
 					mileage: '',
@@ -402,6 +468,10 @@
 				}],
 				// 是否弹出登记日期
 				showDate: false,
+				// 是否弹出品牌
+				showModel: false,
+				// 车系
+				seriesList: [],
 				// 卖家信息
 				sellerForm: {
 					vehicleReceiptAmount: '',
@@ -523,6 +593,8 @@
 				],
 				showOverlay: false,
 				carId: null,
+				modelId: null,
+				modelName: null
 			}
 		},
 		onBackPress(options) {
@@ -534,6 +606,9 @@
 				this.active = 0;
 			}
 			return true;
+		},
+		mounted() {
+			// this.carBrandList()
 		},
 		methods: {
 			back() {
@@ -613,6 +688,8 @@
 										_this.carForm.model = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
 										// _this.carForm.firstRegistDate = data.words_result['注册日期'].words;
 										_this.carForm.firstRegistDate = '2019-02-20';
+										// 根据品牌查询id
+										_this.carBrandList();
 									}
 									if (i == res.tempFilePaths.length - 1) {
 										_this.upload(res, index);
@@ -697,6 +774,35 @@
 					this[`fileList${event.name}`].splice(event.index, 1);
 				})
 			},
+			// 查询品牌id
+			carBrandList() {
+				let data = {
+					// brand_name: this.carForm.brand
+					brand_name: '宝马'
+				}
+				getCarBrandList(data).then((res) => {
+					// 根据品牌id查询车系
+					this.carSeriesList(res.brand_id);
+				})
+			},
+			// 查询车系
+			carSeriesList(id) {
+				let data = {
+					brand_id: id
+				}
+				this.seriesList = [];
+				getCarSeriesList(data).then((res) => {
+					this.seriesList = res.series_list;
+				})
+			},
+			// 关闭选择车型
+			handleClose(val) {
+				if (val) {
+					this.modelId = val.model_id;
+					this.modelName = val.model_name;
+				}
+				this.showModel = false;
+			},
 			// 确认登记日期
 			handleDate(e) {
 				this.$nextTick(() => {
@@ -707,15 +813,19 @@
 			},
 			// 下一步
 			handleStep() {
-				this.$refs.carForm.validate().then(res => {
-					if (this.carId) {
-						this.vehicleInfor = false;
-						this.sellerInfor = true;
-						this.active = 1;
-						return;
-					}
-					this.handleDraft('step');
-				})
+				if (this.modelId) {
+					this.$refs.carForm.validate().then(res => {
+						if (this.carId) {
+							this.vehicleInfor = false;
+							this.sellerInfor = true;
+							this.active = 1;
+							return;
+						}
+						this.handleDraft('step');
+					})
+				} else {
+					this.$modal.msg("请选择车型");
+				}
 			},
 			// 点击车辆信息保存
 			handleSaveCar() {
@@ -748,7 +858,7 @@
 					certificateUrl: this.fileList3.map((item) => { return item.id }),
 					mileage: this.carForm.mileage,
 					brand: this.carForm.brand,
-					year: this.carForm.year,
+					// year: this.carForm.year,
 					model: this.carForm.model,
 					remarks: this.carForm.remarks
 				}
@@ -760,11 +870,22 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.fairValue();
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
+				})
+			},
+			// 查询公允价值
+			fairValue() {
+				let data = {
+					carId: this.carId,
+					modelId: this.modelId
+				}
+				getFairValue(data).then((res) => {
+					console.log(res)
 				})
 			},
 			// 收款方式选择框确定
@@ -821,6 +942,7 @@
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
 	}
+	
 	.uni-card--border {
 		border: none;
 	}

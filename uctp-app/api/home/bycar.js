@@ -42,3 +42,39 @@ export function getCancelContract() {
 		'method': 'GET'
 	})
 }
+
+// 查询公允价值
+export function getFairValue(data) {
+	return request({
+		url: '/uctp/car-info/searchFairValue',
+		'method': 'POST',
+		'data': data
+	})
+}
+
+// 查询品牌id
+export function getCarBrandList(data) {
+	return request({
+		url: '/uctp/car-info/getCarBrandList',
+		'method': 'POST',
+		'data': data
+	})
+}
+
+// 查询车系
+export function getCarSeriesList(data) {
+	return request({
+		url: '/uctp/car-info/getCarSeriesList',
+		'method': 'POST',
+		'data': data
+	})
+}
+
+// 查询车型
+export function getCarModelList(data) {
+	return request({
+		url: '/uctp/car-info/getCarModelList',
+		'method': 'POST',
+		'data': data
+	})
+}

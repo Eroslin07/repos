@@ -21,7 +21,7 @@
 					</uni-col>
 					<uni-col :span="16">
 						<h3>{{tab.brand}}-{{tab.year}}{{tab.model}}</h3>
-						<view>{{tab.year}}年 | {{tab.mileage | filterMile}}万公里</view>
+						<view>{{tab.year}}年 | {{tab.mileage}}万公里</view>
 						<view style="color: #68b4c5;">{{tab.vehicleReceiptAmount}}元</view>
 					</uni-col>
 				</uni-row>
