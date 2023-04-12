@@ -1,14 +1,16 @@
 package com.newtouch.uctp.module.business.dal.dataobject;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 import lombok.*;
 
 import java.math.BigDecimal;
 
-@TableName("uctp_car_info_details")
+@TableName(value = "uctp_car_info_details",autoResultMap = true)
 //@KeySequence("uctp_car_info_details_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -114,9 +116,6 @@ public class CarInfoDetailsDO extends BaseDO {
      * 收车时收款方式
      */
     private String remitType;
-
-
-
     /**
      * 买家电话
      */
@@ -129,4 +128,14 @@ public class CarInfoDetailsDO extends BaseDO {
      * 买家姓名
      */
     private String buyerName;
+    /**
+     * 车辆手续及备件
+     */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private ProceduresAndSpareParts proceduresAndSpareParts;
+    /**
+     * 车况相关
+     */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private FeesAndCommitments feesAndCommitments;
 }

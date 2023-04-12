@@ -94,8 +94,6 @@ public class CarInfoDO extends TenantBaseDO {
      * 卖车金额
      */
     private BigDecimal sellAmount;
-
-
     /**
      * 状态
      */
@@ -104,4 +102,24 @@ public class CarInfoDO extends TenantBaseDO {
      * 卖车方式
      */
     private Integer sellType;
+    /**
+     * 使用年限至
+     */
+    private LocalDateTime scrapDate;
+    /**
+     * 年检签证有效期至
+     */
+    private LocalDateTime annualInspectionDate;
+    /**
+     * 保险险种
+     */
+    private String insurance;
+    /**
+     * 保险期至
+     */
+    private String insuranceEndData;
+    /**
+     * 其他
+     */
+    private String other;
 }

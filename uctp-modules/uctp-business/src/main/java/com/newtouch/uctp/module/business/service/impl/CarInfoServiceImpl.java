@@ -16,6 +16,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
+import com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
@@ -28,9 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
-
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
