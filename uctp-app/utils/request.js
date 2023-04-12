@@ -4,7 +4,7 @@ import { getAccessToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { toast, showConfirm, tansParams } from '@/utils/common'
 
-let timeout = 10000
+let timeout = 60000
 const baseUrl = config.baseUrl + config.baseApi;
 
 const request = config => {
@@ -15,7 +15,7 @@ const request = config => {
     config.header['Authorization'] = 'Bearer ' + getAccessToken()
   }
   // 设置租户 TODO 芋艿：强制 1 先
-  config.header['tenant-id'] = '1';
+  // config.header['tenant-id'] = '1';
   // get请求映射params参数
   if (config.params) {
     let url = config.url + '?' + tansParams(config.params)

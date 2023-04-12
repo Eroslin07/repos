@@ -12,7 +12,8 @@ const user = {
     name: storage.get(constant.name),
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
-    permissions: storage.get(constant.permissions)
+    permissions: storage.get(constant.permissions),
+    phone: storage.get(constant.phone)
   },
 
   mutations: {
@@ -34,6 +35,10 @@ const user = {
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
       storage.set(constant.permissions, permissions)
+    },
+    SET_PHONE: (state, phone) => {
+      state.phone = phone
+      storage.set(constant.phone, phone)
     }
   },
 
@@ -105,6 +110,11 @@ const user = {
           reject(error)
         })
       })
+    },
+
+    // 保存手机号
+    GetPhone({ commit, state }) {
+      commit('SET_PHONE', state)
     }
   }
 }

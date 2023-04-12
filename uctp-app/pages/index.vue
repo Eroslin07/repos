@@ -212,7 +212,7 @@
 <style lang="scss" scoped>
 	.content {
 		width: 100%;
-		height: 88vh;
+		// height: 88vh;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		background-color: #f4f6f8;

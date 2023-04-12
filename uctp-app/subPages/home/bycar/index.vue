@@ -48,7 +48,7 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #fd6601;" @click="handleOcr(2)">上传图片</text>
+							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(2)"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label="上传行驶证" :required="true" prop="drivingLicenseUrl" borderBottom>
@@ -63,7 +63,7 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #fd6601;" @click="handleOcr(1)">上传图片</text>
+							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(1)"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label="发动机编号" :required="true" prop="engineNum" borderBottom>
@@ -103,7 +103,7 @@
 							></u-upload>
 						</view>
 						<view slot="right" name="arrow-right">
-							<text style="color: #fd6601;" @click="handleOcr(3)">上传图片</text>
+							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(3)"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label="登记证号" :required="true" prop="licensePlateNum" borderBottom>
@@ -252,7 +252,7 @@
 					<u-form-item label="身份证号" :required="true" prop="sellerIdCard" borderBottom>
 						<u--input v-model="sellerForm.sellerIdCard" border="none" placeholder="请输入身份证号"></u--input>
 						<view slot="right" name="arrow-right">
-							<text style="color: #50a8bc;" @click="handleOcr(4)">上传图片</text>
+							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(4)"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label=" " borderBottom v-if="fileList4.length != 0">
@@ -729,7 +729,12 @@
 				for (let i = 0; i < res.tempFilePaths.length; i++) {
 					uni.uploadFile({
 						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						// #ifdef H5
 						file: res.tempFiles[i],
+						// #endif
+						// #ifdef MP-WEIXIN || APP
+						filePath: res.tempFilePaths[i],
+						// #endif
 						name: 'file',
 						header: {
 							Authorization: 'Bearer ' + getAccessToken()
