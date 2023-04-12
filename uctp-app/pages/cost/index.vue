@@ -4,76 +4,56 @@
 			<view class="">
 				<view class="const-analy-header">
 					<view>
-						<u-datetime-picker :show="dateShow" loading :closeOnClickOverlay="false" v-model="dateValue"
-							mode="year-month" @confirm="dateConfirm" @cancel="dateShow=false">
-						</u-datetime-picker>
-						<view class="date-box">
-							<view>{{dateValue}}</view>
-							<u-icon @click="dateShow=true" name="arrow-down" color="#40ADDD" class="date-picker"
-								size="16">
-							</u-icon>
-						</view>
+						<zb-dropdown-menu>
+							<zb-dropdown-item :name="dateTitle" :options="options" v-model="dateValue">
+							</zb-dropdown-item>
+						</zb-dropdown-menu>
 					</view>
 					<view>
 						<text @click="analiesBtn">分析</text>
 					</view>
 				</view>
 
-				<view class="cost-content">
-					<u-tabs :list="listArr" @click="tabClick"></u-tabs>
-					<view v-if="tabValue=='支出'" class="cost-item">
-						<!-- <view class="">
-							支出
-						</view> -->
-						<view class="charts-box">
-							<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
-						</view>
-					</view>
-					<view v-if="tabValue=='收入'" class="cost-item">
-						<!-- <view class="">
-							收入
-						</view> -->
-						<view class="charts-box">
-							<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
-						</view>
-					</view>
-					<!-- <view class="charts-box">
-						<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
-					</view> -->
+				<view class="charts-box">
+					<qiun-data-charts type="column" :opts="opts" :chartData="chartData" />
 				</view>
 			</view>
-			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear" placeholder="请选择车辆">
+			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"
+				placeholder="请输入车架号(VIN)/品牌/收车费用/卖车费用">
 			</u-search>
-			<uni-card v-for="(tab, index) in tabList" :key="index" is-full style="margin-top: 10px;"
+			<uni-card v-for="(tab, index) in tabList" :key="index" is-full style="margin-top: 10px;border-radius: 8px;"
 				class="car-cost-list" @click="viewDetails(tab)">
-				<view>VIN：LE4TG4DB1JL199517</view>
-				<h3>宝马-宝马X12021款sDrive20Li时尚型</h3>
-				<view class="col40AD">
-					车辆状态：{{tab.status}}
+				<view class="col3b fs13 mb5">VIN：LE4TG4DB1JL199517</view>
+				<h3 class="car-title">宝马-宝马X12021款sDrive20Li时尚型</h3>
+				<u-line dashed style="margin:10px 0"></u-line>
+				<view class="disFlex fs13">
+					<text class="col3b">车辆状态：</text>
+					<text>{{tab.status}}</text>
 				</view>
-				<h4>
-					收车费用：100,500元
-				</h4>
-				<h4>
-					实际产生费用合计：960元
-				</h4>
-				<view v-if="tab.status==='已售车'">
-					<h4>
-						卖车金额：105,500元
-					</h4>
-					<h4>
-						<text>卖车利润：4,040元</text>
-						<text class="floatR col40AD">经办人：张三</text>
-					</h4>
+				<view class="disFlex fs13">
+					<text class="col3b">收车费用：</text>
+					<text>100,500元</text>
 				</view>
-				<view v-else>
-					<h4>
-						预计将产生费用：560元
-					</h4>
-					<h4>
-						<text>卖车金额：——元</text>
-						<text>经办人：张三</text>
-					</h4>
+				<view v-if="tab.status==='待售中已检测'" class="disFlex fs13">
+					<text class="col3b">卖车金额：</text>
+					<text>——</text>
+				</view>
+				<view v-if="tab.status==='已售车'" class="disFlex fs13">
+					<text class="col3b">卖车金额：</text>
+					<text>105,500元</text>
+				</view>
+				<view v-if="tab.status==='已售车'" class="disFlex fs13">
+					<text class="col3b">平台扣减费用：</text>
+					<text>105,500元</text>
+				</view>
+				<view v-if="tab.status==='已售车'" class="disFlex fs13">
+					<text class="col3b">卖车利润：</text>
+					<text>4,040元</text>
+				</view>
+				<u-line dashed style="margin:10px 0"></u-line>
+				<view class="disFlex fs13">
+					<text class="col3b">经办人：</text>
+					<text>张三</text>
 				</view>
 			</uni-card>
 		</uni-card>
@@ -81,47 +61,66 @@
 </template>
 
 <script>
+	import DropdownMenu from '../../subPages/home/carStatus/JP-dropdown-menu/JP-dropdown-menu.vue';
+	import DropdownItem from '../../subPages/home/carStatus/JP-dropdown-menu/JP-dropdown-item.vue';
 	export default {
 		data() {
 			return {
-				//日期
-				dateValue: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm'),
-				dateShow: false,
+				// 日期
+				startYear: 2023,
+				endYear: new Date().getFullYear(),
+				dateValue: '',
+				dateTitle: '',
+				options: [],
+				// 搜索
 				searchValue: "",
+				// 列表
 				tabList: [],
-
+				// 图表
 				chartData: {},
 				opts: {
 					color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4",
 						"#ea7ccc"
 					],
-					width: '50px',
-					height: '50px',
-					padding: [5, 5, 5, 5],
+					padding: [15, 15, 0, 5],
 					enableScroll: false,
-					legend: {
-						float: "left",
-						// lineHeight: 20,
+					legend: {},
+					xAxis: {
+						disableGrid: true
+					},
+					yAxis: {
+						data: [{
+							min: 0
+						}]
 					},
 					extra: {
-						pie: {
-							activeOpacity: 0.5,
-							activeRadius: 10,
-							offsetAngle: 0,
-							labelWidth: 15,
-							border: true,
-							borderWidth: 3,
-							borderColor: "#FFFFFF"
+						column: {
+							type: "group",
+							width: 30,
+							activeBgColor: "#000000",
+							activeBgOpacity: 0.08
 						}
 					}
-				},
-				listArr: [{
-					name: '支出',
-				}, {
-					name: '收入',
-				}],
-				tabValue:'支出',
+				}
+
 			}
+		},
+		onLoad() {
+			let currentMonth = new Date().getMonth() + 1;
+			let currentQuarter = Math.floor((currentMonth % 3 == 0) ? (currentMonth / 3) : (currentMonth / 3 + 1));
+			let currentValue = (String(this.endYear) + currentQuarter) * 1
+			let quarterArr = ['第一季度', '第二季度', '第三季度', '第四季度']
+			for (let i = this.startYear; i <= this.endYear; i++) {
+				for (let q = 0; q < quarterArr.length; q++) {
+					let obj = {
+						text: i + quarterArr[q],
+						value: (String(i) + (q + 1)) * 1
+					}
+					this.options.push(obj)
+				}
+			}
+			this.dateValue = this.options.find(item => item.value == currentValue).value
+			this.dateTitle = this.options.find(item => item.value == currentValue).text
 		},
 		created() {
 
@@ -130,8 +129,10 @@
 			this.getServerData();
 		},
 		mounted() {
-			this.tabList = [];
-			for (let i = 0; i < 5; i++) {
+			this.tabList = [{
+				status: '待售中已检测'
+			}];
+			for (let i = 0; i < 4; i++) {
 				this.tabList.push({
 					status: '已售车'
 				})
@@ -193,23 +194,19 @@
 				setTimeout(() => {
 					//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
 					let res = {
+						categories: ["1月", "2月", "3月"],
 						series: [{
-							data: [{
-								"name": "已实际产生费用",
-								"value": 50
-							}, {
-								"name": "预计将产生费用",
-								"value": 30
-							}]
-						}]
+								name: "税费",
+								data: [35, 36, 31]
+							},
+							{
+								name: "服务费",
+								data: [18, 27, 21]
+							}
+						]
 					};
 					this.chartData = JSON.parse(JSON.stringify(res));
 				}, 500);
-			},
-			// 切换图表
-			tabClick(item) {
-				console.log(item)
-				this.tabValue = item.name
 			},
 
 			//查看车辆明细
@@ -226,6 +223,7 @@
 	.const-analy-header {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		font-size: 14px;
 		color: #40ADDD;
 	}
@@ -236,8 +234,9 @@
 		// padding: 10px;
 		font-size: 14px;
 		margin: 15px auto 10px;
-		.cost-item{
-			padding:10px;
+
+		.cost-item {
+			padding: 10px;
 		}
 	}
 
@@ -252,6 +251,10 @@
 
 	.fs14 {
 		font-size: 14px;
+	}
+
+	.fs13 {
+		font-size: 13px;
 	}
 
 	.col40AD {
@@ -269,5 +272,45 @@
 	.charts-box {
 		width: 100%;
 		height: 249px;
+	}
+
+	.car-title {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.margin-tb10 {
+		margin: 10px 0;
+	}
+
+	.disFlex {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.col3b {
+		color: #bbb;
+	}
+
+	.mb5 {
+		margin-bottom: 5px;
+	}
+
+	/deep/ .zb-dropdown-menu__bar {
+		box-shadow: none;
+	}
+
+	/deep/.zb-dropdown-menu__title::after {
+		border-width: 5px;
+		border-bottom-color: #aaa;
+		border-left-color: #aaa;
+		margin-top: -8px;
+		right: -10px;
+		opacity: 0.9
+	}
+
+	/deep/.zb-dropdown-menu__title--down::after {
+		margin-top: -3px;
 	}
 </style>
