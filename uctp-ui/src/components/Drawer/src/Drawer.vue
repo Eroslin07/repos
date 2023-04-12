@@ -73,10 +73,6 @@ const props = defineProps({
   drawerTitle: {
     type: String,
     default: '收车合同审批-节点3'
-  },
-  status: {
-    type: String,
-    default: ''
   }
 })
 const drawerVisible = computed(() => {

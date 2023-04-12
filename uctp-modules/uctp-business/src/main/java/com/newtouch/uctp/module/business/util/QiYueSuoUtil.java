@@ -1,14 +1,12 @@
 package com.newtouch.uctp.module.business.util;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.qiyuesuo.sdk.v2.SdkClient;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.*;
-import com.qiyuesuo.sdk.v2.response.CategoryDetailResult;
-import com.qiyuesuo.sdk.v2.response.ContractPageResult;
-import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
-import com.qiyuesuo.sdk.v2.response.SdkResponse;
+import com.qiyuesuo.sdk.v2.response.*;
 import com.qiyuesuo.sdk.v2.utils.CollectionUtils;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -320,7 +318,7 @@ public class QiYueSuoUtil {
 
     public SdkResponse<Contract> draft(Contract draftContract, Class<Contract> clazz) throws Exception {
         ContractDraftRequest request = new ContractDraftRequest(draftContract);
-        return execute(request, clazz);
+        return execute(request, Contract.class);
     }
 
     public SdkResponse<DocumentAddResult> addDocumentByFile(Long contractId, File file, String title)
@@ -483,6 +481,28 @@ public class QiYueSuoUtil {
         return this.execute(request, CategoryDetailResult.class);
     }
 
+    /**
+     * 单点登录模板授权页面
+     * @param companyId 公司id
+     * @param companyName 公司名称
+     * @param contact 单点用户联系方式
+     * @param contactType 联系方式类型：MOBILE 或 EMAIL
+     * @return
+     */
+    private SdkResponse<OpenSSOPrivilegeUrlResult> openSSOPrivilegeUrl(Long companyId,String companyName,String contact,String contactType) throws Exception {
+        Company company = null;
+        if (ObjectUtil.isNotNull(companyId)) {
+            company = new Company(companyId);
+        }
+        if (StringUtils.isNotBlank(companyName)) {
+            company = new Company(companyName);
+        }
+        User user = new User(contact, contactType);
+        OpenSSOPrivilegeUrlRequest request = new OpenSSOPrivilegeUrlRequest(company, user);
+        request.setSuccessUrl("www.baidu.com");
+        return this.execute(request, OpenSSOPrivilegeUrlResult.class);
+    }
+
     private <T extends SdkRequest> void downLoad(T request, FileOutputStream outputStream) {
         if (null == outputStream) {
             throw exception(QYS_FILE_URL_NOT_NULL);
@@ -506,26 +526,84 @@ public class QiYueSuoUtil {
             e.printStackTrace();
 //            throw new unknowexception(err);
         }
-        SdkResponse<?> sdkResponse = JSONUtils.toQysResponse(response, clazz);
-        if (!sdkResponse.getCode().equals(0)) {
-            //此处抛出错误，应该去官网查看其对应错误详情
-            String codeMsg = String.format("%s,请求契约锁服务器成功，返回错误状态码原因：%s", name, sdkResponse.getMessage());
-            log.error(codeMsg);
-//            throw new UnKnowException(codeMsg);
-        }
-        return sdkResponse;
+        return JSONUtils.toQysResponse(response, clazz);
+//        if (!sdkResponse.getCode().equals(0)) {
+//            //此处抛出错误，应该去官网查看其对应错误详情
+//            String codeMsg = String.format("%s,请求契约锁服务器成功，返回错误状态码原因：%s", name, sdkResponse.getMessage());
+//            log.error(codeMsg);
+////            throw new UnKnowException(codeMsg);
+//        }
     }
 
 
     public static void main(String[] args) {
-        //SdkResponse<CategoryDetailResult> categoryDetail = this.getCategoryDetail((long) 0, "");
+//        q4xKsNcFI8
+//        qKPK101VGyLsnSqFoLzSCu3JGiMAVO
+        QiYueSuoUtil qiYueSuoUtil = new QiYueSuoUtil("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
+        try {
+//            tset1(qiYueSuoUtil);
 
-//        QiYueSuoUtil qiYueSuoUtil = new QiYueSuoUtil("https://openapi.qiyuesuo.cn","r5ZBZFFOYn","nf086I0ghj9noaOhOeUNKLEsQrZaYD");
-//        try {
-//            SdkResponse<CategoryDetailResult> detail = qiYueSuoUtil.getCategoryDetail(2720100917440418016l, "上海新致软件股份测试有限公司");
-//            System.out.println(JSONUtils.toJson(detail));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+            test2(qiYueSuoUtil);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void tset1(QiYueSuoUtil qiYueSuoUtil) throws Exception {
+        Contract draftContract = new Contract();
+        draftContract.setSubject("三方-二手车");
+        // 设置合同接收方
+        // 甲方个人签署方
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("PERSONAL");
+        persoanlSignatory.setTenantName("罗聪");
+        persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+        draftContract.addSignatory(persoanlSignatory);
+        // 乙方平台
+        Signatory platformSignatory = new Signatory();
+        platformSignatory.setTenantType("COMPANY");
+        platformSignatory.setTenantName("成都新致云服测试公司");
+        platformSignatory.setReceiver(new User( "13708206115", "MOBILE"));
+        draftContract.addSignatory(platformSignatory);
+        //丙方
+        Signatory initiator2 = new Signatory();
+        initiator2.setTenantType("COMPANY");
+        initiator2.setTenantName("平头哥二手车");
+        initiator2.setReceiver(new User("17311271898", "MOBILE"));
+        draftContract.addSignatory(initiator2);
+
+        //模板参数
+        draftContract.addTemplateParam(new TemplateParam("甲方","罗聪"));
+        draftContract.addTemplateParam(new TemplateParam("乙方","新致"));
+        draftContract.addTemplateParam(new TemplateParam("丙方","平头哥二手车"));
+        draftContract.addTemplateParam(new TemplateParam("选择1","☑"));
+        draftContract.addTemplateParam(new TemplateParam("选择2","☑"));
+        draftContract.addTemplateParam(new TemplateParam("选择3","□"));
+        draftContract.addTemplateParam(new TemplateParam("选择4","□"));
+
+        draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        draftContract.setSend(false); // 发起合同
+        SdkResponse<Contract> draft = qiYueSuoUtil.draft(draftContract, Contract.class);
+        if (!draft.getCode().equals(0)) {
+            System.out.println("发起合同："+draft.getMessage());
+        }
+        Contract result = draft.getResult();
+        System.out.println(JSONUtils.toJson(result));
+        //2,签字时是丙方是否会自动签章
+        qiYueSuoUtil.send(result.getId());
+    }
+
+    private static void test2(QiYueSuoUtil qiYueSuoUtil) throws Exception {
+        //2,单点登陆签署页面
+        SdkResponse<OpenSSOPrivilegeUrlResult> response = qiYueSuoUtil
+                .openSSOPrivilegeUrl(null,
+                        "平头哥二手车", "17311271898", "MOBILE");
+        if (!response.getCode().equals(0)) {
+            System.out.println("单点登录："+response.getMessage());
+        }
+        OpenSSOPrivilegeUrlResult result = response.getResult();
+        System.out.println(result.getPageUrl());
     }
 }
