@@ -1,14 +1,14 @@
 <template>
 	<view class="normal-login-container">
 		<!-- 自定义导航栏 -->
-		<u-navbar title="登录">
+		<u-navbar>
 			<view class="u-nav-slot" slot="left">
 				<view class="bank-logo"></view>
 			</view>
 		</u-navbar>
 		
 		<view class="logo-content align-center justify-center flex">
-			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">xxx结算中心</h2>
+			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;margin-top: 20%;">结算中心</h2>
 		</view>
 		<view class="logo-content align-center justify-center flex">
 			<h3 class="title" style="margin-right: 50%;">助力车商</h3>
@@ -16,21 +16,18 @@
 		<view class="logo-content align-center justify-center flex">
 			<h3 class="fxnw">经纪转经销</h3>
 		</view>
-		<u-popup :show="show" :overlay="false">
-			<view class="action-btn">
-				<u-checkbox-group v-model="value">
-					<u-checkbox shape="circle" activeColor="#fe7345"></u-checkbox>
-					<view>同意
-						<text style="color: #fe7345;" @click="handleUserAgrement">《xx用户协议》</text>
-						<text style="color: #fe7345;" @click="handlePrivacy">《隐私政策》</text>
-					</view>
-				</u-checkbox-group>
-				<!-- #ifdef MP-WEIXIN -->
-				<button shape="circle" type="primary" link="true" open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信用户一键登录</button>
-				<!-- #endif -->
-			</view>
-		</u-popup>
-		<u-modal :show="showModel" :content='content' :showConfirmButton="true" :showCancelButton="true" confirmText="是" cancelText="否" @cancel="handleCancel" @confirm="handleConfirm"></u-modal>
+		
+		<view class="action-btn">
+			<u-checkbox-group v-model="value">
+				<u-checkbox shape="circle" activeColor="#fe7345"></u-checkbox>
+				<view>同意
+					<text style="color: #fe7345;" @click="handleUserAgrement">《用户协议》</text>及
+					<text style="color: #fe7345;" @click="handlePrivacy">《隐私政策》</text>
+				</view>
+			</u-checkbox-group>
+			<button shape="circle" type="primary" link="true" open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信用户一键登录</button>
+		</view>
+		<u-modal :show="showModel" :content='content' :showConfirmButton="true" :showCancelButton="true" confirmText="是" cancelText="否" @cancel="handleCancel" @confirm="handleConfirm" confirmColor="#fe7345"></u-modal>
 	</view>
 </template>
 
@@ -39,7 +36,7 @@
 		data() {
 			return {
 				showModel: false,
-				content: '您的手机号尚未在平台注册，是否要注册？',
+				content: '您的手机号尚未在平台注册，是否要注册?',
 				value: [],
 				show: true,
 				appId: 'wx52552be23725ae44',
@@ -207,13 +204,13 @@
 	
 	.action-btn {
 		padding: 20px;
-		margin-top: 20px;
+		margin-top: 80%;
 		height: 200px;
 	}
 	
 	.login-btn {
 		height: 45px;
-		margin-top: 10px;
+		margin-top: 20px;
 		background-color: #fe7345;
 	}
 </style>
