@@ -13,7 +13,9 @@ const user = {
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
     permissions: storage.get(constant.permissions),
-    phone: storage.get(constant.phone)
+    phone: storage.get(constant.phone),
+    deptId: storage.get(constant.deptId),
+    tenantId: storage.get(constant.tenantId)
   },
 
   mutations: {
@@ -39,6 +41,14 @@ const user = {
     SET_PHONE: (state, phone) => {
       state.phone = phone
       storage.set(constant.phone, phone)
+    },
+    SET_DEPTID: (state, deptId) => {
+      state.deptId = deptId
+      storage.set(constant.deptId, deptId)
+    },
+    SET_TENANTID: (state, tenantId) => {
+      state.tenantId = tenantId
+      storage.set(constant.tenantId, tenantId)
     }
   },
 
@@ -90,6 +100,8 @@ const user = {
           }
           commit('SET_NAME', nickname)
           commit('SET_AVATAR', avatar)
+          commit('SET_DEPTID', deptId)
+          commit('SET_TENANTID', tenantId)
           resolve(res)
         }).catch(error => {
           reject(error)

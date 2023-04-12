@@ -1,4 +1,5 @@
 import store from '@/store'
+import $store from "../store";
 import config from '@/config'
 import { getAccessToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
@@ -15,6 +16,10 @@ const request = config => {
     config.header['Authorization'] = 'Bearer ' + getAccessToken()
   }
   // 设置租户 TODO 芋艿：强制 1 先
+  const tenantId = $store.state.user.tenantId
+  if (tenantId) {
+    config.header['tenant-id'] = tenantId;
+  }
   // config.header['tenant-id'] = '1';
   // get请求映射params参数
   if (config.params) {
