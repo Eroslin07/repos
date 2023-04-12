@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.CostMapper">
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.NoticeMapper">
 
-    <select id="getNotices" resultType="com.newtouch.uctp.module.business.domain.app.NoticeInfoDO" >
+    <select id="getNotices" resultType="com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO" >
         select
             ID
             ,TITLE
@@ -11,13 +11,19 @@
             ,PHONE
             ,BUSINESS_ID as businessId
             ,TENANT_ID as tenantId
-            ,CREATED_BY as createdBy
-            ,CREATED_TIME as createdTime
-            ,UPDATED_BY as updatedBy
-            ,UPDATED_TIME as updatedTime
+            ,CREATED_BY as creator
+            ,CREATED_TIME as createTime
+            ,UPDATED_BY as updater
+            ,UPDATED_TIME as updateTime
+            ,status
         from uctp_notice
     </select>
 
+    <update id="updateNoticeStatus" parameterType="map">
+        update
+            uctp_notice set STATUS='1'
+        where id=#{vo.id}
+    </update>
 
 
 </mapper>

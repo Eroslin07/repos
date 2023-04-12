@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.impl;
 
-import com.newtouch.uctp.module.business.domain.app.NoticeInfoDO;
+import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
+import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
 import com.newtouch.uctp.module.business.dal.mysql.NoticeMapper;
 import com.newtouch.uctp.module.business.service.NoticeService;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,10 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public List<NoticeInfoDO> getNotices() {
         return noticeMapper.getNotices();
+    }
+
+    @Override
+    public void updateNoticeStatus(NoticeVO noticeVO) {
+        noticeMapper.updateNoticeStatus(noticeVO);
     }
 }

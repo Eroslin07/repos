@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
+package com.newtouch.uctp.module.business.controller.app.myCost.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

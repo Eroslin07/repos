@@ -1,12 +1,10 @@
 package com.newtouch.uctp.module.business.dal.mysql;
 
 
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppMyCostVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CostExample;
-import com.newtouch.uctp.module.business.domain.app.NoticeInfoDO;
+import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
+import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -19,6 +17,7 @@ public interface NoticeMapper {
 
     List<NoticeInfoDO> getNotices();
 
+    void updateNoticeStatus(@Param("vo") NoticeVO noticeVO);
 
 
 }

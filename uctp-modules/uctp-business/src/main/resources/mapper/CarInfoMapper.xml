@@ -210,7 +210,7 @@
         where NUMBER=#{vo.contractID}
     </update>
 
-    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.domain.app.InvoicesInfoDO">
+    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.dal.dataobject.InvoicesInfoDO">
 
         select
             id,

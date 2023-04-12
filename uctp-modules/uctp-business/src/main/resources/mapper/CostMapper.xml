@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.newtouch.uctp.module.business.dal.mysql.CostMapper">
 
-    <select id="getMyCosts" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppMyCostVO" parameterType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CostExample">
+    <select id="getMyCosts" resultType="com.newtouch.uctp.module.business.controller.app.myCost.vo.AppMyCostVO" parameterType="com.newtouch.uctp.module.business.controller.app.myCost.vo.CostExample">
         select
                   uci.id,
                   uci.BRAND,
@@ -31,7 +31,7 @@
           </if>
     </select>
 
-    <select id="getMyCosts1" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppMyCostVO" >
+    <select id="getMyCosts1" resultType="com.newtouch.uctp.module.business.controller.app.myCost.vo.AppMyCostVO" >
         select
                   uci.id,
                   uci.BRAND,

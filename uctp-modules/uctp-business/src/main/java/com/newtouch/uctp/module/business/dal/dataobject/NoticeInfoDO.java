@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.domain.app;
+package com.newtouch.uctp.module.business.dal.dataobject;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -51,22 +51,9 @@ public class NoticeInfoDO extends BaseDO {
      */
     private String tenantId;
     /**
-     * 创建人
+     * 消息状态
      */
-    private Integer createdBy;
-    /**
-     * 创建时间
-     */
-    private Long createdTime;
-
-    /**
-     * 更新人
-     */
-    private Integer updatedBy;
-    /**
-     * 更新时间
-     */
-    private Date updatedTime;
+    private String status;
 
 
 

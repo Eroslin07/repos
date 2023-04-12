@@ -88,7 +88,7 @@ public class AppCarInfoController {
         return success(CarInfoConvert.INSTANCE.convertList(list));
     }
 
-    @GetMapping("/page")
+    @PostMapping("/page")
     @Operation(summary = "获得车辆主表分页")
     public CommonResult<PageResult<AppCarInfoRespVO>> getCarInfoPage(@RequestBody @Valid AppCarInfoPageReqVO pageVO) {
         PageResult<CarInfoDO> pageResult = carInfoService.getCarInfoPage(pageVO);

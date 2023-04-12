@@ -1,11 +1,9 @@
 package com.newtouch.uctp.module.business.service;
 
 
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppMyCostVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CostExample;
-import com.newtouch.uctp.module.business.domain.app.NoticeInfoDO;
+import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
+import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -22,7 +20,11 @@ public interface NoticeService {
      */
 
     List<NoticeInfoDO> getNotices();
-
+    /**
+     * 更新消息状态
+     *
+     */
+    void updateNoticeStatus(@Param("vo") NoticeVO noticeVO);
 
 
 }

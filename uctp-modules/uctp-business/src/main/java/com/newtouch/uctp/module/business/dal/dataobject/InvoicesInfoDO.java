@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.domain.app;
+package com.newtouch.uctp.module.business.dal.dataobject;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -12,14 +12,14 @@ import java.util.Date;
  *
  *
  */
-@TableName("uctp_contract_log")
+@TableName("uctp_invoices_management")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContractarInfoDO extends BaseDO {
+public class InvoicesInfoDO extends BaseDO {
 
 
 
@@ -29,33 +29,29 @@ public class ContractarInfoDO extends BaseDO {
     @TableId
     private String id;
     /**
-     * 合同ID
+     * 发票类型(0反向二手车销售统一发票 1正向二手车销售统一发票 2二手车增值税发票)
      */
-    private String contractId;
+    private String invoiceType;
+    /**
+     * 商户
+     */
+    private String business;
     /**
      * 合同名称
      */
-    private String contractName;
+    private String name;
     /**
-     * 合同类型
+     * 合同金额
      */
-    private String contractType;
+    private String amountMoney;
     /**
-     * 开始时间
+     * 税额
      */
-    private String startTime;
+    private String tax;
     /**
-     * 结束时间
-     */
-    private String endTime;
-    /**
-     * 状态
+     * 状态(0待开票 1已开票)
      */
     private String status;
-    /**
-     * 商户ID
-     */
-    private String businessId;
     /**
      * 租户号
      */
