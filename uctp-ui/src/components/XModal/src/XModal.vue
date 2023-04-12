@@ -25,7 +25,7 @@ const getBindValue = computed(() => {
 </script>
 
 <template>
-  <vxe-modal v-bind="getBindValue" destroy-on-close show-zoom resize transfer zIndex="3000">
+  <vxe-modal v-bind="getBindValue" destroy-on-close show-zoom resize transfer>
     <template v-if="slots.header" #header>
       <slot name="header"></slot>
     </template>
