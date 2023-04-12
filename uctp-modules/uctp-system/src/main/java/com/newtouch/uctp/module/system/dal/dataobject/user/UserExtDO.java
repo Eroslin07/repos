@@ -62,4 +62,9 @@ public class UserExtDO extends TenantBaseDO {
      * 身份证号
      */
     private String idCard;
+
+    /**
+     * 保证金充值卡号
+     */
+    private String bondBankAccount;
 }
