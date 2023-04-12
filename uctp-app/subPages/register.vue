@@ -5,92 +5,139 @@
 		<u-modal :show="showModal" :content='content' showCancelButton @confirm="handleConfirm" @cancel="handleCancel"></u-modal>
 		<!-- 信息填写 -->
 		<view>
-			<uni-card :is-shadow="false" is-full style="border: none;">
-				<u--form labelPosition="left" :model="registerForm" :rules="rules" ref="valiForm" labelWidth="120px">
-					<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
-						<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
-						<view slot="right" name="arrow-right">
-							<text style="color: #fd6601;" @click="handleOcr(1, 'idCard')">上传图片</text>
-						</view>
-					</u-form-item>
-					<u-form-item label=" " borderBottom v-if="fileList1.length != 0">
-						<view class="image">
-							<u-upload
-								v-if="fileList1.length"
-								:fileList="fileList1"
-								@delete="deletePic"
-								name="1"
-								width="70"
-								height="70"
-							></u-upload>
-						</view>
-					</u-form-item>
-					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
-						<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>
-					</u-form-item>
-					<u-form-item label="手机号" :required="true" prop="phone" borderBottom>
-						<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
-							<!-- #ifndef MP-WEIXIN -->
-							<template slot="suffix">
-								<view @click="getVerification" style="color: #fd6601;" v-if="getTime">获取验证码</view>
-								<view class="login-code-img" style="color: #fd6601;" v-else>已发送({{ time }})</view>
-							</template>
-							<!-- #endif -->
-						</u-input>
-					</u-form-item>
-					<!-- #ifndef MP-WEIXIN -->
-					<u-form-item label="验证码" :required="true" prop="captcha" borderBottom>
-						<u--input v-model="registerForm.captcha" border="none" placeholder="请输入验证码"></u--input>
-					</u-form-item>
-					<!-- #endif -->
-					<u-form-item label="营业执照" :required="true" prop="businessLicense" borderBottom>
-						<view class="image">
-							<u-upload
-								v-if="fileList2.length"
-								:fileList="fileList2"
-								@delete="deletePic"
-								name="2"
-								width="70"
-								height="70"
-							></u-upload>
-						</view>
-						<view slot="right" name="arrow-right">
-							<text style="color: #fd6601;" @click="handleOcr(2, 'businessLicense')">上传图片</text>
-						</view>
-					</u-form-item>
-					<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom @click="showSex = true">
-						<u--input v-model="registerForm.businessName" disabled disabledColor="#ffffff"
-							placeholder="请输入公司名称" border="none"></u--input>
-					</u-form-item>
-					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
-						<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
-							placeholder="请选择市场场地编号" border="none"></u--input>
-						<u-icon slot="right" name="arrow-right"></u-icon>
-					</u-form-item>
-					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
-						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
-					</u-form-item>
-					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
-						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
-					</u-form-item>
-					<!-- <u-form-item label="输入密码" :required="true" prop="password" borderBottom>
-						<u--input v-model="registerForm.password" password border="none" placeholder="请输入8-32位(数字+字母)">
-						</u--input>
-					</u-form-item>
-					<u-form-item label="再次输入密码" :required="true" prop="confirmPassword" borderBottom>
-						<u--input v-model="registerForm.confirmPassword" password border="none"
-							placeholder="请输入8-32位(数字+字母)"></u--input>
-					</u-form-item> -->
-				</u--form>
-				<u-picker :show="showSex" :columns="range" keyName="contactName" title="请选择市场所在地" @confirm="confirm"
-					@cancel="cancel"></u-picker>
-				<view class="action-btn">
+			<u--form labelPosition="left" :model="registerForm" :rules="rules" ref="valiForm" labelWidth="120px">
+				<uni-card :is-shadow="false" is-full style="border: none;">
+				<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
+					<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
+				</u-form-item>
+				<u-form-item borderBottom>
+					<view class="image">
+						<u-grid col="2">
+							<u-grid-item>
+								<u-upload
+									v-if="fileList1.length"
+									:fileList="fileList1"
+									@delete="deletePic"
+									name="1"
+									width="150"
+								></u-upload>
+								<image v-else src=".../../../static/images/home/ghm.png"
+									mode="widthFix" style="width: 150px;" @click="handleOcr(1, 'idCard')"></image>
+								<image
+									v-if="fileList1.length == 0"
+									src="../static/images/take.png"
+									class="icon-image"
+									@click="handleOcr(1, 'idCard')"></image>
+							</u-grid-item>
+							<u-grid-item>
+								<u-upload
+									v-if="fileList2.length"
+									:fileList="fileList2"
+									@delete="deletePic"
+									name="2"
+									width="150"
+								></u-upload>
+								<image v-else src=".../../../static/images/home/rxm.png"
+									mode="widthFix" style="width: 150px;" @click="handleOcr(2, 'idCard')"></image>
+								<image
+									v-if="fileList2.length == 0"
+									src="../static/images/take.png"
+									class="icon-image"
+									@click="handleOcr(2, 'idCard')"></image>
+							</u-grid-item>
+						</u-grid>
+					</view>
+				</u-form-item>
+				<u-form-item label="姓名" :required="true" prop="name" borderBottom>
+					<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>
+				</u-form-item>
+				<u-form-item label="手机号" :required="true" prop="phone" borderBottom>
+					<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
+						<!-- <template slot="suffix">
+							<view @click="getVerification" style="color: #fd6601;" v-if="getTime">获取验证码</view>
+							<view class="login-code-img" style="color: #fd6601;" v-else>已发送({{ time }})</view>
+						</template> -->
+					</u-input>
+				</u-form-item>
+				<!-- <u-form-item label="验证码" :required="true" prop="captcha" borderBottom>
+					<u--input v-model="registerForm.captcha" border="none" placeholder="请输入验证码"></u--input>
+				</u-form-item> -->
+				</uni-card>
+				<view class="fenge"></view>
+				<uni-card :is-shadow="false" is-full style="border: none;">
+				<u-form-item label="营业执照号" :required="true" prop="taxNum" borderBottom>
+					<u--input v-model="registerForm.taxNum" border="none" placeholder="请输入营业执照号"></u--input>
+				</u-form-item>
+				<u-form-item label=" " borderBottom>
+					<view class="image" style="position: relative;">
+						<u-upload
+							v-if="fileList3.length"
+							:fileList="fileList3"
+							@delete="deletePic"
+							name="3"
+							width="150"
+						></u-upload>
+						<image v-else src=".../../../static/images/home/yyzz.png"
+							mode="widthFix" style="width: 150px;" @click="handleOcr(3, 'business')"></image>
+						<image
+							v-if="fileList3.length == 0"
+							src="../static/images/take.png"
+							class="icon-image"
+							style="left: 75px;"
+							@click="handleOcr(3, 'business')"></image>
+					</view>
+				</u-form-item>
+				<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom @click="showSex = true">
+					<u--input v-model="registerForm.businessName" disabled disabledColor="#ffffff"
+						placeholder="请输入公司名称" border="none"></u--input>
+				</u-form-item>
+				<u-form-item label="法定代表人" :required="true" prop="legal_representative" borderBottom @click="showSex = true">
+					<u--input v-model="registerForm.legal_representative" disabled disabledColor="#ffffff"
+						placeholder="请输入法定代表人" border="none"></u--input>
+				</u-form-item>
+				<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
+					<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
+						placeholder="请选择市场场地编号" border="none"></u--input>
+					<u-icon slot="right" name="arrow-right"></u-icon>
+				</u-form-item>
+				<u-form-item label="联系地址" :required="true" prop="address" borderBottom>
+					<u--input v-model="registerForm.address" border="none" placeholder="请输入联系地址"></u--input>
+				</u-form-item>
+				<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
+					<u--input v-model="registerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
+				</u-form-item>
+				<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
+					<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
+				</u-form-item>
+				<u-form-item label="保证金充值卡号" :required="true" prop="bondBankAccount" borderBottom>
+					<u--input v-model="registerForm.bondBankAccount" border="none" placeholder="请输入保证金充值卡号" @change="handleChange1"></u--input>
+					<view slot="right" name="arrow-right">
+						<u-icon name="error-circle" @click="handleCircle"></u-icon>
+					</view>
+				</u-form-item>
+				<!-- <u-form-item label="输入密码" :required="true" prop="password" borderBottom>
+					<u--input v-model="registerForm.password" password border="none" placeholder="请输入8-32位(数字+字母)">
+					</u--input>
+				</u-form-item>
+				<u-form-item label="再次输入密码" :required="true" prop="confirmPassword" borderBottom>
+					<u--input v-model="registerForm.confirmPassword" password border="none"
+						placeholder="请输入8-32位(数字+字母)"></u--input>
+				</u-form-item> -->
+				</uni-card>
+			</u--form>
+			<u-picker :show="showSex" :columns="range" keyName="contactName" title="请选择市场所在地" @confirm="confirm"
+				@cancel="cancel"></u-picker>
+		</view>
+		<view class="footer">
+			<!-- 底部按钮 -->
+			<u-grid col="2">
+				<u-grid-item>
+					<button @click="handleCancel" class="button" style="background-color: #fff;color: #000;">取消</button>
+				</u-grid-item>
+				<u-grid-item>
 					<button @click="handleSave" class="button">提交审核</button>
-				</view>
-				<view class="action-btn">
-					<button @click="handleCancel" class="button" style="background-color: #fff; color: #000;">取消</button>
-				</view>
-			</uni-card>
+				</u-grid-item>
+			</u-grid>
 		</view>
 	</view>
 </template>
@@ -99,6 +146,7 @@
 	import config from '@/config'
 	import { rsaEncrypt } from '@/utils/rsa.js'
 	import { urlTobase64 } from '@/utils/ruoyi.js'
+	import { showConfirm } from '@/utils/common'
 	import {
 		register,
 		getTenantlist,
@@ -118,8 +166,9 @@
 				timer: null,
 				// 身份证
 				fileList1: [],
-				// 营业执照
 				fileList2: [],
+				// 营业执照
+				fileList3: [],
 				registerForm: {
 					phone: "",               // 手机号
 					captcha: "",             // 验证码
@@ -127,11 +176,15 @@
 					idCard: "",              // 身份证号
 					idCardUrl: [],           // 身份证图片
 					businessLicense: [],     // 营业执照
+					taxNum: "",              // 营业执照号
 					businessName: "",        // 公司名称
+					legal_representative: "",// 法定代表人
 					marketLocation: "",      // 市场所在地id
 					marketLocationValue: "", // 市场所在地
+					address: "",             // 联系地址
 					bankName: "",            // 开户行
 					bankAccount: "",         // 对公银行账号
+					bondBankAccount: "",     // 保证金充值卡号
 					password: "",            // 密码
 					confirmPassword: ""      // 确认密码
 				},
@@ -183,16 +236,22 @@
 						message:"身份证格式不正确",
 						trigger: ['blur', 'change']
 					}],
-					businessLicense: {
-						type: 'array',
+					taxNum: {
+						type: 'string',
 						required: true,
-						message: '请选择营业执照',
+						message: '请填写营业执照号',
 						trigger: ['blur', 'change']
 					},
 					businessName: {
 						type: 'string',
 						required: true,
 						message: '请填写公司名称',
+						trigger: ['blur', 'change']
+					},
+					legal_representative: {
+						type: 'string',
+						required: true,
+						message: '请填写法定代表人',
 						trigger: ['blur', 'change']
 					},
 					marketLocationValue: {
@@ -219,6 +278,24 @@
 						message: '请填写开户行',
 						trigger: ['blur', 'change']
 					},
+					address: {
+						type: 'string',
+						required: true,
+						message: '请填写联系地址',
+						trigger: ['blur', 'change']
+					},
+					bondBankAccount: [{
+						type: 'string',
+						required: true,
+						message: '请填写保证金充值卡号',
+						trigger: ['blur', 'change']
+					}, {
+						pattern: /^(\d{4}\s){3}\d{4}$|^(\d{4}\s){4}\d{3}$/,
+						type: 'string',
+						required: true,
+						message: '请填写正确的卡号',
+						trigger: ['blur', 'change']
+					}],
 					password: [{
 						required: true,
 						message: '请填写密码',
@@ -264,10 +341,12 @@
 				},
 				showSex: false,
 				range: [],
+				date: null,
 			}
 		},
 		onLoad() {
 			this.showModal = true;
+			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
 		},
 		methods: {
 			back() {
@@ -284,6 +363,19 @@
 			handleChange(data) {
 				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
 				this.$set(this.registerForm, 'bankAccount', account)
+			},
+			handleChange1(data) {
+				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
+				this.$set(this.registerForm, 'bondBankAccount', account)
+			},
+			handleCircle() {
+				uni.showModal({
+				  title: '提示',
+					showCancel: false,
+				  content: '提供的兴业银行个人卡号实名认证需与身份证一致。',
+				  confirmText: '知道了',
+					confirmColor: '#fa6401'
+				})
 			},
 			// 获取验证码
 			getVerification() {
@@ -316,7 +408,7 @@
 			chooseImages(index, type, tapIndex) {
 				let _this = this;
 				uni.chooseImage({
-					// count: 1,
+					count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
 					success: async function(res) {
@@ -327,9 +419,9 @@
 								message: '上传中'
 							})
 						})
-						if (index == 1) {
+						if (index == 1 || index == 2) {
 							// 识别身份证
-							_this.registerForm.idCardUrl = _this[`fileList${index}`];
+							_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, _this[`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
 								getIdCard({ IDCardUrl: str }).then((ress) => {
@@ -338,12 +430,20 @@
 										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
 										_this.registerForm.name = data.words_result['姓名'].words;
 									}
+									if (data.words_result['失效日期']) {
+										if (_this.date > data.words_result['失效日期'].words) {
+											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+											  _this.handleCancel();
+												return;
+											})
+										}
+									}
 									if (i == res.tempFilePaths.length - 1) {
 										_this.upload(res, type, index);
 									}
 								})
 							}
-						} else if (index == 2) {
+						} else if (index == 3) {
 							// 识别营业执照
 							_this.registerForm.businessLicense = _this[`fileList${index}`];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
@@ -352,6 +452,8 @@
 									let data = JSON.parse(ress.data);
 									if (data.words_result['单位名称']) {
 										_this.registerForm.businessName = data.words_result['单位名称'].words;
+										_this.registerForm.taxNum = data.words_result['证件编号'].words;
+										_this.registerForm.legal_representative = data.words_result['法人'].words;
 									}
 									if (i == res.tempFilePaths.length - 1) {
 										_this.upload(res, type, index);
@@ -367,7 +469,12 @@
 				for (let i = 0; i < res.tempFilePaths.length; i++) {
 					uni.uploadFile({
 						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						// #ifdef H5
 						file: res.tempFiles[i],
+						// #endif
+						// #ifdef MP-WEIXIN || APP
+						filePath: res.tempFilePaths[i],
+						// #endif
 						name: 'file',
 						formData: {
 							type: type
@@ -425,17 +532,22 @@
 						this.$modal.msgError("两次密码不一致");
 						return;
 					}
+					let list = [...this.fileList1, ...this.fileList2];
 					let data = {
 						phone: this.registerForm.phone,
-						captcha: this.registerForm.captcha,
+						// captcha: this.registerForm.captcha,
 						name: this.registerForm.name,
 						idCard: this.registerForm.idCard,
-						idCardUrl: this.fileList1.map((item) => { return item.id }),
-						businessLicense: this.fileList2.map((item) => { return item.id }),
+						idCardUrl: list.map((item) => { return item.id }),
+						taxNum: this.registerForm.taxNum,
+						businessLicense: this.fileList3[0].url,
 						marketLocation: this.registerForm.marketLocation,
+						address: this.registerForm.address,
 						bankNumber: this.registerForm.bankAccount,
 						businessName: this.registerForm.businessName,
+						legal_representative: this.registerForm.legal_representative,
 						bankName: this.registerForm.bankName,
+						bondBankAccount: this.registerForm.bondBankAccount,
 						// password: rsaEncrypt(this.registerForm.password),
 						// confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
 					}
@@ -472,12 +584,16 @@
 	page {
 		background-color: #ffffff;
 	}
+	
+	.register {
+		border-top: 1px solid #f3f3f3;
+		padding-bottom: 80px;
+	}
 
 	/* #ifdef MP-WEIXIN */
 	/deep/ .uni-card--border {
 		border-bottom: none;
 	}
-
 	/* #endif */
 
 	.text {
@@ -508,15 +624,29 @@
 			border-radius: 10px;
 		}
 	}
-
-	.action-btn {
-		text-align: center;
-		margin-top: 20px;
+	
+	.fenge {
+		height: 20px;
+		background-color: #fafafa;
 	}
-
-	.button {
-		background-color: #fd6601;
-		color: #fff;
+	
+	.footer {
+		width: 100%;
+		position: fixed;
+		bottom: 0;
+		background-color: #fff;
+		padding-bottom: 10px;
+		
+		.button {
+			width: 80%;
+			margin-top: 10px;
+			background-color: #fa6401;
+			color: #fff;
+		}
+	}
+	
+	.image {
+		width: 100%;
 	}
 	
 	/deep/ .image .u-upload__button {
