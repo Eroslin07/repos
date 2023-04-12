@@ -39,6 +39,11 @@
             <artifactId>uctp-api-infra</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-api-business</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!-- 业务组件 -->
         <dependency>
@@ -158,6 +163,12 @@
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-monitor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baidu.aip</groupId>
+            <artifactId>java-sdk</artifactId>
+            <version>4.16.2</version>
         </dependency>
 
     </dependencies>

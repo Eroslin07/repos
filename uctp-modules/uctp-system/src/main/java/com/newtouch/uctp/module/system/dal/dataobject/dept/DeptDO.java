@@ -79,4 +79,14 @@ public class DeptDO extends TenantBaseDO {
      */
     private String business_license_url;
 
+    /**
+     * 法定代表人
+     */
+    private String legal_representative;
+
+    /**
+     * 联系地址
+     */
+    private String address;
+
 }

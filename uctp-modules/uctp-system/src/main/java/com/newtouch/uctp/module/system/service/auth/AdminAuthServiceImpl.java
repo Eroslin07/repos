@@ -3,9 +3,12 @@ package com.newtouch.uctp.module.system.service.auth;
 import cn.hutool.core.util.ObjectUtil;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.util.monitor.TracerUtils;
 import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
 import com.newtouch.uctp.framework.common.util.validation.ValidationUtils;
+import com.newtouch.uctp.module.business.api.file.BusinessFileApi;
+import com.newtouch.uctp.module.business.api.file.dto.FileInsertReqDTO;
 import com.newtouch.uctp.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import com.newtouch.uctp.module.system.api.sms.SmsCodeApi;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
@@ -78,6 +81,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private DeptService deptService;
     @Resource
     private UserExtService userExtService;
+    @Resource
+    private BusinessFileApi businessFileApi;
 
     /**
      * 验证码的开关，默认为 true
@@ -144,44 +149,50 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 //        String decrypt = RASClientUtil.jsencryptDecryptByPrivateKeyLong(reqVO.getPassword());
         try {
             //根据租户id查询商户的父级id
-            DeptDO dept = deptService.selectDept(reqVO.getMarketLocation(), "商户方");
+            DeptDO dept = deptService.selectDept(reqVO.getMarketLocation(), "2");//2商户方  1市场方
+
+
+            //插入商户信息
+            DeptDO deptDO = new DeptDO();
+            deptDO.setName(reqVO.getBusinessName());
+            deptDO.setParentId(dept.getId());//父级id
+            deptDO.setTax_num(reqVO.getTaxNum());
+            deptDO.setAddress(reqVO.getAddress());
+            deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
+            deptDO.setSort(2);
+            deptDO.setStatus(0);
+            deptService.insertDept(deptDO);
+
             //用户主表
             AdminUserDO userDO = new AdminUserDO();
             userDO.setUsername(reqVO.getPhone());
             userDO.setMobile(reqVO.getPhone());
 //            userDO.setPassword(encodePassword(decrypt)); // 加密密码
             userDO.setNickname(reqVO.getName());
+            userDO.setDeptId(deptDO.getId());//商户id
             userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            userDO.setStatus(1);
+            userDO.setStatus(1);//提交审批前状态为停用
             userService.insertUser(userDO);
-            //用户扩展表插入数据
+
+            //用户扩展表
             UserExtDO extDO = new UserExtDO();
+            extDO.setUserId(userDO.getId());//用户主表id
             extDO.setIdCard(reqVO.getIdCard());
+            extDO.setBankName(reqVO.getBankName());//开户行
+            extDO.setBankAccount(reqVO.getBankNumber());//对公银行账号
+            extDO.setBondBankAccount(reqVO.getBondBankAccount());//保证金充值账号
+            extDO.setStaffType("1");//主账号
             extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            extDO.setUserId(userDO.getId());
-            extDO.setBankName(reqVO.getBankName());
-            extDO.setBankAccount(reqVO.getBankNumber());
-            extDO.setStaffType("1");
             userExtService.insertUser(extDO);
 
-            //插入商户信息
-            DeptDO deptDO = new DeptDO();
-            deptDO.setName(reqVO.getBusinessName());
-            deptDO.setParentId(dept.getId());
-            deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            deptDO.setSort(2);
-            deptDO.setStatus(0);
-            deptService.insertDept(deptDO);
-
-//            //保存图片到中间表
-//            List<String> carUrl = reqVO.getBusinessLicense();
-//            for(int a=0;a<carUrl.size();a++){//车辆图片
-//                UctpBusinessFileDO businessFileDO = new BusinessFileDO();
-//                businessFileDO.setId(Long.valueOf(carUrl.get(a)));
-//                businessFileDO.setMainId(infoDO.getId());
-//                businessFileDO.setFileType("1");
-//                businessFileService.insert(businessFileDO);
-//            }
+            FileInsertReqDTO reqDTO = new FileInsertReqDTO();
+            reqDTO.setMainId(extDO.getId());//用户扩展表id
+            reqDTO.setUrl(reqVO.getIdCardUrl());
+            reqDTO.setType("8");//商户身份证
+            reqDTO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            CommonResult<String> result = businessFileApi.saveToBusinessFile(reqDTO);
+            System.out.println(result);
         }catch (Exception e){
             throw exception(AUTH_REGISTER_ERROR);
         }

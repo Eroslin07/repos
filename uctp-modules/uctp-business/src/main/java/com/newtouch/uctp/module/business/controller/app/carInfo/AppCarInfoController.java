@@ -199,7 +199,6 @@ public class AppCarInfoController {
     }
 
 
-/*
 
     @GetMapping("/getCarCosts/{id}")
     @Operation(summary = "获得资金信息")
@@ -317,12 +316,30 @@ public class AppCarInfoController {
         return appContractarVO;
     }
 
+    @PostMapping("/getCarBrandList")
+    @PermitAll
+    @Operation(summary = "品牌查询")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public Map getCarBrandList(@RequestBody Map map) {
+        String brand_name = String.valueOf(map.get("brand_name"));//品牌
+        Map SeriesMap=new HashMap<>();
+        try {
+            String url = "http://testapi.che300.com/service/getCarBrandList";
+            String token = "61f499b086392005f92009b91f8f966a";
+            SeriesMap = UctpCarInfoSearchUtils.getCarBrandList(token, brand_name, url);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return SeriesMap;
+    }
+
+
     @PostMapping("/getCarSeriesList")
     @PermitAll
     @Operation(summary = "查询车系")
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public Map getCarSeriesList(@RequestBody Map map) {
-        String brand_id = String.valueOf(map.get("brand_id"));//品牌
+        String brand_id = String.valueOf(map.get("brand_id"));//品牌id
         Map SeriesMap=new HashMap<>();
         try {
             String url = "http://testapi.che300.com/service/getCarSeriesList";
@@ -383,7 +400,6 @@ public class AppCarInfoController {
         return fairValue;
     }
 
-*/
 
 
 //    static Map<String,Long> map=new HashMap<>();

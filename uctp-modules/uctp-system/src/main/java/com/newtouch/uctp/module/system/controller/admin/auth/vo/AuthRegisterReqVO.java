@@ -38,15 +38,26 @@ public class AuthRegisterReqVO {
     private String phone;
 
 
+    @Schema(description = "营业执照号", required = true, example = "123456")
+    private String taxNum;
+
     @Schema(description = "营业执照url", required = true, example = "")
-    private List<String> businessLicense;
+    private String businessLicense;
 
     @Schema(description = "公司名称", required = true, example = "XX车行")
     private String businessName;
 
+    @Schema(description = "法定代表人")
+    private String legal_representative;
+
     @Schema(description = "市场所在地(租户id)", required = true, example = "130")
 //    @NotEmpty(message = "市场所在地不能为空")
     private String marketLocation;
+
+    @Schema(description = "联系地址")
+    private String address;
+
+
 
     @Schema(description = "开户行", required = true, example = "XX银行")
     private String bankName;
@@ -57,10 +68,9 @@ public class AuthRegisterReqVO {
     private String bankNumber;
 
 
+    @Schema(description = "保证金充值卡号")
+    private String bondBankAccount;
 
-
-//    @Schema(description = "税号", required = true, example = "123456")
-//    private String taxNum;
 
 
 //    @Schema(description = "密码", required = true, example = "buzhidao")
