@@ -31,7 +31,7 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
     }
 
     default DeptDO selectByTenantId(String tenantId,String type){
-        return selectOne(DeptDO::getTenantId,tenantId,DeptDO::getName,type);
+        return selectOne(DeptDO::getTenantId,tenantId,DeptDO::getAttr,type);
     }
 
     default List<DeptDO> selectDeptByParentId(Long parentId) {
