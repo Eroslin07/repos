@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -246,6 +247,13 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         formMainDataObject.put(this.matchMapKey(formMainDataObject, "procInstId"), task.getProcessInstanceId());
         formMainDataObject.put(this.matchMapKey(formMainDataObject, "submitTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(bpmFormMainDO.getSubmitTime()));
         formMainDataObject.put(this.matchMapKey(formMainDataObject, "doneTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        HashMap<String, Object> submitFormDataJsonField = (HashMap<String, Object>) formMainDataObject.getOrDefault(this.matchMapKey(formMainDataObject, "formDataJson"), new HashMap<String, Object>());
+        if (!CollectionUtils.isEmpty(submitFormDataJsonField)) {
+            formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), JSON.toJSONString(submitFormDataJsonField).getBytes(StandardCharsets.UTF_8));
+        } else {
+            formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), null);
+        }
+        
         formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
         this.bpmFormDataService.saveDataObject(bpmFormMainDO.getId(), formDataJsonVariable);
 
