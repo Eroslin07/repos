@@ -212,6 +212,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             map.put("thirdId",deptDO.getId());
             map.put("marketName",parentDept.getName());
             map.put("merchantName",deptDO.getName());
+            map.put("startUserId",userDO.getId());
         }catch (Exception e){
             throw exception(AUTH_REGISTER_ERROR);
         }
