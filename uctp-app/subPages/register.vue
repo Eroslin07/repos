@@ -155,6 +155,7 @@
 		getBusinessLicense,
 		deleteImage
 	} from '@/api/register'
+	import { setCreate } from '@/api/home'
 	export default {
 		data() {
 			return {
@@ -454,6 +455,7 @@
 										_this.registerForm.businessName = data.words_result['单位名称'].words;
 										_this.registerForm.taxNum = data.words_result['证件编号'].words;
 										_this.registerForm.legal_representative = data.words_result['法人'].words;
+										_this.registerForm.address = data.words_result['地址'].words;
 									}
 									if (i == res.tempFilePaths.length - 1) {
 										_this.upload(res, type, index);
@@ -490,7 +492,8 @@
 											status: 'success',
 											message: '',
 											url: data[i].url,
-											id: data[i].id
+											id: data[i].id,
+											path: data[i].path
 										}))
 										fileListLen++;
 									}
@@ -532,6 +535,7 @@
 						this.$modal.msgError("两次密码不一致");
 						return;
 					}
+					// 提交审核
 					let list = [...this.fileList1, ...this.fileList2];
 					let data = {
 						phone: this.registerForm.phone,
@@ -540,7 +544,7 @@
 						idCard: this.registerForm.idCard,
 						idCardUrl: list.map((item) => { return item.id }),
 						taxNum: this.registerForm.taxNum,
-						businessLicense: this.fileList3[0].url,
+						businessLicense: this.fileList3.map((item) => { return item.id }),
 						marketLocation: this.registerForm.marketLocation,
 						address: this.registerForm.address,
 						bankNumber: this.registerForm.bankAccount,
@@ -551,15 +555,38 @@
 						// password: rsaEncrypt(this.registerForm.password),
 						// confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
 					}
+					this.$modal.loading("提交中，请耐心等待...")
 					register(data).then((res) => {
-						this.$modal.msg("已提交审核");
-						// #ifndef MP-WEIXIN
-						clearInterval(this.timer);
-						this.$tab.reLaunch('/pages/login')
-						// #endif
-						// #ifdef MP-WEIXIN
-						this.$tab.reLaunch('/pages/wx_login')
-						// #endif
+						//  发起流程
+						data.idCardUrl = list;
+						data.businessLicense = this.fileList3;
+						let procDefKey = "ZHSQ";
+						let variables = {
+							marketName: res.data.marketName,
+							merchantName: res.data.merchantName,
+							startUserId: res.data.startUserId,
+							formDataJson: {
+								formMain: {
+									merchantId: res.data.thirdId,
+									thirdId: res.data.thirdId,
+									formDataJson: data
+								}
+							}
+						}
+						let createData = { procDefKey, variables };
+						setCreate(createData).then((ress) => {
+							this.$modal.closeLoading()
+							this.$modal.msg("已提交审核");
+							// #ifndef MP-WEIXIN
+							clearInterval(this.timer);
+							this.$tab.reLaunch('/pages/login')
+							// #endif
+							// #ifdef MP-WEIXIN
+							this.$tab.reLaunch('/pages/wx_login')
+							// #endif
+						}).catch((error) => {
+							this.$modal.msgError("发起流程失败");
+						})
 					}).catch((error) => {
 						this.$modal.msgError("提交审核失败");
 					})
