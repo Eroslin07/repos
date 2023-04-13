@@ -6,7 +6,6 @@ import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.system.controller.admin.user.vo.user.UserExportReqVO;
 import com.newtouch.uctp.module.system.controller.admin.user.vo.user.UserPageReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Collection;
@@ -25,6 +24,12 @@ public interface AdminUserMapper extends BaseMapperX<AdminUserDO> {
 
     default AdminUserDO selectByMobile(String mobile) {
         return selectOne(AdminUserDO::getMobile, mobile);
+    }
+
+    default List<AdminUserDO> selectIsExist(String mobile, Integer status){
+        return selectList(new LambdaQueryWrapperX<AdminUserDO>()
+                .likeIfPresent(AdminUserDO::getMobile,mobile)
+                .eqIfPresent(AdminUserDO::getStatus, status));
     }
 
     default PageResult<AdminUserDO> selectPage(UserPageReqVO reqVO, Collection<Long> deptIds) {

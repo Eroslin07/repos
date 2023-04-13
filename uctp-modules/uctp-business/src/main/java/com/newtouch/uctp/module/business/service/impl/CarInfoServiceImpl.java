@@ -106,8 +106,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
 
         infoDO.setSalesStatus(1);//收车中
-        infoDO.setStatus(1);//草稿
-        infoDO.setStatusThree(1);
+        infoDO.setStatus(11);//草稿
+        infoDO.setStatusThree(111);
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据

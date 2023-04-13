@@ -106,6 +106,9 @@ public interface AdminUserService {
      */
     AdminUserDO getUserByMobile(String mobile);
 
+
+    List<AdminUserDO> selectIsExist(String mobile,Integer status);
+
     /**
      * 获得用户分页列表
      *

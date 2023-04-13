@@ -144,6 +144,21 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Override
     @Transactional
     public Map registerAccount(AuthRegisterReqVO reqVO) {
+        //查询是否有未注册数据，有则删除
+        List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 2);
+        if(userDOS.size()>0){
+            for (AdminUserDO user:userDOS) {
+                userService.deleteUser(user.getId());
+                userExtService.deleteByUserId(user.getId());
+            }
+        }
+        List<DeptDO> deptDOS = deptService.selectIsExist(reqVO.getBusinessName(), 2);
+        if (deptDOS.size()>0){
+            for (DeptDO dept:deptDOS) {
+                deptService.deleteDept(dept.getId());
+            }
+        }
+
         //查询该手机号是否注册
         if(userService.getUserByMobile(reqVO.getPhone())!=null){
             throw exception(AUTH_MOBILE_IS_EXIST);
@@ -167,7 +182,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
 //            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
             deptDO.setSort(2);
-            deptDO.setStatus(0);
+            deptDO.setStatus(2);//未激活
             deptService.insertDept(deptDO);
 
             //用户主表
@@ -178,7 +193,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             userDO.setNickname(reqVO.getName());
             userDO.setDeptId(deptDO.getId());//商户id
             userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            userDO.setStatus(1);//提交审批前状态为停用
+            userDO.setStatus(2);//未激活
             userService.insertUser(userDO);
 
             //用户扩展表
@@ -189,6 +204,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             extDO.setBankAccount(reqVO.getBankNumber());//对公银行账号
             extDO.setBondBankAccount(reqVO.getBondBankAccount());//保证金充值账号
             extDO.setStaffType("1");//主账号
+            extDO.setStatus(2);
             extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             userExtService.insertUser(extDO);
 

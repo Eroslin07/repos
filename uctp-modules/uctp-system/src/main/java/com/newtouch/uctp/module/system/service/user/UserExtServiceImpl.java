@@ -24,4 +24,9 @@ public class UserExtServiceImpl implements UserExtService {
 
         return userExtMapper.insertUserExt(user);
     }
+
+    @Override
+    public int deleteByUserId(Long userId) {
+        return userExtMapper.deleteByUserId(userId);
+    }
 }
