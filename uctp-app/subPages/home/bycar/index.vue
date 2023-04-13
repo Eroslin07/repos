@@ -127,7 +127,7 @@
 					<u-form-item label="车架号(VIN)" :required="true" prop="vin" borderBottom>
 						<u--input v-model="carForm.vin" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
 					</u-form-item>
-					<u-form-item label="首次登记日期" :required="true" prop="firstRegistDate" borderBottom @click="showDate = true">
+					<u-form-item label="首次登记日期" :required="true" prop="firstRegistDate" borderBottom @click="getDate(carForm.firstRegistDate, 1)">
 						<u--input
 							v-model="carForm.firstRegistDate"
 							disabled
@@ -146,6 +146,12 @@
 					<u-form-item label="使用性质" :required="true" prop="natureOfOperat" borderBottom>
 						<u--input v-model="carForm.natureOfOperat" border="none" placeholder="请输入使用性质"></u--input>
 					</u-form-item>
+					<u-form-item label="车辆类型" :required="true" prop="carType" borderBottom>
+						<u--input v-model="carForm.carType" border="none" placeholder="请输入车辆类型"></u--input>
+					</u-form-item>
+					<u-form-item label="品牌型号" :required="true" prop="model" borderBottom>
+						<u--input v-model="carForm.model" border="none" placeholder="请输入品牌型号"></u--input>
+					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="brand" borderBottom>
 						<view @click="showModel = true">
 							<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌/车系/车型"></u--input>
@@ -155,7 +161,7 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="上传机动车登记证书" :required="true" prop="certificateUrl">
+					<u-form-item label="上传机动车登记证书" :required="true" prop="certificateUrl" labelWidth="150px">
 					</u-form-item>
 					<u-form-item label=" " borderBottom>
 						<view class="image" style="position: relative;">
@@ -176,11 +182,11 @@
 								@click="handleOcr(3)"></image>
 						</view>
 					</u-form-item>
-					<u-form-item label="登记证号" :required="true" prop="licensePlateNum" borderBottom>
-						<u--input v-model="carForm.licensePlateNum" border="none" placeholder="请输入登记证号"></u--input>
+					<u-form-item label="登记证号" :required="true" prop="certificateNum" borderBottom>
+						<u--input v-model="carForm.certificateNum" border="none" placeholder="请输入登记证号"></u--input>
 					</u-form-item>
-					<u-form-item label="颜色" :required="true" prop="licensePlateNum" borderBottom>
-						<u--input v-model="carForm.licensePlateNum" border="none" placeholder="请输入颜色"></u--input>
+					<u-form-item label="颜色" :required="true" prop="color" borderBottom>
+						<u--input v-model="carForm.color" border="none" placeholder="请输入颜色"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" :required="true" prop="mileage" borderBottom>
 						<u-input v-model="carForm.mileage" border="none" placeholder="请输入里程数">
@@ -195,9 +201,9 @@
 					<!-- <u-form-item label="型号" :required="true" prop="model" borderBottom>
 						<u--input v-model="carForm.model" border="none" placeholder="请输入型号"></u--input>
 					</u-form-item> -->
-					<u-form-item label="使用年限至" prop="firstRegistDate" borderBottom @click="showDate = true">
+					<u-form-item label="使用年限至" prop="serviceLife" borderBottom @click="getDate(carForm.serviceLife, 2)">
 						<u--input
-							v-model="carForm.firstRegistDate"
+							v-model="carForm.serviceLife"
 							disabled
 							disabledColor="#ffffff"
 							placeholder="请选择"
@@ -208,9 +214,9 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="年检签证有效期" prop="firstRegistDate" borderBottom @click="showDate = true">
+					<u-form-item label="年检签证有效期" prop="effectiveDate" borderBottom @click="getDate(carForm.effectiveDate, 3)">
 						<u--input
-							v-model="carForm.firstRegistDate"
+							v-model="carForm.effectiveDate"
 							disabled
 							disabledColor="#ffffff"
 							placeholder="请选择"
@@ -221,12 +227,12 @@
 							name="arrow-right"
 						></u-icon>
 					</u-form-item>
-					<u-form-item label="保险险种" prop="remarks" borderBottom>
-						<u--input v-model="carForm.remarks" border="none" placeholder="请输入其他约定"></u--input>
+					<u-form-item label="保险险种" prop="insurance" borderBottom>
+						<u--input v-model="carForm.insurance" border="none" placeholder="请输入保险险种"></u--input>
 					</u-form-item>
-					<u-form-item label="保险期至" prop="firstRegistDate" borderBottom @click="showDate = true">
+					<u-form-item label="保险期至" prop="insureDate" borderBottom @click="getDate(carForm.insureDate, 4)">
 						<u--input
-							v-model="carForm.firstRegistDate"
+							v-model="carForm.insureDate"
 							disabled
 							disabledColor="#ffffff"
 							placeholder="请选择"
@@ -243,8 +249,9 @@
 				</u--form>
 				<!-- 选择登记日期 -->
 				<u-datetime-picker
+					v-if="showDate"
 					:show="showDate"
-					v-model="carForm.firstRegistDate"
+					v-model="showDateTime"
 					mode="date"
 					:formatter="formatter"
 					@cancel="showDate = false"
@@ -268,7 +275,7 @@
 				>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
-						<view class="text">车辆价款</view>
+						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
 						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额" @blur="handleBlur" @focus="handleFocus">
@@ -312,21 +319,8 @@
 					</u-form-item>
 					<u-form-item label="身份证号" :required="true" prop="sellerIdCard" borderBottom>
 						<u--input v-model="sellerForm.sellerIdCard" border="none" placeholder="请输入身份证号"></u--input>
-						<view slot="right" name="arrow-right">
-							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(4)"></image>
-						</view>
 					</u-form-item>
-					<u-form-item label=" " borderBottom v-if="fileList4.length != 0">
-						<view class="image">
-							<u-upload
-								v-if="fileList4.length"
-								:fileList="fileList4"
-								@delete="deletePic"
-								name="4"
-								width="70"
-								height="70"
-							></u-upload>
-						</view>
+					<u-form-item borderBottom>
 						<view class="image">
 							<u-grid col="2">
 								<u-grid-item>
@@ -338,7 +332,7 @@
 										width="150"
 									></u-upload>
 									<image v-else src=".../../../static/images/home/ghm.png"
-										mode="widthFix" style="width: 150px;" @click="handleOcr(1, 'idCard')"></image>
+										mode="widthFix" style="width: 150px;" @click="handleOcr(4)"></image>
 									<image
 										v-if="fileList4.length == 0"
 										src="../../../static/images/take.png"
@@ -354,7 +348,7 @@
 										width="150"
 									></u-upload>
 									<image v-else src=".../../../static/images/home/rxm.png"
-										mode="widthFix" style="width: 150px;" @click="handleOcr(2, 'idCard')"></image>
+										mode="widthFix" style="width: 150px;" @click="handleOcr(8)"></image>
 									<image
 										v-if="fileList8.length == 0"
 										src="../../../static/images/take.png"
@@ -367,6 +361,9 @@
 					<u-form-item label="姓名" :required="true" prop="sellerName" borderBottom>
 						<u--input v-model="sellerForm.sellerName" border="none" placeholder="请输入姓名">
 						</u--input>
+					</u-form-item>
+					<u-form-item label="联系地址" :required="true" prop="addess" borderBottom v-if="sellerForm.collection == 1">
+						<u--input v-model="sellerForm.addess" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="sellerTel" borderBottom>
 						<u--input v-model="sellerForm.sellerTel" border="none" placeholder="请输入11位手机号"></u--input>
@@ -436,11 +433,11 @@
 								></u--input>
 								<u--input v-model="carForm.other" v-if="item.name == 12" border="none" placeholder="请输入"></u--input>
 							</view>
-							<u-icon
-								v-if="item.name == 11"
+							<u--text
 								slot="right"
-								name="arrow-right"
-							></u-icon>
+								v-if="item.name == 11"
+								prefixIcon="arrow-right"
+								text="组"></u--text>
 						</u-form-item>
 					</u-checkbox-group>
 				</u--form>
@@ -486,6 +483,7 @@
 		getCarSeriesList,
 		getCarBrandList
 	} from '@/api/home/bycar.js'
+	const dateTime = uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd');
 	export default {
 		components: {
 			modelList
@@ -514,11 +512,19 @@
 					carUrl: [],
 					vin: '',
 					natureOfOperat: '',
-					firstRegistDate: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd'),
+					carType: '',
+					firstRegistDate: dateTime,
+					serviceLife: '',
+					effectiveDate: '',
+					insureDate: '',
 					licensePlateNum: '',
+					certificateNum: '',
+					color: '',
 					engineNum: '',
+					model: '',
 					brand: '',
 					remarks: '',
+					insurance: '',
 					mileage: '',
 					checkboxValue: [],
 					key: '',
@@ -556,6 +562,18 @@
 						message: '请填写使用性质',
 						trigger: ['blur', 'change']
 					},
+					carType: {
+						type: 'string',
+						required: true,
+						message: '请填写车辆类型',
+						trigger: ['blur', 'change']
+					},
+					model: {
+						type: 'string',
+						required: true,
+						message: '请填写品牌型号',
+						trigger: ['blur', 'change']
+					},
 					engineNum: {
 						type: 'string',
 						required: true,
@@ -585,6 +603,18 @@
 						required: true,
 						message: '请填写车牌号',
 						trigger: ['blur', 'change']
+					},
+					certificateNum: {
+						type: 'string',
+						required: true,
+						message: '请填写登记证号',
+						trigger: ['blur', 'change']
+					},
+					color: {
+						type: 'string',
+						required: true,
+						message: '请填写车辆颜色',
+						trigger: ['blur', 'change']
 					}
 				},
 				// 收车方式
@@ -597,6 +627,8 @@
 				}],
 				// 是否弹出登记日期
 				showDate: false,
+				showDateTime: dateTime,
+				dateStatus: 0,
 				// 是否弹出品牌
 				showModel: false,
 				// 车系
@@ -619,7 +651,7 @@
 				showKey: false,
 				rangeKey: [
 					[{
-						label: '转账',
+						label: 1,
 						id: 1
 					}],
 				],
@@ -633,6 +665,7 @@
 					sellerName: '',
 					thirdSellerName: '',
 					sellerTel: '',
+					addess: '',
 					remitType: '转账',
 					bankName: '',
 					bankCard: '',
@@ -673,6 +706,12 @@
 						type: 'string',
 						required: true,
 						message: '请填写姓名',
+						trigger: ['blur', 'change']
+					},
+					addess: {
+						type: 'string',
+						required: true,
+						message: '请填写联系地址',
 						trigger: ['blur', 'change']
 					},
 					sellerTel: [{
@@ -838,6 +877,7 @@
 										_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
 										_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
 										_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+										_this.carForm.model = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
 										// _this.carForm.firstRegistDate = data.words_result['注册日期'].words;
 										_this.carForm.firstRegistDate = '2019-02-20';
 										// 根据品牌查询id
@@ -858,7 +898,7 @@
 							_this.upload(res, index);
 						} else if (index == 4 || index == 8) {
 							// 识别身份证
-							_this.sellerForm.sellerIdCardUrl = _this[`fileList${index}`];
+							_this.sellerForm.sellerIdCardUrl = [..._this.sellerForm.sellerIdCardUrl, ..._this[`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
 								getIdCard({ IDCardUrl: str }).then((ress) => {
@@ -968,29 +1008,37 @@
 				}
 				this.showModel = false;
 			},
+			// 点击日期下拉框
+			getDate(date, i) {
+				this.showDateTime = date;
+				this.dateStatus = i;
+				this.showDate = true;
+			},
 			// 确认登记日期
 			handleDate(e) {
 				this.$nextTick(() => {
 					const timeFormat = uni.$u.timeFormat;
-					this.carForm.firstRegistDate = timeFormat(e.value, 'yyyy-mm-dd');
+					if (this.dateStatus == 1) {
+						this.carForm.firstRegistDate = timeFormat(e.value, 'yyyy-mm-dd');
+					} else if (this.dateStatus == 2) {
+						this.carForm.serviceLife = timeFormat(e.value, 'yyyy-mm-dd');
+					} else if (this.dateStatus == 3) {
+						this.carForm.effectiveDate = timeFormat(e.value, 'yyyy-mm-dd');
+					} else if (this.dateStatus == 4) {
+						this.carForm.insureDate = timeFormat(e.value, 'yyyy-mm-dd');
+					}
 					this.showDate = false;
 				})
 			},
 			// 下一步
 			handleStep() {
-				if (this.modelId) {
-					this.$refs.carForm.validate().then(res => {
-						if (this.carId) {
-							this.vehicleInfor = false;
-							this.sellerInfor = true;
-							this.active = 1;
-							return;
-						}
+				this.$refs.carForm.validate().then(res => {
+					if (this.modelId) {
 						this.handleDraft('step');
-					})
-				} else {
-					this.$modal.msg("请选择车型");
-				}
+					} else {
+						this.$modal.msg("请选择车型");
+					}
+				})
 			},
 			// 点击车辆信息保存
 			handleSaveCar() {
@@ -1022,9 +1070,20 @@
 					firstRegistDate: this.carForm.firstRegistDate,
 					plateNum: this.carForm.licensePlateNum,
 					certificateUrl: this.fileList3.map((item) => { return item.id }),
+					certificateNum: this.carForm.certificateNum,
 					mileage: this.carForm.mileage,
 					brand: this.carForm.brand,
-					remarks: this.carForm.remarks
+					carType: this.carForm.carType,
+					model: this.carForm.model,
+					color: this.carForm.color,
+					serviceLife: this.carForm.serviceLife,
+					effectiveDate: this.carForm.effectiveDate,
+					insureDate: this.carForm.insureDate,
+					insurance: this.carForm.insurance,
+					remarks: this.carForm.remarks,
+					checkboxValue: this.carForm.checkboxValue,
+					key: this.carForm.key,
+					other: this.carForm.other,
 				}
 				setCarInfo(data).then((res) => {
 					this.showOverlay = false;
@@ -1072,7 +1131,7 @@
 					this.handleSubmit('entrust');
 				})
 			},
-			// 点击卖家信息保存
+			// 点击交易信息保存
 			handleSubmit(val) {
 				this.showOverlay = true;
 				let list = [...this.fileList4, ...this.fileList8];
