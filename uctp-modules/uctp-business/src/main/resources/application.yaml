@@ -145,6 +145,8 @@ uctp:
       - com.newtouch.uctp.module.business.enums.ErrorCodeConstants
   tenant: # 多租户相关配置项
     enable: true
+    ignore-tables:
+      - infra_file
   sms-code: # 短信验证码相关的配置项
     expire-times: 10m
     send-frequency: 1m

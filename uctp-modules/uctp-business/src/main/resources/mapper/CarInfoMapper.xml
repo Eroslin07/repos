@@ -36,7 +36,8 @@
         a.STATUS_THREE as statusThree,
         b.MILEAGE as mileage,
         b.BUYER_NAME as firstParty,
-        b.SELLER_NAME as secondParty
+        b.SELLER_NAME as secondParty,
+        d.url as url
     </sql>
 
 
@@ -46,6 +47,8 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
+        left join infra_file d on c.ID = d.id
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
@@ -71,6 +74,8 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
+        left join infra_file d on c.ID = d.id
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
