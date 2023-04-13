@@ -69,5 +69,7 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
 
     List<CarDCVo> getInvoiceIds(String id);
 
-
+    default CarInfoDO selectByVin(String vin,String status){
+        return selectOne(CarInfoDO::getVin,vin,CarInfoDO::getStatus,status);
+    };
 }

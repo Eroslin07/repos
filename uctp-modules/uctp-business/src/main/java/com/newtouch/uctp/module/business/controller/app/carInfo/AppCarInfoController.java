@@ -141,7 +141,7 @@ public class AppCarInfoController {
 
     @PostMapping("/insertCarInfo")
     @Operation(summary = "新增车辆信息")
-    public CommonResult<String> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
+    public CommonResult<AppBpmCarInfoRespVO> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
         return success(carInfoService.insertCarInfo(createReqVO));
     }
 
@@ -155,8 +155,8 @@ public class AppCarInfoController {
     @GetMapping("/getCarInfoByVIN")
     @Operation(summary = "根据VIN获取回显车辆信息")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") Long id) {
-        return success(carInfoService.getSellCarInfo(id));
+    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") String VIN) {
+        return success(carInfoService.getCarInfoByVIN(VIN));
     }
 
     @GetMapping("/getDetailds")

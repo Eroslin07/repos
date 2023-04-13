@@ -6,6 +6,12 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.security.core.LoginUser;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoAndDetailVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.convert.app.CarInfoDetailsConvert;
@@ -70,35 +76,53 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Override
     @Transactional
-    public String insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
-//        SecurityFrameworkUtils.getLoginUserId();
+    public AppBpmCarInfoRespVO insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
+
+//        CarInfoDO carInfoDO = carInfoMapper.selectByVin(createReqVO.getVin(),"11");//11收车中草稿
+//        if (ObjectUtil.isNull(carInfoDO)) {
+//            throw exception(CAR_INFO_IS_EXISTS);
+//        }
         //车辆主表信息
         CarInfoDO infoDO = new CarInfoDO();
         infoDO.setBrand(createReqVO.getBrand());
         infoDO.setVin(createReqVO.getVin());
-        infoDO.setModel(createReqVO.getModel());
+        infoDO.setBrand(createReqVO.getBrand());//车辆品牌
+        infoDO.setCarType(createReqVO.getCarType());//车辆类型
+        infoDO.setBrandType(createReqVO.getBrandType());//品牌型号
+        infoDO.setModel(createReqVO.getModel());//品牌/车型
         infoDO.setPlateNum(createReqVO.getPlateNum());
         infoDO.setEngineNum(createReqVO.getEngineNum());
-//        infoDO.setVehicleReceiptAmount(createReqVO.getVehicleReceiptAmount());
         infoDO.setRemarks(createReqVO.getRemarks());
-        infoDO.setSalesStatus(0);
+
         LocalDateTime current = LocalDateTime.now();
         infoDO.setPickUpTime(current);
         infoDO.setCheckStatus(0);
-        infoDO.setBusinessId(Long.valueOf("130"));
-        infoDO.setStatus(31);//草稿
+        infoDO.setBusinessId(createReqVO.getDeptId());
+        infoDO.setTenantId(createReqVO.getTenantId());
+
+        infoDO.setScrapDate(createReqVO.getScrapDate());
+        infoDO.setAnnualInspectionDate(createReqVO.getAnnualInspectionDate());
+        infoDO.setInsurance(createReqVO.getInsurance());
+        infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+
+        infoDO.setSalesStatus(1);//收车中
+        infoDO.setStatus(1);//草稿
+        infoDO.setStatusThree(1);
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据
         CarInfoDetailsDO detailsDO = new CarInfoDetailsDO();
         detailsDO.setCarId(infoDO.getId());
         detailsDO.setMileage(createReqVO.getMileage());
+        detailsDO.setColour(createReqVO.getColour());
         detailsDO.setAccidentVehicle(0);
         detailsDO.setSoakingCar(0);
         detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
         detailsDO.setBurnCar(0);
         detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
         detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
+        detailsDO.setTenantId(createReqVO.getTenantId());
+        detailsDO.setProceduresAndSpareParts(createReqVO.getProceduresAndSpareParts());
         carInfoDetailsService.insertCarInfoDetail(detailsDO);
 
         //保存图片到中间表
@@ -107,7 +131,11 @@ public class CarInfoServiceImpl implements CarInfoService {
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(carUrl.get(a)));
             businessFileDO.setMainId(infoDO.getId());
-            businessFileDO.setFileType("1");
+            if(a==0){
+                businessFileDO.setFileType("1-1");//1-1 车辆图片首页图
+            }else{
+                businessFileDO.setFileType("1");
+            }
             businessFileService.insert(businessFileDO);
         }
 
@@ -128,7 +156,8 @@ public class CarInfoServiceImpl implements CarInfoService {
             businessFileDO.setFileType("3");
             businessFileService.insert(businessFileDO);
         }
-        return String.valueOf(detailsDO.getId());
+
+        return this.buildBmpVO(infoDO,detailsDO);
     }
 
     @Override
@@ -240,6 +269,43 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Override
     public AppSellCarInfoRespVO getSellCarInfo(Long id) {
+        CarInfoDO carInfo = this.getCarInfo(id);
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        if (ObjectUtil.isNull(carInfoDetailsDO)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        //获取车辆相关图片
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainIdAndType(id,null);
+        List<String> carPicList = Lists.newArrayList();
+        List<String> drivingPicList = Lists.newArrayList();
+        List<String> registerPicList = Lists.newArrayList();
+        for (FileRespDTO dto : fileList) {
+//            1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证
+            switch (dto.getFileType()){
+                case "1":
+                    carPicList.add(dto.getUrl());
+                    break;
+                case "2":
+                    drivingPicList.add(dto.getUrl());
+                    break;
+                case "3":
+                    registerPicList.add(dto.getUrl());
+                    break;
+                default:
+                    break;
+            }
+        }
+        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,carInfoDetailsDO);
+        return carInfoRespVO;
+    }
+
+    @Override
+    public AppSellCarInfoRespVO getCarInfoByVIN(String vin) {
+        CarInfoDO carInfoDO = carInfoMapper.selectByVin(vin,"11");//11收车中草稿
+        Long id = carInfoDO.getId();
         CarInfoDO carInfo = this.getCarInfo(id);
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);

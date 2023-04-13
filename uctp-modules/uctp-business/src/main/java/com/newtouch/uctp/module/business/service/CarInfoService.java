@@ -32,7 +32,7 @@ public interface CarInfoService {
      * @param createReqVO
      * @return
      */
-    String insertCarInfo(@Valid AppCarInfoCreateReqVO createReqVO);
+    AppBpmCarInfoRespVO insertCarInfo(@Valid AppCarInfoCreateReqVO createReqVO);
 
     /**
      * 卖家信息
@@ -109,6 +109,8 @@ public interface CarInfoService {
      * @return
      */
     AppSellCarInfoRespVO getSellCarInfo(Long id);
+
+    AppSellCarInfoRespVO getCarInfoByVIN(String vin);
 
     /**
      * 获取卖车详情的明细费用

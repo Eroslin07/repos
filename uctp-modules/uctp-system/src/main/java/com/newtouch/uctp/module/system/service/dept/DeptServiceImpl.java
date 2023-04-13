@@ -308,6 +308,10 @@ public class DeptServiceImpl implements DeptService {
         return deptMapper.selectByTenantId(tenantId,type);
     }
 
+
+    public DeptDO selectByParent(String tenantId,Long type) {
+        return deptMapper.selectByParent(tenantId,type);
+    }
     @Override
     public int insertDept(DeptDO deptDO) {
 

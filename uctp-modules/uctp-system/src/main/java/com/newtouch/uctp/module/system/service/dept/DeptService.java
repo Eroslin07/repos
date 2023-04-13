@@ -137,6 +137,9 @@ public interface DeptService {
      */
     DeptDO selectDept(String tenantId,String type);
 
+
+    DeptDO selectByParent(String tenantId,Long type);
+
     int insertDept(DeptDO deptDO);
 
     List<DeptDO> getDeptByParentId(Long parentId);
