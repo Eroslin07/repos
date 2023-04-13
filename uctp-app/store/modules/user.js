@@ -92,6 +92,8 @@ const user = {
           const user = res.user
           const avatar = (user == null || user.avatar === "" || user.avatar == null) ? require("@/static/images/profile.jpg") : user.avatar
           const nickname = (user == null || user.nickname === "" || user.nickname == null) ? "" : user.nickname
+          const deptId = user.deptId
+          const tenantId = user.tenantId
           if (res.roles && res.roles.length > 0) {
             commit('SET_ROLES', res.roles)
             commit('SET_PERMISSIONS', res.permissions)

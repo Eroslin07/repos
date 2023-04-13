@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarInfoDetailsDO extends BaseDO {
+public class CarInfoDetailsDO extends TenantBaseDO {
     /**
      * 乐观锁
      */
@@ -41,6 +41,11 @@ public class CarInfoDetailsDO extends BaseDO {
      * 运营性质
      */
     private String natureOfOperat;
+
+    /**
+     * 颜色
+     */
+    private String colour;
 
     /**
      * 是/非事故车(1是 0非)
@@ -129,6 +134,14 @@ public class CarInfoDetailsDO extends BaseDO {
      */
     private String buyerName;
     /**
+     * 买家地址
+     */
+    private String buyerAdder;
+    /**
+     * 买转入地车辆管理所名称
+     */
+    private String transManageName;
+    /**
      * 车辆手续及备件
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
@@ -138,4 +151,5 @@ public class CarInfoDetailsDO extends BaseDO {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private FeesAndCommitments feesAndCommitments;
+
 }

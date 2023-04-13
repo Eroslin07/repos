@@ -23,9 +23,13 @@ public class AppSellCarInfoReqVO {
     private String buyerName;
     @Schema(description = "买家电话")
     private String buyerTel;
+    @Schema(description = "买家地址")
+    private String buyerAdder;
     @Schema(description = "收款方式")
     private Integer sellType;
     @Schema(description = "身份证正反面图片id")
     private List<Long> IdCardIds;
+    @Schema(description = "转入地车辆管理所名称")
+    private String transManageName;
 
 }

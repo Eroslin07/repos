@@ -38,8 +38,8 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
 
     default List<Map<String, Object>> selectCarCountGroupByStatus(){
         return selectMaps(new QueryWrapper<CarInfoDO>()
-                .select("count(*) num","SALES_STATUS salesStatus")
-                .groupBy("SALES_STATUS"));
+                .select("SALES_STATUS statusOne","STATUS statusTwo","count(*) num")
+                .groupBy("SALES_STATUS","STATUS"));
     }
 
     Page<AppSellCarInfoPageRespVO> selectAppCellCarPage(@Param("pg") Page<AppSellCarInfoPageRespVO> page,@Param("pageVO")AppSellCarInfoPageReqVO pageVO);

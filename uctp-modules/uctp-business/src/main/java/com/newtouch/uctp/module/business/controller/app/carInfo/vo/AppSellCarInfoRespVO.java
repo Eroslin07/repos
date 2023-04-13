@@ -1,11 +1,14 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
+import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
+import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareParts;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "用户 APP - 车辆售卖详情 Response VO")
@@ -39,4 +42,21 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String natureOfOperat;
     @Schema(description = "车牌号")
     private String plateNum;
+    @Schema(description = "使用年限至")
+    private LocalDateTime scrapDate;
+    @Schema(description = "年检签证有效期至")
+    private LocalDateTime annualInspectionDate;
+    @Schema(description = "保险险种")
+    private String insurance;
+    @Schema(description = "保险期至")
+    private String insuranceEndData;
+    @Schema(description = "其他")
+    private String other;
+    @Schema(description = "车辆手续及备件")
+    private ProceduresAndSpareParts proceduresAndSpareParts;
+    @Schema(description = "车况相关")
+    private FeesAndCommitments feesAndCommitments;
+    @Schema(description = "转入地车辆管理所名称")
+    private String transManageName;
+
 }

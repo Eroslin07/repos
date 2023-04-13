@@ -67,7 +67,7 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private Integer revision;
     /**
-     * 售卖状态
+     * 第一级状态
      */
     private Integer salesStatus;
     /**
@@ -95,9 +95,13 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private BigDecimal sellAmount;
     /**
-     * 状态
+     * 第二级状态
      */
     private Integer status;
+    /**
+     * 第三级状态
+     */
+    private Integer statusThree;
     /**
      * 卖车方式
      */
