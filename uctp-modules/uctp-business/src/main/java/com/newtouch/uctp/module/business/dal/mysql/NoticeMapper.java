@@ -19,5 +19,9 @@ public interface NoticeMapper {
 
     void updateNoticeStatus(@Param("vo") NoticeVO noticeVO);
 
+    void updateAllNoticeStatus(String id);
+
+    void deleteAllNoticeStatus(String id);
+
 
 }

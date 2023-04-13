@@ -21,10 +21,25 @@ public interface NoticeService {
 
     List<NoticeInfoDO> getNotices();
     /**
-     * 更新消息状态
+     * 更新单个消息状态
      *
      */
     void updateNoticeStatus(@Param("vo") NoticeVO noticeVO);
+
+    /**
+     * 批量更新消息状态
+     *
+     */
+    void updateAllNoticeStatus(String id);
+
+    void updateAllNoticeStatus(List<String> list);
+
+
+    /**
+     * 批量删除消息/目前只考虑单个
+     *
+     */
+    void deleteAllNoticeStatus(String id);
 
 
 }
