@@ -3,7 +3,7 @@
 <mapper namespace="com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper">
     <resultMap id="bpmTaskTodoRespVO" type="com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskTodoRespVO">
         <id property="taskId" column="task_id"/>
-        <result property="businessKey" column="business_key"/>
+        <result property="businessKey" column="business_key" javaType="String"/>
         <result property="procInstId" column="proc_inst_id"/>
         <result property="procDefId" column="proc_def_id"/>
         <result property="serialNo" column="serial_no"/>

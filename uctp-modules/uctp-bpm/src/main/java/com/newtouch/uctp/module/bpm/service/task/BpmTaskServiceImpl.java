@@ -253,7 +253,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         } else {
             formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), null);
         }
-        
+
         formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
         this.bpmFormDataService.saveDataObject(bpmFormMainDO.getId(), formDataJsonVariable);
 
@@ -392,8 +392,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                 ProcessInstance processInstance =
                     processInstanceService.getProcessInstance(task.getProcessInstanceId());
                 AdminUserRespDTO startUser = adminUserApi.getUser(Long.valueOf(processInstance.getStartUserId())).getCheckedData();
-                messageService.sendMessageWhenTaskAssigned(
-                    BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
+                /*messageService.sendMessageWhenTaskAssigned(
+                    BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));*/
             }
         });
     }
