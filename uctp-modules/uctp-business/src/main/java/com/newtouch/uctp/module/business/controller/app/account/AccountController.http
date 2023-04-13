@@ -1,0 +1,4 @@
+### 请求 /uctp/account/info 接口 => 成功
+GET {{appBusinessUrl}}/uctp/account/info
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
