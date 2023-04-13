@@ -1,22 +1,25 @@
 package com.newtouch.uctp.module.system.controller.admin.dept;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.Comparator;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.*;
 import com.newtouch.uctp.module.system.convert.dept.DeptConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.service.dept.DeptService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.Comparator;
-import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
@@ -81,6 +84,13 @@ public class DeptController {
     @PreAuthorize("@ss.hasPermission('system:dept:query')")
     public CommonResult<DeptRespVO> getDept(@RequestParam("id") Long id) {
         return success(DeptConvert.INSTANCE.convert(deptService.getDept(id)));
+    }
+
+    @GetMapping("/getByName")
+    @Operation(summary = "根据部门名称获得部门信息")
+    @Parameter(name = "name", description = "部门名称", required = true, example = "万国二手车")
+    public CommonResult<DeptRespVO> getDeptByName(@RequestParam("name") String name) {
+        return success(DeptConvert.INSTANCE.convert(deptService.getDeptByName(name)));
     }
 
 }
