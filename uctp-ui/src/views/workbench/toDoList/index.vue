@@ -74,14 +74,14 @@ const handleExport = () => {
 
 // 点击申请单号
 const handleApplication = (row) => {
-  console.log(row, 'row')
+  console.log(row.taskId, row.businessKey, 'row')
   const params = {
     taskId: row.taskId,
     businessKey: row.businessKey
   }
   ToDoList.getTaskFormInfoAPI(params).then((response) => {
     console.log(response, 'response')
-    // GZSH SCJG SCKP SCKZH MCHT MCKP LRTQ
+    // ZHSQ SCJG SCKP SCKZH MCHT MCKP LRTQ
     status.value = response.busiType
     drawerVisible.value = true //打开抽屉
   })
