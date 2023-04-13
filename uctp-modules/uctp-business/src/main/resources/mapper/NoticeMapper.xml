@@ -16,6 +16,7 @@
             ,UPDATED_BY as updater
             ,UPDATED_TIME as updateTime
             ,status
+            ,url
         from uctp_notice
     </select>
 
