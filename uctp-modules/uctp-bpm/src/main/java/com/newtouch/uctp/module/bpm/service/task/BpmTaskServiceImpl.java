@@ -234,32 +234,38 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         if (instance == null) {
             throw exception(PROCESS_INSTANCE_NOT_EXISTS);
         }
-        // 更新表单信息
-        // 获得流程业务ID
-        String businessKey = StrUtil.toStringOrNull(reqVO.getVariables().get("businessKey"));
-        if (!StringUtils.hasText(businessKey)) {
-            throw exception(PROCESS_BUSI_KEY_NOT_EXISTS);
-        }
-        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, instance.getId());
         if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 1) {
             throw exception(PROCESS_BUSI_APPROVALING);
         }
-        HashMap<String, Object> formDataObject = (HashMap<String, Object>) reqVO.getVariables().get("formDataJson");
-        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataObject);
-        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataObject);
+        Map<String, Object> variables = CollectionUtils.isEmpty(reqVO.getVariables()) ? new HashMap<String, Object>() : reqVO.getVariables();
+        HashMap<String, Object> formDataJsonVariable = (HashMap<String, Object>) variables.getOrDefault("formDataJson", new HashMap<String, Object>());
+        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataJsonVariable);
+        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataJsonVariable);
         formMainDataObject.put("status", 1);
-        formMainDataObject.put("procInstId", task.getProcessInstanceId());
-        formMainDataObject.put("submitTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(bpmFormMainDO.getSubmitTime()));
-        formMainDataObject.put("doneTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
-        formDataObject.put(workFlowMainEntityAlias, formMainDataObject);
-        this.bpmFormDataService.saveDataObject(Long.valueOf(businessKey), formDataObject);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "procInstId"), task.getProcessInstanceId());
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "submitTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(bpmFormMainDO.getSubmitTime()));
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "doneTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
+        this.bpmFormDataService.saveDataObject(bpmFormMainDO.getId(), formDataJsonVariable);
 
         // 完成任务，审批通过
-        taskService.complete(task.getId(), reqVO.getVariables());
+        variables.put("formDataJson", formDataJsonVariable);
+        taskService.complete(task.getId(), variables);
         // 更新任务拓展表为通过
         taskExtMapper.updateByTaskId(
                 new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.APPROVE.getResult())
                         .setReason(reqVO.getReason()));
+    }
+
+    private String matchMapKey(Map<String, Object> map, String key) {
+        for (String k : map.keySet()) {
+            if (k.toLowerCase().equals(key.toLowerCase())) {
+                return k;
+            }
+        }
+
+        return key;
     }
 
     @Override

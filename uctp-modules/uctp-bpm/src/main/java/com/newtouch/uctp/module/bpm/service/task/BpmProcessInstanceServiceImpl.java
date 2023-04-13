@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.flowable.engine.HistoryService;
+import org.flowable.engine.IdentityService;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.event.FlowableCancelledEvent;
@@ -108,6 +109,8 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     @Resource
     private RepositoryService repositoryService;
     @Resource
+    public IdentityService identityService;
+    @Resource
     private RedisTemplate redisTemplate;
 
 
@@ -196,6 +199,10 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 0) {
             throw exception(PROCESS_BUSI_RUNING);
         }
+        if (userId == null) {
+            userId = Long.valueOf(variables.get("startUserId") + "");
+        }
+        identityService.setAuthenticatedUserId(String.valueOf(userId));
 
         // 1.获得流程定义
         List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).active().orderByProcessDefinitionVersion().desc().list();
@@ -453,7 +460,6 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (definition.isSuspended()) {
             throw exception(PROCESS_DEFINITION_IS_SUSPENDED);
         }
-
         // 创建流程实例
         ProcessInstance instance = runtimeService.startProcessInstanceById(definition.getId(), businessKey, variables);
         // 设置流程名字
