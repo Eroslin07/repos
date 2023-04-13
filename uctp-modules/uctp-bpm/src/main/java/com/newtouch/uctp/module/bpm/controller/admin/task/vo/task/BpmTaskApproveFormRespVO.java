@@ -33,6 +33,8 @@ public class BpmTaskApproveFormRespVO {
     private String nodeId;
     @Schema(description = "节点名称")
     private String nodeName;
+    @Schema(description = "前端路由组件地址")
+    private String componentAddress;
     @Schema(description = "变量实例")
     private Map<String, Object> variables = new HashMap<String,Object>();
 }

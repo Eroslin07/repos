@@ -145,5 +145,5 @@ public interface BpmTaskService {
 
     PageResult<BpmTaskTodoRespVO> getTodoTaskPageV2(Long loginUserId, BpmTaskTodoReqVO pageVO);
 
-    BpmTaskApproveFormRespVO getTaskFormInfo(String taskId);
+    BpmTaskApproveFormRespVO getTaskFormInfo(String taskId, String businessKey);
 }
