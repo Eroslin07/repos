@@ -1,33 +1,26 @@
-package com.newtouch.uctp.module.bpm.dal.dataobject.form;
+package com.newtouch.uctp.module.bpm.controller.admin.form.vo;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
-import com.newtouch.uctp.module.bpm.annotation.WfEntity;
-import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
+import com.alibaba.fastjson.JSONObject;
 
 /**
- * 流程业务主表（通用）
  * @author helong
- * @date 2023/4/8 15:31
+ * @date 2023/4/13 16:10
  */
-@TableName(value = "bpm_form_main", autoResultMap = true)
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@WfEntity(alias = "formMain", isMainEntity = true, mapperClass = BpmFormMainMapper.class)
-public class BpmFormMainDO extends BaseDO {
+@EqualsAndHashCode(callSuper = false)
+public class BpmFormMainVO {
     /**
      * 业务ID
      */
-    @TableId
     private Long id;
     /**
      * 单据状态（0-草稿  1-审批中   2-完成  -1-作废）
@@ -76,7 +69,7 @@ public class BpmFormMainDO extends BaseDO {
     /**
      * 表单提交JSON二进制数据
      */
-    private byte[] formDataJson;
+    private JSONObject formDataJson;
     /**
      * 第三方业务ID
      */

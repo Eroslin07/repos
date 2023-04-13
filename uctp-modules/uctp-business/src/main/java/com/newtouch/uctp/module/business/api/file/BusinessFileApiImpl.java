@@ -23,11 +23,13 @@ public class BusinessFileApiImpl implements BusinessFileApi {
 
     @Override
     public CommonResult<String> saveToBusinessFile(FileInsertReqDTO reqDTO ) {
+        System.out.println("========进入保存图片方法=========");
         //保存图片到中间表
-        List<String> carUrl = reqDTO.getUrl();
-        for(int a=0;a<carUrl.size();a++){//车辆图片
+        List<String> url = reqDTO.getUrl();
+        for(int a=0;a<url.size();a++){
             BusinessFileDO businessFileDO = new BusinessFileDO();
-            businessFileDO.setId(Long.valueOf(carUrl.get(a)));
+            System.out.println("========进入循环=========");
+            businessFileDO.setId(Long.valueOf(url.get(a)));
             businessFileDO.setMainId(Long.valueOf(reqDTO.getMainId()));//主表id
             businessFileDO.setFileType(reqDTO.getType());//图片类型
             businessFileDO.setTenantId(reqDTO.getTenantId());

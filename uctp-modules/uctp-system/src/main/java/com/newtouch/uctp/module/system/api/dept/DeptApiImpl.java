@@ -42,4 +42,10 @@ public class DeptApiImpl implements DeptApi {
         return success(true);
     }
 
+    @Override
+    public CommonResult<DeptRespDTO> getDeptByName(String name) {
+        DeptDO dept = deptService.getDeptByName(name);
+        return success(DeptConvert.INSTANCE.convert03(dept));
+    }
+
 }

@@ -16,6 +16,7 @@
             ,UPDATED_BY as updater
             ,UPDATED_TIME as updateTime
             ,status
+            ,url
         from uctp_notice
     </select>
 
@@ -24,6 +25,17 @@
             uctp_notice set STATUS='1'
         where id=#{vo.id}
     </update>
+
+   <update id="updateAllNoticeStatus" >
+        update
+            uctp_notice set STATUS='1'
+            where id in(${id})
+    </update>
+
+   <delete id="updateAllNoticeStatus" >
+        delete from uctp_notice
+            where id in(${id})
+    </delete>
 
 
 </mapper>

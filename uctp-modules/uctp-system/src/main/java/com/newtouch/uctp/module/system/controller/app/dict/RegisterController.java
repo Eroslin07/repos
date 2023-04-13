@@ -157,9 +157,9 @@ public class RegisterController {
     @PermitAll
     @Operation(summary = "注册账号")
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
-    public CommonResult<String> registerAccount(@RequestBody @Valid AuthRegisterReqVO reqVO) {
-        authService.registerAccount(reqVO);
-        return success("提交成功");
+    public CommonResult<Map> registerAccount(@RequestBody @Valid AuthRegisterReqVO reqVO) {
+        Map map = authService.registerAccount(reqVO);
+        return success(map);
     }
 
 

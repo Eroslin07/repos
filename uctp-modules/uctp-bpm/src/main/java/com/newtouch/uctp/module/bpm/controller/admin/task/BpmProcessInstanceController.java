@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
@@ -50,6 +52,12 @@ public class BpmProcessInstanceController {
         return success(processInstanceService.createProcessInstanceV2(getLoginUserId(), createReqVO));
     }
 
+    @PostMapping("/v3/create")
+    @Operation(summary = "根据流程定义标识（业务类型）新建流程")
+    public CommonResult<String> createProcessInstanceByKey(@Valid @RequestBody BpmProcessInstanceByKeyReqVO createReqVO) {
+        return success(processInstanceService.createProcessInstanceByKey(getLoginUserId(), createReqVO.getProcDefKey(), createReqVO.getVariables()));
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得指定流程实例", description = "在【流程详细】界面中，进行调用")
     @Parameter(name = "id", description = "流程实例的编号", required = true)
@@ -73,5 +81,12 @@ public class BpmProcessInstanceController {
         return success(respVO);
     }
 
+
+    @GetMapping("/get-bpm-busi-variables")
+    @Operation(summary = "根据业务ID获取流程业务变量", description = "在【流程详细】界面中，进行调用")
+    @Parameter(name = "businessKey", description = "业务ID", required = true)
+    public CommonResult<Map<String, Object>> getBpmBusinessVariables(@RequestParam("businessKey") String businessKey) {
+        return null;
+    }
 
 }

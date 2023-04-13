@@ -12,7 +12,6 @@
         <id property="id" column="id"/>
         <result property="vin" column="vin"/>
         <result property="brand" column="brand"/>
-        <result property="year" column="year"/>
         <result property="model" column="model"/>
         <result property="engineNum" column="engineNum"/>
         <result property="vehicleReceiptAmount" column="vehicleReceiptAmount"/>
@@ -27,15 +26,16 @@
         a.ID as id,
         a.BRAND as brand,
         a.VIN as vin,
-        a.YEAR as year,
         a.MODEL as model,
         a.ENGINE_NUM as engineNum,
         a.VEHICLE_RECEIPT_AMOUNT as vehicleReceiptAmount,
         a.SALES_STATUS as salesStatus,
         a.STATUS as status,
+        a.STATUS_THREE as statusThree,
         b.MILEAGE as mileage,
         b.BUYER_NAME as firstParty,
-        b.SELLER_NAME as secondParty
+        b.SELLER_NAME as secondParty,
+        d.url as url
     </sql>
 
 
@@ -45,20 +45,22 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
+        left join infra_file d on c.ID = d.id
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue
+                or a.BRAND like #{pageVO.searchValue}
                 or a.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
             <if test="pageVO.status != null">
-                and a.STATUS = #{pageVO.status}}
+                and a.STATUS = #{pageVO.status}
             </if>
             <if test="pageVO.statusThree != null">
-                and a.STATUS_THREE = #{pageVO.statusThree}}
+                and a.STATUS_THREE = #{pageVO.statusThree}
             </if>
         </where>
         order by a.CREATE_TIME desc
@@ -70,20 +72,29 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
+        left join infra_file d on c.ID = d.id
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue
+                or a.BRAND like #{pageVO.searchValue}
                 or a.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
-            <if test="pageVO.status != null">
-                and a.STATUS = #{pageVO.status}}
+            <if test="pageVO.salesStatus != null">
+                and a.SALES_STATUS = #{pageVO.salesStatus}
             </if>
-            <if test="pageVO.statusThree != null">
-                and a.STATUS_THREE = #{pageVO.statusThree}}
+            <if test="pageVO.status != null">
+                and a.STATUS = #{pageVO.status}
+            </if>
+            <if test="pageVO.statusThree != null and pageVO.statusThree.length > 0">
+                and a.STATUS_THREE in
+                <foreach collection="pageVO.statusThree" item="item"
+                         index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by a.CREATE_TIME desc

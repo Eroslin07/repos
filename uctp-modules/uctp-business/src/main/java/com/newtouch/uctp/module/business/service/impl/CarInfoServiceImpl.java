@@ -6,8 +6,15 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.security.core.LoginUser;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoAndDetailVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
+import com.newtouch.uctp.module.business.convert.app.CarInfoDetailsConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
@@ -32,8 +39,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_SELL_AMOUNT_ERROR;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 import static com.newtouch.uctp.module.system.enums.DictTypeConstants.*;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.DICT_TYPE_NOT_EXISTS;
 
@@ -70,36 +76,53 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Override
     @Transactional
-    public String insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
-//        SecurityFrameworkUtils.getLoginUserId();
+    public AppBpmCarInfoRespVO insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
+
+//        CarInfoDO carInfoDO = carInfoMapper.selectByVin(createReqVO.getVin(),"11");//11收车中草稿
+//        if (ObjectUtil.isNull(carInfoDO)) {
+//            throw exception(CAR_INFO_IS_EXISTS);
+//        }
         //车辆主表信息
         CarInfoDO infoDO = new CarInfoDO();
         infoDO.setBrand(createReqVO.getBrand());
         infoDO.setVin(createReqVO.getVin());
-        infoDO.setYear(createReqVO.getYear());
-        infoDO.setModel(createReqVO.getModel());
+        infoDO.setBrand(createReqVO.getBrand());//车辆品牌
+        infoDO.setCarType(createReqVO.getCarType());//车辆类型
+        infoDO.setBrandType(createReqVO.getBrandType());//品牌型号
+        infoDO.setModel(createReqVO.getModel());//品牌/车型
         infoDO.setPlateNum(createReqVO.getPlateNum());
         infoDO.setEngineNum(createReqVO.getEngineNum());
-//        infoDO.setVehicleReceiptAmount(createReqVO.getVehicleReceiptAmount());
         infoDO.setRemarks(createReqVO.getRemarks());
-        infoDO.setSalesStatus(0);
+
         LocalDateTime current = LocalDateTime.now();
         infoDO.setPickUpTime(current);
         infoDO.setCheckStatus(0);
-        infoDO.setBusinessId(Long.valueOf("130"));
-        infoDO.setStatus(31);//草稿
+        infoDO.setBusinessId(createReqVO.getDeptId());
+        infoDO.setTenantId(createReqVO.getTenantId());
+
+        infoDO.setScrapDate(createReqVO.getScrapDate());
+        infoDO.setAnnualInspectionDate(createReqVO.getAnnualInspectionDate());
+        infoDO.setInsurance(createReqVO.getInsurance());
+        infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+
+        infoDO.setSalesStatus(1);//收车中
+        infoDO.setStatus(1);//草稿
+        infoDO.setStatusThree(1);
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据
         CarInfoDetailsDO detailsDO = new CarInfoDetailsDO();
         detailsDO.setCarId(infoDO.getId());
         detailsDO.setMileage(createReqVO.getMileage());
+        detailsDO.setColour(createReqVO.getColour());
         detailsDO.setAccidentVehicle(0);
         detailsDO.setSoakingCar(0);
         detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
         detailsDO.setBurnCar(0);
         detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
         detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
+        detailsDO.setTenantId(createReqVO.getTenantId());
+        detailsDO.setProceduresAndSpareParts(createReqVO.getProceduresAndSpareParts());
         carInfoDetailsService.insertCarInfoDetail(detailsDO);
 
         //保存图片到中间表
@@ -108,7 +131,11 @@ public class CarInfoServiceImpl implements CarInfoService {
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(carUrl.get(a)));
             businessFileDO.setMainId(infoDO.getId());
-            businessFileDO.setFileType("1");
+            if(a==0){
+                businessFileDO.setFileType("1-1");//1-1 车辆图片首页图
+            }else{
+                businessFileDO.setFileType("1");
+            }
             businessFileService.insert(businessFileDO);
         }
 
@@ -129,7 +156,8 @@ public class CarInfoServiceImpl implements CarInfoService {
             businessFileDO.setFileType("3");
             businessFileService.insert(businessFileDO);
         }
-        return String.valueOf(detailsDO.getId());
+
+        return this.buildBmpVO(infoDO,detailsDO);
     }
 
     @Override
@@ -275,6 +303,43 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
+    public AppSellCarInfoRespVO getCarInfoByVIN(String vin) {
+        CarInfoDO carInfoDO = carInfoMapper.selectByVin(vin,"11");//11收车中草稿
+        Long id = carInfoDO.getId();
+        CarInfoDO carInfo = this.getCarInfo(id);
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        if (ObjectUtil.isNull(carInfoDetailsDO)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        //获取车辆相关图片
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainIdAndType(id,null);
+        List<String> carPicList = Lists.newArrayList();
+        List<String> drivingPicList = Lists.newArrayList();
+        List<String> registerPicList = Lists.newArrayList();
+        for (FileRespDTO dto : fileList) {
+//            1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证
+            switch (dto.getFileType()){
+                case "1":
+                    carPicList.add(dto.getUrl());
+                    break;
+                case "2":
+                    drivingPicList.add(dto.getUrl());
+                    break;
+                case "3":
+                    registerPicList.add(dto.getUrl());
+                    break;
+                default:
+                    break;
+            }
+        }
+        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,carInfoDetailsDO);
+        return carInfoRespVO;
+    }
+
+    @Override
     public AppCarInfoAmountRespVO getCarInfoAmount(Long id,BigDecimal sellAmount) {
 //        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         //税配置100，服务费配置200，然后合计费用300；利润=卖车金额-收车金额-税-服务费
@@ -334,25 +399,60 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Transactional
     @Override
-    public void saveSellCarInfo(AppSellCarInfoReqVO reqVO) {
+    public AppBpmCarInfoRespVO saveSellCarInfo(AppSellCarInfoReqVO reqVO) {
         validateCarInfoExists(reqVO.getId());
         // 更新卖车填写数据
-        CarInfoDO updateObj = CarInfoConvert.INSTANCE.convert(reqVO);
-        carInfoMapper.updateById(updateObj);
+        CarInfoDO carInfo = CarInfoConvert.INSTANCE.convert(reqVO);
+        CarInfoDetailsDO carInfoDetails = CarInfoDetailsConvert.INSTANCE.convert(reqVO);
+        carInfoMapper.updateById(carInfo);
+        carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
         //保存卖车上传的身份证正反面图片
-        List<BusinessFileDO> businessFileList = businessFileService.getByMainIdAndType(updateObj.getId(), "5");
+        List<BusinessFileDO> businessFileList = businessFileService.getByMainIdAndType(carInfo.getId(), "5");
         if (CollUtil.isNotEmpty(businessFileList)) {
             //这里其实可以不用查询，直接删除
-            businessFileService.deleteByMainIdAndType(updateObj.getId(),"5");
+            businessFileService.deleteByMainIdAndType(carInfo.getId(),"5");
         }
         reqVO.getIdCardIds().forEach(fileId -> {
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(fileId);
             businessFileDO.setFileType("5");
-            businessFileDO.setMainId(updateObj.getId());
+            businessFileDO.setMainId(carInfo.getId());
             businessFileService.insert(businessFileDO);
         });
+        //返回流程需要的对象
+        return this.buildBmpVO(carInfo,carInfoDetails);
+    }
 
+    private AppBpmCarInfoRespVO buildBmpVO(CarInfoDO carInfo,CarInfoDetailsDO carInfoDetails){
+        AppBpmCarInfoRespVO vo = new AppBpmCarInfoRespVO();
+        vo.setCarInfo(carInfo);
+        vo.setCarInfoDetails(carInfoDetails);
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
+        //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
+        fileList.forEach(file->{
+            switch (file.getFileType()){
+                case "1":
+                case "1-1":
+                    //1-1 表是车辆第一张图片
+                    vo.getFileA().add(new AppSimpleFileVO(file));
+                    break;
+                case "2":
+                    vo.getFileB().add(new AppSimpleFileVO(file));
+                    break;
+                case "3":
+                    vo.getFileC().add(new AppSimpleFileVO(file));
+                    break;
+                case "4":
+                    vo.getFileD().add(new AppSimpleFileVO(file));
+                    break;
+                case "5":
+                    vo.getFileE().add(new AppSimpleFileVO(file));
+                    break;
+                default:
+                    break;
+            }
+        });
+        return vo;
     }
 
     /**
@@ -505,6 +605,29 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     public List<CarDCVo> getInvoiceIds(String id) {
         return carInfoMapper.getInvoiceIds(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteSell(Long id) {
+        this.validateCarInfoExists(id);
+        CarInfoDO carInfo = this.getCarInfo(id);
+        //判断第二级状态不为草稿状态，禁止删除
+        if (!"31".equals(carInfo.getStatus())) {
+            throw exception(CAR_INFO_STATUS_ERROR);
+        }
+        carInfo.setRemarks(null);
+        carInfo.setSellAmount(null);
+        carInfo.setSellType(null);
+        carInfo.setRemarks(null);
+        CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        carInfoDetails.setBuyerAdder(null);
+        carInfoDetails.setBuyerIdCard(null);
+        carInfoDetails.setBuyerName(null);
+        carInfoDetails.setBuyerTel(null);
+        carInfoDetails.setTransManageName(null);
+        carInfoMapper.updateById(carInfo);
+        carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
     }
 
 

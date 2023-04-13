@@ -76,6 +76,15 @@ public interface BpmProcessInstanceService {
     String createProcessInstanceV2(Long userId, @Valid BpmProcessInstanceCreateReqVO createReqVO);
 
     /**
+     *
+     * @param userId 用户编号
+     * @param processDefinitionKey 流程定义标识（用于区分业务流程）
+     * @param variables 流程变量
+     * @return
+     */
+    String createProcessInstanceByKey(Long userId, String processDefinitionKey, Map<String, Object> variables);
+
+    /**
      * 创建流程实例（提供给内部）
      *
      * @param userId 用户编号

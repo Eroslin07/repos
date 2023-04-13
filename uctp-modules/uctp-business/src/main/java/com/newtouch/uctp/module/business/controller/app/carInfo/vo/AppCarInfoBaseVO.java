@@ -17,9 +17,6 @@ public class AppCarInfoBaseVO {
     @Schema(description = "车辆品牌")
     private String brand;
 
-    @Schema(description = "车辆年份")
-    private String year;
-
     @Schema(description = "车辆型号")
     private String model;
 
@@ -32,11 +29,13 @@ public class AppCarInfoBaseVO {
     @Schema(description = "备注")
     private String remarks;
 
-    @Schema(description = "售卖状态")
+    @Schema(description = "一级状态")
     private Integer salesStatus;
 
-    @Schema(description = "状态")
+    @Schema(description = "二级状态")
     private Integer status;
+    @Schema(description = "三级状态")
+    private Integer statusThree;
 
     @Schema(description = "商户id")
     private String businessId;

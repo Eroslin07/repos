@@ -4,6 +4,7 @@ import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * 管理后台的认证 Service 接口
@@ -38,7 +39,7 @@ public interface AdminAuthService {
      */
     AuthLoginRespVO wxLogin(@Valid AuthWxLoginReqVO reqVO);
 
-    String registerAccount(AuthRegisterReqVO reqVO);
+    Map registerAccount(AuthRegisterReqVO reqVO);
 
     /**
      * 基于 token 退出登录

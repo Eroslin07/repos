@@ -31,6 +31,8 @@ public class LoginUser {
      * 租户编号
      */
     private Long tenantId;
+
+    private Long deptId;
     /**
      * 授权范围
      */

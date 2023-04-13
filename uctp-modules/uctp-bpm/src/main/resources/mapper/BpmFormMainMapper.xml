@@ -41,5 +41,6 @@
         <if test="todoReqVO.serialNo != null and todoReqVO.serialNo != ''">
             and fm.serial_no like concat('%', #{todoReqVO.serialNo}, '%')
         </if>
+         ORDER BY task.CREATE_TIME_ desc
     </select>
 </mapper>
