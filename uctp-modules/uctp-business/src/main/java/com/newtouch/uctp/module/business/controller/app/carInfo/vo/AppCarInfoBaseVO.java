@@ -17,9 +17,6 @@ public class AppCarInfoBaseVO {
     @Schema(description = "车辆品牌")
     private String brand;
 
-    @Schema(description = "车辆年份")
-    private String year;
-
     @Schema(description = "车辆型号")
     private String model;
 
