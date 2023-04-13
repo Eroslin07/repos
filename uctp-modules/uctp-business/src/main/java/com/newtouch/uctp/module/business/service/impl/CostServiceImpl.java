@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.AppMyCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.CostExample;
 import com.newtouch.uctp.module.business.dal.mysql.CostMapper;
@@ -34,5 +35,10 @@ public class CostServiceImpl implements CostService {
     @Override
     public AppMyCostVO getMyCosts1(String brand, String year, String mon) {
         return costMapper.getMyCosts1(brand,year,mon);
+    }
+
+    @Override
+    public AppCarCostVO getCarCosts(String id) {
+        return costMapper.getCarCosts(id);
     }
 }

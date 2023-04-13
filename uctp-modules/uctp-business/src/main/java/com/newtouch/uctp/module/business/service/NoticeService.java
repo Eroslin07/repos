@@ -39,7 +39,8 @@ public interface NoticeService {
      * 批量删除消息/目前只考虑单个
      *
      */
-    void deleteAllNoticeStatus(String id);
+    //void deleteAllNoticeStatus(String id);
+    void deleteAllNoticeStatus(List<String> list);
 
 
 }

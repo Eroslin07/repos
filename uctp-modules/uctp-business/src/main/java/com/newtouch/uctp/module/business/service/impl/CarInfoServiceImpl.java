@@ -19,15 +19,15 @@ import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
-import com.newtouch.uctp.module.business.service.BusinessFileService;
-import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
-import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
 import com.newtouch.uctp.module.system.enums.DictTypeConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -60,7 +60,15 @@ public class CarInfoServiceImpl implements CarInfoService {
     private CarInfoDetailsService carInfoDetailsService;
     @Resource
     private DictDataApi dictDataApi;
+    @Autowired
+    @Lazy
+    private InvoicesService invoicesService;
 
+    @Resource
+    private CostService costService;
+
+    @Resource
+    private ContractService contractService;
 
     @Resource
     private FileApi fileApi;
@@ -523,22 +531,22 @@ public class CarInfoServiceImpl implements CarInfoService {
         //写入车辆信息
         carDetailRespVO.setCarInfoAndDetailVO(appCarInfoAndDetailVO);
         //合同信息
-        List<AppContractarVO> contractInfo = getContractInfo(carDCVo.getId());
-        List<AppContractarVO> contractInfo1 =new ArrayList<>();
+        List<AppContractarVO> contractInfo = contractService.getContractInfo(carDCVo.getId());
+        /*List<AppContractarVO> contractInfo1 =new ArrayList<>();
         for (AppContractarVO appContractarVO : contractInfo) {
-            contractInfo1.add(setContractUrl(appContractarVO));
-        }
-        carDetailRespVO.setContractarVO(contractInfo1);
+            contractInfo1.add(contractService.setContractUrl(appContractarVO));
+        }*/
+        carDetailRespVO.setContractarVO(contractInfo);
 
         // 资金信息
-        carDetailRespVO.setCarCostVO(getCarCosts(carDCVo.getId()));
+        carDetailRespVO.setCarCostVO(costService.getCarCosts(carDCVo.getId()));
         //发票信息
-        List<AppCarInvoiceVo> invoicesInfosList= getInvoicesInfo(carDCVo.getId());
-        List<AppCarInvoiceVo> invoicesInfos= new ArrayList<>();
+        List<AppCarInvoiceVo> invoicesInfosList= invoicesService.getInvoicesInfo(carDCVo.getId());
+        /*List<AppCarInvoiceVo> invoicesInfos= new ArrayList<>();
         for (AppCarInvoiceVo appCarInvoiceVo : invoicesInfosList) {
             invoicesInfos.add(setInvoiceUrl(appCarInvoiceVo));
-        }
-        carDetailRespVO.setCarInvoiceVO(invoicesInfos);
+        }*/
+        carDetailRespVO.setCarInvoiceVO(invoicesInfosList);
 
         return carDetailRespVO;
     }
@@ -548,29 +556,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         return carInfoMapper.getCarDCDetails(id);
     }
 
-    @Override
-    public AppCarCostVO getCarCosts(String id) {
-        return carInfoMapper.getCarCosts(id);
-    }
 
-    @Override
-    public List<AppContractarVO> getContractInfo(String carID) {
-        return carInfoMapper.getContractInfo(carID);
-    }
-
-    @Override
-    public String updateContractStatas(CarDCVo carDCVo) {
-        String result="更新失败";
-        int i=carInfoMapper.updateContractStatas(carDCVo);
-        if (i>0)
-            result="更新失败";
-        return result;
-    }
-
-    @Override
-    public List<AppCarInvoiceVo> getInvoicesInfo(String id) {
-        return carInfoMapper.getInvoicesInfo(id);
-    }
 
     @Override
     public CarDCVo getCarDC(String carID) {
@@ -592,20 +578,12 @@ public class CarInfoServiceImpl implements CarInfoService {
         return carInfoMapper.getCertificateIds(carID);
     }
 
-    @Override
-    public List<CarDCVo> getContractIds(String contractID) {
-        return carInfoMapper.getContractIds(contractID);
-    }
 
     @Override
     public PeopleVo getPeopelInfo(String carID) {
         return carInfoMapper.getPeopelInfo(carID);
     }
 
-    @Override
-    public List<CarDCVo> getInvoiceIds(String id) {
-        return carInfoMapper.getInvoiceIds(id);
-    }
 
     @Transactional
     @Override
@@ -631,7 +609,10 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
 
-    public PicResp getPics( CarDCVo carDCVo) {
+    /**
+     * 获取汽车驾驶证行驶证图片
+     */
+    private PicResp getPics( CarDCVo carDCVo) {
         //获取行驶证，驾驶证号
        // CarDCVo carDC =getCarDC(carDCVo.getId());
        // List<CarDCVo>  certificatePic=getCertificateIds(carDC.getCertificateNo());
@@ -673,47 +654,7 @@ public class CarInfoServiceImpl implements CarInfoService {
 
 
 
-    /**
-     * 将合同的url放到实体中
-     */
-    private AppContractarVO setContractUrl(AppContractarVO appContractarVO){
 
-        CommonResult<List<FileRespDTO>> listContractar =null;
 
-        List<Long> contractList=new ArrayList<>();
-        List<CarDCVo> contractIds= getContractIds(appContractarVO.getContractID()) ;//一条合同数据的ids;正常情况一个合同只会有一个pdf文件
-        for (CarDCVo contractId : contractIds) {
-            contractList.add(contractId.getLongId());
-        }
-        listContractar= fileApi.fileList(contractList);
-        if(listContractar.getData()!=null) {
-            for (FileRespDTO datum : listContractar.getData()) {
 
-                appContractarVO.setUrl(datum.getUrl());
-            }
-        }
-        return appContractarVO;
-    }
-
-    /**
-     * 将发票的url放到实体中
-     */
-    private AppCarInvoiceVo setInvoiceUrl(AppCarInvoiceVo  VO){
-
-        CommonResult<List<FileRespDTO>> listInvoice =null;
-
-        List<Long> invoiceList=new ArrayList<>();
-        List<CarDCVo> invoiceIds= getInvoiceIds(VO.getInvoiceId()) ;//目前一个发票只有一个路径
-
-        for (CarDCVo invoiceId : invoiceIds) {
-            invoiceList.add(invoiceId.getLongId());
-        }
-        listInvoice= fileApi.fileList(invoiceList);
-        if(listInvoice.getData()!=null) {
-            for (FileRespDTO datum : listInvoice.getData()) {
-                VO.setUrl(datum.getUrl());
-            }
-        }
-        return VO;
-    }
 }

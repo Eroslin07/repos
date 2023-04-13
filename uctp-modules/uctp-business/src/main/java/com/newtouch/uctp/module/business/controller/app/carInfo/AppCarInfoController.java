@@ -8,6 +8,7 @@ import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
 import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
@@ -39,9 +40,10 @@ import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 public class AppCarInfoController {
     @Resource
     private CarInfoService carInfoService;
-
     @Resource
-    private FileApi fileApi;
+    private ContractService contractService;
+
+
 
     @PostMapping("/create")
     @Operation(summary = "创建车辆主表")
@@ -172,7 +174,7 @@ public class AppCarInfoController {
     @PostMapping("/updateContractStatas")
     @Operation(summary = "作废合同状态")
     public CommonResult<String> updateContractStatas(@RequestBody  CarDCVo carDCVo) {
-        return success(carInfoService.updateContractStatas(carDCVo));
+        return success(contractService.updateContractStatas(carDCVo));
     }
 
 
@@ -182,6 +184,7 @@ public class AppCarInfoController {
         File file = DownLoadUtils.getResourceFile(example.getUrl());
         DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
     }
+/*
     @PostMapping ("/download-more")
     @Operation(summary = "多文件下载")
     public void downLoadmore(@RequestBody DownloadMoreExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -191,6 +194,7 @@ public class AppCarInfoController {
             DownLoadUtils.outFileByFile(exampleExample.getName()+"."+exampleExample.getType(),file,false,request,response);
         }
     }
+
 
 
 
@@ -309,6 +313,7 @@ public class AppCarInfoController {
         }
         return appContractarVO;
     }
+*/
 
     @PostMapping("/getCarBrandList")
     @PermitAll

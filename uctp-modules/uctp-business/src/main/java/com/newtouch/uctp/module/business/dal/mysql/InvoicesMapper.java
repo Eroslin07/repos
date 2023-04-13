@@ -1,7 +1,8 @@
 package com.newtouch.uctp.module.business.dal.mysql;
 
 
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.AppMyCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.CostExample;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,17 +12,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 /**
- * 我的费用 Mapper
+ * 发票 Mapper
  */
 @Mapper
-public interface CostMapper  {
+public interface InvoicesMapper {
 
 
-    List<AppMyCostVO> getMyCosts(@Param("example") CostExample example);
+    List<AppCarInvoiceVo> getInvoicesInfo(String carID);
 
-    AppMyCostVO getMyCosts1(@PathVariable String brand,@PathVariable String year, @PathVariable String mon);
+    List<CarDCVo> getInvoiceIds(String id);
 
-    AppCarCostVO getCarCosts(String id);
+
 
 
 }
