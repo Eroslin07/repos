@@ -12,7 +12,6 @@
         <id property="id" column="id"/>
         <result property="vin" column="vin"/>
         <result property="brand" column="brand"/>
-        <result property="year" column="year"/>
         <result property="model" column="model"/>
         <result property="engineNum" column="engineNum"/>
         <result property="vehicleReceiptAmount" column="vehicleReceiptAmount"/>
@@ -27,7 +26,6 @@
         a.ID as id,
         a.BRAND as brand,
         a.VIN as vin,
-        a.YEAR as year,
         a.MODEL as model,
         a.ENGINE_NUM as engineNum,
         a.VEHICLE_RECEIPT_AMOUNT as vehicleReceiptAmount,
