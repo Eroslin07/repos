@@ -13,6 +13,7 @@ import java.util.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
@@ -398,6 +399,37 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         Page<BpmTaskTodoRespVO> page = MyBatisUtils.buildPage(pageVO);
         bpmFormMainMapper.getBpmTaskTodo(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
+    }
+
+    @Override
+    public BpmTaskApproveFormRespVO getTaskFormInfo(String taskId) {
+        BpmTaskApproveFormRespVO bpmTaskApproveFormRespVO = new BpmTaskApproveFormRespVO();
+        Task task = getTask(taskId);
+        if (task == null) {
+            throw exception(TASK_COMPLETE_FAIL_NOT_EXISTS);
+        }
+        bpmTaskApproveFormRespVO.setTaskId(task.getId());
+        bpmTaskApproveFormRespVO.setProcDefId(task.getProcessDefinitionId());
+        bpmTaskApproveFormRespVO.setProcInstId(task.getProcessInstanceId());
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, task.getProcessInstanceId());
+        if (ObjectUtil.isNull(bpmFormMainDO) || bpmFormMainDO.getStatus() != 1) {
+            throw exception(TASK_COMPLETE_FAIL_NOT_EXISTS);
+        }
+        bpmTaskApproveFormRespVO.setBusinessKey(bpmFormMainDO.getId());
+        bpmTaskApproveFormRespVO.setSerialNo(bpmFormMainDO.getSerialNo());
+        bpmTaskApproveFormRespVO.setTitle(bpmFormMainDO.getTitle());
+        bpmTaskApproveFormRespVO.setBusiType(bpmFormMainDO.getBusiType());
+
+        List<UserTask> userTaskList = repositoryService.getBpmnModel(task.getProcessDefinitionId()).getMainProcess().findFlowElementsOfType(UserTask.class, true);
+
+        FlowElement flowElement = repositoryService.getBpmnModel(task.getProcessDefinitionId()).getMainProcess().getFlowElement(task.getTaskDefinitionKey());
+        bpmTaskApproveFormRespVO.setNodeId(task.getTaskDefinitionKey());
+        bpmTaskApproveFormRespVO.setNodeName(flowElement.getName());
+
+
+
+
+        return bpmTaskApproveFormRespVO;
     }
 
     private Task getTask(String id) {
