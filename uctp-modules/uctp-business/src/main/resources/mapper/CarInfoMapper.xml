@@ -46,35 +46,24 @@
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
         <where>
-            1=1
-            <if test="pageVO.salesStatus != null">
-                <bind name="pageVO.salesStatus" value="'%'+pageVO.salesStatus+'%'"/>
-                and a.SALES_STATUS like #{pageVO.salesStatus}
-            </if>
-            <if test="pageVO.status != null">
-                <bind name="pageVO.status" value="'%'+pageVO.status+'%'"/>
-                and a.STATUS like #{pageVO.status}
-            </if>
-            <if test="pageVO.brand != null and pageVO.brand != ''">
-                <bind name="pageVO.brand" value="'%'+pageVO.brand+'%'"/>
-                and a.BRAND like #{pageVO.brand}
-            </if>
+            a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
-                and (b.BUYER_NAME like #{pageVO.searchValue}
-                or b.SELLER_NAME like #{pageVO.searchValue}
-                or a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue})
+                and (a.VIN like #{pageVO.searchValue}
+                or a.BRAND like #{pageVO.searchValue
+                or a.BUYER_NAME like #{pageVO.searchValue}
+                or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
-            <if test="pageVO.pickUpTime != null and pageVO.pickUpTime.length > 0">
-                and a.PICK_UP_TIME between #{pageVO.PICK_UP_TIME[0]} and #{pageVO.PICK_UP_TIME[1]}
+            <if test="pageVO.status != null">
+                and a.STATUS = #{pageVO.status}}
             </if>
-            <if test="pageVO.salesTime != null and pageVO.salesTime.length > 0">
-                and a.SALES_TIME between #{pageVO.SALES_TIME[0]} and #{pageVO.SALES_TIME[1]}
+            <if test="pageVO.statusThree != null">
+                and a.STATUS_THREE = #{pageVO.statusThree}}
             </if>
         </where>
         order by a.CREATE_TIME desc
     </select>
+<!--    这里需要关联文件表查询车头的图片，如果查不出来就一个个的去查-->
     <select id="selectAppCellCarPage"
             resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppSellCarInfoPageRespVO">
         select
@@ -86,7 +75,15 @@
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue})
+                or a.BRAND like #{pageVO.searchValue
+                or a.BUYER_NAME like #{pageVO.searchValue}
+                or a.SELLER_NAME like #{pageVO.searchValue})
+            </if>
+            <if test="pageVO.status != null">
+                and a.STATUS = #{pageVO.status}}
+            </if>
+            <if test="pageVO.statusThree != null">
+                and a.STATUS_THREE = #{pageVO.statusThree}}
             </if>
         </where>
         order by a.CREATE_TIME desc

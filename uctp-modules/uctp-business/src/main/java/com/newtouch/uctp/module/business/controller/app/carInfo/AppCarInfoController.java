@@ -1,6 +1,5 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo;
 
-import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
@@ -9,11 +8,8 @@ import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
-import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
-import com.qiyuesuo.sdk.v2.bean.Contract;
-import com.qiyuesuo.sdk.v2.response.ContractPageResult;
-import com.qiyuesuo.sdk.v2.response.SdkResponse;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
+import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,14 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.error;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
@@ -116,27 +108,6 @@ public class AppCarInfoController {
         return success(pageResult);
     }
 
-
-    @PostMapping("/insertCarInfo")
-    @Operation(summary = "新增车辆信息")
-    public CommonResult<String> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
-        return success(carInfoService.insertCarInfo(createReqVO));
-    }
-
-    @PostMapping("/insertSellerInfo")
-    @Operation(summary = "新增卖家信息")
-    public CommonResult<String> insertSellerInfo(@Valid @RequestBody AppSellerInfoReqVO reqVO) {
-        return success(carInfoService.insertSellerInfo(reqVO));
-    }
-
-    @GetMapping("/getCarInfoByVIN")
-    @Operation(summary = "根据VIN获取回显车辆信息")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") Long id) {
-
-        return success(carInfoService.getSellCarInfo(id));
-    }
-
     @GetMapping("/get/sell")
     @Operation(summary = "获得APP卖车详情页")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
@@ -161,6 +132,25 @@ public class AppCarInfoController {
         return success(true);
     }
 
+
+    @PostMapping("/insertCarInfo")
+    @Operation(summary = "新增车辆信息")
+    public CommonResult<String> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
+        return success(carInfoService.insertCarInfo(createReqVO));
+    }
+
+    @PostMapping("/insertSellerInfo")
+    @Operation(summary = "新增卖家信息")
+    public CommonResult<String> insertSellerInfo(@Valid @RequestBody AppSellerInfoReqVO reqVO) {
+        return success(carInfoService.insertSellerInfo(reqVO));
+    }
+
+    @GetMapping("/getCarInfoByVIN")
+    @Operation(summary = "根据VIN获取回显车辆信息")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") Long id) {
+        return success(carInfoService.getSellCarInfo(id));
+    }
 
 
     @GetMapping("/getDetailds")

@@ -6,10 +6,6 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoAndDetailVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
@@ -226,7 +222,6 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     public PageResult<AppHomeCarInfoRespVO> getHomeCarInfoPage(AppHomeCarInfoPageReqVO pageVO) {
         Page<AppHomeCarInfoRespVO> page = new Page<>(pageVO.getPageNo(), pageVO.getPageSize());
-        pageVO.formatLocalDateTime();
         page = carInfoMapper.selectAppHomePage(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
     }

@@ -81,6 +81,9 @@ public class ContractarInfoDO extends BaseDO {
      * 车辆ID
      */
     private String carId;
-
+    /**
+     * 转入地车辆管理所名称
+     */
+    private String transManageName;
 
 }

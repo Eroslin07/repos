@@ -129,6 +129,10 @@ public class CarInfoDetailsDO extends BaseDO {
      */
     private String buyerName;
     /**
+     * 买家地址
+     */
+    private String buyerAdder;
+    /**
      * 车辆手续及备件
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
@@ -138,4 +142,5 @@ public class CarInfoDetailsDO extends BaseDO {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private FeesAndCommitments feesAndCommitments;
+
 }

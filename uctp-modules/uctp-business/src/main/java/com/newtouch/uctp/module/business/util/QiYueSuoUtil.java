@@ -5,6 +5,7 @@ import com.qiyuesuo.sdk.v2.SdkClient;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
+import com.qiyuesuo.sdk.v2.param.SignParam;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 import com.qiyuesuo.sdk.v2.utils.CollectionUtils;
@@ -541,10 +542,12 @@ public class QiYueSuoUtil {
 //        qKPK101VGyLsnSqFoLzSCu3JGiMAVO
         QiYueSuoUtil qiYueSuoUtil = new QiYueSuoUtil("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
         try {
+//            3083697423701316570
 //            tset1(qiYueSuoUtil);
 
-            test2(qiYueSuoUtil);
-
+//            test2(qiYueSuoUtil);
+            test3(qiYueSuoUtil);
+//            test4(qiYueSuoUtil);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -605,5 +608,38 @@ public class QiYueSuoUtil {
         }
         OpenSSOPrivilegeUrlResult result = response.getResult();
         System.out.println(result.getPageUrl());
+    }
+
+    private static void test3(QiYueSuoUtil qiYueSuoUtil) throws Exception {
+//        nVtv3tjV9s
+//        A0OOrtfkB3pqqeSsgBPglUSv7Mneoj
+        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn","nVtv3tjV9s","A0OOrtfkB3pqqeSsgBPglUSv7Mneoj");
+        SignParam param = new SignParam();
+        param.setContractId(3083701724985168035L);
+        param.setSealId(3083300647844586000L);
+        ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);
+        String response = sdkClient.service(request);
+        SdkResponse<Object> responseObj = JSONUtils.toQysResponse(response);
+        if(responseObj.getCode() == 0) {
+            System.out.println("公章签署成功");
+        } else {
+            String format = String.format("公章签署失败，错误码:%s，错误信息:%s", responseObj.getCode(), responseObj.getMessage());
+            System.out.println(format);
+        }
+    }
+    private static void test4(QiYueSuoUtil qiYueSuoUtil) throws Exception {
+//        nVtv3tjV9s
+//        A0OOrtfkB3pqqeSsgBPglUSv7Mneoj
+        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn","nVtv3tjV9s","A0OOrtfkB3pqqeSsgBPglUSv7Mneoj");
+        SealListRequest request = new SealListRequest();
+        String response = sdkClient.service(request);
+        SdkResponse<SealListResult> responseObj = JSONUtils.toQysResponse(response, SealListResult.class);
+        if(responseObj.getCode() == 0) {
+            SealListResult sealList = responseObj.getResult();
+            System.out.println("印章列表查询，数量:"+sealList.getTotalCount());
+        } else {
+            String format = String.format("印章列表失败，错误码:%s，错误信息:%s", responseObj.getCode(), responseObj.getMessage());
+            System.out.println(format);
+        }
     }
 }
