@@ -3,7 +3,11 @@
 		<!-- 标题 -->
 		<view class="text-title">{{detailObj.title}}</view>
 		<view class="content-box">
-			<rich-text :nodes="detailObj.content"></rich-text>
+			<view>
+				<text>{{detailObj.content}}</text>
+				<text v-if="detailObj.url" class="navigator-box"
+					@click="handleNavigate(detailObj.url)">{{ detailObj.url }}</text>
+			</view>
 		</view>
 		<view class="footer">
 			{{detailObj.createTime}}
@@ -19,8 +23,14 @@
 			}
 		},
 		onLoad(options) {
-			console.log(JSON.parse(decodeURIComponent(options.item)))
 			this.detailObj = JSON.parse(decodeURIComponent(options.item))
+		},
+		methods: {
+			//跳转
+			handleNavigate(url) {
+				let index = url.indexOf('/')
+				this.$tab.navigateTo(url.substring(index))
+			}
 		}
 	}
 </script>
@@ -31,20 +41,29 @@
 		padding: 10px 15px;
 
 		.content-box {
+			width: 100%;
 			margin-top: 20px;
-			text-indent:28px;
-			color:#626262;
+			text-indent: 28px;
+			color: #626262;
+			word-wrap: break-word;
+			word-break: break-all;
+			white-space: normal;
 		}
 
 		.text-title {
 			text-align: center;
 			font-size: 16px;
 		}
-		
-		.footer{
-			margin-top:20px;
-			text-align:right;
-			color:#626262;
+
+		.footer {
+			margin-top: 20px;
+			text-align: right;
+			color: #626262;
+		}
+
+		.navigator-box {
+			color: #007BFF;
+			text-decoration: underline;
 		}
 	}
 </style>
