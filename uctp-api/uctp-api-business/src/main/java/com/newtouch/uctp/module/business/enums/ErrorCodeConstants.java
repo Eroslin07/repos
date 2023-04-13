@@ -14,6 +14,7 @@ public interface ErrorCodeConstants {
     ErrorCode CAR_INFO_NOT_EXISTS = new ErrorCode(1005000011, "车辆不存在");
     ErrorCode CAR_INFO_DETAILS_NOT_EXISTS = new ErrorCode(1005000012, "车辆明细不存在");
     ErrorCode CAR_INFO_SELL_AMOUNT_ERROR = new ErrorCode(1005000013, "卖车金额必须大于收车金额");
+    ErrorCode CAR_INFO_STATUS_ERROR = new ErrorCode(1005000014, "车辆状态异常");
 
 
     // ========== business 契约锁错误 1005000100 ==========

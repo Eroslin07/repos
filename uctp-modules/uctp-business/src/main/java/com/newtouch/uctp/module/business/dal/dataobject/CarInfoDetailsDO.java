@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
 
@@ -138,6 +137,10 @@ public class CarInfoDetailsDO extends TenantBaseDO {
      * 买家地址
      */
     private String buyerAdder;
+    /**
+     * 买转入地车辆管理所名称
+     */
+    private String transManageName;
     /**
      * 车辆手续及备件
      */
