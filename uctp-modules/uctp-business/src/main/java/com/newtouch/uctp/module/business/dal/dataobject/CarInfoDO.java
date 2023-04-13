@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -36,12 +37,19 @@ public class CarInfoDO extends TenantBaseDO {
      * 车辆品牌
      */
     private String brand;
+
     /**
-     * 车辆年份
+     * 车辆类型
      */
-    private String year;
+    private String carType;
+
     /**
-     * 车辆型号
+     * 品牌型号
+     */
+    private String brandType;
+
+    /**
+     * 品牌/车型
      */
     private String model;
 
