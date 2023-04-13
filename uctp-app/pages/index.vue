@@ -1,5 +1,8 @@
 <template>
 	<view class="content">
+		<view class="msg-btn">
+			<u-button type="primary" size="small" :plain="true" text="消息" @click="handleMsg"></u-button>
+		</view>
 		<view class="image">
 			<image src="/static/images/home/car.jpg"></image>
 		</view>
@@ -164,8 +167,8 @@
 			getAcount() {
 				getHomeCount().then(res => {
 					this.gatherData = res.data
-					this.gatherData.sort(function(a,b){
-						return a.salesStatus-b.salesStatus
+					this.gatherData.sort(function(a, b) {
+						return a.salesStatus - b.salesStatus
 					})
 				}).catch((error) => {
 					for (let i = 0; i < 4; i++) {
@@ -176,7 +179,7 @@
 					}
 				})
 			},
-			
+
 			// 搜索
 			search(val) {
 				uni.showToast({
@@ -204,6 +207,10 @@
 			// 收车中
 			tabCarStatus(text) {
 				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${text}`)
+			},
+			// 消息
+			handleMsg() {
+				this.$tab.navigateTo('/subPages/work/index')
 			}
 		}
 	}
@@ -346,5 +353,13 @@
 
 	.paddingR10 {
 		padding-right: 10px;
+	}
+
+	.msg-btn {
+		width: 50px;
+		height: 50px;
+		position: absolute;
+		left: 15px;
+		z-index: 100000
 	}
 </style>

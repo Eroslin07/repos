@@ -1,46 +1,42 @@
 {
 	"pages": [
-	// 	{
-	// 	"path": "pages/wx_login",
-	// 	"style": {
-	// 		"navigationBarTitleText": "登录",
-	// 		"navigationStyle": "custom"
-	// 	}
-	// },
-	{
-		"path": "pages/login",
-		"style": {
-			"navigationBarTitleText": "登录",
-			"navigationStyle": "custom"
+		// 	{
+		// 	"path": "pages/wx_login",
+		// 	"style": {
+		// 		"navigationBarTitleText": "登录",
+		// 		"navigationStyle": "custom"
+		// 	}
+		// },
+		{
+			"path": "pages/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				// "navigationStyle": "custom"
+				"enablePullDownRefresh": true
+			}
+		}, {
+			"path": "pages/cost/index",
+			"style": {
+				"navigationBarTitleText": "费用分析"
+			}
+		}, {
+			"path": "pages/account/index",
+			"style": {
+				"navigationBarTitleText": "资金管理"
+			}
+		}, {
+			"path": "pages/mine/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
 		}
-	}, {
-		"path": "pages/index",
-		"style": {
-			"navigationBarTitleText": "首页",
-			// "navigationStyle": "custom"
-			"enablePullDownRefresh":true
-		}
-	}, {
-		"path": "pages/cost/index",
-		"style": {
-			"navigationBarTitleText": "费用分析"
-		}
-	}, {
-		"path": "pages/account/index",
-		"style": {
-			"navigationBarTitleText": "资金管理"
-		}
-	}, {
-		"path": "pages/work/index",
-		"style": {
-			"navigationBarTitleText": "消息"
-		}
-	}, {
-		"path": "pages/mine/index",
-		"style": {
-			"navigationBarTitleText": "我的"
-		}
-	}],
+	],
 	"subPackages": [{
 		"root": "subPages",
 		"pages": [{
@@ -81,6 +77,16 @@
 			"path": "home/sellingCar/carInfo",
 			"style": {
 				"navigationBarTitleText": "我要卖车"
+			}
+		}, {
+			"path": "work/index",
+			"style": {
+				"navigationBarTitleText": "消息"
+			}
+		}, {
+			"path": "work/infoDetail",
+			"style": {
+				"navigationBarTitleText": "消息详情"
 			}
 		}, {
 			"path": "home/sellingCar/vehicleDetails",
