@@ -65,9 +65,9 @@
 	export default {
 		data() {
 			return {
-				captchaEnabled: true,
+				captchaEnabled: false,
 				globalConfig: getApp().globalData.config,
-				changing: false,
+				changing: true,
 				getTime: true,
 				time: 60,
 				timer: null,

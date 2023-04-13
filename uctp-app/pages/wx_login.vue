@@ -204,7 +204,7 @@
 	
 	.action-btn {
 		padding: 20px;
-		margin-top: 80%;
+		margin-top: 50%;
 		height: 200px;
 	}
 	
