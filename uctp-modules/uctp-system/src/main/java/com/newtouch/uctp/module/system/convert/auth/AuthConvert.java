@@ -74,6 +74,4 @@ public interface AuthConvert {
     SmsCodeUseReqDTO convert(AuthSmsLoginReqVO reqVO, Integer scene, String usedIp);
 
 
-    AuthRegisterRespVO convert(AuthRegisterReqVO bean);
-
 }
