@@ -48,7 +48,6 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     public void updateCarInfoDetail(CarInfoDetailsDO detailsDO) {
         // 校验存在
         validateCarInfoDetailsExists(detailsDO.getId());
-
         carInfoDetailsMapper.updateById(detailsDO);
     }
 

@@ -112,7 +112,6 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
         CarInfoDO dbCarInfo = randomPojo(CarInfoDO.class, o -> { // 等会查询到
             o.setVin(null);
             o.setBrand(null);
-            o.setYear(null);
             o.setModel(null);
             o.setEngineNum(null);
             o.setVehicleReceiptAmount(null);
@@ -128,8 +127,6 @@ public class CarInfoServiceImplTest extends BaseDbUnitTest {
         carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setVin(null)));
         // 测试 brand 不匹配
         carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setBrand(null)));
-        // 测试 year 不匹配
-        carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setYear(null)));
         // 测试 style 不匹配
         carInfoMapper.insert(cloneIgnoreId(dbCarInfo, o -> o.setModel(null)));
         // 测试 engineNum 不匹配

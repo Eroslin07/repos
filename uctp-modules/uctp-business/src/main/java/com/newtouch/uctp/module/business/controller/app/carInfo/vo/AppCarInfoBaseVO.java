@@ -32,11 +32,13 @@ public class AppCarInfoBaseVO {
     @Schema(description = "备注")
     private String remarks;
 
-    @Schema(description = "售卖状态")
+    @Schema(description = "一级状态")
     private Integer salesStatus;
 
-    @Schema(description = "状态")
+    @Schema(description = "二级状态")
     private Integer status;
+    @Schema(description = "三级状态")
+    private Integer statusThree;
 
     @Schema(description = "商户id")
     private String businessId;

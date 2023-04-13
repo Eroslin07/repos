@@ -33,6 +33,7 @@
         a.VEHICLE_RECEIPT_AMOUNT as vehicleReceiptAmount,
         a.SALES_STATUS as salesStatus,
         a.STATUS as status,
+        a.STATUS_THREE as statusThree,
         b.MILEAGE as mileage,
         b.BUYER_NAME as firstParty,
         b.SELLER_NAME as secondParty
@@ -50,15 +51,15 @@
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue
+                or a.BRAND like #{pageVO.searchValue}
                 or a.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
             <if test="pageVO.status != null">
-                and a.STATUS = #{pageVO.status}}
+                and a.STATUS = #{pageVO.status}
             </if>
             <if test="pageVO.statusThree != null">
-                and a.STATUS_THREE = #{pageVO.statusThree}}
+                and a.STATUS_THREE = #{pageVO.statusThree}
             </if>
         </where>
         order by a.CREATE_TIME desc
@@ -75,15 +76,22 @@
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue
+                or a.BRAND like #{pageVO.searchValue}
                 or a.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
-            <if test="pageVO.status != null">
-                and a.STATUS = #{pageVO.status}}
+            <if test="pageVO.salesStatus != null">
+                and a.SALES_STATUS = #{pageVO.salesStatus}
             </if>
-            <if test="pageVO.statusThree != null">
-                and a.STATUS_THREE = #{pageVO.statusThree}}
+            <if test="pageVO.status != null">
+                and a.STATUS = #{pageVO.status}
+            </if>
+            <if test="pageVO.statusThree != null and pageVO.statusThree.length > 0">
+                and a.STATUS_THREE in
+                <foreach collection="pageVO.statusThree" item="item"
+                         index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by a.CREATE_TIME desc

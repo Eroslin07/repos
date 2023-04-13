@@ -46,6 +46,11 @@ public class BusinessFileServiceImpl implements BusinessFileService {
         businessFileMapper.insertBatch(fileDOList);
     }
 
+    @Override
+    public List<FileRespDTO> getDTOByMainId(Long mainId) {
+        return this.getDTOByMainIdAndType(mainId, null);
+    }
+
 
     @Override
     public List<FileRespDTO> getDTOByMainIdAndType(Long mainId, String fileType) {
@@ -66,6 +71,11 @@ public class BusinessFileServiceImpl implements BusinessFileService {
             }
         });
         return dataList;
+    }
+
+    @Override
+    public List<BusinessFileDO> getByMainId(Long mainId) {
+        return this.getByMainIdAndType(mainId,null);
     }
 
     @Override
