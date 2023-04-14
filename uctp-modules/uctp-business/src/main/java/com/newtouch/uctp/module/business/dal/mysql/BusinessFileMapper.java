@@ -23,6 +23,5 @@ public interface BusinessFileMapper extends BaseMapperX<BusinessFileDO> {
                 .eqIfPresent(BusinessFileDO::getFileType, fileType));
     }
 
-//    @Delete("delete from uctp_business_file where MAIN_ID = #{mainId} and FILE_TYPE = #{fileType}}")
     int deleteByMainIdAndType(@Param("mainId") Long mainId, @Param("fileType") String fileType);
 }

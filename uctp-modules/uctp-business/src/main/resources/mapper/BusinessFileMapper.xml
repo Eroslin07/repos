@@ -14,7 +14,9 @@
         from uctp_business_file
         <where>
             MAIN_ID = #{mainId}
-            and FILE_TYPE = #{fileType}
+            <if test="fileType != null and fileType != ''">
+                and FILE_TYPE = #{fileType}
+            </if>
         </where>
     </delete>
 
