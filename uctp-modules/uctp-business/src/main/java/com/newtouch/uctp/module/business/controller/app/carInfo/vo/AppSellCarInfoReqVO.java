@@ -1,6 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
-import com.newtouch.uctp.module.business.dal.dataobject.Condition;
+import com.newtouch.uctp.module.business.dal.dataobject.VehicleCondition;
 import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -36,6 +36,6 @@ public class AppSellCarInfoReqVO {
     @Schema(description = "其他费用及约定")
     private FeesAndCommitments feesAndCommitments;
     @Schema(description = "车况相关")
-    private Condition condition;
+    private VehicleCondition vehicleCondition;
 
 }

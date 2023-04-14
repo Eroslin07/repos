@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Condition implements Serializable {
+public class VehicleCondition implements Serializable {
     //--------------------租金相关-------------------------------
     @Schema(description = "里程表未被蓄意改动")
     private Boolean conditionA;

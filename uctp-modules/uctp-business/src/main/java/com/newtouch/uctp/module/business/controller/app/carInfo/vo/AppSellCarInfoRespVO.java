@@ -1,6 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
-import com.newtouch.uctp.module.business.dal.dataobject.Condition;
+import com.newtouch.uctp.module.business.dal.dataobject.VehicleCondition;
 import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
 import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareParts;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -60,7 +60,7 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     @Schema(description = "其他费用及约定")
     private FeesAndCommitments feesAndCommitments;
     @Schema(description = "车况相关")
-    private Condition condition;
+    private VehicleCondition vehicleCondition;
     @Schema(description = "转入地车辆管理所名称")
     private String transManageName;
 
