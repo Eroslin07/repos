@@ -15,11 +15,11 @@
 					<uni-col :span="10">
 						<view class="car_left">
 							<view class="car_text cell-car-draft">代售已检测</view>
-							<image src="../../../static/images/car.webp" class="car-image"></image>
+							<image :src="tab.url" class="car-image"></image>
 						</view>
 					</uni-col>
 					<uni-col :span="14">
-						<h3>{{tab.brand}}</h3>
+						<h3>{{tab.model}}</h3>
 						<view>VIN：{{tab.vin}}</view>
 						<view>{{tab.model}} | {{tab.mileage}}万公里</view>
 						<view style="color: #000;">收车价：{{tab.vehicleReceiptAmount}}元</view>
@@ -65,6 +65,7 @@
 					pageNo: 1,
 					pageSize: 10,
 					searchValue: this.searchValue,
+					statusThree: [231, 221],
 					businessId: 130
 				}
 				this.$modal.loading("数据加载中...");
