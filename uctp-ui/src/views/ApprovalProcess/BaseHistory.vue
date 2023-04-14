@@ -47,8 +47,12 @@ import { formatPast2 } from '@/utils/formatTime'
 import * as TaskApi from '@/api/bpm/task'
 import { useUserStore } from '@/store/modules/user'
 import { onMounted, ref } from 'vue'
+
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+console.log(baseInfoData.data, 'baseInfoData')
+
 const { query } = useRoute() // 查询参数
-const id = (query.id as unknown as number) || '393a0177-cf96-11ed-ae43-005056c00008'
+const id = (query.id as unknown as number) || baseInfoData.data.procInstId
 const tasksLoad = ref(true)
 const tasks = ref<any[]>([])
 const runningTasks = ref<any[]>([]) // 运行中的任务

@@ -22,5 +22,7 @@ public class AppSellCarInfoPageRespVO extends AppCarInfoBaseVO {
     private String secondParty;
     @Schema(description = "里程数")
     private String mileage;
+    @Schema(description = "图片地址")
+    private String url;
 
 }

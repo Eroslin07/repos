@@ -39,7 +39,7 @@ public interface CarInfoService {
      * @param reqVO
      * @return
      */
-    String insertSellerInfo(@Valid AppSellerInfoReqVO reqVO);
+    AppBpmCarInfoRespVO insertSellerInfo(@Valid AppSellerInfoReqVO reqVO);
 
     CarInfoDO selectCarInfoByID(String id);
 
@@ -58,6 +58,18 @@ public interface CarInfoService {
      * @param id 编号
      */
     void deleteCarInfo(Long id);
+
+
+
+    /**
+     * 收车删除车辆主表&明细表数据
+     *
+     * @param id 编号
+     */
+    void delCarInfoWithCollect(Long id);
+
+
+
 
     /**
      * 获得车辆主表
@@ -110,7 +122,7 @@ public interface CarInfoService {
      */
     AppSellCarInfoRespVO getSellCarInfo(Long id);
 
-    AppSellCarInfoRespVO getCarInfoByVIN(String vin);
+    Map getCarInfoByVIN(String vin);
 
     /**
      * 获取卖车详情的明细费用

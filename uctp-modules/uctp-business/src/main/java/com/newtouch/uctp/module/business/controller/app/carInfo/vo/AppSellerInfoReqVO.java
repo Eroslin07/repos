@@ -21,6 +21,9 @@ public class AppSellerInfoReqVO {
     @Schema(description = "付款方式")
     private String payType;
 
+    @Schema(description = "转入地车辆管理所名称")
+    private String transManageName;
+
     @Schema(description = "是否第三方代收")
     private String collection;
 
@@ -32,6 +35,9 @@ public class AppSellerInfoReqVO {
 
     @Schema(description = "卖家姓名")
     private String sellerName;
+
+    @Schema(description = "卖家地址")
+    private String sellerAdder;
 
 
     @Schema(description = "卖家电话")
