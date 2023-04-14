@@ -26,11 +26,11 @@ public interface ErrorCodeConstants {
     ErrorCode QYS_FILE_URL_NOT_NULL = new ErrorCode(1005000100, "契约锁:输出路径不能为空");
 
     // ========== business 资金错误 1005000200 ==========
-    ErrorCode ACC_ACCOUNT_NO_NOT_NULL = new ErrorCode(1005000200, "商户号不能为空");
-    ErrorCode ACC_CONTRACT_NO_NOT_NULL = new ErrorCode(1005000200, "交易合同号不能为空");
-    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_NOT_NULL = new ErrorCode(1005000200, "收车金额不能为负");
-    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000200, "收车金额不能为空");
-    ErrorCode ACC_CAR_SALES_AMOUNT_NOT_NULL = new ErrorCode(1005000200, "卖车金额不能为空");
-    ErrorCode ACC_CAR_SALES_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000200, "卖车金额不能为负");
-    ErrorCode ACC_COST_TYPE_REPEAT = new ErrorCode(1005000200, "费用类型不能重复");
+    ErrorCode ACC_ACCOUNT_NO_NOT_NULL = new ErrorCode(1005000201, "商户号不能为空");
+    ErrorCode ACC_CONTRACT_NO_NOT_NULL = new ErrorCode(1005000202, "交易合同号不能为空");
+    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_NOT_NULL = new ErrorCode(1005000203, "收车金额不能为负");
+    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000204, "收车金额不能为空");
+    ErrorCode ACC_CAR_SALES_AMOUNT_NOT_NULL = new ErrorCode(1005000205, "卖车金额不能为空");
+    ErrorCode ACC_CAR_SALES_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000206, "卖车金额不能为负");
+    ErrorCode ACC_COST_TYPE_REPEAT = new ErrorCode(1005000207, "费用类型不能重复");
 }
