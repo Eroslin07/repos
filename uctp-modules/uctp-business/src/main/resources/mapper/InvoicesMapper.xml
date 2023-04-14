@@ -48,4 +48,149 @@
         where uim.id =#{id}
     </select>
 
+
+    <select id="getVatInvoiceDO" resultType="com.newtouch.uctp.module.business.dal.dataobject.VatInvoiceDO">
+       select
+            uvi.ID  as  id,
+            uvi.DEVICE_TYPE  as  deviceType,
+            uvi.ORGANIZATION_CODE  as  organizationCode,
+            uvi.SERIAL_NO  as  serialNo,
+            uvi.REQSERIAL_NUMBER  as  reqSerialNumber,
+            uvi.BUSINESS_ID  as  businessId,
+            uvi.SYSTEM_ID  as  systemId,
+            uvi.SYSTEM_NAME  as  systemName,
+            uvi.TAXATION_MODE  as  taxationMode,
+            uvi.INVOICE_TYPE  as  invoiceType,
+            uvi.INVOICE_TYPE_CODE  as  invoiceTypeCode,
+            uvi.INVOICE_SPECIAL_MARK  as  invoiceSpecialMark,
+            uvi.SELLER_TAX_NO  as  sellerTaxNo,
+            uvi.INVOICE_TERMINAL_CODE  as  invoiceTerminalCode,
+            uvi.BUYER_TAX_NO  as  buyerTaxNo,
+            uvi.BUYER_NAME  as  buyerName,
+            uvi.BUYER_ADDRESS_PHONE  as  buyerAddressPhone,
+            uvi.BUYER_BANK_ACCOUNT  as  buyerBankAccount,
+            uvi.DRAWER  as  drawer,
+            uvi.CHECKER  as  checker,
+            uvi.PAYEE  as  payee,
+            uvi.INVOICE_LIST_MARK  as  invoiceListMark,
+            uvi.RED_INFO_NO  as  redInfoNo,
+            uvi.NOTIFICATION_NO  as  notificationNo,
+            uvi.ORIGINAL_INVOICE_CODE  as  originalInvoiceCode,
+            uvi.ORIGINAL_INVOICE_NO  as  originalInvoiceNo,
+            uvi.DEDUCTIBLE_AMOUNT  as  deductibleAmount,
+            uvi.INVOICE_TOTAL_PRICE  as  invoiceTotalPrice,
+            uvi.INVOICE_TOTAL_TAX  as  invoiceTotalTax,
+            uvi.INVOICE_TOTAL_PRICE_TAX  as  invoiceTotalPriceTax,
+            uvi.SIGNATURE_PARAMETER  as  signatureParameter,
+            uvi.TAX_DISK_NO  as  taxDiskNo,
+            uvi.GOODS_CODE_VERSION  as  goodsCodeVersion,
+            uvi.CONSOLIDATED_TAX_RATE  as  consolidatedTaxRate,
+            uvi.INVOICE_SAMPLE  as  invoiceSample,
+            uvi.AUTO_SPLIT  as  autoSplit,
+            uvi.REMARKS  as  remarks,
+            uvi.SELLER_NAME  as  sellerName,
+            uvi.SELLER_BANK_ACCOUNT  as  sellerBankAccount,
+            uvi.SELLER_ADDRESS_PHONE  as  sellerAddressPhone,
+            uvi.USER_ACCOUNT  as  userAccount
+        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID and ucm.CONTRACT_TYPE ='4'
+        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.NUMBER
+        inner join uctp_vat_invoices uvi on uvi.id=uim.id
+        where uci.ID =#{id}
+
+    </select>
+
+    <select id="getVatInvoiceDetailsList" resultType="com.newtouch.uctp.module.business.dal.dataobject.InvoiceDetailsListDO">
+         select
+            uid.GOODS_LINE_NO           as goodsLineNo,
+            uid.GOODS_LINE_NATURE       as goodsLineNature,
+            uid.GOODS_CODE              as goodsCode,
+            uid.GOODS_EXTEND_CODE       as goodsExtendCode,
+            uid.GOODS_NAME              as goodsName,
+            uid.GOODS_TAX_ITEM          as goodsTaxItem,
+            uid.GOODS_SPECIFICATION     as goodsSpecification,
+            uid.GOODS_UNIT              as goodsUnit,
+            uid.GOODS_QUANTITY          as goodsQuantity,
+            uid.GOODS_PRICE             as goodsPrice,
+            uid.GOODS_TOTAL_PRICE       as goodsTotalPrice,
+            uid.GOODS_TOTAL_TAX         as goodsTotalTax,
+            uid.GOODS_TAX_RATE          as goodsTaxRate,
+            uid.GOODS_DISCOUNT_LINENO   as goodsDiscountLineNo,
+            uid.PRICE_TAX_MARK          as priceTaxMark,
+            uid.VAT_SPECIAL_MANAGEMENT  as vatSpecialManagement,
+            uid.FREE_TAX_MARK           as freeTaxMark,
+            uid.PREFERENTIAL_MARK       as preferentialMark
+        from uctp_invoices_details uid inner join uctp_vat_invoices uvi on  uid.VAT_INVOICE_ID=uvi.id
+        where uvi.id =#{id}
+    </select>
+
+    <select id="getOutputInvoiceUsedCarIssue" resultType="com.newtouch.uctp.module.business.dal.dataobject.OutputInvoiceUsedCarIssueDO">
+        select
+            uoiu.ID ,
+            uoiu.TAX_NO as taxNo,
+            uoiu.ORG_CODE as orgCode,
+            uoiu.INVOICE_TERMINAL_CODE as  invoiceTerminalCode ,
+            uoiu.TAX_DISK_NO as taxDiskNo
+        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID and ucm.CONTRACT_TYPE in ('2','4')
+        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.NUMBER
+        inner join uctp_output_invoice_used_car_issue uoiu on uoiu.id=uim.id
+        where uci.ID =#{id}
+    </select>
+
+    <select id="getCarTransactionInvoiceData" resultType="com.newtouch.uctp.module.business.dal.dataobject.CarTransactionInvoiceDataDO">
+        select
+            ucti.id,
+            ucti.BUYER_TAX_NO           as  buyerTaxNo,
+            ucti.BUYER_NAME             as  buyerName,
+            ucti.BUYER_ADDRESS          as  buyerAddress,
+            ucti.BUYER_PHONE            as  buyerPhone,
+            ucti.SERIAL_NO              as  serialNo,
+            ucti.DRAWER,
+            ucti.INVOICE_TYPE           as  invoiceType,
+            ucti.INVOICE_TYPE_CODE      as  invoiceTypeCode,
+            ucti.ORIGINAL_INVOICE_CODE  as  originalInvoiceCode,
+            ucti.ORIGINAL_INVOICE_NO    as  originalInvoiceNo,
+            ucti.INVOICE_TOTAL_PRICE    as  invoiceTotalPrice,
+            ucti.REMARKS,
+            ucti.USER_ACCOUNT           as  userAccount,
+            ucti.REVERSE_ISSUEMARK      as  reverseIssueMark
+        from uctp_output_invoice_used_car_issue uoi inner join on uctp_car_transaction_invoices ucti on ucti.OUTPUT_INVOICE_CAR_ID=uoi.id
+        where uoi.ID =#{id}
+    </select>
+
+    <select id="getInvoiceVehicleInfo" resultType="com.newtouch.uctp.module.business.dal.dataobject.InvoiceVehicleInfoDO">
+        select
+             uiv.LICENSE_PLATE             as licensePlate,
+             uiv.DRAWER_TYPE               as drawerType,
+             uiv.VEHICLE_TYPE              as vehicleType,
+             uiv.REGISTRY_NO               as registryNo,
+             uiv.BRAND_MODEL               as brandModel,
+             uiv.VEHICLE_ADMINISTRATION    as vehicleAdministration,
+             uiv.VEHICLE_NO                as vehicleNo,
+             uiv.CAR_PAYMENT_VOUCHER_NO    as carPaymentVoucherNo,
+             uiv.INVOICE_MARK              as invoiceMark,
+             uiv.VAT_MARK                  as vatMark,
+             uiv.ISSUED_INVOICE_CODE       as issuedInvoiceCode,
+             uiv.ISSUED_INVOICE_NO         as issuedInvoiceNo,
+             uiv.ISSUED_TOTAL_PRICE        as issuedTotalPrice,
+             uiv.ISSUED_TOTAL_TAX          as issuedTotalTax,
+             uiv.ISSUED_TAX_RATE           as issuedTaxRate,
+             uiv.PAYMENT_VOUCHER_MARK      as paymentVoucherMark,
+             uiv.PAYMENT_VOUCHER_NO        as paymentVoucherNo,
+             uiv.PAYMENT_VOUCHER_TORAL_PRICE as paymentVoucherToralPrice,
+             uiv.PAYMENT_VOUCHER_TAX_RATE  as paymentVoucherTaxRate,
+             uiv.PAYMENT_VOUCHER_TOTAL_TAX as paymentVoucherTotalTax,
+             uiv.GOODS_CODE                as goodsCode,
+             uiv.GOODS_PERSONAL_CODE       as goodsPersonalCode,
+             uiv.VAT_SPECIAL_MANAGEMENT    as vatSpecialManagement,
+             uiv.FREE_TAX_MARK             as freeTaxMark,
+             uiv.PREFERENTIAL_MARK_FLAG    as preferentialMarkFlag,
+             uiv.SELLER_NAME               as sellerName,
+             uiv.SELLER_TAX_NO             as sellerTaxNo,
+             uiv.SELLER_ADDRESS            as sellerAddress,
+             uiv.SELLER_PHONE    as sellerPhone
+        from  uctp_car_transaction_invoices ucti inner  join uctp_invoices_vehicle uiv on ucti.ID=uiv.CAR_TRANSTION_ID
+        where ucti.ID =#{id}
+    </select>
+
+
 </mapper>
