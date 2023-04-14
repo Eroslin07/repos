@@ -27,6 +27,8 @@ public class AccountConstants {
     public static final String TRADE_TO_BUY_CARS = "1";
     //交易去向-我的保证金
     public static final String TRADE_TO_MY_CASH = "2";
+    //交易去向-市场方
+    public static final String TRADE_TO_MARKET = "2";
 
     //客户类型-商户
     public static final String CUST_TYPE_MERCHANT = "1";
@@ -44,6 +46,38 @@ public class AccountConstants {
     public static final String TRAN_STATE_SUCCESS = "3";
     //交易状态-支付失败
     public static final String TRAN_STATE_FAIL = "4";
+
+    // 利润：交易类型
+    //卖车利润
+    public static final String TRAN_PROFIT_SALES_PROFIT = "1";
+    //利润提现
+    public static final String TRAN_PROFIT_PRESENT = "2";
+    //利润-保证金回填
+    public static final String TRAN_PROFIT_CASH_BACK = "3";
+    //利润-服务费
+    public static final String TRAN_PROFIT_SERVICE_COST = "4";
+    //利润-税费
+    public static final String TRAN_PROFIT_TAX_COST = "5";
+
+    // 利润：提现类型
+    //待回填保证金
+    public static final String PRESENT_PROFIT_CASH_BACK_WAIT = "1";
+    //已回填保证金
+    public static final String PRESENT_PROFIT_CASH_BACK_DONE = "2";
+    //申请登记
+    public static final String PRESENT_PROFIT_APPLY = "0";
+    //市场方退回
+    public static final String PRESENT_PROFIT_AUDIT_REJECT = "3";
+    //市场方审批中
+    public static final String PRESENT_PROFIT_AUDIT_PROCESSING = "4";
+    //市场方审批成功
+    public static final String PRESENT_PROFIT_AUDIT_APPROVED = "5";
+    //银行处理
+    public static final String PRESENT_PROFIT_BANK_PROCESSING = "6";
+    //到账成功
+    public static final String PRESENT_PROFIT_BANK_SUCCESS = "7";
+    //到账失败
+    public static final String PRESENT_PROFIT_BANK_FAIL = "8";
 
     public static Integer ERROR_CODE_ACCOUNT_NOT_FOUND = 90010001;
     public static String ERROR_MESSAGE_ACCOUNT_NOT_FOUND = "未查询到当前账号信息";
