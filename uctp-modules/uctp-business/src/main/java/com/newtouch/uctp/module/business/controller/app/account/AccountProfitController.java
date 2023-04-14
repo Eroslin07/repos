@@ -6,6 +6,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitPresentReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummaryRespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +22,14 @@ import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 @RequestMapping("/uctp/account/profit")
 @Validated
 public class AccountProfitController {
+
+    @GetMapping("/summary")
+    @Operation(summary = "查询利润概要信息")
+    public CommonResult<ProfitSummaryRespVO> summary() {
+        // todo 通过什么方式能获取到当前商户（用户）
+        ProfitSummaryRespVO respVO = new ProfitSummaryRespVO();
+        return success(respVO);
+    }
 
     @PostMapping("/present")
     @Operation(summary = "利润提取")
@@ -44,6 +53,5 @@ public class AccountProfitController {
         ProfitDetailRespVO respVO = new ProfitDetailRespVO();
         return success(respVO);
     }
-
 
 }
