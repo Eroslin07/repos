@@ -43,7 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.validation.Validator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -141,13 +143,32 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     @Transactional
-    public String registerAccount(AuthRegisterReqVO reqVO) {
+    public Map registerAccount(AuthRegisterReqVO reqVO) {
+        //查询是否有未注册数据，有则删除
+        List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 2);
+        if(userDOS.size()>0){
+            for (AdminUserDO user:userDOS) {
+                userService.deleteUser(user.getId());
+                userExtService.deleteByUserId(user.getId());
+            }
+        }
+        List<DeptDO> deptDOS = deptService.selectIsExist(reqVO.getBusinessName(), 2);
+        if (deptDOS.size()>0){
+            for (DeptDO dept:deptDOS) {
+                deptService.deleteDept(dept.getId());
+            }
+        }
+
         //查询该手机号是否注册
         if(userService.getUserByMobile(reqVO.getPhone())!=null){
             throw exception(AUTH_MOBILE_IS_EXIST);
         }
 //        String decrypt = RASClientUtil.jsencryptDecryptByPrivateKeyLong(reqVO.getPassword());
+        HashMap<Object, Object> map = new HashMap<>();
         try {
+            //拿到父级
+            DeptDO parentDept = deptService.selectByParent(reqVO.getMarketLocation(), 0L);//2商户方  1市场方 0 父级
+
             //根据租户id查询商户的父级id
             DeptDO dept = deptService.selectDept(reqVO.getMarketLocation(), "2");//2商户方  1市场方
 
@@ -159,9 +180,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             deptDO.setTax_num(reqVO.getTaxNum());
             deptDO.setAddress(reqVO.getAddress());
             deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
+//            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
             deptDO.setSort(2);
-            deptDO.setStatus(0);
+            deptDO.setStatus(2);//未激活
             deptService.insertDept(deptDO);
 
             //用户主表
@@ -172,7 +193,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             userDO.setNickname(reqVO.getName());
             userDO.setDeptId(deptDO.getId());//商户id
             userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            userDO.setStatus(1);//提交审批前状态为停用
+            userDO.setStatus(2);//未激活
             userService.insertUser(userDO);
 
             //用户扩展表
@@ -183,6 +204,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             extDO.setBankAccount(reqVO.getBankNumber());//对公银行账号
             extDO.setBondBankAccount(reqVO.getBondBankAccount());//保证金充值账号
             extDO.setStaffType("1");//主账号
+            extDO.setStatus(2);
             extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             userExtService.insertUser(extDO);
 
@@ -193,10 +215,24 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             reqDTO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             CommonResult<String> result = businessFileApi.saveToBusinessFile(reqDTO);
             System.out.println(result);
+
+            FileInsertReqDTO reqDTO1 = new FileInsertReqDTO();
+            reqDTO1.setMainId(deptDO.getId());//用户扩展表id
+            reqDTO1.setUrl(reqVO.getBusinessLicense());
+            reqDTO1.setType("9");//营业执照
+            reqDTO1.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            CommonResult<String> result2 = businessFileApi.saveToBusinessFile(reqDTO1);
+            System.out.println(result2);
+
+
+            map.put("thirdId",deptDO.getId());
+            map.put("marketName",parentDept.getName());
+            map.put("merchantName",deptDO.getName());
+            map.put("startUserId",userDO.getId());
         }catch (Exception e){
             throw exception(AUTH_REGISTER_ERROR);
         }
-        return "";
+        return map;
     }
 
     @Override

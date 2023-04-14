@@ -24,7 +24,12 @@ public interface BusinessFileService {
      * @return
      */
     void insertBatch(List<BusinessFileDO> fileDOList);
-
+    /**
+     * 获取业务对应的文件
+     * @param mainId 业务Id
+     * @return
+     */
+    List<FileRespDTO> getDTOByMainId(Long mainId);
     /**
      * 获取业务对应的文件
      * @param mainId 业务Id
@@ -32,6 +37,12 @@ public interface BusinessFileService {
      * @return
      */
     List<FileRespDTO> getDTOByMainIdAndType(Long mainId, String fileType);
+    /**
+     * 获取业务对应的文件
+     * @param mainId 业务Id
+     * @return
+     */
+    List<BusinessFileDO> getByMainId(Long mainId);
     /**
      * 获取业务对应的文件
      * @param mainId 业务Id

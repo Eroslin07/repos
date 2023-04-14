@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service;
 
 
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.AppMyCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.CostExample;
 import org.apache.ibatis.annotations.Param;
@@ -25,6 +26,15 @@ public interface CostService {
     List<AppMyCostVO> getMyCosts(@Param("example") CostExample example);
 
     AppMyCostVO getMyCosts1(@PathVariable String brand,@PathVariable String year, @PathVariable String mon);
+
+
+    /**
+     * 获得车辆费用信息
+     *
+     * @param id
+     * @return 车辆费用信息
+     */
+    AppCarCostVO getCarCosts(String id);
 
 
 

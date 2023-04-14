@@ -42,7 +42,7 @@ public class AuthRegisterReqVO {
     private String taxNum;
 
     @Schema(description = "营业执照url", required = true, example = "")
-    private String businessLicense;
+    private List<String> businessLicense;
 
     @Schema(description = "公司名称", required = true, example = "XX车行")
     private String businessName;

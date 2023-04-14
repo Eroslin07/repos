@@ -1,6 +1,22 @@
 package com.newtouch.uctp.module.bpm.convert.task;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.flowable.common.engine.impl.db.SuspensionState;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
+
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskDonePageItemRespVO;
@@ -10,19 +26,6 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
 import com.newtouch.uctp.module.bpm.service.message.dto.BpmMessageSendWhenTaskCreatedReqDTO;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
-import org.flowable.common.engine.impl.db.SuspensionState;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
-import org.springframework.beans.BeanUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Bpm 任务 Convert
@@ -162,7 +165,7 @@ public interface BpmTaskConvert {
                                                         Task task) {
         BpmMessageSendWhenTaskCreatedReqDTO reqDTO = new BpmMessageSendWhenTaskCreatedReqDTO();
         reqDTO.setProcessInstanceId(processInstance.getProcessInstanceId())
-                .setProcessInstanceName(processInstance.getName()).setStartUserId(startUser.getId())
+                .setProcessInstanceName(StringUtils.hasText(processInstance.getName()) ? processInstance.getName() : processInstance.getProcessDefinitionName()).setStartUserId(Long.valueOf(processInstance.getStartUserId()))
                 .setStartUserNickname(startUser.getNickname()).setTaskId(task.getId()).setTaskName(task.getName())
                 .setAssigneeUserId(NumberUtils.parseLong(task.getAssignee()));
         return reqDTO;

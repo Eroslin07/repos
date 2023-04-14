@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class BpmTaskTodoRespVO {
     private String taskId;
 
-    private Long businessKey;
+    private String businessKey;
 
     private String procInstId;
 

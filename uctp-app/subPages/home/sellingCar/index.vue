@@ -1,34 +1,32 @@
 <template>
 	<view>
 		<view class="search_header">
-			<view>请选择您要售卖的车辆。</view>
-			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear" placeholder="请输入/车辆型号/单号"></u-search>
+			<view style="margin-bottom: 10px;">请选择您要售卖的车辆</view>
+			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear" placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
-		<view style="margin-top: 75px;">
+		<view style="margin-top: 85px;">
 			<uni-card
 				v-for="(tab, tabIndex) in tabList"
 				:key="tabIndex"
-				:title="'VIN：'+tab.vin"
-				:sub-title="'创建时间：'+tab.createTime"
-				:extra="'车辆状态：'+tab.status"
-				is-full
 				@click="handleCard(tab.id)"
 				style="margin-top: 10px;"
 			>
 				<uni-row :gutter="30">
-					<uni-col :span="8">
-						<view style="height: 100px;border: 1px solid red;"></view>
+					<uni-col :span="10">
+						<view class="car_left">
+							<view class="car_text cell-car-draft">代售已检测</view>
+							<image src="../../../static/images/car.webp" class="car-image"></image>
+						</view>
 					</uni-col>
-					<uni-col :span="16">
-						<h3>{{tab.brand}}-{{tab.year}}{{tab.model}}</h3>
-						<view>{{tab.year}}年 | {{tab.mileage}}万公里</view>
-						<view style="color: #68b4c5;">{{tab.vehicleReceiptAmount}}元</view>
+					<uni-col :span="14">
+						<h3>{{tab.brand}}</h3>
+						<view>VIN：{{tab.vin}}</view>
+						<view>{{tab.model}} | {{tab.mileage}}万公里</view>
+						<view style="color: #000;">收车价：{{tab.vehicleReceiptAmount}}元</view>
+						<view>创建时间：{{tab.createTime}}</view>
 					</uni-col>
 				</uni-row>
 			</uni-card>
-		</view>
-		<view class="warp" v-if="loading">
-			<u-loading-icon text="加载中..." textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
 		</view>
 		<u-modal
 			:show="show"
@@ -51,7 +49,6 @@
 				searchValue: '',
 				tabList: [],
 				show: false,
-				loading: false
 			}
 		},
 		mounted() {
@@ -64,15 +61,15 @@
 		methods: {
 			getList() {
 				this.tabList = [];
-				this.loading = true;
 				let data = {
 					pageNo: 1,
 					pageSize: 10,
 					searchValue: this.searchValue,
 					businessId: 130
 				}
+				this.$modal.loading("数据加载中...");
 				getSellPage(data).then((res) => {
-					this.loading = false;
+					this.$modal.closeLoading()
 					this.tabList = res.data.list
 				})
 			},
@@ -119,9 +116,7 @@
 		/* #endif */
 		width: 100%;
 		padding: 10px;
-		border-bottom: 1px solid #ddd;
 		font-size: 16px;
-		color: #fe7345;
 		background-color: #fff;
 		z-index: 999;
 	}
@@ -131,10 +126,31 @@
 		font-size: 14px !important;
 	}
 	
-	.warp {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
+	.car-image {
+		width: 100%;
+		height: 100px;
+		border-radius: 8px;
+	}
+	
+	.car_left {
+		position: relative;
+		border-radius: 8px;
+		overflow: hidden;
+	
+		.car_text {
+			width: 100%;
+			text-align: center;
+			position: absolute;
+			bottom: 6px;
+			font-size: 12px;
+			padding: 0 5px;
+			border-radius: 0 0 8px 8px;
+			z-index: 999;
+		}
+		
+		.cell-car-draft {
+			color: #fff;
+			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
+		}
 	}
 </style>

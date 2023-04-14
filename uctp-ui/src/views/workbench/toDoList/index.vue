@@ -39,11 +39,13 @@ import { ref } from 'vue'
 import { allSchemas } from './toDoList.data'
 import { Drawer } from '@/components/Drawer'
 import * as ToDoList from '@/api/workbench/toDoList'
+// import * as RoleApi from '@/api/system/role'
 
 // 列表相关的变量
 const [registerTable] = useXTable({
   allSchemas: allSchemas,
   getListApi: ToDoList.getToDoList
+  // getListApi: RoleApi.getRolePageApi
 })
 const { t } = useI18n() // 国际化
 
@@ -72,10 +74,17 @@ const handleExport = () => {
 
 // 点击申请单号
 const handleApplication = (row) => {
-  console.log(row)
-  // GZSH SCJG SCKP SCKZH MCHT MCKP LRTQ
-  status.value = 'GZSH'
-  drawerVisible.value = true //打开抽屉
+  console.log(row.taskId, row.businessKey, 'row')
+  const params = {
+    taskId: row.taskId,
+    businessKey: row.businessKey
+  }
+  ToDoList.getTaskFormInfoAPI(params).then((response) => {
+    console.log(response, 'response')
+    // ZHSQ SCJG SCKP SCKZH MCHT MCKP LRTQ
+    status.value = response.busiType
+    drawerVisible.value = true //打开抽屉
+  })
 }
 
 // 关闭弹框

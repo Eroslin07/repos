@@ -27,7 +27,7 @@ public interface AuthConvert {
 
     default AuthPermissionInfoRespVO convert(AdminUserDO user, List<RoleDO> roleList, List<MenuDO> menuList) {
         return AuthPermissionInfoRespVO.builder()
-            .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).nickname(user.getNickname()).avatar(user.getAvatar()).build())
+            .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId()).avatar(user.getAvatar()).build())
             .roles(convertSet(roleList, RoleDO::getCode))
             .permissions(convertSet(menuList, MenuDO::getPermission))
             .build();
@@ -72,5 +72,6 @@ public interface AuthConvert {
     SmsCodeSendReqDTO convert(AuthSmsSendReqVO reqVO);
 
     SmsCodeUseReqDTO convert(AuthSmsLoginReqVO reqVO, Integer scene, String usedIp);
+
 
 }

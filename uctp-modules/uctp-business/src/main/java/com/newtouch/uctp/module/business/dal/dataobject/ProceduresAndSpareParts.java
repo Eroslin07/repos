@@ -18,7 +18,7 @@ public class ProceduresAndSpareParts implements Serializable {
      * 是否有行驶证正、副本
      */
     @Schema(description = "是否有行驶证正、副本")
-    private Boolean DrivingLicense;
+    private Boolean drivingLicense;
     /**
      * 是否有购车发票
      */

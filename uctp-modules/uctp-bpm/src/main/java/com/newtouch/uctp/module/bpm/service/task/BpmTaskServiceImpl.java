@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -13,6 +14,7 @@ import java.util.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
@@ -24,22 +26,30 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.date.DateUtils;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
 import com.newtouch.uctp.framework.common.util.object.PageUtils;
 import com.newtouch.uctp.framework.mybatis.core.util.MyBatisUtils;
+import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmTaskConvert;
+import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmProcessDefinitionExtDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.definition.BpmProcessDefinitionExtMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.task.BpmTaskExtMapper;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
@@ -88,6 +98,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private BpmFormMainMapper bpmFormMainMapper;
     @Resource
     private BpmFormDataService bpmFormDataService;
+    @Resource
+    private BpmProcessDefinitionExtMapper bpmProcessDefinitionExtMapper;
 
     @Override
     public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageVO) {
@@ -223,32 +235,45 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         if (instance == null) {
             throw exception(PROCESS_INSTANCE_NOT_EXISTS);
         }
-        // 更新表单信息
-        // 获得流程业务ID
-        String businessKey = StrUtil.toStringOrNull(reqVO.getVariables().get("businessKey"));
-        if (!StringUtils.hasText(businessKey)) {
-            throw exception(PROCESS_BUSI_KEY_NOT_EXISTS);
-        }
-        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, instance.getId());
         if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 1) {
             throw exception(PROCESS_BUSI_APPROVALING);
         }
-        HashMap<String, Object> formDataObject = (HashMap<String, Object>) reqVO.getVariables().get("formDataJson");
-        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataObject);
-        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataObject);
+        Map<String, Object> variables = CollectionUtils.isEmpty(reqVO.getVariables()) ? new HashMap<String, Object>() : reqVO.getVariables();
+        HashMap<String, Object> formDataJsonVariable = (HashMap<String, Object>) variables.getOrDefault("formDataJson", new HashMap<String, Object>());
+        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataJsonVariable);
+        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataJsonVariable);
         formMainDataObject.put("status", 1);
-        formMainDataObject.put("procInstId", task.getProcessInstanceId());
-        formMainDataObject.put("submitTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(bpmFormMainDO.getSubmitTime()));
-        formMainDataObject.put("doneTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
-        formDataObject.put(workFlowMainEntityAlias, formMainDataObject);
-        this.bpmFormDataService.saveDataObject(Long.valueOf(businessKey), formDataObject);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "procInstId"), task.getProcessInstanceId());
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "submitTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(bpmFormMainDO.getSubmitTime()));
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "doneTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        HashMap<String, Object> submitFormDataJsonField = (HashMap<String, Object>) formMainDataObject.getOrDefault(this.matchMapKey(formMainDataObject, "formDataJson"), new HashMap<String, Object>());
+        if (!CollectionUtils.isEmpty(submitFormDataJsonField)) {
+            formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), JSON.toJSONString(submitFormDataJsonField).getBytes(StandardCharsets.UTF_8));
+        } else {
+            formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), null);
+        }
+
+        formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
+        this.bpmFormDataService.saveDataObject(bpmFormMainDO.getId(), formDataJsonVariable);
 
         // 完成任务，审批通过
-        taskService.complete(task.getId(), reqVO.getVariables());
+        variables.put("formDataJson", formDataJsonVariable);
+        taskService.complete(task.getId(), variables);
         // 更新任务拓展表为通过
         taskExtMapper.updateByTaskId(
                 new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.APPROVE.getResult())
                         .setReason(reqVO.getReason()));
+    }
+
+    private String matchMapKey(Map<String, Object> map, String key) {
+        for (String k : map.keySet()) {
+            if (k.toLowerCase().equals(key.toLowerCase())) {
+                return k;
+            }
+        }
+
+        return key;
     }
 
     @Override
@@ -367,8 +392,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                 ProcessInstance processInstance =
                     processInstanceService.getProcessInstance(task.getProcessInstanceId());
                 AdminUserRespDTO startUser = adminUserApi.getUser(Long.valueOf(processInstance.getStartUserId())).getCheckedData();
-                messageService.sendMessageWhenTaskAssigned(
-                    BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
+                /*messageService.sendMessageWhenTaskAssigned(
+                    BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));*/
             }
         });
     }
@@ -398,6 +423,81 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         Page<BpmTaskTodoRespVO> page = MyBatisUtils.buildPage(pageVO);
         bpmFormMainMapper.getBpmTaskTodo(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
+    }
+
+    @Override
+    public BpmTaskApproveFormRespVO getTaskFormInfo(String taskId, String businessKey) {
+        BpmTaskApproveFormRespVO bpmTaskApproveFormRespVO = new BpmTaskApproveFormRespVO();
+        if (!StringUtils.hasText(taskId) && !StringUtils.hasText(businessKey)) {
+            throw  new ServiceException(1009003003, "请传递参数：任务ID或流程业务ID");
+        }
+
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        if (ObjectUtil.isNull(bpmFormMainDO)) {
+            throw  new ServiceException(1009003003, "业务流程不存在，查询审批表单信息失败。");
+        }
+        bpmTaskApproveFormRespVO.setTaskId(taskId);
+        bpmTaskApproveFormRespVO.setProcDefId(bpmFormMainDO.getProcDefId());
+        bpmTaskApproveFormRespVO.setProcInstId(bpmFormMainDO.getProcInstId());
+        bpmTaskApproveFormRespVO.setBusinessKey(bpmFormMainDO.getId());
+        bpmTaskApproveFormRespVO.setBusiType(bpmFormMainDO.getBusiType());
+        bpmTaskApproveFormRespVO.setSerialNo(bpmFormMainDO.getSerialNo());
+        bpmTaskApproveFormRespVO.setTitle(bpmFormMainDO.getTitle());
+        if (StringUtils.hasText(taskId)) {
+            Task task = getTask(taskId);
+            if (task == null) {
+                throw exception(TASK_COMPLETE_FAIL_NOT_EXISTS);
+            }
+            FlowElement flowElement = repositoryService.getBpmnModel(task.getProcessDefinitionId()).getMainProcess().getFlowElement(task.getTaskDefinitionKey());
+            bpmTaskApproveFormRespVO.setNodeId(task.getTaskDefinitionKey());
+            bpmTaskApproveFormRespVO.setNodeName(flowElement.getName());
+        }
+        if (StringUtils.hasText(bpmFormMainDO.getProcDefId())) {
+            BpmProcessDefinitionExtDO bpmProcessDefinitionExtDO = bpmProcessDefinitionExtMapper.selectByProcessDefinitionId(bpmFormMainDO.getProcDefId());
+            bpmTaskApproveFormRespVO.setComponentAddress(bpmProcessDefinitionExtDO.getFormCustomCreatePath());
+        }
+
+        Map<String, Object> variablesNew = new HashMap<String, Object>();
+        if (StringUtils.hasText(bpmFormMainDO.getProcInstId())) {
+            List<HistoricVariableInstance> historicVariableInstanceList = historyService.createHistoricVariableInstanceQuery().processInstanceId(bpmFormMainDO.getProcInstId()).orderByVariableName().desc().list();
+            if (!CollectionUtils.isEmpty(historicVariableInstanceList)) {
+                for (HistoricVariableInstance historicVariableInstance : historicVariableInstanceList) {
+                    System.out.println(historicVariableInstance.getValue());
+                    if (historicVariableInstance.getVariableName().toLowerCase().equals("formDataJson".toLowerCase())) {
+                        continue;
+                    }
+                    variablesNew.put(historicVariableInstance.getVariableName(), historicVariableInstance.getValue());
+                }
+            }
+        }
+
+        BpmFormMainVO bpmFormMainVO = new BpmFormMainVO();
+        bpmFormMainVO.setId(bpmFormMainDO.getId());
+        bpmFormMainVO.setStatus(bpmFormMainDO.getStatus());
+        bpmFormMainVO.setProcDefId(bpmFormMainDO.getProcDefId());
+        bpmFormMainVO.setProcInstId(bpmFormMainDO.getProcInstId());
+        bpmFormMainVO.setSerialNo(bpmFormMainDO.getSerialNo());
+        bpmFormMainVO.setTitle(bpmFormMainDO.getTitle());
+        bpmFormMainVO.setStartUserId(bpmFormMainDO.getStartUserId());
+        bpmFormMainVO.setMerchantId(bpmFormMainDO.getMerchantId());
+        bpmFormMainVO.setBusiType(bpmFormMainDO.getBusiType());
+        bpmFormMainVO.setRemark(bpmFormMainDO.getRemark());
+        bpmFormMainVO.setThirdId(bpmFormMainDO.getThirdId());
+        bpmFormMainVO.setSubmitTime(bpmFormMainDO.getSubmitTime());
+        bpmFormMainVO.setDoneTime(bpmFormMainDO.getDoneTime());
+
+        if (bpmFormMainDO.getFormDataJson() == null) {
+            bpmFormMainVO.setFormDataJson(new JSONObject());
+        }
+        else {
+            bpmFormMainVO.setFormDataJson(JSON.parseObject(new String(bpmFormMainDO.getFormDataJson())));
+        }
+        HashMap<String, Object> formDataJsonVariable = new HashMap<>();
+        formDataJsonVariable.put("formMain", bpmFormMainVO);
+        variablesNew.put("formDataJson", formDataJsonVariable);
+        bpmTaskApproveFormRespVO.setVariables(variablesNew);
+
+        return bpmTaskApproveFormRespVO;
     }
 
     private Task getTask(String id) {

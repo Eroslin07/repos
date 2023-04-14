@@ -8,6 +8,7 @@ import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
 import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
@@ -39,9 +40,10 @@ import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 public class AppCarInfoController {
     @Resource
     private CarInfoService carInfoService;
-
     @Resource
-    private FileApi fileApi;
+    private ContractService contractService;
+
+
 
     @PostMapping("/create")
     @Operation(summary = "创建车辆主表")
@@ -132,10 +134,16 @@ public class AppCarInfoController {
         return success(true);
     }
 
+    @GetMapping("/delete/sell/{id}")
+    @Operation(summary = "删除卖车的草稿数据")
+    public CommonResult<Boolean> deleteSell(@PathVariable Long id) {
+        carInfoService.deleteSell(id);
+        return success(true);
+    }
 
     @PostMapping("/insertCarInfo")
     @Operation(summary = "新增车辆信息")
-    public CommonResult<String> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
+    public CommonResult<AppBpmCarInfoRespVO> insertCarInfo(@Valid @RequestBody AppCarInfoCreateReqVO createReqVO) {
         return success(carInfoService.insertCarInfo(createReqVO));
     }
 
@@ -145,13 +153,13 @@ public class AppCarInfoController {
         return success(carInfoService.insertSellerInfo(reqVO));
     }
 
+
     @GetMapping("/getCarInfoByVIN")
     @Operation(summary = "根据VIN获取回显车辆信息")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") Long id) {
-        return success(carInfoService.getSellCarInfo(id));
+    public CommonResult<AppSellCarInfoRespVO> getCarInfoByVIN(@RequestParam("VIN") String VIN) {
+        return success(carInfoService.getCarInfoByVIN(VIN));
     }
-
 
     @GetMapping("/getDetailds")
     @Operation(summary = "获得车辆明细信息")
@@ -166,7 +174,7 @@ public class AppCarInfoController {
     @PostMapping("/updateContractStatas")
     @Operation(summary = "作废合同状态")
     public CommonResult<String> updateContractStatas(@RequestBody  CarDCVo carDCVo) {
-        return success(carInfoService.updateContractStatas(carDCVo));
+        return success(contractService.updateContractStatas(carDCVo));
     }
 
 
@@ -176,6 +184,7 @@ public class AppCarInfoController {
         File file = DownLoadUtils.getResourceFile(example.getUrl());
         DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
     }
+/*
     @PostMapping ("/download-more")
     @Operation(summary = "多文件下载")
     public void downLoadmore(@RequestBody DownloadMoreExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -184,9 +193,8 @@ public class AppCarInfoController {
             File file = DownLoadUtils.getResourceFile(exampleExample.getUrl());
             DownLoadUtils.outFileByFile(exampleExample.getName()+"."+exampleExample.getType(),file,false,request,response);
         }
-
-
     }
+
 
 
 
@@ -305,6 +313,7 @@ public class AppCarInfoController {
         }
         return appContractarVO;
     }
+*/
 
     @PostMapping("/getCarBrandList")
     @PermitAll

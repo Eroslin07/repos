@@ -37,6 +37,12 @@ spring:
             - Path=/admin-api/bpm/**
           filters:
               - RewritePath=/admin-api/bpm/v3/api-docs, /v3/api-docs
+        - id: bpm-app-api # 路由的编号
+          uri: grayLb://bpm-server
+          predicates: # 断言，作为路由的匹配条件，对应 RouteDefinition 数组
+            - Path=/app-api/bpm/**
+          filters:
+            - RewritePath=/app-api/bpm/v3/api-docs, /v3/api-docs
         - id: report-admin-api # 路由的编号
           uri: grayLb://report-server
           predicates: # 断言，作为路由的匹配条件，对应 RouteDefinition 数组

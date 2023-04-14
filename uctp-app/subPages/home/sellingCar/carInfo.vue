@@ -4,25 +4,17 @@
 		<!-- <u-navbar title="我要卖车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
 			<u-grid-item>
-				<u-icon
-					:customStyle="{paddingTop:20+'rpx'}"
-					name="level"
-					:color="active == 0 ? '#fd6601' : ''"
-					:size="30"
-				></u-icon>
+				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
+				<image v-show="active == 1" src="../../../static/images/bycar/car1.png" class="form-image"></image>
 				<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
 			</u-grid-item>
 			<u-grid-item>
-				<u-icon
-					:customStyle="{paddingTop:20+'rpx'}"
-					name="level"
-					:color="active == 1 ? '#fd6601' : ''"
-					:size="30"
-				></u-icon>
-				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">买家信息</text>
+				<image v-show="active == 0" src="../../../static/images/bycar/car3.png" class="form-image"></image>
+				<image v-show="active == 1" src="../../../static/images/bycar/car2.png" class="form-image"></image>
+				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">交易信息</text>
 			</u-grid-item>
 		</u-grid>
-		<uni-card>
+		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
 			<view v-if="vehicleInfor">
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
@@ -73,18 +65,15 @@
 						</u-collapse-item>
 					</u-collapse>
 					<u-form-item label="发动机编号" prop="engineNum" borderBottom>
-						<u--input v-model="carForm.engineNum" border="none" placeholder="请输入发动机编号"></u--input>
+						<u--input v-model="carForm.engineNum" readonly border="none" placeholder="请输入发动机编号"></u--input>
 					</u-form-item>
 					<u-form-item label="车架号(VIN)" prop="vin" borderBottom>
-						<u--input v-model="carForm.vin" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
+						<u--input v-model="carForm.vin" readonly border="none" placeholder="请输入17位车架号(VIN)"></u--input>
 					</u-form-item>
-					<u-form-item label="使用性质" prop="natureOfOperat" borderBottom>
-						<u--input v-model="carForm.natureOfOperat" border="none" placeholder="请输入使用性质"></u--input>
-					</u-form-item>
-					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom @click="showDate = true">
+					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom>
 						<u--input
 							v-model="carForm.firstRegistDate"
-							disabled
+							readonly
 							disabledColor="#ffffff"
 							placeholder="请选择登记日期"
 							border="none"
@@ -95,55 +84,81 @@
 						></u-icon>
 					</u-form-item>
 					<u-form-item label="车牌号" prop="plateNum" borderBottom>
-						<u--input v-model="carForm.plateNum" border="none" placeholder="请输入车牌号"></u--input>
+						<u--input v-model="carForm.plateNum" readonly border="none" placeholder="请输入车牌号"></u--input>
 					</u-form-item>
-					<u-form-item label="品牌" prop="brand" borderBottom>
-						<u--input v-model="carForm.brand" border="none" placeholder="请输入品牌"></u--input>
+					<u-form-item label="使用性质" prop="natureOfOperat" borderBottom>
+						<u--input v-model="carForm.natureOfOperat" readonly border="none" placeholder="请输入使用性质"></u--input>
 					</u-form-item>
-					<u-form-item label="年代" prop="year" borderBottom>
-						<u--input v-model="carForm.year" border="none" placeholder="请输入年代"></u--input>
+					<u-form-item label="车辆类型" prop="carType" borderBottom>
+						<u--input v-model="carForm.carType" readonly border="none" placeholder="请输入车辆类型"></u--input>
 					</u-form-item>
-					<u-form-item label="型号" prop="model" borderBottom>
-						<u--input v-model="carForm.model" border="none" placeholder="请输入型号"></u--input>
+					<u-form-item label="品牌型号" prop="model" borderBottom>
+						<u--input v-model="carForm.model" readonly border="none" placeholder="请输入品牌型号"></u--input>
+					</u-form-item>
+					<u-form-item label="品牌/车型" prop="brand" borderBottom>
+						<u--input v-model="carForm.brand" readonly border="none" placeholder="请输入品牌/车型"></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
+					<u-form-item label="登记证号" prop="licensePlateNum" borderBottom>
+						<u--input v-model="carForm.licensePlateNum" readonly border="none" placeholder="请输入登记证号"></u--input>
+					</u-form-item>
+					<u-form-item label="颜色" prop="color" borderBottom>
+						<u--input v-model="carForm.color" readonly border="none" placeholder="请输入颜色"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" prop="mileage" borderBottom>
-						<u-input v-model="carForm.mileage" border="none" placeholder="请输入里程数">
+						<u-input v-model="carForm.mileage" readonly border="none" placeholder="请输入里程数">
 							<template slot="suffix">
 								<view>万公里</view>
 							</template>
 						</u-input>
 					</u-form-item>
+					<u-form-item label="使用年限至" prop="scrapDate" borderBottom>
+						<u--input
+							v-model="carForm.scrapDate"
+							readonly
+							disabledColor="#ffffff"
+							placeholder="请选择"
+							border="none"
+						></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
+					<u-form-item label="年检签证有效期" prop="annualInspectionDate" borderBottom>
+						<u--input
+							v-model="carForm.annualInspectionDate"
+							readonly
+							disabledColor="#ffffff"
+							placeholder="请选择"
+							border="none"
+						></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
+					<u-form-item label="保险险种" prop="insurance" borderBottom>
+						<u--input v-model="carForm.insurance" readonly border="none" placeholder="请输入保险险种"></u--input>
+					</u-form-item>
+					<u-form-item label="保险期至" prop="insuranceEndData" borderBottom>
+						<u--input
+							v-model="carForm.insuranceEndData"
+							readonly
+							disabledColor="#ffffff"
+							placeholder="请选择"
+							border="none"
+						></u--input>
+						<u-icon
+							slot="right"
+							name="arrow-right"
+						></u-icon>
+					</u-form-item>
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<u--input v-model="carForm.remarks" border="none" placeholder="请输入特殊约定"></u--input>
-					</u-form-item>
-					<u-form-item label="收车金额" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="carForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额">
-							<template slot="suffix"><view>元</view></template>
-						</u-input>
-					</u-form-item>
-					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="carForm.sellAmount" border="none" @blur="handleBlur" placeholder="请输入卖车金额">
-							<template slot="suffix"><view>元</view></template>
-						</u-input>
-					</u-form-item>
-					<view @click="handleDetail">
-						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
-							:text="'预计产生'+carForm.total+'元费用，利润'+carForm.profit+'元。查看明细'" color="#e26e1f"></u--text>
-					</view>
-					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
-						<u-radio-group
-							v-model="carForm.sellType"
-							placement="row"
-						>
-							<u-radio
-								:customStyle="{marginBottom: '8px'}"
-								v-for="(item, index) in sexs"
-								:key="index"
-								:label="item.label"
-								:name="item.value"
-							>
-							</u-radio>
-						</u-radio-group>
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
@@ -180,27 +195,92 @@
 					ref="sellerForm"
 					labelWidth="120px"
 				>
+					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view class="text">车辆价款及交易方式</view>
+					</view>
+					<u-form-item label="收车金额" prop="vehicleReceiptAmount" borderBottom>
+						<u-input v-model="sellerRules.vehicleReceiptAmount" border="none" placeholder="请输入收车金额">
+							<template slot="suffix"><view>元</view></template>
+						</u-input>
+					</u-form-item>
+					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
+						<u-input v-model="sellerRules.sellAmount" border="none" @blur="handleBlur" placeholder="请输入卖车金额">
+							<template slot="suffix"><view>元</view></template>
+						</u-input>
+					</u-form-item>
+					<view @click="handleDetail">
+						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+							:text="'预计产生'+sellerRules.total+'元费用，利润'+sellerRules.profit+'元。查看明细'" color="#e26e1f"></u--text>
+						<view style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;">预计费用XXX元，利润XX元。明细请查看。</view>
+					</view>
+					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
+						<u-radio-group
+							v-model="sellerRules.sellType"
+							placement="row"
+						>
+							<u-radio
+								:customStyle="{marginBottom: '8px'}"
+								v-for="(item, index) in sexs"
+								:key="index"
+								:label="item.label"
+								:name="item.value"
+							>
+							</u-radio>
+						</u-radio-group>
+					</u-form-item>
+					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view class="text">买家信息</view>
+					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
 						<u--input v-model="sellerForm.buyerIdCard" border="none" placeholder="请输入身份证号"></u--input>
-						<view slot="right" name="arrow-right">
-							<image src="../../../static/images/home/camera.png" class="form-image" @click="handleOcr(4)"></image>
-						</view>
 					</u-form-item>
-					<u-form-item label=" " borderBottom v-if="fileList4.length != 0">
+					<u-form-item borderBottom>
 						<view class="image">
-							<u-upload
-								v-if="fileList4.length"
-								:fileList="fileList4"
-								@delete="deletePic"
-								name="4"
-								width="70"
-								height="70"
-							></u-upload>
+							<u-grid col="2">
+								<u-grid-item>
+									<u-upload
+										v-if="fileList4.length"
+										:fileList="fileList4"
+										@delete="deletePic"
+										name="4"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/home/ghm.png"
+										mode="widthFix" style="width: 150px;" @click="handleOcr(4)"></image>
+									<image
+										v-if="fileList4.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(4)"></image>
+								</u-grid-item>
+								<u-grid-item>
+									<u-upload
+										v-if="fileList5.length"
+										:fileList="fileList5"
+										@delete="deletePic"
+										name="5"
+										width="150"
+									></u-upload>
+									<image v-else src=".../../../static/images/home/rxm.png"
+										mode="widthFix" style="width: 150px;" @click="handleOcr(5)"></image>
+									<image
+										v-if="fileList5.length == 0"
+										src="../../../static/images/take.png"
+										class="icon-image"
+										@click="handleOcr(5)"></image>
+								</u-grid-item>
+							</u-grid>
 						</view>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="buyerName" borderBottom>
 						<u--input v-model="sellerForm.buyerName" border="none" placeholder="请输入姓名">
 						</u--input>
+					</u-form-item>
+					<u-form-item label="联系地址" :required="true" prop="buyerTel" borderBottom>
+						<u--input v-model="sellerForm.buyerTel" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
 						<u--input v-model="sellerForm.buyerTel" border="none" placeholder="请输入11位手机号"></u--input>
@@ -212,9 +292,165 @@
 				</view>
 			</view>
 		</uni-card>
+		<view class="fenge" v-if="vehicleInfor"></view>
+		<uni-card :is-shadow="false" is-full style="border: none;">
+			<view v-if="vehicleInfor">
+				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+					<view class="text">车辆手续及备件</view>
+				</view>
+				<u--form
+					:model="carForm"
+					:rules="carRules"
+					labelPosition="left"
+					labelWidth="120px"
+				>
+					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404">
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="item.name == 11 ? showKey = true : ''">
+							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
+							<view style="margin-left: 10px;">
+								<u--input
+									v-model="carForm.key"
+									disabled
+									v-if="item.name == 'vehicleKey'"
+									disabledColor="#ffffff"
+									placeholder="请选择"
+									border="none"
+								></u--input>
+								<u--input v-model="carForm.other" v-if="item.name == 'other'" border="none" placeholder="请输入"></u--input>
+							</view>
+							<u--text
+								slot="right"
+								v-if="item.name == 'vehicleKey'"
+								prefixIcon="arrow-right"
+								text="组"></u--text>
+						</u-form-item>
+					</u-checkbox-group>
+					<u-form-item label="车况" :required="true"></u-form-item>
+					<u-form-item borderBottom>
+						<u-radio-group activeColor="#fd6404" shape="square">
+							<text>（</text>
+							<u-radio label="确保" name="1"></u-radio>
+							<text style="margin: 0 5px;">/</text>
+							<u-radio label="不确保" name="0"></u-radio>
+							<text>）里程表未被蓄意改动</text>
+						</u-radio-group>
+					</u-form-item>
+					<u-form-item borderBottom>
+						<u-radio-group activeColor="#fd6404" shape="square">
+							<text>（</text>
+							<u-radio label="是" name="1"></u-radio>
+							<text style="margin: 0 5px;">/</text>
+							<u-radio label="非" name="0"></u-radio>
+							<text>）事故车</text>
+						</u-radio-group>
+					</u-form-item>
+					<u-form-item borderBottom>
+						<u-radio-group activeColor="#fd6404" shape="square">
+							<text>（</text>
+							<u-radio label="是" name="1"></u-radio>
+							<text style="margin: 0 5px;">/</text>
+							<u-radio label="非" name="0"></u-radio>
+							<text>）泡水车</text>
+						</u-radio-group>
+					</u-form-item>
+					<u-form-item borderBottom>
+						<u-radio-group activeColor="#fd6404" shape="square">
+							<text>（</text>
+							<u-radio label="是" name="1"></u-radio>
+							<text style="margin: 0 5px;">/</text>
+							<u-radio label="非" name="0"></u-radio>
+							<text>）火烧车</text>
+						</u-radio-group>
+					</u-form-item>
+				</u--form>
+			</view>
+			<u-picker :show="showKey" :columns="rangeKey" keyName="label" @confirm="confirmKey" @cancel="showKey = false"></u-picker>
+		</uni-card>
+		<uni-card :is-shadow="false" is-full style="border: none;">
+			<view v-if="vehicleInfor">
+				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
+					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+					<view class="text">其他费用及约定</view>
+				</view>
+				<u--form
+					:model="carForm"
+					:rules="carRules"
+					labelPosition="left"
+					labelWidth="120px"
+				>
+					<u-radio-group placement="column" activeColor="#fd6404" shape="square">
+						<u-form-item label="租金相关" :required="true"></u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>“轿车200元/天”</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>“商务车400元/天”</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>“豪车1000元/天”(本协议第二条车辆价款在50万(含)以上)</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>平台无需承担</text>
+						</u-form-item>
+					</u-radio-group>
+					
+					<u-radio-group placement="column" activeColor="#fd6404" shape="square">
+						<u-form-item label="交易过户费" :required="true"></u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>销售车辆首次交易过户费(平台过户买方指定过户人)</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>销售车辆二次交易过户费(该车辆现户主过户车商指定过户人)</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>平台无需承担</text>
+						</u-form-item>
+					</u-radio-group>
+					
+					<u-radio-group placement="column" activeColor="#fd6404" shape="square">
+						<u-form-item label="车辆折损费用" :required="true"></u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>依据本协议第二条车辆价款的5%支付车辆折损费用</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>平台无需承担</text>
+						</u-form-item>
+					</u-radio-group>
+					
+					<u-radio-group placement="column" activeColor="#fd6404" shape="square">
+						<u-form-item label="第三方检测费用" :required="true"></u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>全车检测费用</text>
+						</u-form-item>
+						<u-form-item borderBottom>
+							<u-radio label="" name="1"></u-radio>
+							<text>平台无需承担</text>
+						</u-form-item>
+					</u-radio-group>
+					<u-form-item label="其他"></u-form-item>
+					<!-- <u-form-item>
+						<u--textarea placeholder="请输入内容" ></u--textarea>
+					</u-form-item> -->
+				</u--form>
+			</view>
+		</uni-card>
 		<view class="footer">
 			<!-- 底部按钮 -->
-			<u-grid col="2">
+			<u-grid col="3">
+				<u-grid-item>
+					<button @click="handleStep" class="button" style="background-image: none;color: #000;">删除</button>
+				</u-grid-item>
 				<u-grid-item>
 					<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
 					<button @click="handleEntrust" class="button" v-if="sellerInfor">确认发起</button>
@@ -257,6 +493,7 @@
 				fileList3: [],
 				// 身份证信息
 				fileList4: [],
+				fileList5: [],
 				// 车辆信息
 				carForm: {
 					registerPicList: [],
@@ -264,19 +501,21 @@
 					carPicList: [],
 					vin: '',
 					natureOfOperat: '',
+					carType: '',
 					engineNum: '',
 					firstRegistDate: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd'),
 					plateNum: '',
 					model: '',
 					brand: '',
-					year: '',
+					licensePlateNum: '',
+					color: '',
 					mileage: '',
+					scrapDate: '',
+					annualInspectionDate: '',
+					insurance: '',
+					insuranceEndData: '',
 					remarks: '',
-					vehicleReceiptAmount: '',
-					total: '',
-					profit: '',
-					sellAmount: '',
-					sellType: 0
+					checkboxValue: [],
 				},
 				// 车辆信息校验规则
 				carRules: {
@@ -291,55 +530,57 @@
 						required: true,
 						message: '请上传机动车登记证书',
 						trigger: ['blur', 'change']
-					},
-					carPicList: {
-						type: 'array',
-						required: true,
-						message: '请上传车辆图片',
-						trigger: ['blur', 'change']
-					},
-					engineNum: {
-						type: 'string',
-						required: true,
-						message: '请填写发动机编号',
-						trigger: ['blur', 'change']
-					},
-					vin: {
-						type: 'string',
-						required: true,
-						message: '请填写车架号',
-						trigger: ['blur', 'change']
-					},
-					firstRegistDate: {
-						type: 'string',
-						required: true,
-						message: '请选择登记日期',
-						trigger: ['blur', 'change']
-					},
-					brand: {
-						type: 'string',
-						required: true,
-						message: '请填写品牌',
-						trigger: ['blur', 'change']
-					},
-					year: {
-						type: 'string',
-						required: true,
-						message: '请填写年代',
-						trigger: ['blur', 'change']
-					},
-					model: {
-						type: 'string',
-						required: true,
-						message: '请填写型号',
-						trigger: ['blur', 'change']
-					},
-					mileage: {
-						type: 'number',
-						required: true,
-						message: '请填写里程数',
-						trigger: ['blur', 'change']
-					},
+					}
+				},
+				amountDetails: {},
+				// 车辆手续
+				checkboxList: [
+					{ label: '行驶证正、副本', name: 1},
+					{ label: '购车发票', name: 'carInvoice' },
+					{ label: '机动车登记证', name: 'registrationCertificate' },
+					{ label: '购置税完税凭证', name: 'purchaseTax' },
+					{ label: '备胎', name: 'spareTire' },
+					{ label: '车船使用税完税凭证', name: 'carShipTax' },
+					{ label: '交强险保单', name: 'heavyTrafficInsurance' },
+					{ label: '商业险保单', name: 'commercialInsurance' },
+					{ label: '千斤顶', name: 'jack' },
+					{ label: '说明书', name: 'specification' },
+					{ label: '钥匙', name: 'vehicleKey' },
+					{ label: '其他', name: 'other' },
+				],
+				showKey: false,
+				rangeKey: [
+					[{
+						label: 1,
+						id: 1
+					}],
+				],
+				// 卖车方式
+				sexs: [{
+					label: '全款',
+					value: 0
+				}, {
+					label: '分期',
+					value: 1
+				}],
+				// 是否弹出登记日期
+				showDate: false,
+				// 费用明细
+				showDetail: false,
+				// 卖家信息
+				sellerForm: {
+					vehicleReceiptAmount: '',
+					total: '',
+					profit: '',
+					sellAmount: '',
+					sellType: 0,
+					buyerIdCard: '',
+					buyerIdCardUrl: [],
+					buyerName: '',
+					buyerTel: ''
+				},
+				// 卖家信息校验规则
+				sellerRules: {
 					vehicleReceiptAmount: {
 						type: 'number',
 						required: true,
@@ -357,30 +598,7 @@
 						required: true,
 						message: '请选择卖车方式',
 						trigger: ['blur', 'change']
-					}
-				},
-				amountDetails: {},
-				// 卖车方式
-				sexs: [{
-					label: '全款',
-					value: 0
-				}, {
-					label: '分期',
-					value: 1
-				}],
-				// 是否弹出登记日期
-				showDate: false,
-				// 费用明细
-				showDetail: false,
-				// 卖家信息
-				sellerForm: {
-					buyerIdCard: '',
-					buyerIdCardUrl: [],
-					buyerName: '',
-					buyerTel: ''
-				},
-				// 卖家信息校验规则
-				sellerRules: {
+					},
 					buyerIdCard: [{
 						required: true,
 						message: '请填写身份证号',
@@ -506,7 +724,7 @@
 							})
 						})
 						// 识别身份证
-						_this.sellerForm.buyerIdCardUrl = _this[`fileList${index}`];
+						_this.sellerForm.buyerIdCardUrl = [..._this.sellerForm.buyerIdCardUrl, _this[`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
 							getIdCard({ IDCardUrl: str }).then((ress) => {
@@ -625,6 +843,11 @@
 			handleDraft(val) {
 				this.textOverlay = '保存中...';
 				this.showOverlay = true;
+				this.proceduresAndSpareParts = {};
+				// 车辆手续及备件
+				this.carForm.checkboxValue.forEach((item) => {
+					this.proceduresAndSpareParts[item] = true;
+				})
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
@@ -661,7 +884,12 @@
 			// 点击卖家信息保存
 			handleSubmit() {
 				this.handleDraft();
-			}
+			},
+			// 确认钥匙框
+			confirmKey(val) {
+				this.carForm.key = val.value[0].label;
+				this.showKey = false;
+			},
 		}
 	}
 </script>
@@ -706,8 +934,17 @@
 			padding: 10px 0;
 		}
 		
+		.image {
+			width: 100%;
+		}
+		
 		/deep/ .image .u-upload__button {
 			display: none;
+		}
+		
+		.fenge {
+			height: 20px;
+			background-color: #fafafa;
 		}
 		
 		.form-item {
@@ -731,7 +968,7 @@
 				width: 80%;
 				margin-top: 10px;
 				background-image: linear-gradient(to right, #fcbb2b,#ed6c21);
-				background-color: #50a8bc;
+				background-color: #fff;
 				color: #fff;
 			}
 		}

@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
+import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.ToString;
@@ -31,5 +32,7 @@ public class AppSellCarInfoReqVO {
     private List<Long> IdCardIds;
     @Schema(description = "转入地车辆管理所名称")
     private String transManageName;
+    @Schema(description = "车况相关")
+    private FeesAndCommitments feesAndCommitments;
 
 }

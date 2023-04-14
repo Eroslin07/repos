@@ -16,13 +16,27 @@
             ,UPDATED_BY as updater
             ,UPDATED_TIME as updateTime
             ,status
+            ,url
         from uctp_notice
+        where status in ('1','0')
     </select>
 
     <update id="updateNoticeStatus" parameterType="map">
         update
             uctp_notice set STATUS='1'
         where id=#{vo.id}
+    </update>
+
+   <update id="updateAllNoticeStatus" >
+        update
+            uctp_notice set STATUS='1'
+            where id in(${id})
+    </update>
+
+   <update id="deleteAllNoticeStatus" >
+        update
+            uctp_notice set STATUS='-1'
+            where id in(${id})
     </update>
 
 

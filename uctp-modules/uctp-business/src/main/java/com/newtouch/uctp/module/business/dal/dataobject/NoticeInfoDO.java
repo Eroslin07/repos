@@ -54,6 +54,10 @@ public class NoticeInfoDO extends BaseDO {
      * 消息状态
      */
     private String status;
+    /**
+     * 跳转路径/有就存，没有就不存
+     */
+    private String url;
 
 
 

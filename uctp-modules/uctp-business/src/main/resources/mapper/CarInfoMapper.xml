@@ -12,7 +12,6 @@
         <id property="id" column="id"/>
         <result property="vin" column="vin"/>
         <result property="brand" column="brand"/>
-        <result property="year" column="year"/>
         <result property="model" column="model"/>
         <result property="engineNum" column="engineNum"/>
         <result property="vehicleReceiptAmount" column="vehicleReceiptAmount"/>
@@ -27,15 +26,16 @@
         a.ID as id,
         a.BRAND as brand,
         a.VIN as vin,
-        a.YEAR as year,
         a.MODEL as model,
         a.ENGINE_NUM as engineNum,
         a.VEHICLE_RECEIPT_AMOUNT as vehicleReceiptAmount,
         a.SALES_STATUS as salesStatus,
         a.STATUS as status,
+        a.STATUS_THREE as statusThree,
         b.MILEAGE as mileage,
         b.BUYER_NAME as firstParty,
-        b.SELLER_NAME as secondParty
+        b.SELLER_NAME as secondParty,
+        d.url as url
     </sql>
 
 
@@ -45,20 +45,22 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
+        left join infra_file d on c.ID = d.id
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue
+                or a.BRAND like #{pageVO.searchValue}
                 or a.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
             <if test="pageVO.status != null">
-                and a.STATUS = #{pageVO.status}}
+                and a.STATUS = #{pageVO.status}
             </if>
             <if test="pageVO.statusThree != null">
-                and a.STATUS_THREE = #{pageVO.statusThree}}
+                and a.STATUS_THREE = #{pageVO.statusThree}
             </if>
         </where>
         order by a.CREATE_TIME desc
@@ -70,20 +72,29 @@
             <include refid="appPageColumn" />
         from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
+        left join infra_file d on c.ID = d.id
         <where>
             a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue
+                or a.BRAND like #{pageVO.searchValue}
                 or a.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
-            <if test="pageVO.status != null">
-                and a.STATUS = #{pageVO.status}}
+            <if test="pageVO.salesStatus != null">
+                and a.SALES_STATUS = #{pageVO.salesStatus}
             </if>
-            <if test="pageVO.statusThree != null">
-                and a.STATUS_THREE = #{pageVO.statusThree}}
+            <if test="pageVO.status != null">
+                and a.STATUS = #{pageVO.status}
+            </if>
+            <if test="pageVO.statusThree != null and pageVO.statusThree.length > 0">
+                and a.STATUS_THREE in
+                <foreach collection="pageVO.statusThree" item="item"
+                         index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by a.CREATE_TIME desc
@@ -155,94 +166,14 @@
       where ucid.CAR_ID=#{id}
     </select>
 
-    <select id="getCarCosts" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO">
-        select
-            MAIN_ID as mainID,
-            VEHICLE_RECEIPT_AMOUNT  as vehicleReceiptAmount,
-            TESTING_FEE as testingFee,
-            OPERATION_FEE as operationFee,
-            TRANSFER_FEE as transferFee,
-            TAXATION ,
-            OTHER_TAXATION as otherTaxation,
-            CAR_SALES_AMOUNT as carSalesAmount,
-            PROFIT,
-            case when PAY_TYPE='1' then '支付成功' when PAY_TYPE='0' then '支付失败' else '' end payType,
-            (IFNULL(VEHICLE_RECEIPT_AMOUNT,0)+IFNULL(TESTING_FEE+OPERATION_FEE,0)+IFNULL(TRANSFER_FEE+TAXATION,0)+IFNULL(OTHER_TAXATION,0) ) costCount
-        from uctp_cost_detail
-        where MAIN_ID=#{id}
-    </select>
 
 
 
-    <select id="getContractInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO">
-        select
-            ucm.CAR_ID as carID,
-            ucm.NUMBER as contractID,
-            ucm.NAME as contractName,
-            ucm.CONTRACT_TYPE as contractType,
-            ucm.STATUS ,
-            ucid.collection
-        from uctp_contract_management ucm left join uctp_car_info_details ucid
-        on ucid.CAR_ID =ucm.CAR_ID
-        where ucm.CAR_ID=#{carID}
-    </select>
 
-    <select id="getContractInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo">
-        select
-            uim.id invoiceId,
-            uim.INVOICE_TYPE as invoiceType,
-            uim.status,
-            uim.CONTRACT_NO as contractNo,
-            uim.name,
-            uim.AMOUNT_MONEY amountMoney,
-            tax
-        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID
-        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.`NUMBER`
-        where uci.ID =#{id}
-    </select>
 
-    <update id="updateContractStatas" parameterType="map">
-        update
-            uctp_contract_management set STATUS='2'
-        where NUMBER=#{vo.contractID}
-    </update>
 
-    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.dal.dataobject.InvoicesInfoDO">
 
-        select
-            id,
-            INVOICE_TYPE as invoiceType,
-            BUSINESS as business,
-            NAME ,
-            AMOUNT_MONEY as amountMoney,
-            TAX ,
-            STATUS,
-            TENANT_ID as tenantId,
-            CREATED_BY as reatedBy,
-            CREATED_TIME as createdTime,
-            UPDATED_BY as updatedBy,
-            UPDATED_TIME as updatedTime
-        from uctp_invoices_management uim where id =#{id}
-    </select>
 
-    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo">
-       select
-            uim.id invoiceId,
-            uim.INVOICE_TYPE as invoiceType,
-            uim.business,
-            uim.status,
-            uim.CONTRACT_NO as contractNo,
-            uim.name,
-            uim.AMOUNT_MONEY amountMoney,
-            uim.tax,
-            uim.CREATED_BY as createdBy,
-            uim.CREATED_TIME as createdTime,
-            uim.UPDATED_BY as updatedBy,
-            uim.UPDATED_TIME as updatedTime
-        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID
-        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.`NUMBER`
-        where uci.ID =#{id}
-    </select>
 
     <select id="getCarDC"  resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
 
@@ -291,24 +222,8 @@
      where CAR_ID =#{carID}
     </select>
 
-    <select id="getContractIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
 
 
-    select
-     	ubf.id as longId,
-     	ucm.number as contractID
-     from uctp_contract_management ucm inner join uctp_business_file ubf
-     on ucm.NUMBER =ubf.MAIN_ID
-     where ucm.NUMBER =#{contractID}
-    </select>
-
-    <select id="getInvoiceIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
-        select
-        	ubf.id as longId,
-        from uctp_invoices_management uim inner join uctp_business_file ubf
-        on uim.id =ubf.MAIN_ID
-        where uim.id =#{id}
-    </select>
 
 
 

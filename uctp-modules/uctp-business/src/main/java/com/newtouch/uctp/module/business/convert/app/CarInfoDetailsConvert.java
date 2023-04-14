@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.convert.app;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppSellCarInfoReqVO;
 import com.newtouch.uctp.module.business.controller.app.carinfodetails.vo.CarInfoDetailsCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.carinfodetails.vo.CarInfoDetailsRespVO;
 import com.newtouch.uctp.module.business.controller.app.carinfodetails.vo.CarInfoDetailsUpdateReqVO;
@@ -17,8 +18,10 @@ public interface CarInfoDetailsConvert {
     CarInfoDetailsDO convert(CarInfoDetailsCreateReqVO bean);
 
     CarInfoDetailsDO convert(CarInfoDetailsUpdateReqVO bean);
+    CarInfoDetailsDO convert(AppSellCarInfoReqVO reqVO);
 
     CarInfoDetailsRespVO convert(CarInfoDetailsDO bean);
+
 
     List<CarInfoDetailsRespVO> convertList(List<CarInfoDetailsDO> list);
 

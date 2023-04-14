@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.dal.mysql;
 
 
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.AppMyCostVO;
 import com.newtouch.uctp.module.business.controller.app.myCost.vo.CostExample;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,7 +21,7 @@ public interface CostMapper  {
 
     AppMyCostVO getMyCosts1(@PathVariable String brand,@PathVariable String year, @PathVariable String mon);
 
-
+    AppCarCostVO getCarCosts(String id);
 
 
 }

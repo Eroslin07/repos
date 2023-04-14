@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.system.service.dept;
 
 import cn.hutool.core.collection.CollUtil;
+import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -308,6 +309,10 @@ public class DeptServiceImpl implements DeptService {
         return deptMapper.selectByTenantId(tenantId,type);
     }
 
+
+    public DeptDO selectByParent(String tenantId,Long type) {
+        return deptMapper.selectByParent(tenantId,type);
+    }
     @Override
     public int insertDept(DeptDO deptDO) {
 
@@ -317,5 +322,11 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public List<DeptDO> getDeptByParentId(Long parentId) {
         return deptMapper.selectDeptByParentId(parentId);
+    }
+
+
+    @Override
+    public List<DeptDO> selectIsExist(String name, Integer status) {
+        return deptMapper.selectIsExist(name,status);
     }
 }

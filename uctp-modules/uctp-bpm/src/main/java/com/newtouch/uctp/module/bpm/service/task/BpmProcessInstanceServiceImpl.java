@@ -2,10 +2,12 @@ package com.newtouch.uctp.module.bpm.service.task;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -14,6 +16,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.flowable.engine.HistoryService;
+import org.flowable.engine.IdentityService;
+import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.event.FlowableCancelledEvent;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -21,13 +25,18 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
+import com.alibaba.fastjson.JSON;
+import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.*;
@@ -97,6 +106,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     private BpmFormMainMapper bpmFormMainMapper;
     @Resource
     private TenantApi tenantApi;
+    @Resource
+    private RepositoryService repositoryService;
+    @Resource
+    public IdentityService identityService;
+    @Resource
+    private RedisTemplate redisTemplate;
 
 
     @Override
@@ -139,6 +154,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     public String createProcessInstanceV2(Long userId, @Valid BpmProcessInstanceCreateReqVO createReqVO) {
         // 获得流程业务ID
         String businessKey = StrUtil.toStringOrNull(createReqVO.getVariables().get("businessKey"));
+
         if (!StringUtils.hasText(businessKey)) {
             throw exception(PROCESS_BUSI_KEY_NOT_EXISTS);
         }
@@ -169,6 +185,84 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
 
         return procInstId;
     }
+
+    @Override
+    public String createProcessInstanceByKey(Long userId, String processDefinitionKey, Map<String, Object> variables) {
+        if (CollectionUtils.isEmpty(variables)) {
+            variables = new HashMap<String, Object>();
+        }
+        Long businessKey = IdUtil.getSnowflakeNextId();
+        if (ObjectUtil.isNotEmpty(variables.get("businessKey"))) {
+            businessKey = Long.valueOf(StrUtil.toStringOrNull(variables.get("businessKey")));
+        }
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 0) {
+            throw exception(PROCESS_BUSI_RUNING);
+        }
+        if (userId == null) {
+            userId = Long.valueOf(variables.get("startUserId") + "");
+        }
+        identityService.setAuthenticatedUserId(String.valueOf(userId));
+
+        // 1.获得流程定义
+        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).active().orderByProcessDefinitionVersion().desc().list();
+        if (CollectionUtils.isEmpty(processDefinitionList)) {
+            throw  new ServiceException(1009003002, "流程定义不存在或未激活。");
+        }
+        ProcessDefinition processDefinition = CollUtil.get(processDefinitionList, 0);
+
+        // 2.自动生成表单编号、单据标题等
+        String serialNo = this.getFormSerialNo(processDefinitionKey);
+        String title = serialNo;
+
+        // 3.保存流程表单提交数据
+        HashMap<String, Object> formDataJsonVariable = (HashMap<String, Object>) variables.getOrDefault("formDataJson", new HashMap<String, Object>());
+        String workFlowMainEntityAlias = this.bpmFormDataService.getObjectMainEntityAlias(formDataJsonVariable);
+        Map<String, Object> formMainDataObject = this.bpmFormDataService.getObjectMainEntityMap(formDataJsonVariable);
+        formMainDataObject.put("id", businessKey);
+        formMainDataObject.put("status", 1);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "procDefId"), processDefinition.getId());
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "serialNo") , serialNo);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "title"), title);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "startUserId"), userId);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "busiType"), processDefinitionKey);
+        formMainDataObject.put(this.matchMapKey(formMainDataObject, "submitTime"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        HashMap<String, Object> submitFormDataJsonField = (HashMap<String, Object>) formMainDataObject.getOrDefault(this.matchMapKey(formMainDataObject, "formDataJson"), new HashMap<String, Object>());
+        if (!CollectionUtils.isEmpty(submitFormDataJsonField)) {
+            formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), JSON.toJSONString(submitFormDataJsonField).getBytes(StandardCharsets.UTF_8));
+        } else {
+            formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), null);
+        }
+        formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
+        this.bpmFormDataService.saveDataObject(businessKey, formDataJsonVariable);
+
+        // 4.发起流程
+        String procInstId = createProcessInstance0(userId, processDefinition, variables, String.valueOf(businessKey));
+        BpmFormMainDO updateBpmFormMainDO = bpmFormMainMapper.selectById(Long.valueOf(businessKey));
+        updateBpmFormMainDO.setProcInstId(procInstId);
+        updateBpmFormMainDO.setDoneTime(updateBpmFormMainDO.getSubmitTime());
+        bpmFormMainMapper.updateById(updateBpmFormMainDO);
+
+        return String.valueOf(businessKey);
+    }
+
+    private String matchMapKey(Map<String, Object> map, String key) {
+        for (String k : map.keySet()) {
+            if (k.toLowerCase().equals(key.toLowerCase())) {
+                return k;
+            }
+        }
+
+        return key;
+    }
+
+    private String getFormSerialNo(String busiTypeCode) {
+        String serialNoPrefix = busiTypeCode.concat(DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDateTime.now()));
+        Long index = this.redisTemplate.opsForValue().increment(serialNoPrefix, 1L);
+        return serialNoPrefix.concat(String.format("%05d", index.intValue()));
+    }
+
+
 
     @Override
     public String createProcessInstance(Long userId, @Valid BpmProcessInstanceCreateReqDTO createReqDTO) {
@@ -341,12 +435,15 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         TenantRespDTO tenantRespDTO = tenantApi.getTenant(tenantId).getData();
         String tenantName = tenantRespDTO.getName();
         if (StringUtils.hasText(reqVO.getMerchantName())) {
-            //deptApi.get
+            Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+            AdminUserRespDTO adminUserRespDTO = adminUserApi.getUser(loginUserId).getCheckedData();
+            DeptRespDTO deptRespDTO = deptApi.getDept(adminUserRespDTO.getDeptId()).getData();
+            System.out.println(deptRespDTO);
         }
 
 
 
-
+        respVO.setBusiType(reqVO.getBusiType());
         return respVO;
     }
 
@@ -363,7 +460,6 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (definition.isSuspended()) {
             throw exception(PROCESS_DEFINITION_IS_SUSPENDED);
         }
-
         // 创建流程实例
         ProcessInstance instance = runtimeService.startProcessInstanceById(definition.getId(), businessKey, variables);
         // 设置流程名字

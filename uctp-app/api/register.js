@@ -5,7 +5,8 @@ export function register(data) {
 	return request({
 		url: '/system/appAuth/registerAccount',
 		headers: {
-			isToken: false
+			isToken: false,
+			'tenant-id': data.marketLocation
 		},
 		'method': 'POST',
 		'data': data

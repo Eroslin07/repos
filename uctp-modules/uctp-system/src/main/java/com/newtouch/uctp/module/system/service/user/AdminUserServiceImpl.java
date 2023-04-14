@@ -230,6 +230,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public List<AdminUserDO> selectIsExist(String mobile,Integer status) {
+        return userMapper.selectIsExist(mobile,status);
+    }
+
+    @Override
     public PageResult<AdminUserDO> getUserPage(UserPageReqVO reqVO) {
         return userMapper.selectPage(reqVO, getDeptCondition(reqVO.getDeptId()));
     }

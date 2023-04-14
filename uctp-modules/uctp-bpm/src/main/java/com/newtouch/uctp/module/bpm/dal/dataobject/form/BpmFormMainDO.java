@@ -73,4 +73,12 @@ public class BpmFormMainDO extends BaseDO {
      * 流程最后一次审批时间
      */
     private LocalDateTime doneTime;
+    /**
+     * 表单提交JSON二进制数据
+     */
+    private byte[] formDataJson;
+    /**
+     * 第三方业务ID
+     */
+    private Long thirdId;
 }
