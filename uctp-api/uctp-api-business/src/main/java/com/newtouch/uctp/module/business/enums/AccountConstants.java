@@ -28,7 +28,9 @@ public class AccountConstants {
     //交易去向-我的保证金
     public static final String TRADE_TO_MY_CASH = "2";
     //交易去向-市场方
-    public static final String TRADE_TO_MARKET = "2";
+    public static final String TRADE_TO_MARKET = "3";
+    //交易去向-我的利润
+    public static final String TRADE_TO_MY_PROFIT = "4";
 
     //客户类型-商户
     public static final String CUST_TYPE_MERCHANT = "1";
@@ -78,6 +80,16 @@ public class AccountConstants {
     public static final String PRESENT_PROFIT_BANK_SUCCESS = "7";
     //到账失败
     public static final String PRESENT_PROFIT_BANK_FAIL = "8";
+
+    // 提现：状态
+    // 提现申请
+    public static final String PRESENT_STATUS_APPLY = "1";
+    // 市场方审批中
+    public static final String PRESENT_STATUS_AUDIT = "2";
+    // 提现申请
+    public static final String PRESENT_STATUS_BANK_PROCESSING = "3";
+    // 提现申请
+    public static final String PRESENT_STATUS_BANK_SUCCESS = "4";
 
     public static Integer ERROR_CODE_ACCOUNT_NOT_FOUND = 90010001;
     public static String ERROR_MESSAGE_ACCOUNT_NOT_FOUND = "未查询到当前账号信息";
