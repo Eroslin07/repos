@@ -8,10 +8,15 @@
       @close="closeDialog"
     > -->
     <el-container>
-      <el-header class="header">山西万国市场商户张三账号申请待办</el-header>
+      <!-- <el-header class="header">山西万国市场商户张三账号申请待办</el-header> -->
+      <el-header class="header">{{
+        (baseInfoData.data.variables.marketName || '') +
+        (baseInfoData.data.variables.merchantName || '') +
+        '账号申请流程'
+      }}</el-header>
       <el-main>
         <div style="overflow: hidden; margin-bottom: 10px">
-          <div style="float: left; font-size: 16px">单号：GZSH202303220001</div>
+          <div style="float: left; font-size: 16px">单号：{{ baseInfoData.data.serialNo }}</div>
           <div class="btn">
             <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
             <!-- <el-button type="primary" v-if="type == 'need'" @submit="submitBtn">提交</el-button>
@@ -21,38 +26,36 @@
         <el-card class="content-box">
           <div>商户信息</div>
           <el-row :gutter="20">
-            <el-col :span="6">手机号： 1538756769</el-col>
-            <el-col :span="6">姓名： 张兰</el-col>
-            <el-col :span="6">身份证号： 5****************1</el-col>
-            <el-col :span="6">市场所在地： 山西万国</el-col>
+            <el-col :span="6">手机号： {{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
+            <el-col :span="6">姓名： {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
+            <el-col :span="6">身份证号： {{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
+            <el-col :span="6"
+              >市场所在地： {{ mainValue.formDataJson.marketLocationValue || '暂无数据' }}</el-col
+            >
           </el-row>
-          <div>对公银行账号：66XXXXXXXXXXXXXXX</div>
+          <div>对公银行账号：{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
           <div>
             <div>身份证图片</div>
             <el-image
+              v-for="(img, index) in mainValue.formDataJson.idCardUrl"
+              :key="img.id"
               style="width: 200px; height: 100px; margin-right: 10px"
-              src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+              :src="img.url"
               :zoom-rate="1.2"
-              :preview-src-list="srcList"
+              :preview-src-list="idcardUrlArr"
               fit="cover"
-              :initial-index="0"
-            />
-            <el-image
-              style="width: 200px; height: 100px"
-              src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
-              :zoom-rate="1.2"
-              :preview-src-list="srcList"
-              fit="cover"
-              :initial-index="1"
+              :initial-index="index"
             />
           </div>
           <div>
             <div>营业执照图片</div>
             <el-image
+              v-for="item in mainValue.formDataJson.businessLicense"
+              :key="item.id"
               style="width: 200px; height: 100px"
-              src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+              :src="item.url"
               :zoom-rate="1.2"
-              :preview-src-list="srcList"
+              :preview-src-list="busUrlArr"
               fit="cover"
               :initial-index="0"
             />
@@ -68,17 +71,15 @@ import { allSchemas } from '../toDoList/toDoList.data'
 import { defineProps } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 // import type { FormExpose } from '@/components/Form'
+// 详情
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+console.log(baseInfoData.data)
 const { t } = useI18n() // 国际化
 // const message = useMessage() // 消息弹窗
 
 const [] = useXTable({
   allSchemas: allSchemas
 })
-
-const srcList = [
-  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-  'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
-]
 
 const actionType = ref('detail') // 操作按钮的类型
 // const dialogVisible = ref(true) // 是否显示弹出层
@@ -91,6 +92,23 @@ const setDialogTile = (type: string) => {
   actionType.value = type
   // dialogVisible.value = true
 }
+
+// 详情
+let mainValue = reactive({
+  formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
+})
+
+nextTick(() => {
+  mainValue.formDataJson = { ...baseInfoData.data.variables.formDataJson.formMain.formDataJson }
+})
+
+const idcardUrlArr = computed(() => {
+  return mainValue.formDataJson.idCardUrl.map((item) => item.url)
+})
+
+const busUrlArr = computed(() => {
+  return mainValue.formDataJson.businessLicense.map((item) => item.url)
+})
 
 // const emit = defineEmits(['closeDialog'])
 

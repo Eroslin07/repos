@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @TableName("uctp_vat_invoices")
 @Data
@@ -190,7 +191,7 @@ public class VatInvoiceDO implements Serializable {
      * 商品明细实体
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private InvoiceDetailsListDO invoiceDetailsListDO;
+    private List<InvoiceDetailsListDO> invoiceDetailsListDO;
 
 }
 

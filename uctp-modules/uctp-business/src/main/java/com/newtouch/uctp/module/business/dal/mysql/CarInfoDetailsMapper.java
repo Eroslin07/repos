@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.business.dal.mysql;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.carinfodetails.vo.CarInfoDetailsPageReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,5 +21,9 @@ public interface CarInfoDetailsMapper extends BaseMapperX<CarInfoDetailsDO> {
                 .eqIfPresent(CarInfoDetailsDO::getEnergyType, reqVO.getEnergyType())
                 .betweenIfPresent(CarInfoDetailsDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(CarInfoDetailsDO::getId));
+    }
+
+    default int deleteByCarId(Long carId){
+        return delete(new QueryWrapperX<CarInfoDetailsDO>().eq("CAR_ID",carId));
     }
 }

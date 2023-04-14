@@ -148,5 +148,5 @@ public class CarInfoDetailsDO extends TenantBaseDO {
      * 车况相关
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private VehicleCondition vehicleCondition;
+    private VehicleProblem vehicleProblem;
 }

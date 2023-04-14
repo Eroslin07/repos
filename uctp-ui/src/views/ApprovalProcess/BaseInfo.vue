@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="baseinfo-container">
     <!-- 商户主账号审批待办 -->
     <MerchantApprovalPending v-if="status == 'ZHSQ'" :type="'need'" />
     <!-- 收车价格超公允值待办 -->
-    <CollectCarPending v-if="status == 'SCJG'" :type="'need'" />
+    <CollectCarPending v-if="status == 'SGYZ'" :type="'need'" />
     <!-- 反向二手车统一发票待办 -->
     <Reverse v-if="status == 'SCKP'" :type="'need'" />
     <!-- 支付失败待办 -->
@@ -27,6 +27,8 @@ import {
   Profit
 } from '@/views/workbench/components'
 import { defineProps } from 'vue'
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+console.log(baseInfoData.data, 'baseInfoData')
 const props = defineProps({
   status: {
     type: String,
@@ -36,3 +38,9 @@ const props = defineProps({
 
 console.log(props, 'prop')
 </script>
+
+<style lang="scss" scoped>
+.baseinfo-container {
+  // height: 400px;
+}
+</style>

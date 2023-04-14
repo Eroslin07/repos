@@ -73,5 +73,5 @@ public class ProceduresAndSpareParts implements Serializable {
      * 其他
      */
     @Schema(description = "其他")
-    private String accident_vehicle;
+    private String accidentVehicle;
 }

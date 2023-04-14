@@ -72,4 +72,19 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     default CarInfoDO selectByVin(String vin,String status){
         return selectOne(CarInfoDO::getVin,vin,CarInfoDO::getStatus,status);
     };
+
+    default  List<CarInfoDO> selectIsSell(String vin,Integer statusThree){
+        return selectList(new LambdaQueryWrapperX<CarInfoDO>()
+                .likeIfPresent(CarInfoDO::getVin,vin)
+                .ne(CarInfoDO::getStatusThree, statusThree)
+        );
+    };
+
+    default List<CarInfoDO> selectIsExist(String vin, Integer salesStatus,Integer status){//salesStatus一级状态  status二级状态
+        return selectList(new LambdaQueryWrapperX<CarInfoDO>()
+                .likeIfPresent(CarInfoDO::getVin,vin)
+                .eqIfPresent(CarInfoDO::getSalesStatus, salesStatus)
+                .eqIfPresent(CarInfoDO::getStatus, status)
+        );
+    }
 }

@@ -83,6 +83,11 @@ public class BusinessFileServiceImpl implements BusinessFileService {
     }
 
     @Override
+    public int deleteByMainId(Long mainId) {
+        return this.deleteByMainIdAndType(mainId,null);
+    }
+
+    @Override
     public int deleteByMainIdAndType(Long mainId, String fileType) {
 //        return businessFileMapper.delete(new QueryWrapperX<BusinessFileDO>()
 //                .eq("MAIN_ID", mainId)

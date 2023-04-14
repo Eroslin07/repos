@@ -57,6 +57,11 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     }
 
     @Override
+    public int deleteByCarId(Long carId) {
+        return carInfoDetailsMapper.deleteByCarId(carId);
+    }
+
+    @Override
     public void deleteCarInfoDetails(Long id) {
         // 校验存在
         validateCarInfoDetailsExists(id);
