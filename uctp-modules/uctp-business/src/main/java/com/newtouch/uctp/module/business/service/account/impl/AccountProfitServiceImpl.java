@@ -33,6 +33,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         BigDecimal totalCostAmount = this.getTotalCostAmount(costs);
         // 计算利润，利润=卖车金额-所有费用-收车金额
         BigDecimal profit = carSalesAmount.divide(totalCostAmount).divide(carSalesAmount);
+
+        // todo
     }
 
     private void generateProfitCheck(String accountNo,
