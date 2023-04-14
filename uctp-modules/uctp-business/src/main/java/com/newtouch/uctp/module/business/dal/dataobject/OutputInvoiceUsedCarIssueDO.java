@@ -23,10 +23,6 @@ public class OutputInvoiceUsedCarIssueDO implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
-     * 车牌交易关联ID
-     */
-    private Long carTranstionID;
-    /**
      * 销方机构税号
      */
     private String taxNo;

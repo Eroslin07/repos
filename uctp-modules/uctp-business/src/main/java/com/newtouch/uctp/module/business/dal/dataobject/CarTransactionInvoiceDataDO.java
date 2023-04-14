@@ -23,9 +23,9 @@ public class CarTransactionInvoiceDataDO implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
-     * 商品明细实体关联ID
+     * 二手车发票关联ID
      */
-    private Long InvoiceDetailID;
+    private Long OutputInvoiceCarID;
     /**
      * 购方税号
      */

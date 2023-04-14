@@ -8,7 +8,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@TableName("uctp_invoices_vehicle")
+@TableName("uctp_invoices_details_list")
 @Data
 @ToString(callSuper = true)
 @Builder
@@ -21,100 +21,83 @@ public class InvoiceDetailsListDO implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
-     * 车牌照号
+     * 增值税发票ID
      */
-    private String licensePlate;
+    private Long vatInvoiceID;
     /**
-     * 开票方类型：01-经营单位、02-拍卖单位、 03-二手车市场
+     * 明细行号
      */
-    private String drawerType;
+    private String goodsLineNo;
     /**
-     * 车辆类型
+     * 发票行性质，0：正常行 1：折扣行 2：被折扣行
      */
-    private String vehicleType;
+    private String goodsLineNature;
     /**
-     * 登记证号
-     */
-    private String registryNo;
-    /**
-     * 厂牌型号
-     */
-    private String brandModel;
-    /**
-     * 转入地车辆管理所名称
-     */
-    private String vehicleAdministration;
-    /**
-     * 车辆识别代号/车架号码，车架号码只能为字母、数字或*号
-     */
-    private String vehicleNo;
-    /**
-     * 车购税完税凭证号码
-     */
-    private String carPaymentVoucherNo;
-    /**
-     * 开票标识，0-未开票 1-已开票
-     */
-    private String invoiceMark;
-    /**
-     * 增值税标志，0-免征增值税 1-不征增值税
-     */
-    private String vatMark;
-    /**
-     * 已开发票代码
-     */
-    private String issuedInvoiceCode;
-    /**
-     * 已开发票号码
-     */
-    private String issuedInvoiceNo;
-    /**
-     * 已开票销售额
-     */
-    private BigDecimal issuedTotalPrice;
-    /**
-     * 已开票税额
-     */
-    private BigDecimal issuedTotalTax;
-    /**
-     * 已开票税率
-     */
-    private BigDecimal issuedTaxRate;
-
-    /**
-     * 开具完税证明标识，0-未开 1-已开
-     */
-    private String paymentVoucherMark;
-    /**
-     * 完税凭证号码
-     */
-    private String paymentVoucherNo;
-    /**
-     * 完税凭证销售额，保留两位小数
-     */
-    private BigDecimal paymentVoucherToralPrice;
-    /**
-     * 完税凭证税率，保留两位小数
-     */
-    private BigDecimal paymentVoucherTaxRate;
-    /**
-     * 完税凭证税额，保留两位小数
-     */
-    private BigDecimal paymentVoucherTotalTax;
-    /**
-     * 商品编码，总局固定编码，不能修改
+     * 商品编码
      */
     private String goodsCode;
     /**
-     * 自行编码，以2位为一级，共10级，每级可用编码值为00-99或AA-ZZ
+     * 自行编码
      */
-    private String goodsPersonalCode;
+    private String goodsExtendCode;
     /**
-     * 增值税特殊管理（优惠政策为1时必填）
+     * 商品名称
+     */
+    private String goodsName;
+    /**
+     * 商品税目
+     */
+    private String goodsTaxItem;
+    /**
+     * 规格型号
+     */
+    private String goodsSpecification;
+    /**
+     * 计量单位
+     */
+    private String goodsUnit;
+    /**
+     * 商品数量
+     */
+    private String goodsQuantity;
+    /**
+     * 商品单价
+     */
+    private String goodsPrice;
+    /**
+     * 金额
+     */
+    private String goodsTotalPrice;
+    /**
+     * 税额，如果为空，根据金额，税率自动计算出
+     */
+    private String goodsTotalTax;
+    /**
+     * 税率
+     */
+    private String goodsTaxRate;
+    /**
+     * 折行对应行号（有折扣行时必填）
+     */
+    private String goodsDiscountLineNo;
+    /**
+     * 含税标志0：不含税 1：含税
+     */
+    private String priceTaxMark;
+
+    /**
+     * 增优惠政策类型，如果使用优惠政策，此项必填，具体信息取《商品
+     * 和服务税收分类与编码》.xls中的增值税特殊管理列。
      */
     private String vatSpecialManagement;
     /**
-     * 零税率标识 ，空代表无， 1-出口免税和其他免税优惠政策 2-不征增值税 3-普通零税率
+     * 零税率标识：空代表无， 1 出口免税和其他免税优惠政策， 2 不征增值
+     * 税， 3 普通零税率
      */
     private String freeTaxMark;
+    /**
+     * 是否使用优惠政策 0:未使用，1:使用
+     */
+    private String preferentialMark;
+
 }
