@@ -62,6 +62,9 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "登记证书url")
     private List<String>  certificateUrl;
 
+    @Schema(description = "登记证号")
+    private String certificateNo;
+
     @Schema(description = "颜色")
     private String colour;
 

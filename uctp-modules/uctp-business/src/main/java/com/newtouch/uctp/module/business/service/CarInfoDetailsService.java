@@ -72,4 +72,6 @@ public interface CarInfoDetailsService {
      * @return
      */
     CarInfoDetailsDO getCarInfoDetailsByCarId(Long carId);
+
+    int deleteByCarId(Long carId);
 }
