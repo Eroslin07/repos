@@ -29,4 +29,6 @@ public interface UserExtService {
      * 新增用户
      */
     int insertUser(UserExtDO user);
+
+    int deleteByUserId(Long userId);
 }

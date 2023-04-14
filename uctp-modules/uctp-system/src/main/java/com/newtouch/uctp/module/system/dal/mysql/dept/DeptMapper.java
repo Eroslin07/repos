@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.system.dal.mysql.dept;
 
 import java.util.List;
 
+import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
@@ -40,5 +41,11 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
 
     default List<DeptDO> selectDeptByParentId(Long parentId) {
         return selectList(DeptDO::getParentId, parentId);
+    }
+
+    default List<DeptDO> selectIsExist(String name, Integer status){
+        return selectList(new LambdaQueryWrapperX<DeptDO>()
+                .likeIfPresent(DeptDO::getName,name)
+                .eqIfPresent(DeptDO::getStatus, status));
     }
 }

@@ -6,15 +6,8 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.framework.security.core.LoginUser;
-import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoAndDetailVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInfoPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
-import com.newtouch.uctp.module.business.convert.app.CarInfoDetailsConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
@@ -36,7 +29,6 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
@@ -114,8 +106,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
 
         infoDO.setSalesStatus(1);//收车中
-        infoDO.setStatus(1);//草稿
-        infoDO.setStatusThree(1);
+        infoDO.setStatus(11);//草稿
+        infoDO.setStatusThree(111);
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据
@@ -410,9 +402,22 @@ public class CarInfoServiceImpl implements CarInfoService {
     public AppBpmCarInfoRespVO saveSellCarInfo(AppSellCarInfoReqVO reqVO) {
         validateCarInfoExists(reqVO.getId());
         // 更新卖车填写数据
-        CarInfoDO carInfo = CarInfoConvert.INSTANCE.convert(reqVO);
-        CarInfoDetailsDO carInfoDetails = CarInfoDetailsConvert.INSTANCE.convert(reqVO);
+        CarInfoDO carInfo = carInfoMapper.selectById(reqVO.getId());
+        carInfo.setRemarks( reqVO.getRemarks() );
+        carInfo.setSellAmount( reqVO.getSellAmount() );
+        carInfo.setSellType( reqVO.getSellType() );
+        //此时状态为 买车中草稿
+        carInfo.setSalesStatus(3);
+        carInfo.setStatus(31);
+        carInfo.setStatusThree(311);
         carInfoMapper.updateById(carInfo);
+        CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(reqVO.getId());
+        carInfoDetails.setBuyerTel( reqVO.getBuyerTel() );
+        carInfoDetails.setBuyerIdCard( reqVO.getBuyerIdCard() );
+        carInfoDetails.setBuyerName( reqVO.getBuyerName() );
+        carInfoDetails.setBuyerAdder( reqVO.getBuyerAdder() );
+        carInfoDetails.setTransManageName( reqVO.getTransManageName() );
+        carInfoDetails.setFeesAndCommitments( reqVO.getFeesAndCommitments() );
         carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
         //保存卖车上传的身份证正反面图片
         List<BusinessFileDO> businessFileList = businessFileService.getByMainIdAndType(carInfo.getId(), "5");
@@ -473,30 +478,27 @@ public class CarInfoServiceImpl implements CarInfoService {
             //这里以后增加了状态删除即可
             return maps;
         }
-        if (CollUtil.isEmpty(maps)) {
-            for (int i = 0; i <= 3; i++) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("salesStatus", i);
-                map.put("num", 0);
-                maps.add(map);
-            }
-        }else {
-            List<Integer> salesStatusList = new ArrayList<>();
-            maps.forEach(map->{
-                salesStatusList.add((Integer) map.get("salesStatus"));
-            });
-            List<Integer> list = Arrays.asList(0,1, 2, 3);
-            List<Integer> resList = list.stream().filter(i -> !salesStatusList.contains(i)).collect(Collectors.toList());
-            if (CollUtil.isNotEmpty(resList)) {
-                for (Integer i : resList) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("salesStatus", i);
+        Map<Integer, Integer> mapIdx = new HashMap<>();
+        for (int i = 0; i < maps.size(); i++) {
+            mapIdx.put((Integer)maps.get(i).get("statusTwo"), i);
+        }
+        List<Map<String, Object>> mapList = Lists.newArrayList();
+        for (int i = 1; i <= 4; i++) {
+            for (int j = 1; j <= 3; j++) {
+                Map<String,Object> map = new HashMap<>();
+                Integer statusTwo = 10 * i + j;
+                if (mapIdx.containsKey(statusTwo)) {
+                    Map<String, Object> dbMap = maps.get(mapIdx.get(statusTwo));
+                    mapList.add(dbMap);
+                } else {
+                    map.put("statusOne", i);
+                    map.put("statusTwo", statusTwo);
                     map.put("num", 0);
-                    maps.add(map);
                 }
+                mapList.add(map);
             }
         }
-        return maps;
+        return mapList;
     }
     @Override
     public AppCarInfoAndDetailVO getCarInfoAndDetail(String id) {
@@ -591,19 +593,24 @@ public class CarInfoServiceImpl implements CarInfoService {
         this.validateCarInfoExists(id);
         CarInfoDO carInfo = this.getCarInfo(id);
         //判断第二级状态不为草稿状态，禁止删除
-        if (!"31".equals(carInfo.getStatus())) {
+        if (!ObjectUtil.equals(31,carInfo.getStatus())) {
             throw exception(CAR_INFO_STATUS_ERROR);
         }
         carInfo.setRemarks(null);
         carInfo.setSellAmount(null);
         carInfo.setSellType(null);
         carInfo.setRemarks(null);
+        //此时状态为 待售中-已检测
+        carInfo.setSalesStatus(2);
+        carInfo.setStatus(23);
+        carInfo.setSalesStatus(233);
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(id);
         carInfoDetails.setBuyerAdder(null);
         carInfoDetails.setBuyerIdCard(null);
         carInfoDetails.setBuyerName(null);
         carInfoDetails.setBuyerTel(null);
         carInfoDetails.setTransManageName(null);
+        carInfoDetails.setFeesAndCommitments(null);
         carInfoMapper.updateById(carInfo);
         carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
     }

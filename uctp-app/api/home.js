@@ -15,3 +15,12 @@ export const getHomeCount = () => {
 		method: 'GET'
 	})
 }
+
+// 流程发起
+export const setCreate = (data) => {
+	return request({
+		url: `/bpm/app/process-instance/v3/create`,
+		method: 'POST',
+		data
+	})
+}

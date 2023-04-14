@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 商户主账号审批待办 -->
-    <MerchantApprovalPending v-if="status == 'GZSH'" :type="'need'" />
+    <MerchantApprovalPending v-if="status == 'ZHSQ'" :type="'need'" />
     <!-- 收车价格超公允值待办 -->
     <CollectCarPending v-if="status == 'SCJG'" :type="'need'" />
     <!-- 反向二手车统一发票待办 -->

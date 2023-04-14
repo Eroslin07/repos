@@ -57,7 +57,7 @@ public class UserExtDO extends TenantBaseDO {
     /**
      * 状态
      */
-    private String status;
+    private Integer status;
     /**
      * 身份证号
      */
