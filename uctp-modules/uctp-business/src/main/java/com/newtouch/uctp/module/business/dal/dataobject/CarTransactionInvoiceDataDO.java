@@ -88,5 +88,5 @@ public class CarTransactionInvoiceDataDO implements Serializable {
      * 二手车明细
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private InvoiceDetailsListDO invoiceVehicleInfoDO;
+    private InvoiceVehicleInfoDO invoiceVehicleInfoDO;
 }
