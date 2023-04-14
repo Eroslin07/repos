@@ -1,7 +1,7 @@
 <template>
 	<view class="progress">
 		<uni-card :is-shadow="false" is-full>
-			<u-steps current="1" direction="column" activeColor="#50a8bc">
+			<u-steps current="1" direction="column" activeColor="#fa6401">
 				<u-steps-item title="发起提现申请">
 				</u-steps-item>
 				<u-steps-item title="市场方审批中" desc="请及时提交发票到市场处进行审批" v-if="type == 2">
@@ -38,7 +38,7 @@
 			this.type = options.type;
 			if (options.type == 1) {
 				uni.setNavigationBarTitle({
-					title: '我的保证金提现'
+					title: '保证金提现'
 				});
 			} else if (options.type == 2) {
 				uni.setNavigationBarTitle({
@@ -62,7 +62,7 @@
 <style lang="scss" scoped>
 	.progress {
 		.button {
-			background-color: #50a8bc;
+			background-color: #fa6401;
 			color: #fff;
 			margin-top: 10px;
 			margin-top: 30%;

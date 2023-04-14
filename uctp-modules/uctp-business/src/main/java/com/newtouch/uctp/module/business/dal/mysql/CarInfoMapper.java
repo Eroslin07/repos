@@ -49,27 +49,42 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     PicResp getCarDCDetails(String id);
 
 
-    AppCarCostVO getCarCosts(String id);
+    //AppCarCostVO getCarCosts(String id);
 
 
-    List<AppContractarVO> getContractInfo(String carID);
+    //List<AppContractarVO> getContractInfo(String carID);
 
-    List<AppCarInvoiceVo> getInvoicesInfo(String carID);
+    //List<AppCarInvoiceVo> getInvoicesInfo(String carID);
 
     CarDCVo getCarDC(String carID);
     List<CarDCVo> getCarIds(String carID);
     List<CarDCVo> getDrivingLicenseIds(String carID);
     List<CarDCVo> getCertificateIds(String carID);
 
-    List<CarDCVo> getContractIds(String contractID);
+   // List<CarDCVo> getContractIds(String contractID);
 
-    int updateContractStatas(@Param("vo") CarDCVo carDCVo);
+    //int updateContractStatas(@Param("vo") CarDCVo carDCVo);
 
     PeopleVo getPeopelInfo(String carID);
 
-    List<CarDCVo> getInvoiceIds(String id);
+   // List<CarDCVo> getInvoiceIds(String id);
 
     default CarInfoDO selectByVin(String vin,String status){
         return selectOne(CarInfoDO::getVin,vin,CarInfoDO::getStatus,status);
     };
+
+    default  List<CarInfoDO> selectIsSell(String vin,Integer statusThree){
+        return selectList(new LambdaQueryWrapperX<CarInfoDO>()
+                .likeIfPresent(CarInfoDO::getVin,vin)
+                .ne(CarInfoDO::getStatusThree, statusThree)
+        );
+    };
+
+    default List<CarInfoDO> selectIsExist(String vin, Integer salesStatus,Integer status){//salesStatus一级状态  status二级状态
+        return selectList(new LambdaQueryWrapperX<CarInfoDO>()
+                .likeIfPresent(CarInfoDO::getVin,vin)
+                .eqIfPresent(CarInfoDO::getSalesStatus, salesStatus)
+                .eqIfPresent(CarInfoDO::getStatus, status)
+        );
+    }
 }

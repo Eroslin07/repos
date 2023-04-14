@@ -67,7 +67,13 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void deleteAllNoticeStatus(String id) {
-        noticeMapper.deleteAllNoticeStatus(id);
+    public void deleteAllNoticeStatus(List<String> list) {
+        String ids = "";
+        for (int i = 0; i < list.size(); i++) {
+
+            ids += "'" + list.get(i) + "',";
+        }
+        ids += "'#'";
+        noticeMapper.deleteAllNoticeStatus(ids);
     }
 }

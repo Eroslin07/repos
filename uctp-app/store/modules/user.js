@@ -13,9 +13,9 @@ const user = {
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
     permissions: storage.get(constant.permissions),
-    phone: storage.get(constant.phone),
-    deptId: storage.get(constant.deptId),
-    tenantId: storage.get(constant.tenantId)
+    phone: uni.getStorageSync('PHONE'),
+    deptId: uni.getStorageSync('DEPT_ID'),
+    tenantId: uni.getStorageSync('TENANT_ID')
   },
 
   mutations: {
@@ -41,14 +41,17 @@ const user = {
     SET_PHONE: (state, phone) => {
       state.phone = phone
       storage.set(constant.phone, phone)
+      uni.setStorageSync('PHONE', phone)
     },
     SET_DEPTID: (state, deptId) => {
       state.deptId = deptId
       storage.set(constant.deptId, deptId)
+      uni.setStorageSync('DEPT_ID', deptId)
     },
     SET_TENANTID: (state, tenantId) => {
       state.tenantId = tenantId
       storage.set(constant.tenantId, tenantId)
+      uni.setStorageSync('TENANT_ID', tenantId)
     }
   },
 

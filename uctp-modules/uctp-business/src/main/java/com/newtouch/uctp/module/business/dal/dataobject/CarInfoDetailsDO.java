@@ -48,18 +48,6 @@ public class CarInfoDetailsDO extends TenantBaseDO {
     private String colour;
 
     /**
-     * 是/非事故车(1是 0非)
-     */
-    private Integer accidentVehicle;
-    /**
-     * 是/非泡水车(1是 0非)
-     */
-    private Integer soakingCar;
-    /**
-     * 是/非火烧车(1是 0非)
-     */
-    private Integer burnCar;
-    /**
      * 首次/初次登记日期
      */
     private String firstRegistDate;
@@ -91,6 +79,11 @@ public class CarInfoDetailsDO extends TenantBaseDO {
      * 卖家电话
      */
     private String sellerTel;
+
+    /**
+     * 卖家地址
+     */
+    private String sellerAdder;
 
     /**
      * 收车时付款方式
@@ -147,9 +140,13 @@ public class CarInfoDetailsDO extends TenantBaseDO {
     @TableField(typeHandler = JacksonTypeHandler.class)
     private ProceduresAndSpareParts proceduresAndSpareParts;
     /**
-     * 车况相关
+     * 其他费用及约定
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private FeesAndCommitments feesAndCommitments;
-
+    /**
+     * 车况相关
+     */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private VehicleProblem vehicleProblem;
 }

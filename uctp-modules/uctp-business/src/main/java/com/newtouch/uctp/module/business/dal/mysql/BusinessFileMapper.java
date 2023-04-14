@@ -4,6 +4,7 @@ import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,4 +23,5 @@ public interface BusinessFileMapper extends BaseMapperX<BusinessFileDO> {
                 .eqIfPresent(BusinessFileDO::getFileType, fileType));
     }
 
+    int deleteByMainIdAndType(@Param("mainId") Long mainId, @Param("fileType") String fileType);
 }

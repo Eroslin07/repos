@@ -59,4 +59,22 @@
           </if>
     </select>
 
+
+    <select id="getCarCosts" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO">
+        select
+            MAIN_ID as mainID,
+            VEHICLE_RECEIPT_AMOUNT  as vehicleReceiptAmount,
+            TESTING_FEE as testingFee,
+            OPERATION_FEE as operationFee,
+            TRANSFER_FEE as transferFee,
+            TAXATION ,
+            OTHER_TAXATION as otherTaxation,
+            CAR_SALES_AMOUNT as carSalesAmount,
+            PROFIT,
+            case when PAY_TYPE='1' then '支付成功' when PAY_TYPE='0' then '支付失败' else '' end payType,
+            (IFNULL(VEHICLE_RECEIPT_AMOUNT,0)+IFNULL(TESTING_FEE+OPERATION_FEE,0)+IFNULL(TRANSFER_FEE+TAXATION,0)+IFNULL(OTHER_TAXATION,0) ) costCount
+        from uctp_cost_detail
+        where MAIN_ID=#{id}
+    </select>
+
 </mapper>

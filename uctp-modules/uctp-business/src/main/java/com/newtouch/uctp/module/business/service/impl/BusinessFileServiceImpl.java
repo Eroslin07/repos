@@ -4,7 +4,6 @@ package com.newtouch.uctp.module.business.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
@@ -84,10 +83,17 @@ public class BusinessFileServiceImpl implements BusinessFileService {
     }
 
     @Override
-    public void deleteByMainIdAndType(Long mainId, String fileType) {
-        businessFileMapper.delete(new QueryWrapperX<BusinessFileDO>()
-                .eq("MAIN_ID", mainId)
-                .eq("FILE_TYPE",fileType));
+    public int deleteByMainId(Long mainId) {
+        return this.deleteByMainIdAndType(mainId,null);
     }
+
+    @Override
+    public int deleteByMainIdAndType(Long mainId, String fileType) {
+//        return businessFileMapper.delete(new QueryWrapperX<BusinessFileDO>()
+//                .eq("MAIN_ID", mainId)
+//                .eq("FILE_TYPE",fileType));
+        return businessFileMapper.deleteByMainIdAndType(mainId,fileType);
+    }
+
 
 }

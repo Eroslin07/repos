@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.InvoicesMapper">
+
+    <select id="getInvoicesInfo1" resultType="com.newtouch.uctp.module.business.dal.dataobject.InvoicesInfoDO">
+
+        select
+            id,
+            INVOICE_TYPE as invoiceType,
+            BUSINESS as business,
+            NAME ,
+            AMOUNT_MONEY as amountMoney,
+            TAX ,
+            STATUS,
+            TENANT_ID as tenantId,
+            CREATED_BY as reatedBy,
+            CREATED_TIME as createdTime,
+            UPDATED_BY as updatedBy,
+            UPDATED_TIME as updatedTime
+        from uctp_invoices_management uim where id =#{id}
+    </select>
+
+    <select id="getInvoicesInfo" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo">
+       select
+            uim.id invoiceId,
+            uim.INVOICE_TYPE as invoiceType,
+            uim.business,
+            uim.status,
+            uim.CONTRACT_NO as contractNo,
+            uim.name,
+            uim.AMOUNT_MONEY amountMoney,
+            uim.tax,
+            uim.CREATED_BY as createdBy,
+            uim.CREATED_TIME as createdTime,
+            uim.UPDATED_BY as updatedBy,
+            uim.UPDATED_TIME as updatedTime
+        from uctp_car_info uci inner join uctp_contract_management ucm  on uci.ID =ucm.CAR_ID
+        inner join uctp_invoices_management uim on uim.CONTRACT_NO =ucm.`NUMBER`
+        where uci.ID =#{id}
+    </select>
+
+
+    <select id="getInvoiceIds" resultType="com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo">
+        select
+        	ubf.id as longId,
+        from uctp_invoices_management uim inner join uctp_business_file ubf
+        on uim.id =ubf.MAIN_ID
+        where uim.id =#{id}
+    </select>
+
+</mapper>

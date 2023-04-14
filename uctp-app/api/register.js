@@ -64,10 +64,11 @@ export function getBusinessLicense(data) {
 // 删除图片
 export function deleteImage(id) {
 	return request({
-		url: '/infra/file/delete/'+id,
+		url: '/infra/file/delete',
 		headers: {
 			isToken: false
 		},
-		'method': 'DELETE'
+		'method': 'DELETE',
+		params: id
 	})
 }

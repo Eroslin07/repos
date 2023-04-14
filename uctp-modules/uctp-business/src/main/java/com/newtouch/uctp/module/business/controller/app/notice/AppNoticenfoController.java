@@ -46,7 +46,7 @@ public class AppNoticenfoController {
     @Operation(summary = "批量更新消息状态")
     public void updateAllNoticeStatus(@RequestBody List<String> list) {
 
-        noticeService.updateAllNoticeStatus(list);
+        noticeService.deleteAllNoticeStatus(list);
 
     }
 
@@ -55,16 +55,9 @@ public class AppNoticenfoController {
     @PostMapping ("/deleteBatchNoticeStatus")
     @Operation(summary = "批量删除消息/目前只考虑单个删除")
     public void deleteBatchNoticeStatus(@RequestBody List<String> list) {
-        Map<String,List<String> >map = ListUtil.groupList(list);
 
-        for (int i = 0; i < map.size(); i++) {
-            String ids="";
-            for (int a= 0; a < map.get("keyName"+i).size(); a++) {
-                ids+="'"+map.get("keyName"+i).get(a)+"',";
-            }
-            ids+="'#'";
-            noticeService.updateAllNoticeStatus(ids);
-        }
+        noticeService.deleteAllNoticeStatus(list);
+
 
     }
 

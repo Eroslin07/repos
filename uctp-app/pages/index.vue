@@ -1,8 +1,12 @@
 <template>
 	<view class="content">
-		<view class="msg-btn">
-			<u-button type="primary" size="small" :plain="true" text="消息" @click="handleMsg"></u-button>
-		</view>
+		<!-- 自定义导航栏 -->
+		<u-navbar title="">
+			<view class="u-nav-slot" slot="left">
+				<u-icon name="chat" size="28" @click="handleMsg"></u-icon>
+			</view>
+		</u-navbar>
+
 		<view class="image">
 			<image src="/static/images/home/car.jpg"></image>
 		</view>
@@ -223,6 +227,7 @@
 		overflow-x: hidden;
 		overflow-y: scroll;
 		background-color: #f4f6f8;
+		margin-top: 44px;
 	}
 
 	.changing-over {

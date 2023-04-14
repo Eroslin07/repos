@@ -39,7 +39,7 @@ public interface CarInfoService {
      * @param reqVO
      * @return
      */
-    String insertSellerInfo(@Valid AppSellerInfoReqVO reqVO);
+    AppBpmCarInfoRespVO insertSellerInfo(@Valid AppSellerInfoReqVO reqVO);
 
     CarInfoDO selectCarInfoByID(String id);
 
@@ -58,6 +58,18 @@ public interface CarInfoService {
      * @param id 编号
      */
     void deleteCarInfo(Long id);
+
+
+
+    /**
+     * 收车删除车辆主表&明细表数据
+     *
+     * @param id 编号
+     */
+    void delCarInfoWithCollect(Long id);
+
+
+
 
     /**
      * 获得车辆主表
@@ -110,7 +122,7 @@ public interface CarInfoService {
      */
     AppSellCarInfoRespVO getSellCarInfo(Long id);
 
-    AppSellCarInfoRespVO getCarInfoByVIN(String vin);
+    Map getCarInfoByVIN(String vin);
 
     /**
      * 获取卖车详情的明细费用
@@ -135,7 +147,7 @@ public interface CarInfoService {
     CarDetailRespVO getCarInfoAndDetails(CarDCVo carDCVo);
 
     /**
-     * 获得车辆信息
+     * 获得车辆DC信息
      *
      * @param id
      * @return 车辆部分信息
@@ -144,35 +156,7 @@ public interface CarInfoService {
 
     PicResp getCarDCDetails(String id);
 
-    /**
-     * 获得车辆费用信息
-     *
-     * @param id
-     * @return 车辆费用信息
-     */
-    AppCarCostVO getCarCosts(String id);
 
-    /**
-     * 获得车辆合同主表信息
-     *
-     * @param carID
-     * @return 车辆合同主表信息
-     */
-    List<AppContractarVO> getContractInfo(String carID);
-    /**
-     * 作废合同
-     *
-     * @param carDCVo
-     *
-     */
-    String updateContractStatas(CarDCVo carDCVo);
-    /**
-     * 获得车辆发票信息
-     *
-     * @param carID
-     * @return 车辆发票信息
-     */
-    List<AppCarInvoiceVo> getInvoicesInfo(String carID);
     /**
      * 获得车辆驾驶证，行驶证编号
      *
@@ -201,13 +185,7 @@ public interface CarInfoService {
      * @return 车辆行驶证在业务上传表中的id集合
      */
     List<CarDCVo> getCertificateIds(String carID);
-    /**
-     * 获得合同在业务上传表中的id集合（查询url使用）
-     *
-     * @param contractID
-     * @return 合同在业务上传表中的id集合
-     */
-    List<CarDCVo> getContractIds(String contractID);
+
 
     /**
      * 获得卖家/买家信息
@@ -216,13 +194,6 @@ public interface CarInfoService {
      * @return PeopleVo
      */
     PeopleVo getPeopelInfo(String carID);
-    /**
-     * 获得发票在业务上传表中的id集合（查询url使用）
-     *
-     * @param id
-     * @return 发票在业务上传表中的id集合
-     */
-    List<CarDCVo> getInvoiceIds(String id);
 
     /**
      * 删除卖车草稿数据
