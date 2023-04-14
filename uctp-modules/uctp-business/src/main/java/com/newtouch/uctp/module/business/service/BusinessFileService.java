@@ -56,5 +56,6 @@ public interface BusinessFileService {
      * @param mainId 业务id
      * @param fileType 类型
      */
-    void deleteByMainIdAndType(Long mainId, String fileType);
+    int deleteByMainIdAndType(Long mainId, String fileType);
+
 }

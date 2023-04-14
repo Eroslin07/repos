@@ -115,10 +115,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         detailsDO.setCarId(infoDO.getId());
         detailsDO.setMileage(createReqVO.getMileage());
         detailsDO.setColour(createReqVO.getColour());
-        detailsDO.setAccidentVehicle(0);
-        detailsDO.setSoakingCar(0);
         detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
-        detailsDO.setBurnCar(0);
         detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
         detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
         detailsDO.setTenantId(createReqVO.getTenantId());
@@ -286,6 +283,7 @@ public class CarInfoServiceImpl implements CarInfoService {
 //            1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证
             switch (dto.getFileType()){
                 case "1":
+                case "1-1":
                     carPicList.add(dto.getUrl());
                     break;
                 case "2":
@@ -418,6 +416,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfoDetails.setBuyerAdder( reqVO.getBuyerAdder() );
         carInfoDetails.setTransManageName( reqVO.getTransManageName() );
         carInfoDetails.setFeesAndCommitments( reqVO.getFeesAndCommitments() );
+        carInfoDetails.setCondition(reqVO.getCondition());
         carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
         //保存卖车上传的身份证正反面图片
         List<BusinessFileDO> businessFileList = businessFileService.getByMainIdAndType(carInfo.getId(), "5");
