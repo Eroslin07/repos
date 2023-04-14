@@ -9,3 +9,8 @@ export const getToDoList = async (params) => {
 export const getTaskFormInfoAPI = async (params) => {
   return await request.get({ url: '/bpm/task/getTaskFormInfo', params })
 }
+
+// 审批提交
+export const putApproveAPI = async (data) => {
+  return await request.put({ url: '/bpm/task/v2/approve', data })
+}

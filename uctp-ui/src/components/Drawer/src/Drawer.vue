@@ -13,7 +13,7 @@
       </template>
       <template #default>
         <div class="btns">
-          <el-button type="primary">提交</el-button>
+          <el-button type="primary" @click="submitBtn">提交</el-button>
           <el-button type="success">退回</el-button>
           <el-button type="danger">作废</el-button>
         </div>
@@ -35,14 +35,41 @@
         </div>
       </template>
     </el-drawer>
+
+    <!-- 审批意见弹框 -->
+    <el-dialog v-model="dialogFormVisible" title="" draggable lock-scroll destroy-on-close>
+      <el-form :model="form">
+        <el-form-item label="审批意见:" label-width="100" required>
+          <el-input
+            v-model="form.reason"
+            autocomplete="off"
+            :rows="4"
+            type="textarea"
+            placeholder="请输入审批意见"
+            maxlength="520"
+            show-word-limit
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="dialogSubmit"> 确定 </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script setup lang="ts">
+import * as detailAPI from '@/api/workbench/toDoList/index'
 import BaseInfo from '@/views/ApprovalProcess/BaseInfo.vue'
 import BaseHistory from '@/views/ApprovalProcess/BaseHistory.vue'
 import BaseFlowChart from '@/views/ApprovalProcess/BaseFlowChart.vue'
 import { ref, shallowRef } from 'vue'
-const emit = defineEmits(['handleCloseDrawer'])
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+
+const message = useMessage()
+const emit = defineEmits(['handleCloseDrawer', 'handleUpdataList'])
 const activeName = ref('BaseInfo')
 const comps = shallowRef([
   {
@@ -85,6 +112,37 @@ const drawerVisible = computed(() => {
 function tabChange(name) {
   console.log(name)
 }
+
+// 提交
+const submitBtn = () => {
+  console.log('提交')
+  dialogFormVisible.value = true
+}
+
+// 审批意见弹框
+const dialogFormVisible = ref(false)
+const form = ref<any>({})
+const dialogSubmit = () => {
+  if (!form.value.reason) return message.error('请输入审批意见')
+  let data = {
+    id: baseInfoData.data.taskId,
+    reason: form.value.reason,
+    variables: baseInfoData.data.variables
+  }
+  detailAPI
+    .putApproveAPI(data)
+    .then((res) => {
+      console.log(res)
+      message.success('提交成功')
+      dialogFormVisible.value = false
+      emit('handleCloseDrawer')
+      emit('handleUpdataList')
+    })
+    .catch((err) => {
+      console.log(err)
+      message.error('提交失败')
+    })
+}
 // 关闭抽屉
 const dravwerClose = () => {
   emit('handleCloseDrawer')
@@ -100,7 +158,7 @@ const dravwerClose = () => {
   }
 
   :deep(.drawer_content) {
-    height: 100%;
+    height: calc(100% - 200px);
 
     .el-tabs {
       height: 100%;
