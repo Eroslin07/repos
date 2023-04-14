@@ -513,7 +513,7 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage(event.file.id).then((res) => {
+				deleteImage({ id: event.file.id }).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
 				})
@@ -546,6 +546,7 @@
 						taxNum: this.registerForm.taxNum,
 						businessLicense: this.fileList3.map((item) => { return item.id }),
 						marketLocation: this.registerForm.marketLocation,
+						marketLocationValue: this.registerForm.marketLocationValue,
 						address: this.registerForm.address,
 						bankNumber: this.registerForm.bankAccount,
 						businessName: this.registerForm.businessName,
