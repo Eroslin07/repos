@@ -93,6 +93,11 @@ public class CarInfoDetailsDO extends TenantBaseDO {
     private String sellerTel;
 
     /**
+     * 卖家地址
+     */
+    private String sellerAdder;
+
+    /**
      * 收车时付款方式
      */
     private String payType;
