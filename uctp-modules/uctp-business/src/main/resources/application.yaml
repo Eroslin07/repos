@@ -68,8 +68,6 @@ dubbo:
     port: -1 # 协议端口，-1 表示自增端口，从 20880 开始
   registry:
     address: spring-cloud://localhost # 设置使用 Spring Cloud 注册中心
-  application:
-    id: report-server # TODO 一定要写么？
 
 --- #################### MQ 消息队列相关配置 ####################
 spring:

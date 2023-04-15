@@ -78,3 +78,21 @@ export function getCarModelList(data) {
 		'data': data
 	})
 }
+
+// 根据VIN获取回显车辆信息
+export function getCarInfo(data) {
+	return request({
+		url: '/uctp/car-info/getCarInfoByVIN',
+		'method': 'GET',
+		params: data
+	})
+}
+
+// 收车删除
+export function delCarInfoWithCollect(data) {
+	return request({
+		url: '/uctp/car-info/delCarInfoWithCollect',
+		'method': 'DELETE',
+		params: data
+	})
+}
