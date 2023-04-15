@@ -61,7 +61,7 @@ public class AccountConstants {
     //利润-税费
     public static final String TRAN_PROFIT_TAX_COST = "5";
 
-    // 利润：提现类型
+    // 利润：提现状态
     //待回填保证金
     public static final String PRESENT_PROFIT_CASH_BACK_WAIT = "1";
     //已回填保证金
@@ -90,6 +90,10 @@ public class AccountConstants {
     public static final String PRESENT_STATUS_BANK_PROCESSING = "3";
     // 提现申请
     public static final String PRESENT_STATUS_BANK_SUCCESS = "4";
+
+    // 提现类型C：保证金提现P：利润提现
+    public static final String PRESENT_TYPE_CASH = "C";
+    public static final String PRESENT_TYPE_PROFIT = "P";
 
     public static Integer ERROR_CODE_ACCOUNT_NOT_FOUND = 90010001;
     public static String ERROR_MESSAGE_ACCOUNT_NOT_FOUND = "未查询到当前账号信息";
