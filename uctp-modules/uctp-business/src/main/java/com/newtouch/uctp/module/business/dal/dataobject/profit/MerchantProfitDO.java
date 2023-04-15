@@ -19,7 +19,7 @@ public class MerchantProfitDO extends BaseDO {
 
     @TableId
     private Long id; // 主键标识
-    private Long accountId; // 账户标识
+    //private Long accountId; // 账户标识
     private String accountNo; // 商户账户号
     private String tradeType; // 交易类型
     private String tradeTo; // 交易去向

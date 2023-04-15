@@ -1,5 +1,10 @@
 package com.newtouch.uctp.module.business.service.account;
 
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -30,4 +35,36 @@ public interface AccountProfitService {
                                     List<CostDTO> costs,
                                     List<TaxDTO> taxes);
 
+    /**
+     * 获取账户信息
+     * @param accountNo
+     * @return
+     */
+    MerchantAccountDO queryByAccountNo(String accountNo);
+
+    /**
+     * 利润提现
+     * @param accountNo 商户账号
+     * @param merchantBankId 商户银行卡ID
+     * @param amount 提取金额
+     * @param invoiceIds 发票ID（支持多个）
+     * @return 利润提现记录ID（后续市场审核通过后通过此ID通知银行转账）
+     */
+    Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds);
+
+    /**
+     * 利润分页查询
+     * @param accountNo 商户账号
+     * @param query 查询对接
+     * @return 分页的利润列表
+     */
+    PageResult<ProfitRespVO> profitList(String accountNo, ProfitQueryReqVO query);
+
+    /**
+     * 查询利润明细
+     * @param accountNo 商户账号
+     * @param profitId 利润记录ID
+     * @return 利润明细，提现交易会返回提现状态记录清单
+     */
+    ProfitDetailRespVO profitDetail(String accountNo, Long profitId);
 }

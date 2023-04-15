@@ -1,10 +1,16 @@
 package com.newtouch.uctp.module.business.controller.app.account.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "资金管理 - 利润明细")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProfitRespVO {
     @Schema(description = "交易类型")
     private String tradeType;

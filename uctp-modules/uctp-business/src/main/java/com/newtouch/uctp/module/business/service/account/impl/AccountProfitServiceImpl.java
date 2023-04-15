@@ -1,21 +1,39 @@
 package com.newtouch.uctp.module.business.service.account.impl;
 
+import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
+import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
+import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
+import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.ProfitCalcResultDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
+import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static cn.hutool.core.date.DatePattern.NORM_DATE_PATTERN;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static com.newtouch.uctp.module.business.enums.AccountConstants.*;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 
 @Service
@@ -23,7 +41,17 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 @Slf4j
 public class AccountProfitServiceImpl implements AccountProfitService {
 
+    @Resource
+    private MerchantAccountService merchantAccountService; // 保证金服务
+
+    @Resource
+    private MerchantProfitMapper merchantProfitMapper;
+
+    @Resource
+    private MerchantPresentStatusRecordMapper merchantPresentStatusRecordMapper;
+
     @Override
+    @Transactional
     public List<MerchantProfitDO> recorded(String accountNo,
                                            String contractNo,
                                            Integer vehicleReceiptAmount,
@@ -32,33 +60,151 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                                            List<TaxDTO> taxes) {
         // 参数校验
         this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs);
-        // 计算本次利润
-        ProfitCalcResultDTO profitCalcResult = this.calcProfit(accountNo, vehicleReceiptAmount, carSalesAmount, costs, taxes);
+        // 商户账户
+        MerchantAccountDO merchantAccount = this.merchantAccountService.queryByAccountNo(accountNo);
+        if (merchantAccount == null) {
+            throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
+        }
+        Integer originalWaitForBackCashTotalAmount = 0; // 账户表暂无待回填保证金 todo
+        if (originalWaitForBackCashTotalAmount == null) {
+            originalWaitForBackCashTotalAmount = 0;
+        }
+        Integer originalProfitTotalAmount = merchantAccount.getProfit();
+        if (originalProfitTotalAmount == null) {
+            originalProfitTotalAmount = 0;
+        }
 
-        // todo
+        // 计算本次利润
+        ProfitCalcResultDTO profitCalcResult = this.calcProfit(accountNo,
+                vehicleReceiptAmount,
+                carSalesAmount,
+                originalWaitForBackCashTotalAmount,
+                originalProfitTotalAmount,
+                costs,
+                taxes);
+
+        // 组装利润明细表记录
+        List<MerchantProfitDO> profitList = this.buildProfitList(accountNo, contractNo, profitCalcResult);
+        // 批量插入利润表
+        this.merchantProfitMapper.insertBatch(profitList);
+        List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
+        for (MerchantProfitDO mp : profitList) {
+            List<PresentStatusRecordDO> psrs = mp.getPresentStatusRecords();
+            for (PresentStatusRecordDO psr : psrs) {
+                psr.setPresentNo(mp.getId());
+                statusRecordList.add(psr);
+            }
+        }
+
+        if (!statusRecordList.isEmpty()) {
+            // 批量插入提现状态表
+            this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
+        }
+
+        return profitList;
+    }
+
+    @Override
+    public MerchantAccountDO queryByAccountNo(String accountNo) {
+        return merchantAccountService.queryByAccountNo(accountNo);
+    }
+
+    @Override
+    @Transactional
+    public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds) {
         return null;
+    }
+
+    @Override
+    public PageResult<ProfitRespVO> profitList(String accountNo, ProfitQueryReqVO query) {
+        QueryWrapper<MerchantProfitDO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ACCOUNT_NO", accountNo)
+                .orderByDesc("CREATE_TIME");
+
+        PageResult<MerchantProfitDO> pr = merchantProfitMapper.selectPage(query, queryWrapper);
+        List<MerchantProfitDO> profitDOList = pr.getList();
+        if (profitDOList != null && !profitDOList.isEmpty()) {
+            List<ProfitRespVO> profitVOList = new ArrayList<>();
+            for (MerchantProfitDO pdo : profitDOList) {
+                ProfitRespVO pvo = ProfitRespVO.builder()
+                        .profitLossType(null) // 损益类型
+                        .tradeDate(null)
+                        .tradeType(pdo.getTradeType())
+                        .presentState(pdo.getPresentState())
+                        .amount(pdo.getProfit())
+                        .build();
+
+                profitVOList.add(pvo);
+            }
+
+            PageResult<ProfitRespVO> result = new PageResult<>(profitVOList, pr.getTotal());
+            return result;
+        }
+
+        return PageResult.empty();
+    }
+
+    @Override
+    public ProfitDetailRespVO profitDetail(String accountNo, Long profitId) {
+        QueryWrapper<MerchantProfitDO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ID", profitId)
+                .eq("ACCOUNT_NO", accountNo);
+
+        MerchantProfitDO p = merchantProfitMapper.selectOne(queryWrapper);
+        if (p == null) {
+            return null;
+        } else {
+            ProfitDetailRespVO respVO = new ProfitDetailRespVO();
+            respVO.setContractNo(p.getContractNo());
+            respVO.setTradeType(p.getTradeType());
+            respVO.setPresentState(p.getPresentState());
+            respVO.setAmount(p.getProfit());
+            respVO.setTradeTo(p.getTradeTo());
+            respVO.setProfitLossType(null); // 暂无 todo 待补充
+            respVO.setTradeDate(null); // 暂无 todo 待补充
+
+            // 查一下提现状态记录清单
+            QueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new QueryWrapper<>();
+            presentStatusRecordWrapper.eq("PRESENT_NO", profitId)
+                            .orderByAsc("OCCURRED_TIME"); // 交易状态变更时间升序
+
+            List<PresentStatusRecordDO> presentStatusRecords = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper);
+            if (presentStatusRecords != null && !presentStatusRecords.isEmpty()) {
+                List<PresentStatusRecordRespVO> presentStatusRespRecords = new ArrayList<>();
+                for (PresentStatusRecordDO psr : presentStatusRecords) {
+                    PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
+                            .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATE_PATTERN))
+                            .status(psr.getStatus())
+                            .build();
+
+                    presentStatusRespRecords.add(psrrvo);
+                }
+
+                respVO.setPresentStatusRecords(presentStatusRespRecords);
+            }
+
+            return respVO;
+        }
     }
 
     /**
      * 计算利润
-     * @param accountNo
-     * @param vehicleReceiptAmount
-     * @param carSalesAmount
-     * @param costs
-     * @param taxes
-     * @return
+     * @param accountNo 账户号
+     * @param vehicleReceiptAmount 收车价
+     * @param carSalesAmount 卖车价
+     * @param originalWaitForBackCashTotalAmount 原待回填保证金
+     * @param originalProfitTotalAmount 原利润余额
+     * @param costs 服务费用清单
+     * @param taxes 税费清单
+     * @return 利润计算结果
      */
     private ProfitCalcResultDTO calcProfit(String accountNo,
-                                          Integer vehicleReceiptAmount,
-                                          Integer carSalesAmount,
-                                          List<CostDTO> costs,
-                                          List<TaxDTO> taxes) {
-        // 原待回填保证金=账户表的待回填保证金
-        Integer originalWaitForBackCashTotalAmount = this.getOriginalWaitForBackCashTotalAmount(accountNo);
-
-        // 原利润余额=账户表的利润
-        Integer originalProfitTotalAmount = this.getOriginalProfitTotalAmount(accountNo);
-
+                                           Integer vehicleReceiptAmount,
+                                           Integer carSalesAmount,
+                                           Integer originalWaitForBackCashTotalAmount,
+                                           Integer originalProfitTotalAmount,
+                                           List<CostDTO> costs,
+                                           List<TaxDTO> taxes) {
         // 服务费总额=各项费用之和
         Integer costTotalAmount = this.calcCostAmount(costs);
 
@@ -184,26 +330,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     }
 
     /**
-     * 获取原有利润总额
-     * @param accountNo
-     * @return
-     */
-    private Integer getOriginalProfitTotalAmount(String accountNo) {
-        // todo
-        return 0;
-    }
-
-    /**
-     * 获取原有待回填保证金总额
-     * @param accountNo
-     * @return
-     */
-    private Integer getOriginalWaitForBackCashTotalAmount(String accountNo) {
-        // todo
-        return 0;
-    }
-
-    /**
      * 利润划入参数校验
      * @param accountNo
      * @param contractNo
@@ -228,12 +354,116 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (vehicleReceiptAmount.compareTo(0) < 0) {
             throw exception(ACC_VEHICLE_RECEIPT_AMOUNT_LESS_THAN_ZERO);
         }
-        if (vehicleReceiptAmount == null) {
-            throw exception(ACC_VEHICLE_RECEIPT_AMOUNT_NOT_NULL);
+        if (carSalesAmount == null) {
+            throw exception(ACC_CAR_SALES_AMOUNT_NOT_NULL);
         }
-        if (vehicleReceiptAmount.compareTo(0) < 0) {
-            throw exception(ACC_VEHICLE_RECEIPT_AMOUNT_LESS_THAN_ZERO);
+        if (carSalesAmount.compareTo(0) < 0) {
+            throw exception(ACC_CAR_SALES_AMOUNT_LESS_THAN_ZERO);
         }
+    }
+
+    /**
+     * 组装利润明细
+     * @param accountNo
+     * @param contractNo
+     * @param profitCalcResult
+     * @return
+     */
+    private List<MerchantProfitDO> buildProfitList(String accountNo, String contractNo, ProfitCalcResultDTO profitCalcResult) {
+        LocalDateTime now = LocalDateTime.now();
+        List<MerchantProfitDO> profitList = new ArrayList<>();
+
+        // 本次卖车利润，不可能为负数
+        if (profitCalcResult.getProfitAmount().compareTo(0) > 0) {
+            MerchantProfitDO profit = MerchantProfitDO.builder()
+                    .accountNo(accountNo)
+                    .contractNo(contractNo)
+                    .profit(profitCalcResult.getProfitAmount())
+                    .tradeType(TRAN_PROFIT_SALES_PROFIT)
+                    .tradeTo(TRADE_TO_MY_PROFIT)
+                    .presentState(null) // 卖车利润初始写入无提现状态
+                    .build();
+
+            profitList.add(profit);
+        }
+
+        // 本次回填保证金，不可能为负数
+        if (profitCalcResult.getBackCashAmount().compareTo(0) > 0) {
+            List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+
+            PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                    .presentType(PRESENT_TYPE_PROFIT)
+                    .occurredTime(now)
+                    .status(PRESENT_PROFIT_CASH_BACK_WAIT)
+                    .build();
+
+            presentStatusRecords.add(psr);
+
+            MerchantProfitDO profit = MerchantProfitDO.builder()
+                    .accountNo(accountNo)
+                    .contractNo(contractNo)
+                    .profit(profitCalcResult.getBackCashAmount() * -1) // 回填保证金为支出，记录负数
+                    .tradeType(TRAN_PROFIT_CASH_BACK)
+                    .tradeTo(TRADE_TO_MY_CASH) // 回填保证金动向为：我的保证金
+                    .presentState(PRESENT_PROFIT_CASH_BACK_WAIT) // 待回填保证金
+                    .presentStatusRecords(presentStatusRecords)
+                    .build();
+
+            profitList.add(profit);
+        }
+
+        // 本次服务费用
+        if (profitCalcResult.getCosts() != null && !profitCalcResult.getCosts().isEmpty()) {
+            for (CostDTO cost : profitCalcResult.getCosts()) {
+                boolean isPromptPayment = cost.isPromptPayment();
+                String presentState = null;
+                List<PresentStatusRecordDO> presentStatusRecords = null;
+                if (isPromptPayment) {
+                    presentState = PRESENT_PROFIT_APPLY; // 如果费用立即付款，则需要将费用的提现状态改为申请登记
+                    if (presentStatusRecords == null) {
+                        presentStatusRecords = new ArrayList<>();
+
+                        PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                                .presentType(PRESENT_TYPE_PROFIT)
+                                .occurredTime(now)
+                                .status(presentState)
+                                .build();
+
+                        presentStatusRecords.add(psr);
+                    }
+                }
+
+                MerchantProfitDO profit = MerchantProfitDO.builder()
+                        .accountNo(accountNo)
+                        .contractNo(contractNo)
+                        .profit(cost.getAmount() * -1) // 费用为支出，记录负数
+                        .tradeType(TRAN_PROFIT_SERVICE_COST) // TODO 费用可能存在多种，交易类型是否要区分？
+                        .tradeTo(TRADE_TO_MARKET) // 费用去向为：市场方
+                        .presentState(presentState)
+                        .presentStatusRecords(presentStatusRecords)
+                        .build();
+
+                profitList.add(profit);
+            }
+        }
+
+        // 本次税费
+        if (profitCalcResult.getTaxes() != null && !profitCalcResult.getTaxes().isEmpty()) {
+            for (TaxDTO tax : profitCalcResult.getTaxes()) {
+                MerchantProfitDO profit = MerchantProfitDO.builder()
+                        .accountNo(accountNo)
+                        .contractNo(contractNo)
+                        .profit(profitCalcResult.getBackCashAmount() * -1) // 税费为支出，记录负数
+                        .tradeType(TRAN_PROFIT_TAX_COST)
+                        .tradeTo(TRADE_TO_MARKET) // 回填保证金动向为：我的保证金
+                        .presentState(null) // 初始写入税费无提现状态
+                        .build();
+
+                profitList.add(profit);
+            }
+        }
+
+        return profitList;
     }
 
 }
