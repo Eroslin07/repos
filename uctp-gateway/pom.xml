@@ -104,7 +104,8 @@
                 <version>${spring.boot.version}</version> <!-- 如果 spring.boot.version 版本修改，则这里也要跟着修改 -->
                 <configuration>
                     <mainClass>com.newtouch.uctp.gateway.GatewayServerApplication</mainClass>
-                    <fork>true</fork>
+                    <!-- 取消在JVM分叉上运行，解决重启SpringBoot端口占用问题。但取消后将禁用以下特性：代理、自定义JVM参数、devtools、指定工作目录 -->
+                    <fork>false</fork>
                     <!-- 支持引入非Maven仓库的Jar包 -->
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
