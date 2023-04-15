@@ -1,7 +1,7 @@
 <template>
 	<view class="normal-login-container">
 		<!-- 自定义导航栏 -->
-		<u-navbar title="">
+		<u-navbar title=" ">
 			<view class="u-nav-slot" slot="left">
 				<view class="bank-logo"></view>
 			</view>

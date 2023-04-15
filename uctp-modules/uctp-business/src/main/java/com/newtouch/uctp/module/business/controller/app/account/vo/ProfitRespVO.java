@@ -10,10 +10,10 @@ public class ProfitRespVO {
     private String tradeType;
     @Schema(description = "提现状态")
     private String presentState;
-    @Schema(description = "利润金额")
-    private String amount;
-    @Schema(description = "发生日期")
+    @Schema(description = "利润金额（单位为：分）")
+    private Integer amount;
+    @Schema(description = "发生日期，格式：yyyy-MM-dd")
     private String tradeDate;
-    @Schema(description = "收支类型，revenue：收入，expenditure：支付")
-    private String revenueAndExpenditureType;
+    @Schema(description = "损益类型")
+    private String profitLossType;
 }
