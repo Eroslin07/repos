@@ -28,9 +28,10 @@ public interface ErrorCodeConstants {
     // ========== business 资金错误 1005000200 ==========
     ErrorCode ACC_ACCOUNT_NO_NOT_NULL = new ErrorCode(1005000201, "商户号不能为空");
     ErrorCode ACC_CONTRACT_NO_NOT_NULL = new ErrorCode(1005000202, "交易合同号不能为空");
-    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_NOT_NULL = new ErrorCode(1005000203, "收车金额不能为负");
-    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000204, "收车金额不能为空");
+    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_NOT_NULL = new ErrorCode(1005000203, "收车金额不能为空");
+    ErrorCode ACC_VEHICLE_RECEIPT_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000204, "收车金额不能为负");
     ErrorCode ACC_CAR_SALES_AMOUNT_NOT_NULL = new ErrorCode(1005000205, "卖车金额不能为空");
     ErrorCode ACC_CAR_SALES_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000206, "卖车金额不能为负");
     ErrorCode ACC_COST_TYPE_REPEAT = new ErrorCode(1005000207, "费用类型不能重复");
+    ErrorCode ACC_TAX_TYPE_REPEAT = new ErrorCode(1005000208, "税费类型不能重复");
 }

@@ -287,7 +287,7 @@
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							text="保证金可用余额150000元" color="#e26e1f"></u--text>
-						<view style="margin-left: 15px;color: #e26e1f;">公允值范围：13.19万元-15.20万元</view>
+						<view style="margin-left: 15px;color: #e26e1f;">公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
 						<view style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
@@ -473,6 +473,7 @@
 	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import modelList from '@/subPages/home/bycar/modelList.vue'
 	import { getIdCard, deleteImage } from '@/api/register'
+	import { setCreate } from '@/api/home'
 	import {
 		getVehicleLicense,
 		setCarInfo,
@@ -774,6 +775,10 @@
 						trigger: ['blur', 'change']
 					}
 				},
+				fairValue: {
+					value1: '13.19',
+					value2: '15.20'
+				},
 				showSex: false,
 				range: [
 					[{
@@ -842,7 +847,7 @@
 			handleOcr(index) {
 				let _this = this;
 				uni.showActionSheet({
-					title: "选择类型",
+					// title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
 						_this.chooseImages(index, res.tapIndex);
@@ -1145,11 +1150,11 @@
 					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
-						this.carId = res.data;
+						this.carId = res.data.carInfo.id;
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
-						this.fairValue();
+						this.getFairValue();
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
@@ -1158,7 +1163,7 @@
 				})
 			},
 			// 查询公允价值
-			fairValue() {
+			getFairValue() {
 				let data = {
 					carId: this.carId,
 					modelId: this.modelId
@@ -1189,7 +1194,27 @@
 			},
 			// 点击交易信息保存
 			handleSubmit(val) {
-				this.showOverlay = true;
+				let _this = this;
+				let amount = _this.sellerForm.vehicleReceiptAmount / 10000;
+				if (_this.fairValue.value1 <= amount <= _this.fairValue.value1) {
+					_this.saveSellerInfo(val);
+				} else {
+					uni.showModal({
+						title: '提示',
+						content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+						confirmText: '是',
+						cancelText: '否',
+						confirmColor: '#fa6401',
+						success(ress) {
+							if (ress.confirm) {
+								_this.saveSellerInfo(val);
+							}
+						}
+					})
+				}
+			},
+			saveSellerInfo(val) {
+				// this.showOverlay = true;
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.carId,
@@ -1198,7 +1223,7 @@
 					payType: this.sellerForm.payType,
 					transManageName: this.sellerForm.transManageName,
 					sellerIdCard: this.sellerForm.sellerIdCard,
-					idCardUrl: this.list.map((item) => { return item.id }),
+					idCardUrl: list.map((item) => { return item.id }),
 					sellerName: this.sellerForm.sellerName,
 					thirdSellerName: this.sellerForm.collection == 1 ? this.sellerForm.thirdSellerName : null,
 					sellerAdder: this.sellerForm.sellerAdder,
@@ -1208,13 +1233,46 @@
 					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard : null,
 					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard : null,
 				}
+				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
 					this.showOverlay = false;
 					if (val == 'entrust') {
 						// 保存卖家信息并确认发起
-						this.$tab.navigateTo('/subPages/home/bycar/agreement');
+						if (this.fairValue.value1 <= data.vehicleReceiptAmount <= this.fairValue.value1) {
+							this.$modal.closeLoading()
+							this.$tab.navigateTo('/subPages/home/bycar/agreement');
+						} else {
+							this.$modal.msg("公允值发起流程开发中...");
+							return
+							// 发起公允值审批流程
+							let procDefKey = "SGYZ";
+							let variables = {
+								marketName: res.data.marketName,
+								merchantName: res.data.merchantName,
+								startUserId: res.data.startUserId,
+								formDataJson: {
+									formMain: {
+										merchantId: res.data.thirdId,
+										thirdId: res.data.thirdId,
+										formDataJson: {
+											carInfo: res.data.carInfo,
+											transactionInfo: res.data.transactionInfo
+										}
+									}
+								}
+							}
+							let createData = { procDefKey, variables };
+							setCreate(createData).then((ress) => {
+								this.$modal.closeLoading()
+								this.$modal.msg("已提交审核");
+								this.$tab.reLaunch('/pages/index');
+							}).catch((error) => {
+								this.$modal.msgError("发起流程失败");
+							})
+						}
 					} else {
 						// 保存卖家草稿信息返回首页
+						this.$modal.closeLoading()
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
@@ -1224,7 +1282,7 @@
 			handleDelete() {
 				if (this.carId) {
 					delCarInfoWithCollect({ id: this.carId }).then((res) => {
-						
+						this.$modal.msg("车辆信息已删除");
 					})
 				}
 			}

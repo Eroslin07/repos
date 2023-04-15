@@ -211,7 +211,7 @@
 					</u-form-item>
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
-							text="公允值范围：13.19万元-15.20万元" color="#e26e1f"></u--text>
+							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;" @click="handleDetail">预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。明细请查看 ></view>
 					</view>
@@ -319,7 +319,7 @@
 									placeholder="请选择"
 									border="none"
 								></u--input>
-								<u--input v-model="carForm.other" v-if="item.name == 'other'" border="none" placeholder="请输入"></u--input>
+								<u--input v-model="carForm.accidentVehicle" v-if="item.name == 'accidentVehicle'" border="none" placeholder="请输入"></u--input>
 							</view>
 							<u--text
 								slot="right"
@@ -551,7 +551,7 @@
 					{ label: '千斤顶', name: 'jack' },
 					{ label: '说明书', name: 'specification' },
 					{ label: '钥匙', name: 'vehicleKey' },
-					{ label: '其他', name: 'other' },
+					{ label: '其他', name: 'accidentVehicle' },
 				],
 				showKey: false,
 				rangeKey: [
@@ -694,6 +694,10 @@
 						trigger: ['change', 'blur'],
 					}]
 				},
+				fairValue: {
+					value1: '13.19',
+					value2: '15.20'
+				},
 				date: null,
 			}
 		},
@@ -762,7 +766,7 @@
 			handleOcr(index) {
 				let _this = this;
 				uni.showActionSheet({
-					title: "选择类型",
+					// title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
 						_this.chooseImages(index, res.tapIndex);
@@ -921,6 +925,17 @@
 				list.forEach((item) => {
 					proceduresAndSpareParts[item] = false;
 				})
+				if (proceduresAndSpareParts['vehicleKey'] == true) {
+					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
+				} else {
+					proceduresAndSpareParts['vehicleKey'] = 0;
+				}
+				if (proceduresAndSpareParts['accidentVehicle'] == true) {
+					proceduresAndSpareParts['accidentVehicle'] = this.carForm.other;
+				} else {
+					proceduresAndSpareParts['accidentVehicle'] = '';
+				}
+				
 				// 租金相关
 				let feesAndCommitments = {};
 				let rent = ['vehicleA', 'vehicleB', 'vehicleC', 'vehicleD'];

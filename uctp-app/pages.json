@@ -99,64 +99,69 @@
 				"navigationBarTitleText": "委托卖车合同签章"
 			}
 		}, {
-			"path": "home/cost/index",
-			"style": {
-				"navigationBarTitleText": "我的费用"
-				// "navigationStyle": "custom"
-			}
-		}, {
-			"path": "home/account/index",
-			"style": {
-				"navigationBarTitleText": "我的账户"
-				// "navigationStyle": "custom"
-			}
-		}, {
-			"path": "home/account/profit",
+			"path": "home/account/profit/profit",
 			"style": {
 				"navigationBarTitleText": "我的利润"
-				// "navigationStyle": "custom"
 			}
 		}, {
-			"path": "home/account/bond",
+			"path": "home/account/bond/bond",
 			"style": {
 				"navigationBarTitleText": "我的保证金"
-				// "navigationStyle": "custom"
 			}
 		}, {
-			"path": "home/account/withdrawal",
+			"path": "home/account/bond/withdrawal",
 			"style": {
-				"navigationBarTitleText": ""
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "保证金提现"
 			}
 		}, {
-			"path": "home/account/progress",
+			"path": "home/account/bond/progress",
 			"style": {
-				"navigationBarTitleText": ""
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "保证金提现"
 			}
 		}, {
-			"path": "home/account/info",
+			"path": "home/account/bond/recharge",
 			"style": {
-				"navigationBarTitleText": ""
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "保证金充值"
 			}
 		}, {
-			"path": "home/account/detailed",
+			"path": "home/account/bond/info",
 			"style": {
-				"navigationBarTitleText": ""
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "保证金回填明细"
 			}
 		}, {
-			"path": "home/account/collection",
+			"path": "home/account/bond/detailed",
 			"style": {
-				"navigationBarTitleText": "目前在售车辆"
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "保证金提现明细"
 			}
 		}, {
-			"path": "home/account/selling",
+			"path": "home/account/bond/withhold",
 			"style": {
-				"navigationBarTitleText": "已销售车辆"
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "保证金预扣明细"
+			}
+		}, {
+			"path": "home/account/bond/actualDeduction",
+			"style": {
+				"navigationBarTitleText": "保证金实扣明细"
+			}
+		}, {
+			"path": "home/account/bond/release",
+			"style": {
+				"navigationBarTitleText": "保证金预扣释放明细"
+			}
+		}, {
+			"path": "home/account/bond/rechargeDetails",
+			"style": {
+				"navigationBarTitleText": "保证金充值明细"
+			}
+		}, {
+			"path": "home/account/bond/freeze",
+			"style": {
+				"navigationBarTitleText": "保证金冻结明细"
+			}
+		}, {
+			"path": "home/account/bond/whole",
+			"style": {
+				"navigationBarTitleText": "保证金交易明细"
 			}
 		}, {
 			"path": "mine/avatar/index",

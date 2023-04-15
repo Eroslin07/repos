@@ -9,9 +9,9 @@
 							</zb-dropdown-item>
 						</zb-dropdown-menu>
 					</view>
-					<view>
+					<!-- <view>
 						<text @click="analiesBtn">分析</text>
-					</view>
+					</view> -->
 				</view>
 
 				<view class="charts-box">
