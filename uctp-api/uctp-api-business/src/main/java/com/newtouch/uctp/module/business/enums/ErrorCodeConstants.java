@@ -34,4 +34,5 @@ public interface ErrorCodeConstants {
     ErrorCode ACC_CAR_SALES_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000206, "卖车金额不能为负");
     ErrorCode ACC_COST_TYPE_REPEAT = new ErrorCode(1005000207, "费用类型不能重复");
     ErrorCode ACC_TAX_TYPE_REPEAT = new ErrorCode(1005000208, "税费类型不能重复");
+    ErrorCode ACC_MERCHANT_ACCOUNT_NOT_EXISTS = new ErrorCode(1005000209, "商户账户不存在");
 }
