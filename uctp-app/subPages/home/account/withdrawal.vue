@@ -1,7 +1,7 @@
 <template>
 	<view class="withdrawal">
 		<uni-card>
-			<view>到账银行卡</view>
+			<view style="margin-bottom: 10px;">到账银行卡</view>
 			<view>兴业银行（***1167）</view>
 		</uni-card>
 		<uni-card>
@@ -37,9 +37,8 @@
 					:maxCount="10"
 				></u-upload>
 			</view>
-			<button v-if="type == 1" class="button" @click="handleDefine">确定</button>
+			<button v-if="type == 1" class="button" @click="handleDefine">提现</button>
 			<button v-if="type == 2" class="button" @click="handleSubmit">提交申请</button>
-			<button style="background-color: #fff;" @click="handleCancel">取消</button>
 		</view>
 	</view>
 </template>
@@ -116,10 +115,6 @@
 			// 提交申请
 			handleSubmit() {
 				this.$tab.navigateTo('/subPages/home/account/progress?type=' + 2);
-			},
-			// 取消
-			handleCancel() {
-				this.$tab.navigateBack();
 			}
 		}
 	}
@@ -127,7 +122,7 @@
 
 <style lang="scss" scoped>
 	.withdrawal {
-		border-top: 1px solid #ccc;
+		border-top: 1px solid #f5f5f5;
 		
 		.button {
 			background-color: #fa6401;

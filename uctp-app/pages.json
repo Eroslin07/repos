@@ -99,18 +99,6 @@
 				"navigationBarTitleText": "委托卖车合同签章"
 			}
 		}, {
-			"path": "home/cost/index",
-			"style": {
-				"navigationBarTitleText": "我的费用"
-				// "navigationStyle": "custom"
-			}
-		}, {
-			"path": "home/account/index",
-			"style": {
-				"navigationBarTitleText": "我的账户"
-				// "navigationStyle": "custom"
-			}
-		}, {
 			"path": "home/account/profit",
 			"style": {
 				"navigationBarTitleText": "我的利润"
@@ -145,6 +133,11 @@
 			"style": {
 				"navigationBarTitleText": ""
 				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/whole",
+			"style": {
+				"navigationBarTitleText": "保证金交易明细"
 			}
 		}, {
 			"path": "home/account/collection",
