@@ -1223,7 +1223,7 @@
 					payType: this.sellerForm.payType,
 					transManageName: this.sellerForm.transManageName,
 					sellerIdCard: this.sellerForm.sellerIdCard,
-					idCardUrl: this.list.map((item) => { return item.id }),
+					idCardUrl: list.map((item) => { return item.id }),
 					sellerName: this.sellerForm.sellerName,
 					thirdSellerName: this.sellerForm.collection == 1 ? this.sellerForm.thirdSellerName : null,
 					sellerAdder: this.sellerForm.sellerAdder,
