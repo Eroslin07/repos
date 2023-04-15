@@ -5,17 +5,14 @@
 		<view style="position: relative;">
 			<view class="cost_image"></view>
 			<view class="statistics">
-				<view><u--text suffixIcon="eye" iconStyle="font-size: 18px" text="可用余额"></u--text></view>
+				<view style="overflow: hidden;">
+					<view style="float: left;"><u--text suffixIcon="eye" iconStyle="font-size: 18px" text="可用余额"></u--text></view>
+					<view style="float: right;" @click="handleCircle"><u--text suffixIcon="error-circle" iconStyle="font-size: 18px"></u--text></view>
+				</view>
 				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">100,500<text style="font-size: 12px;">元</text></view>
-				<view style="margin-bottom: 16px;"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="冻结余额 100,000 元"></u--text></view>
-				<u-grid col="2">
-					<u-grid-item>
-						<button class="button" @click="handleWithdrawal" style="background-color: #fff;">提现</button>
-					</u-grid-item>
-					<u-grid-item>
-						<button class="button" @click="handleRecharge" style="background-color: #fa6401;color: #fff;">充值</button>
-					</u-grid-item>
-				</u-grid>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="冻结余额 100,000 元"></u--text></view>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="待回填保证金0元"></u--text></view>
+				<button class="button" @click="handleRecharge" style="background-color: #fa6401;color: #fff;">提现</button>
 			</view>
 		</view>
 		
@@ -57,19 +54,25 @@
 			return {
 				indexList: [{
 					status: 1,
-					title: '保证金提现中'
+					title: '利润提现中'
 				}, {
 					status: 2,
-					title: '保证金提现'
+					title: '利润提现'
 				}, {
 					status: 3,
-					title: '保证金回填'
+					title: '卖车利润'
 				}, {
 					status: 4,
-					title: '保证金扣减'
+					title: '带回填保证金'
 				}, {
 					status: 5,
-					title: '保证金充值'
+					title: '税费扣减'
+				}, {
+					status: 6,
+					title: '服务费扣减'
+				}, {
+					status: 7,
+					title: '保证金回填'
 				}]
 			}
 		},
@@ -83,28 +86,54 @@
 					delta: 1
 				})
 			},
+			handleCircle() {
+				uni.showModal({
+				  title: '利润提现',
+					showCancel: false,
+				  content: '利润提现时，请提前开好发票，在APP提现申请时上传发票照片，提交申请后，请及时将纸质发票交至市场处，便于市场审核通过。',
+				  confirmText: '知道了',
+					confirmColor: '#fa6401'
+				})
+			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/withdrawal?type=' + 1);
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal');
 			},
 			// 充值
 			handleRecharge() {
-				
+				this.$tab.navigateTo('/subPages/home/account/bond/recharge');
+			},
+			// 点击冻结余额
+			handleFreeze() {
+				this.$tab.navigateTo('/subPages/home/account/bond/freeze');
 			},
 			// 点击全部
 			handleWhole() {
-				this.$tab.navigateTo('/subPages/home/account/whole');
+				this.$tab.navigateTo('/subPages/home/account/bond/whole');
 			},
 			// 点击保证金明细列表
 			handleClick(val) {
 				if (val == '保证金提现中') {
 					// 保证金提现中
-					this.$tab.navigateTo('/subPages/home/account/progress?type=' + 1);
+					this.$tab.navigateTo('/subPages/home/account/bond/progress');
 				} else if (val == '保证金提现') {
 					// 保证金提现明细
-					this.$tab.navigateTo('/subPages/home/account/detailed?type=' + val);
-				} else {
-					this.$tab.navigateTo('/subPages/home/account/info?type=' + val);
+					this.$tab.navigateTo('/subPages/home/account/bond/detailed');
+				} else if (val == '保证金回填') {
+					// 保证金回填
+					this.$tab.navigateTo('/subPages/home/account/bond/info');
+				} else if (val == '保证金预扣') {
+					// 保证金预扣
+					this.$tab.navigateTo('/subPages/home/account/bond/withhold');
+				} else if (val == '保证金充值') {
+					// 保证金充值
+					this.$tab.navigateTo('/subPages/home/account/bond/rechargeDetails');
+				} else if (val == '保证金预扣释放') {
+					// 保证金预扣释放
+					this.$tab.navigateTo('/subPages/home/account/bond/release');
+				} else if (val == '保证金实扣') {
+					// 保证金实扣
+					this.$tab.navigateTo('/subPages/home/account/bond/actualDeduction');
 				}
 			}
 		}
@@ -118,7 +147,7 @@
 		.cost_image {
 			width: 100%;
 			height: 180px;
-			background-image: url('../../../static/images/cost/cost.png');
+			background-image: url('../../../../static/images/cost/cost.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;
 		}
@@ -136,7 +165,7 @@
 		
 		.mingxi {
 			margin: 15px;
-			margin-top: 60px;
+			margin-top: 100px;
 			border-radius: 8px;
 			box-shadow: rgba(0, 0, 0, 0.08) 0px 0px 3px 1px;
 			
@@ -148,7 +177,7 @@
 		}
 	}
 	.button {
-		width: 80%;
+		width: 100%;
 	}
 	
 	.title {

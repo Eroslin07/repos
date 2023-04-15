@@ -98,9 +98,9 @@
 			},
 			handleClick(val) {
 				if (val === 1) {
-					this.$tab.navigateTo('/subPages/home/account/bond');
+					this.$tab.navigateTo('/subPages/home/account/bond/bond');
 				} else if (val === 2) {
-					this.$tab.navigateTo('/subPages/home/account/profit');
+					this.$tab.navigateTo('/subPages/home/account/profit/profit');
 				}
 			}
 		}
