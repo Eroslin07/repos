@@ -1,39 +1,37 @@
 <template>
 	<view class="account">
-		<uni-card :is-shadow="false" title="我的总资产">
-			<view style="color: #64f122;">资金受XX银行监管、保证资金账户7×24小时充值/提现</view>
-			<view>资产总额：10.73万元</br>其中：</view>
-			<u-row justify="space-between" gutter="10">
-				<u-col span="6">
-					<view class="cell-col" @click="handleClick(1)">
-						<view>保证金：</view>
-						<view>10.05万元</view>
+		<view style="position: relative;">
+			<view class="cost_image"></view>
+			<view class="notice">
+				<u-notice-bar :text="text" bgColor="#f8c089" color="#fa6805"></u-notice-bar>
+			</view>
+			<view class="statistics">
+				<view>资产总额</view>
+				<view style="font-size: 20px;">20.73万元</view>
+			</view>
+		</view>
+		
+		<uni-card>
+			<u-grid col="2" :border="true">
+				<u-grid-item>
+					<view @click="handleClick(1)">
+						<view>保证金 ></view>
+						<view>20.05万元</view>
 					</view>
-				</u-col>
-				<u-col span="6">
-					<view class="cell-col" @click="handleClick(2)">
-						<view>利润：</view>
-						<view>0.68万元</view>
+				</u-grid-item>
+				<u-grid-item>
+					<view @click="handleClick(2)">
+						<view>利润 ></view>
+						<view>6,800.00元</view>
 					</view>
-				</u-col>
-			</u-row>
+				</u-grid-item>
+			</u-grid>
 		</uni-card>
-		<uni-card :is-shadow="false" title="我的库存">
-			<view>车辆总量：20辆</br>其中：</view>
-			<u-row justify="space-between" gutter="10">
-				<u-col span="6">
-					<view class="cell-col" @click="handleClick(3)">
-						<view>目前在售车辆：</view>
-						<view>10辆</view>
-					</view>
-				</u-col>
-				<u-col span="6">
-					<view class="cell-col" @click="handleClick(4)">
-						<view>已销售车辆</view>
-						<view>10辆</view>
-					</view>
-				</u-col>
-			</u-row>
+		
+		<uni-card>
+			<view class="charts-box">
+				<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
+			</view>
 		</uni-card>
 	</view>
 </template>
@@ -42,19 +40,67 @@
 	export default {
 		data() {
 			return {
+				text: '资金受兴业银行监管、保证资金账户7×24小时充值/提现',
 				
+				chartData: {},
+				opts: {
+					title: {
+						name: '1'
+					},
+					color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4",
+						"#ea7ccc"
+					],
+					width: '50px',
+					height: '50px',
+					padding: [5, 5, 5, 5],
+					enableScroll: false,
+					legend: {
+						float: "left",
+						// lineHeight: 20,
+					},
+					extra: {
+						pie: {
+							activeOpacity: 0.5,
+							activeRadius: 10,
+							offsetAngle: 0,
+							labelWidth: 15,
+							border: true,
+							borderWidth: 3,
+							borderColor: "#FFFFFF",
+							linearType: "custom"
+						}
+					}
+				},
 			}
 		},
+		onReady() {
+			this.getServerData();
+		},
 		methods: {
+			// 图表数据
+			getServerData() {
+				//模拟从服务器获取数据时的延时
+				setTimeout(() => {
+					//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
+					let res = {
+						series: [{
+							data: [{
+								"name": "利润",
+								"value": 50
+							}, {
+								"name": "保证金",
+								"value": 30
+							}]
+						}]
+					};
+					this.chartData = JSON.parse(JSON.stringify(res));
+				}, 500);
+			},
 			handleClick(val) {
 				if (val === 1) {
 					this.$tab.navigateTo('/subPages/home/account/bond');
 				} else if (val === 2) {
 					this.$tab.navigateTo('/subPages/home/account/profit');
-				} else if (val === 3) {
-					this.$tab.navigateTo('/subPages/home/account/collection');
-				} else if (val === 4) {
-					this.$tab.navigateTo('/subPages/home/account/selling');
 				}
 			}
 		}
@@ -62,9 +108,33 @@
 </script>
 
 <style lang="scss" scoped>
-	.cell-col {
-		text-align: center;
-		border: 1px solid #ddd;
-		border-radius: 8px;
+	.account {
+		.cost_image {
+			width: 100%;
+			height: 180px;
+			background-image: url('../../static/images/cost/cost.png');
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+		}
+		
+		.notice {
+			position: absolute;
+			top: 0;
+		}
+		
+		.statistics {
+			text-align: center;
+			color: #fff;
+			font-size: 16px;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -100%);
+		}
+		
+		.charts-box {
+			width: 100%;
+			height: 249px;
+		}
 	}
 </style>

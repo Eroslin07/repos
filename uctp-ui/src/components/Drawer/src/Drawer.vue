@@ -6,17 +6,20 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       size="80%"
-      @close="dravwerClose"
+      append-to-body
+      destroy-on-close
+      :show-close="false"
     >
-      <template #title>
-        <h3 class="title">{{ drawerTitle }}</h3>
+      <template #header="{ titleId, titleClass }">
+        <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3>
+        <div class="btns" id="btns">
+          <el-button plain type="primary" @click="submitBtn">提交</el-button>
+          <el-button plain type="success">退回</el-button>
+          <el-button plain type="danger">作废</el-button>
+          <el-button plain type="info" @click="dravwerClose">关闭</el-button>
+        </div>
       </template>
       <template #default>
-        <div class="btns">
-          <el-button type="primary" @click="submitBtn">提交</el-button>
-          <el-button type="success">退回</el-button>
-          <el-button type="danger">作废</el-button>
-        </div>
         <div class="drawer_content">
           <el-tabs v-model="activeName" @tab-change="tabChange">
             <el-tab-pane
@@ -25,7 +28,7 @@
               :label="item.label"
               :name="item.name"
             >
-              <el-scrollbar class="scrollbar_init">
+              <el-scrollbar class="scrollbar_init" :min-size="5">
                 <keep-alive>
                   <component :is="item.compName" :status="status"></component>
                 </keep-alive>
@@ -70,6 +73,7 @@ import { baseInfoData } from '@/views/workbench/basInfoValue'
 
 const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdataList'])
+// const emit = defineEmits(['handleUpdataList'])
 const activeName = ref('BaseInfo')
 const comps = shallowRef([
   {
@@ -143,6 +147,7 @@ const dialogSubmit = () => {
       message.error('提交失败')
     })
 }
+
 // 关闭抽屉
 const dravwerClose = () => {
   emit('handleCloseDrawer')
@@ -172,6 +177,9 @@ const dravwerClose = () => {
       margin-bottom: 15px;
     }
   }
+  // :deep(.el-button.is-plain) {
+  //   padding: 5px 10px !important;
+  // }
   .title {
     font-size: 18px;
     font-weight: bold;
@@ -180,5 +188,9 @@ const dravwerClose = () => {
     display: flex;
     justify-content: flex-end;
   }
+}
+
+#btns .el-button {
+  padding: 5px 10px !important;
 }
 </style>

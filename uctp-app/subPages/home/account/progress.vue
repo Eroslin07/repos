@@ -6,7 +6,7 @@
 				</u-steps-item>
 				<u-steps-item title="市场方审批中" desc="请及时提交发票到市场处进行审批" v-if="type == 2">
 				</u-steps-item>
-				<u-steps-item title="银行处理">
+				<u-steps-item title="银行处理中...">
 				</u-steps-item>
 				<u-steps-item title="到账成功"></u-steps-item>
 			</u-steps>
@@ -14,15 +14,14 @@
 		<view style="padding: 20px;">
 			<view style="overflow: hidden;">
 				<view style="float: left;">
-					<view>提现金额</view>
-					<view>到账银行卡</view>
+					<view class="text1">提现金额</view>
+					<view class="text1">到账银行卡</view>
 				</view>
 				<view style="float: right;">
-					<view>￥1,000.00元</view>
-					<view>招商银行 尾号 1167</view>
+					<view class="text2">￥1,000.00元</view>
+					<view class="text2">招商银行 尾号 1167</view>
 				</view>
 			</view>
-			<button class="button" @click="handleCancel">完成</button>
 		</view>
 	</view>
 </template>
@@ -46,15 +45,16 @@
 				});
 			}
 		},
-		methods: {
-			// 取消
-			handleCancel() {
-				if (this.type == 1) {
-					this.$tab.navigateTo('/subPages/home/account/bond');
-				} else if (this.type == 2) {
-					this.$tab.navigateTo('/subPages/home/account/profit');
-				}
+		onBackPress(options) {
+			if (this.type == 1) {
+				this.$tab.navigateTo('/subPages/home/account/bond');
+			} else if (this.type == 2) {
+				this.$tab.navigateTo('/subPages/home/account/profit');
 			}
+			return true;
+		},
+		methods: {
+
 		}
 	}
 </script>
@@ -66,6 +66,17 @@
 			color: #fff;
 			margin-top: 10px;
 			margin-top: 30%;
+		}
+		
+		.text1 {
+			text-align: left;
+			color: #999;
+			margin-bottom: 10px;
+		}
+		
+		.text2 {
+			text-align: right;
+			margin-bottom: 10px;
 		}
 	}
 </style>

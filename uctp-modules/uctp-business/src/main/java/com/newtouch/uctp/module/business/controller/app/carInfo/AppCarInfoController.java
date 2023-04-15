@@ -11,8 +11,6 @@ import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
 import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
-import com.newtouch.uctp.module.infra.api.file.FileApi;
-import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,13 +22,16 @@ import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.newtouch.uctp.framework.common.pojo.CommonResult.error;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
 @Tag(name =  "App管理 - 车辆管理")
@@ -136,7 +137,7 @@ public class AppCarInfoController {
 
     @GetMapping("/delete/sell/{id}")
     @Operation(summary = "删除卖车的草稿数据")
-    public CommonResult<Boolean> deleteSell(@PathVariable Long id) {
+    public CommonResult<Boolean> deleteSell(@PathVariable @NotNull(message = "请传入Id") Long id) {
         carInfoService.deleteSell(id);
         return success(true);
     }

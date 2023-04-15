@@ -99,18 +99,6 @@
 				"navigationBarTitleText": "委托卖车合同签章"
 			}
 		}, {
-			"path": "home/cost/index",
-			"style": {
-				"navigationBarTitleText": "我的费用"
-				// "navigationStyle": "custom"
-			}
-		}, {
-			"path": "home/account/index",
-			"style": {
-				"navigationBarTitleText": "我的账户"
-				// "navigationStyle": "custom"
-			}
-		}, {
 			"path": "home/account/profit",
 			"style": {
 				"navigationBarTitleText": "我的利润"
@@ -145,6 +133,11 @@
 			"style": {
 				"navigationBarTitleText": ""
 				// "navigationStyle": "custom"
+			}
+		}, {
+			"path": "home/account/whole",
+			"style": {
+				"navigationBarTitleText": "保证金交易明细"
 			}
 		}, {
 			"path": "home/account/collection",
@@ -292,18 +285,18 @@
 		"backgroundColor": "#ffffff",
 		"list": [{
 			"pagePath": "pages/index",
-			"iconPath": "static/images/tabbar/home.png",
-			"selectedIconPath": "static/images/tabbar/home_.png",
+			"iconPath": "static/images/tabbar/homepage_.png",
+			"selectedIconPath": "static/images/tabbar/homepage.png",
 			"text": "首页"
 		}, {
 			"pagePath": "pages/cost/index",
-			"iconPath": "static/images/tabbar/work.png",
-			"selectedIconPath": "static/images/tabbar/work_.png",
+			"iconPath": "static/images/tabbar/feiyong.png",
+			"selectedIconPath": "static/images/tabbar/feiyong_.png",
 			"text": "费用分析"
 		}, {
 			"pagePath": "pages/account/index",
-			"iconPath": "static/images/tabbar/work.png",
-			"selectedIconPath": "static/images/tabbar/work_.png",
+			"iconPath": "static/images/tabbar/message.png",
+			"selectedIconPath": "static/images/tabbar/message_.png",
 			"text": "资金管理"
 		}, {
 			"pagePath": "pages/mine/index",

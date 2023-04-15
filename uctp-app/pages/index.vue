@@ -3,7 +3,7 @@
 		<!-- 自定义导航栏 -->
 		<u-navbar title=" ">
 			<view class="u-nav-slot" slot="left">
-				<u-icon name="chat" size="28" @click="handleMsg"></u-icon>
+				<image src="../static/images/home/xiaoxi.png" class="form-image"></image>
 			</view>
 		</u-navbar>
 
