@@ -398,7 +398,7 @@
 			handleOcr(index, type) {
 				let _this = this;
 				uni.showActionSheet({
-					title: "选择类型",
+					// title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
 						_this.chooseImages(index, type, res.tapIndex);
