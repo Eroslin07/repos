@@ -2,7 +2,6 @@
   <ContentWrap>
     <Drawer
       :visible="drawerVisible"
-      :baseInfoValue="baseInfoValue"
       :status="status"
       @handle-close-drawer="handleCloseDrawer"
       @handle-update-list="handleUpdateList"
@@ -41,12 +40,12 @@
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { allSchemas } from './toDoList.data'
 import { Drawer } from '@/components/Drawer'
 import * as ToDoList from '@/api/workbench/toDoList'
 // import * as RoleApi from '@/api/system/role'
-import { baseInfoData } from '../basInfoValue'
+import { baseInfoData, infoLoading } from '../basInfoValue'
 // 列表相关的变量
 const [registerTable, { reload }] = useXTable({
   allSchemas: allSchemas,
@@ -60,7 +59,6 @@ const status = ref('')
 
 // 抽屉
 const drawerVisible = ref(false)
-let baseInfoValue = reactive({})
 const handleCloseDrawer = () => {
   drawerVisible.value = false
 }
@@ -81,16 +79,25 @@ const handleExport = () => {
 
 // 点击申请单号
 const handleApplication = (row) => {
+  drawerVisible.value = true //打开抽屉
+  infoLoading.value = true
+  console.log(infoLoading, 'infoLoading')
   const params = {
     taskId: row.taskId,
     businessKey: row.businessKey
   }
-  ToDoList.getTaskFormInfoAPI(params).then((response) => {
-    baseInfoData.data = { ...response }
-    // ZHSQ SGYZ SCKP SCKZH MCHT MCKP LRTQ
-    status.value = response.busiType
-    drawerVisible.value = true //打开抽屉
-  })
+  ToDoList.getTaskFormInfoAPI(params)
+    .then((response) => {
+      baseInfoData.data = { ...response }
+      // ZHSQ SGYZ SCKP SCKZH MCHT MCKP LRTQ
+      status.value = response.busiType
+      infoLoading.value = false
+      // drawerVisible.value = true //打开抽屉
+    })
+    .catch((err) => {
+      console.log(err)
+      infoLoading.value = false
+    })
 }
 // 刷新列表数据
 const handleUpdateList = () => {

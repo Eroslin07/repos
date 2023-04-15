@@ -1,5 +1,5 @@
 <template>
-  <div class="drawer_self">
+  <div class="drawer_self" id="drawerSelf">
     <el-drawer
       v-model="drawerVisible"
       :direction="direction"
@@ -10,8 +10,9 @@
       destroy-on-close
       :show-close="false"
     >
-      <template #header="{ titleId, titleClass }">
-        <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3>
+      <template #header>
+        <h3></h3>
+        <!-- <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3> -->
         <div class="btns" id="btns">
           <el-button plain type="primary" @click="submitBtn">提交</el-button>
           <el-button plain type="success">退回</el-button>
@@ -57,7 +58,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="dialogSubmit"> 确定 </el-button>
+          <el-button type="primary" @click="dialogSubmit" :loading="subLoading"> 确定 </el-button>
         </span>
       </template>
     </el-dialog>
@@ -124,12 +125,14 @@ const submitBtn = () => {
 }
 
 // 审批意见弹框
+const subLoading = ref(false)
 const dialogFormVisible = ref(false)
 const form = ref<any>({})
 const dialogSubmit = () => {
   if (!form.value.reason) return message.error('请输入审批意见')
+  subLoading.value = true
   let data = {
-    id: baseInfoData.data.taskId,
+    // id: baseInfoData.data.taskId,
     reason: form.value.reason,
     variables: baseInfoData.data.variables
   }
@@ -137,6 +140,7 @@ const dialogSubmit = () => {
     .putApproveAPI(data)
     .then((res) => {
       console.log(res)
+      subLoading.value = false
       message.success('提交成功')
       dialogFormVisible.value = false
       emit('handleCloseDrawer')
@@ -144,6 +148,7 @@ const dialogSubmit = () => {
     })
     .catch((err) => {
       console.log(err)
+      subLoading.value = false
       message.error('提交失败')
     })
 }
@@ -157,11 +162,7 @@ const dravwerClose = () => {
 .drawer_self {
   :deep(.el-drawer__header) {
     margin-bottom: 0;
-    > :first-child {
-      margin: 0;
-    }
   }
-
   :deep(.drawer_content) {
     height: calc(100% - 200px);
 
@@ -192,5 +193,9 @@ const dravwerClose = () => {
 
 #btns .el-button {
   padding: 5px 10px !important;
+}
+
+#drawerSelf .el-drawer .el-drawer__header {
+  margin-bottom: 0 !important;
 }
 </style>

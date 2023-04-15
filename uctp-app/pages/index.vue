@@ -1,82 +1,81 @@
 <template>
 	<view class="content">
 		<!-- 自定义导航栏 -->
-		<u-navbar title=" ">
+		<u-navbar title="二手车交易平台">
 			<view class="u-nav-slot" slot="left">
-				<image src="../static/images/home/xiaoxi.png" class="form-image"></image>
+				<image style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png" class="form-image">
+				</image>
 			</view>
 		</u-navbar>
-
-		<view class="image">
-			<image src="/static/images/home/car.jpg"></image>
+		<!-- 解决窗体沉浸，内容被导航栏遮盖问题 -->
+		<view :style="{height: `${navigateBarHeight}px`}"></view>
+		<!-- 轮播 -->
+		<view class="" style="height:130px;border-radius:4px;">
+			<u-swiper indicator indicatorMode="dot" :list="swiperList"></u-swiper>
 		</view>
-
-		<uni-card :is-shadow="false" is-full class="searchCard">
-			<u-search v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
-				placeholder="请输入商户/车辆型号/单号"></u-search>
-		</uni-card>
-
-		<view style="background-color: #fff;">
-			<view style="border: 2px solid #fff; border-radius: 10px;margin: 0 10px;">
-				<view class="grid-body">
-					<uni-grid :column="2" :showBorder="false">
-						<uni-grid-item>
-							<view class="grid-item-box" @click="buyCar">图片</view>
-							<view class="text-center">我要买车</view>
-						</uni-grid-item>
-						<uni-grid-item>
-							<view class="grid-item-box" @click="sellingCar">图片</view>
-							<view class="text-center">我要卖车</view>
-						</uni-grid-item>
-					</uni-grid>
+		<!-- 收车/卖车 -->
+		<view class="menu-box">
+			<view class="menu-item">
+				<view class="item-title">
+					<text style="margin-right:5px;">我要收车</text>
+					<u-icon name="arrow-right" :size="15" color="#fff">
+					</u-icon>
 				</view>
-
-				<view class="car-status">
-					<u-grid :border="true" col="4">
-						<u-grid-item v-for="(item,index) in gatherData" :key="index"
-							@click="tabCarStatus(item.salesStatus)">
-							<view class="car-status-item" v-show="item.salesStatus==0">
-								<text>收车中</text><br />
-								<text style="color: #e26e1f;">{{item.num}}辆</text>
-							</view>
-							<view class="car-status-item" v-show="item.salesStatus==1">
-								<text>待售中</text><br />
-								<text style="color: #e26e1f;">{{item.num}}辆</text>
-							</view>
-							<view class="car-status-item" v-show="item.salesStatus==2">
-								<text>卖车中</text><br />
-								<text style="color: #e26e1f;">{{item.num}}辆</text>
-							</view>
-							<view class="car-status-item" v-show="item.salesStatus==3">
-								<text>已售出</text><br />
-								<text style="color: #e26e1f;">{{item.num}}辆</text>
-							</view>
-						</u-grid-item>
-					</u-grid>
+				<view class="item-desp">
+					COLLECT
+				</view>
+			</view>
+			<view class="menu-item sell-box">
+				<view class="item-title">
+					<text style="margin-right:5px;">我要卖车</text>
+					<u-icon name="arrow-right" :size="15" color="#fff">
+					</u-icon>
+				</view>
+				<view class="item-desp sell-desp">
+					SELL
 				</view>
 			</view>
 		</view>
-
-		<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" style="margin-top: 10px;">
-			<uni-row :gutter="30">
-				<uni-col :span="8">
-					<view class="car_left">
-						<view class="car_text cell-car-draft">收车草稿</view>
-						<view style="height: 100px;border: 1px solid #eee;"></view>
+		<!-- 交易状态 -->
+		<view class="deal-dynamic">
+			<h3 class="align-center">交易动态</h3>
+			<view class="cars-status" v-for="item in gatherData ||4" :key="item">
+				<view class="left-title">
+					<view class="">收车中</view>
+					<view class="">
+						2
 					</view>
-				</uni-col>
-				<uni-col :span="16">
-					<h3><span class="paddingR10">{{tab.brand}}</span><span>{{tab.model}}</span></h3>
-					<view>VIN: {{tab.vin}}</view>
-					<view>{{tab.year}}年 | {{tab.mileage}}万公里</view>
-					<view style="color: #000;">收车价：<text style="font-weight:bold">{{tab.vehicleReceiptAmount}}元</text>
-					</view>
-					<view style="color: #fa6400;">卖车价：<text style="font-weight:bold">200,000元</text></view>
-					<view>创建时间:{{tab.createTime}}</view>
-				</uni-col>
-			</uni-row>
-		</uni-card>
-
+				</view>
+				<view class="right-content">
+					<u-row style="height:68px;">
+						<u-col span="4">
+							<view class="align-center">草稿<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
+							</view>
+							<view class="align-center">
+								2
+							</view>
+						</u-col>
+						<u-col span="4">
+							<view class="align-center">合同已发起<uni-icons type="right" size="12" color="#656C6E">
+								</uni-icons>
+							</view>
+							<view class="align-center">
+								2
+							</view>
+						</u-col>
+						<u-col span="4">
+							<view class="align-center">支付失败
+								<uni-icons type="right" size="12" color="#ccc"></uni-icons>
+							</view>
+							<view class="align-center">
+								2
+							</view>
+						</u-col>
+					</u-row>
+				</view>
+			</view>
+		</view>
+		<!-- 加载图标 -->
 		<u-loadmore :status="status" loadingText="努力加载中..." />
 	</view>
 </template>
@@ -90,8 +89,16 @@
 	export default {
 		data() {
 			return {
-				// 搜索值
-				// searchValue: "",
+				// 导航栏高度
+				navigateBarHeight: 0,
+				// 轮播
+				swiperList: [
+					'/static/images/swiper.jpg',
+					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
+					'https://img1.baidu.com/it/u=2974906504,2372510003&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
+					'https://img1.baidu.com/it/u=2953355259,1397462208&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=281',
+					'https://img1.baidu.com/it/u=4091777166,1843960962&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625'
+				],
 				// 标签内容
 				tabList: [],
 				formData: {
@@ -110,10 +117,14 @@
 		},
 		onLoad: function() {
 			this.getAcount();
+			/* #ifdef MP-WEIXIN */
+			this.getnavigateBarHeight();
+			/* #endif */
 		},
 
 		mounted() {
-			this.getList(this.formData)
+			this.getList(this.formData);
+
 		},
 
 		onPullDownRefresh() {
@@ -215,6 +226,21 @@
 			// 消息
 			handleMsg() {
 				this.$tab.navigateTo('/subPages/work/index')
+			},
+			// 获取顶部导航栏的高度
+			getnavigateBarHeight() {
+				let menuButtonObject = uni.getMenuButtonBoundingClientRect();
+				uni.getSystemInfo({
+					success: res => {
+						let navHeight = menuButtonObject.height + (menuButtonObject.top - res
+							.statusBarHeight) * 2; //导航栏高度=菜单按钮高度+（菜单按钮与顶部距离-状态栏高度）*2
+						this.navigateBarHeight = navHeight + 4;
+						console.log(navHeight, 'navHeight')
+					},
+					fail(err) {
+						console.log(err);
+					}
+				})
 			}
 		}
 	}
@@ -223,104 +249,112 @@
 <style lang="scss" scoped>
 	.content {
 		width: 100%;
+		height: calc(100vh - 44px);
+		padding: 0 15px;
 		// height: 88vh;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		background-color: #f4f6f8;
 		margin-top: 44px;
-	}
 
-	.changing-over {
-		font-size: 14px;
-		height: 22px;
-		line-height: 22px;
-		color: orange;
-		background-color: white;
-		border: 1px solid orange;
-		border-radius: 10px;
-	}
-
-	.image {
-		/* #ifndef APP-NVUE */
-		display: flex;
-		/* #endif */
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		height: 300rpx;
-		line-height: 300rpx;
-
-		uni-image {
-			width: 100%;
-		}
-	}
-
-	.grid-body {
-		padding-bottom: 20px;
-		border-bottom: 1px solid #ececec;
-
-		.uni-grid-item {
-			height: 100px !important;
-		}
-
-		.grid-item-box {
-			// flex: 1;
-			width: 52px;
-			height: 52px;
-			border: 1px solid black;
-			border-radius: 50%;
-			/* #ifndef APP-NVUE */
+		.menu-box {
+			height: 90px;
+			margin-top: 15px;
 			display: flex;
-			/* #endif */
-			flex-direction: column;
+			flex-direction: row;
+			justify-content: space-between;
 			align-items: center;
-			justify-content: center;
-			margin: 10px auto;
+			font-size: 15px;
+			color: #fff;
+
+			.menu-item {
+				flex: 1;
+				flex-shrink: 0;
+				height: 90px;
+				margin-right: 20px;
+				padding: 15px;
+				border-radius: 5px;
+				background-color: #088FFE;
+
+				.item-title {
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-start;
+					align-items: center;
+				}
+
+				.item-desp {
+					font-size: 13px;
+					margin-top: 8px;
+					color: #96C6FE;
+				}
+			}
+
+			.sell-box {
+				background-color: #DB6A43;
+				margin-right: 0;
+
+				.sell-desp {
+					color: #FFD7B1;
+				}
+			}
 		}
-	}
 
-	.searchCard {
-		/* #ifdef H5 */
-		padding: 0 !important;
-		/* #endif */
-		border: none;
-	}
+		.deal-dynamic {
+			width: 100%;
+			height: calc(100vh - 370px);
+			overflow-x: hidden;
+			overflow-y: scroll;
+			padding: 15px;
+			margin-top: 10px;
+			background-color: #f6f6f6;
+			// background: url('/static/images/bc.jpg') no-repeat;
+			// background-size: 100% 100%;
 
-	/deep/ .uni-grid {
-		justify-content: space-around;
+			.cars-status {
+				box-sizing: border-box;
+				width: 100%;
+				height: 70px;
+				border: 1px solid #088FFE;
+				border-radius: 5px;
+				margin-top: 10px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				background-color: #96C6FE;
+
+				.left-title {
+					width: 68px;
+					height: 68px;
+					text-align: center;
+					font-size: 12px;
+					// background: url('/static/images/bc.jpg') no-repeat;
+					// background-size: 100% 100%;
+					background-color: #2A93EC;
+					color: #fff;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+				}
+
+				.right-content {
+					flex: 1;
+					color: #656C6E;
+					font-size: 12px;
+				}
+			}
+		}
 	}
 
 	/* #ifdef MP-WEIXIN */
-	/deep/.grid-body .uni-grid-item {
-		height: 100px !important;
-	}
-
-	/deep/.searchCard .uni-card {
-		padding: 0 !important;
-		border: none
+	/deep/ .u-navbar__content.data-v-95dec1ae {
+		align-items: center;
 	}
 
 	/* #endif */
 
-	/deep/ .uni-card__header-extra-text {
-		color: #169bd5 !important;
-		font-size: 14px !important;
-	}
 
-	.car_left {
-		position: relative;
-		border-radius: 8px;
-		overflow: hidden;
-
-		.car_text {
-			position: absolute;
-			top: 0;
-			left: 0;
-			font-size: 12px;
-			padding: 0 5px;
-			border-radius: 3px;
-		}
-	}
 
 	.cell-car-draft {
 		color: #fff;
@@ -342,29 +376,9 @@
 		background-image: linear-gradient(to right, #C07F1D, #F4DDB9);
 	}
 
-	.car-status {
-		margin: 10px 10px;
-		font-size: 14px;
 
-		.car-status-item {
-			text-align: center;
-		}
 
-		.last-car-item {
-			// margin-right: 0px;
-		}
-
-	}
-
-	.paddingR10 {
-		padding-right: 10px;
-	}
-
-	.msg-btn {
-		width: 50px;
-		height: 50px;
-		position: absolute;
-		left: 15px;
-		z-index: 100000
+	.align-center {
+		text-align: center;
 	}
 </style>
