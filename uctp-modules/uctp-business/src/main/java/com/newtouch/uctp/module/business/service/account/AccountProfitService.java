@@ -1,12 +1,10 @@
 package com.newtouch.uctp.module.business.service.account;
 
+import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
-import com.newtouch.uctp.module.business.service.account.dto.TaxRateDTO;
-import org.springframework.stereotype.Service;
+import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 利润服务接口
@@ -15,20 +13,21 @@ import java.util.Set;
  */
 public interface AccountProfitService {
 
-
     /**
-     * 计算利润，并调用保证金服务回填保证金
+     * 利润划入
      * @param accountNo 商户号
      * @param contractNo 交易合同号
-     * @param vehicleReceiptAmount 收车金额
-     * @param carSalesAmount 卖车金额
+     * @param vehicleReceiptAmount 收车金额（单位为：分）
+     * @param carSalesAmount 卖车金额（单位为：分）
      * @param costs 费用清单
-     * @param taxRates 税率清单
+     * @param taxes 税率清单
+     * @return 利润明细结果
      */
-    void generateProfit(String accountNo,
-                        String contractNo,
-                        BigDecimal vehicleReceiptAmount,
-                        BigDecimal carSalesAmount,
-                        List<CostDTO> costs,
-                        List<TaxRateDTO> taxRates);
+    List<MerchantProfitDO> recorded(String accountNo,
+                                    String contractNo,
+                                    Integer vehicleReceiptAmount,
+                                    Integer carSalesAmount,
+                                    List<CostDTO> costs,
+                                    List<TaxDTO> taxes);
+
 }
