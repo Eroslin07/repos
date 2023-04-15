@@ -35,4 +35,5 @@ public interface ErrorCodeConstants {
     ErrorCode ACC_COST_TYPE_REPEAT = new ErrorCode(1005000207, "费用类型不能重复");
     ErrorCode ACC_TAX_TYPE_REPEAT = new ErrorCode(1005000208, "税费类型不能重复");
     ErrorCode ACC_MERCHANT_ACCOUNT_NOT_EXISTS = new ErrorCode(1005000209, "商户账户不存在");
+    ErrorCode ACC_PRESENT_ERROR = new ErrorCode(1005000210, "提现处理错误");
 }

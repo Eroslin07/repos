@@ -2,7 +2,10 @@ package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
@@ -12,10 +15,12 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
+import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.ProfitCalcResultDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
+import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +57,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Override
     @Transactional
+    @TenantIgnore
     public List<MerchantProfitDO> recorded(String accountNo,
                                            String contractNo,
                                            Integer vehicleReceiptAmount,
@@ -90,9 +96,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
         for (MerchantProfitDO mp : profitList) {
             List<PresentStatusRecordDO> psrs = mp.getPresentStatusRecords();
-            for (PresentStatusRecordDO psr : psrs) {
-                psr.setPresentNo(mp.getId());
-                statusRecordList.add(psr);
+            if (psrs != null && !psrs.isEmpty()) {
+                for (PresentStatusRecordDO psr : psrs) {
+                    psr.setPresentNo(mp.getId());
+                    statusRecordList.add(psr);
+                }
             }
         }
 
@@ -101,21 +109,27 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
         }
 
+        // 处理利润提现状态
+
+
         return profitList;
     }
 
     @Override
+    @TenantIgnore
     public MerchantAccountDO queryByAccountNo(String accountNo) {
         return merchantAccountService.queryByAccountNo(accountNo);
     }
 
     @Override
     @Transactional
+    @TenantIgnore
     public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds) {
         return null;
     }
 
     @Override
+    @TenantIgnore
     public PageResult<ProfitRespVO> profitList(String accountNo, ProfitQueryReqVO query) {
         QueryWrapper<MerchantProfitDO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ACCOUNT_NO", accountNo)
@@ -145,6 +159,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     }
 
     @Override
+    @TenantIgnore
     public ProfitDetailRespVO profitDetail(String accountNo, Long profitId) {
         QueryWrapper<MerchantProfitDO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ID", profitId)
@@ -184,6 +199,45 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             }
 
             return respVO;
+        }
+    }
+
+    @Override
+    @TenantIgnore
+    @Transactional
+    public void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
+        if (event != null) {
+            MerchantProfitDO profitDO = new MerchantProfitDO();
+            profitDO.setId(id);
+            LambdaUpdateWrapper<MerchantProfitDO> profitDOUpdateWrapper = new LambdaUpdateWrapper<>();
+            profitDOUpdateWrapper.eq(MerchantProfitDO::getId, id);
+            if (event.getSourceStatus() != null) {
+                profitDOUpdateWrapper.eq(MerchantProfitDO::getPresentState, event.getSourceStatus());
+            } else {
+                profitDOUpdateWrapper.isNull(MerchantProfitDO::getPresentState);
+            }
+
+            profitDO.setPresentState(event.getTargetStatus());
+
+            PresentStatusRecordDO presentStatusRecordDO = new PresentStatusRecordDO();
+            presentStatusRecordDO.setPresentNo(id);
+            presentStatusRecordDO.setStatus(event.getTargetStatus());
+            presentStatusRecordDO.setPresentType(PRESENT_TYPE_PROFIT);
+            presentStatusRecordDO.setOccurredTime(LocalDateTime.now());
+
+            int rows = this.merchantProfitMapper.update(profitDO, profitDOUpdateWrapper);
+
+            // 根据状态更新成功，则执行，否则报出异常
+            if (rows == 1) {
+                this.merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
+
+                if (event.getPostEvent() != null) {
+                    // 存在后置事件，则再触发一个后置事件
+                    this.publishProfitPressentStatusChangeEvent(id, event.getPostEvent());
+                }
+            } else {
+                throw exception(ACC_PRESENT_ERROR);
+            }
         }
     }
 
@@ -247,7 +301,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         Integer nowWaitForBackCashTotalAmount = theWaitForBackCashAmount + originalWaitForBackCashTotalAmount - theDeductionBackCashAmount;
 
         // 现利润余额=原利润余额+本次收益-(本次实回填保证金-收车价)
-        Integer nowProfitTotalAmount = originalProfitTotalAmount + tmpTheRevenueAmount - tmpTheActualBackCashAmount - vehicleReceiptAmount;
+        Integer nowProfitTotalAmount = originalProfitTotalAmount + tmpTheRevenueAmount - (tmpTheActualBackCashAmount - vehicleReceiptAmount);
 
         ProfitCalcResultDTO result = ProfitCalcResultDTO.builder()
                 // 本次回填保证金
@@ -453,7 +507,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 MerchantProfitDO profit = MerchantProfitDO.builder()
                         .accountNo(accountNo)
                         .contractNo(contractNo)
-                        .profit(profitCalcResult.getBackCashAmount() * -1) // 税费为支出，记录负数
+                        .profit(tax.getAmount() * -1) // 税费为支出，记录负数
                         .tradeType(TRAN_PROFIT_TAX_COST)
                         .tradeTo(TRADE_TO_MARKET) // 回填保证金动向为：我的保证金
                         .presentState(null) // 初始写入税费无提现状态
