@@ -135,10 +135,15 @@ public class CarInfoDetailsDO extends TenantBaseDO {
      */
     private String transManageName;
     /**
-     * 车辆手续及备件
+     * 车辆手续及备件（收车）
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private ProceduresAndSpareParts proceduresAndSpareParts;
+    /**
+     * 车辆手续及备件（卖车）
+     */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private ProceduresAndSpareSell proceduresAndSpareSell;
     /**
      * 其他费用及约定
      */
