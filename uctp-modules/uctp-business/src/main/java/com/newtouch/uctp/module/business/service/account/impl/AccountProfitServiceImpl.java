@@ -17,6 +17,7 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMa
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
+import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditPpinion;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.ProfitCalcResultDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -47,7 +48,7 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Resource
-    private MerchantAccountService merchantAccountService; // 保证金服务
+    private MerchantAccountService merchantAccountService;
 
     @Resource
     private MerchantProfitMapper merchantProfitMapper;
@@ -94,6 +95,12 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 批量插入利润表
         this.merchantProfitMapper.insertBatch(profitList);
         List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
+
+        // 回填保证金的提现利润清单
+        List<MerchantProfitDO> backCashList = new ArrayList<>();
+        // 需要立即付款的费用清单
+        List<MerchantProfitDO> costWaitForPayList = new ArrayList<>();
+
         for (MerchantProfitDO mp : profitList) {
             List<PresentStatusRecordDO> psrs = mp.getPresentStatusRecords();
             if (psrs != null && !psrs.isEmpty()) {
@@ -102,6 +109,16 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     statusRecordList.add(psr);
                 }
             }
+
+            if (AccountConstants.TRAN_PROFIT_CASH_BACK.equals(mp.getTradeType())) {
+                // 保证金回填交易
+                backCashList.add(mp);
+            } else if (AccountConstants.TRAN_PROFIT_SERVICE_COST.equals(mp.getTradeType())
+                    && StringUtils.isNotBlank(mp.getBankNo())
+                    && StringUtils.isNotBlank(mp.getBankName())) {
+                // 需要立即支付的费用
+                costWaitForPayList.add(mp);
+            }
         }
 
         if (!statusRecordList.isEmpty()) {
@@ -109,8 +126,17 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
         }
 
-        // 处理利润提现状态
-
+        // 处理利润回填保证金提现状态
+        for (MerchantProfitDO mp : backCashList) {
+            this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
+            // 回填保证金
+            this.merchantAccountService.rechargeCash(mp.getAccountNo(), mp.getProfit() * -1);
+        }
+        // 处理费用立即支付
+        for (MerchantProfitDO mp : costWaitForPayList) {
+            this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.COST_PAY);
+            // TODO 调用支付接口
+        }
 
         return profitList;
     }
@@ -126,6 +152,20 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @TenantIgnore
     public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds) {
         return null;
+    }
+
+    @Override
+    @TenantIgnore
+    @Transactional
+    public void auditProfitPressent(Long id, ProfitPressentAuditPpinion auditPpinion) {
+        if (id == null) {
+            throw exception(ACC_PRESENT_ERROR);
+        }
+        if (auditPpinion == null) {
+            throw exception(ACC_PRESENT_ERROR);
+        }
+
+        this.publishProfitPressentStatusChangeEvent(id, auditPpinion.getEvent());
     }
 
     @Override
@@ -202,10 +242,12 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         }
     }
 
-    @Override
-    @TenantIgnore
-    @Transactional
-    public void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
+    /**
+     * 触发事件
+     * @param id 利润ID
+     * @param event 事件
+     */
+    private void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
         if (event != null) {
             MerchantProfitDO profitDO = new MerchantProfitDO();
             profitDO.setId(id);

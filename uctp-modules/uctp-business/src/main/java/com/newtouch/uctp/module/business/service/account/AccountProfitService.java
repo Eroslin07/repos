@@ -70,9 +70,9 @@ public interface AccountProfitService {
     ProfitDetailRespVO profitDetail(String accountNo, Long profitId);
 
     /**
-     * 触发一个利润提现事件
+     * 审核利润提现
      * @param id 利润ID
-     * @param event 事件
+     * @param auditPpinion 审核意见
      */
-    void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event);
+    void auditProfitPressent(Long id, ProfitPressentAuditPpinion auditPpinion);
 }
