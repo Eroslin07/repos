@@ -155,14 +155,18 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             transactionRecordReqVO.setAccountNo(mp.getAccountNo());
             transactionRecordReqVO.setContractNo(mp.getContractNo());
             transactionRecordReqVO.setTranAmount(mp.getProfit() * -1);
-            transactionRecordReqVO.setRevision(merchantAccount.getRevision());
+            transactionRecordReqVO.setRevision(merchantAccount.getRevision() + 1);
 
+            boolean backSuccessed;
             if (profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
                 // 使用的原有利润回填保证金
-                accountCashService.profitBack(transactionRecordReqVO);
+                backSuccessed = accountCashService.profitBack(transactionRecordReqVO);
             } else {
                 // 未使用原有利润回填保证金
-                accountCashService.back(transactionRecordReqVO);
+                backSuccessed = accountCashService.back(transactionRecordReqVO);
+            }
+            if (!backSuccessed) {
+                throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
             }
         }
 
