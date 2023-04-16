@@ -12,8 +12,17 @@ public interface MerchantAccountService {
 
     /**
      * 加锁更新
+     *
      * @param account 商户账户信息
      * @return 成功更新的记录数
      */
     int updateByLock(MerchantAccountDO account);
+
+    /**
+     * 商户账户开户
+     *
+     * @param account
+     * @return
+     */
+    boolean accountOpen(MerchantAccountDO account);
 }

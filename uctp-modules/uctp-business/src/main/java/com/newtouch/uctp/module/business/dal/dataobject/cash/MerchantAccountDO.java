@@ -15,22 +15,24 @@ import lombok.*;
 public class MerchantAccountDO extends BaseDO {
 
     @TableId
-	private Long id;//账户主键标识
+    private Long id;//账户主键标识
 
-	private String accountNo;//账户号
+    private String mobile;// 手机号
 
-	private Integer cash;//保证金
+    private String accountNo;//账户号
 
-	private Integer profit;//利润
+    private Integer cash;//保证金
 
-	private Integer freezeCash;//保证金-冻结余额
+    private Integer profit;//利润
 
-	private Integer availableCash;//保证金-可用余额
+    private Integer freezeCash;//保证金-冻结余额
 
-	private Integer freezeProfit;//利润-冻结余额
+    private Integer availableCash;//保证金-可用余额
 
-	private Long tenantId;//商户标识
+    private Integer freezeProfit;//利润-冻结余额
 
-	private Integer revision;//乐观锁
+    private Long merchantId;//商户标识
+
+    private Integer revision;//乐观锁
 
 }

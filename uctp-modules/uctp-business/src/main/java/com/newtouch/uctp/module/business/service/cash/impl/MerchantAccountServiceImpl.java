@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.service.cash.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -84,4 +85,31 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
         return rows;
     }
 
+    @Override
+    public boolean accountOpen(MerchantAccountDO account) {
+        // 确认用户标识是否存在
+        LambdaUpdateWrapper<MerchantAccountDO> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(MerchantAccountDO::getMerchantId, account.getMerchantId());
+        MerchantAccountDO accountDO = merchantAccountMapper.selectOne(wrapper);
+        if (accountDO == null) {
+            String accountNo = generaAccountNo(accountDO.getMobile());
+            account.setAccountNo(accountNo);
+            merchantAccountMapper.insert(account);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 商户虚拟账户号生成
+     *
+     * @param prefix 账户号前缀: 商户手机号
+     * @return
+     */
+    private String generaAccountNo(String prefix) {
+        StringBuffer accountNo = new StringBuffer();
+        accountNo.append(prefix);
+        accountNo.append(RandomUtil.randomNumbers(7));
+        return accountNo.toString();
+    }
 }
