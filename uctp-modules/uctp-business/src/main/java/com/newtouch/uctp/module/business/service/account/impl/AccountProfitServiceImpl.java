@@ -173,7 +173,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 处理费用立即支付
         for (MerchantProfitDO mp : costWaitForPayList) {
             this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.COST_PAY);
-            // TODO 调用支付接口
+            // 调用支付接口
+            this.pay(mp.getBankName(), mp.getBankNo(), mp.getProfit() * -1);
+            // TODO 根据支付结果处理利润余额和利润冻结
         }
 
         return profitList;
@@ -395,7 +397,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
             if (event == ProfitPressentStatusChangeEvent.BANK_PROCESSING) {
                 // 如果触发了银行处理中事件，则需要发起支付
-                // TODO 调用支付接口
+                MerchantProfitDO waitForPay = this.merchantProfitMapper.selectById(id);
+                this.pay(waitForPay.getBankName(), waitForPay.getBankNo(), waitForPay.getProfit() * -1);
+                // TODO 根据支付结果处理利润余额和利润冻结
             }
         }
     }
@@ -707,4 +711,14 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         return profitList;
     }
 
+    /**
+     * 支付，内部用调支付接口
+     * @param bankName 银行卡账户名
+     * @param bankNo 银行卡号
+     * @param amount 支付金额
+     */
+    private void pay(String bankName, String bankNo, Integer amount) {
+        // TODO: 调用支付接口
+
+    }
 }

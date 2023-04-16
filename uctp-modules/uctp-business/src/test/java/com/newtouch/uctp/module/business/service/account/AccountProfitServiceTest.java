@@ -73,14 +73,21 @@ public class AccountProfitServiceTest {
 
     @Test
     public void testProfitPresent() {
-        Long id = accountProfitService.profitPresent("11111111", 1L, 1, null);
+        Long id = accountProfitService.profitPresent("11111111", 1L, 5, null);
         Assertions.assertNotNull(id);
     }
 
     @Test
-    public void testAuditProfitPressent() throws InterruptedException {
+    public void testAuditProfitPressentReject() throws InterruptedException {
         accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
         accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_REJECT);
+    }
+
+    @Test
+    public void testAuditProfitPressentApproved() throws InterruptedException {
+        accountProfitService.auditProfitPressent(1647578548698865666L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
+        Thread.sleep(10);
+        accountProfitService.auditProfitPressent(1647578548698865666L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
     }
 }
