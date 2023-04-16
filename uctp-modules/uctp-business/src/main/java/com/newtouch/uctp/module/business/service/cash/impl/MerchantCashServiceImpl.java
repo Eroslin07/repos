@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 @Validated
@@ -35,7 +36,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
 
     @Override
     @Transactional
-    public int insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo) {
+    public void insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo) {
         MerchantCashDO merchantCashDO = new MerchantCashDO();
 
         merchantCashDO.setAccountBalance(merchantAccountDO.getCash() + merchantAccountDO.getProfit());
@@ -47,25 +48,43 @@ public class MerchantCashServiceImpl implements MerchantCashService {
 
         switch (type) {
             case AccountConstants.TRADE_TYPE_RECHARGE:
-                merchantCashDO.setPayChannel(AccountConstants.DEFAULT_PAY_CHANNEL);
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_DEFAULT);
                 merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_INCOME);
-                merchantCashDO.setTradeRecordNo(tradeRecordNo);
+                merchantCashDO.setTranRecordNo(tradeRecordNo);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 break;
             case AccountConstants.TRADE_TYPE_WITHDRAW:
-                merchantCashDO.setPayChannel(AccountConstants.DEFAULT_PAY_CHANNEL);
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_DEFAULT);
                 merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
-                merchantCashDO.setTradeRecordNo(tradeRecordNo);
+                merchantCashDO.setTranRecordNo(tradeRecordNo);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 break;
             case AccountConstants.TRADE_TYPE_PREEMPTION:
-                merchantCashDO.setPayChannel(AccountConstants.DEFAULT_PAY_CHANNEL);
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
                 merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
+                merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_BUY_CARS);
+                merchantCashDO.setContractNo(contractNo);
+                break;
+            case AccountConstants.TRADE_TYPE_BACK:
+            case AccountConstants.TRADE_TYPE_PROFIT_BACK:
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_DEFAULT);
+                merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_INCOME);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 merchantCashDO.setContractNo(contractNo);
                 break;
-        }
+            case AccountConstants.TRADE_TYPE_DEDUCTION:
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
+                merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
+                merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_BUY_CARS);
+                merchantCashDO.setContractNo(contractNo);
+                break;
 
-        return this.insert(merchantCashDO);
+        }
+        this.insert(merchantCashDO);
+    }
+
+    @Override
+    public MerchantCashDO queryContractNoAmount(String contractNo, List<String> tradeTypes) {
+        return merchantCashMapper.queryContractNoAmount(contractNo, tradeTypes);
     }
 }

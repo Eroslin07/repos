@@ -41,7 +41,10 @@
             available_cash = available_cash + #{tranAmount},
             revision       = revision + 1
         where account_no = #{accountNo}
-          and revision = revision
+        <if test="revision != null and revision != ''">
+            and revision = #{revision}
+        </if>
+
     </update>
 
     <update id="withdrawCash">

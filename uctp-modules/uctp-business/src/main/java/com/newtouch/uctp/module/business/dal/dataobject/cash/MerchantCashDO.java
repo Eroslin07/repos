@@ -25,7 +25,7 @@ public class MerchantCashDO extends BaseDO {
 
     private String profitLossType;//损益类型
 
-    private String tradeRecordNo;//支付流水
+    private String tranRecordNo;//支付流水
 
     private Integer payAmount;//支付金额
 

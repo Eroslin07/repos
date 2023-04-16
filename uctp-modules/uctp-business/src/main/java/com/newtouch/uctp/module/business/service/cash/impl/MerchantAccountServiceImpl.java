@@ -29,8 +29,8 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
 
     @Override
     @Transactional
-    public int rechargeCash(String accountNo, Integer tranAmount) {
-        return merchantAccountMapper.rechargeCash(accountNo, tranAmount);
+    public int rechargeCash(String accountNo, Integer tranAmount, Integer revision) {
+        return merchantAccountMapper.rechargeCash(accountNo, tranAmount, revision);
     }
 
     @Override
@@ -38,14 +38,22 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
     public int changeCash(String accountNo, Integer tranAmount, Integer revision, String tradeType) {
 
         MerchantAccountDO merchantAccountDO = merchantAccountMapper.selectForUpdateByAccountNo(accountNo);
-        if (merchantAccountDO == null || merchantAccountDO.getAvailableCash() < tranAmount) {
-            //可用余额不足
-            throw new ServiceException(AccountConstants.ERROR_CODE_INSUFFICIENT_AVAILABLE_BALANCE, AccountConstants.ERROR_MESSAGE_INSUFFICIENT_AVAILABLE_BALANCE);
-        }
 
-        if (!revision.equals(merchantAccountDO.getRevision())) {
+        if (revision != null && !revision.equals(merchantAccountDO.getRevision())) {
             //版本号错误
             throw new ServiceException(AccountConstants.ERROR_CODE_REVERSION_ERROR, AccountConstants.ERROR_MESSAGE_REVERSION_ERROR);
+        }
+
+        if (AccountConstants.TRADE_TYPE_DEDUCTION.equals(tradeType)) {
+            if (merchantAccountDO == null || merchantAccountDO.getFreezeCash() < tranAmount) {
+                //冻结金额不足
+                throw new ServiceException(AccountConstants.ERROR_CODE_INSUFFICIENT_FREEZE_CASH, AccountConstants.ERROR_MESSAGE_INSUFFICIENT_FREEZE_CASH);
+            }
+        } else {
+            if (merchantAccountDO == null || merchantAccountDO.getAvailableCash() < tranAmount) {
+                //可用余额不足
+                throw new ServiceException(AccountConstants.ERROR_CODE_INSUFFICIENT_AVAILABLE_BALANCE, AccountConstants.ERROR_MESSAGE_INSUFFICIENT_AVAILABLE_BALANCE);
+            }
         }
 
         switch (tradeType) {
@@ -57,6 +65,9 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
                 merchantAccountDO.setCash(merchantAccountDO.getCash() - tranAmount);
                 merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() - tranAmount);
                 merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() + tranAmount);
+                break;
+            case AccountConstants.TRADE_TYPE_DEDUCTION:
+                merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() - tranAmount);
                 break;
         }
         return merchantAccountMapper.updateById(merchantAccountDO);
