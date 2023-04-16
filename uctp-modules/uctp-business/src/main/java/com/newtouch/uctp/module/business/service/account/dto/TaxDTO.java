@@ -6,7 +6,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 
 @Data
-@ToString(callSuper = true)
+@ToString
 public class TaxDTO {
     private String type; // 税率类型
     private BigDecimal rate; // 税率，传小数（如：5%传0.05）

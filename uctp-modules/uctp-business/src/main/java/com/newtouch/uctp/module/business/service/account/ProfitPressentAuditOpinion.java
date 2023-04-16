@@ -2,7 +2,7 @@ package com.newtouch.uctp.module.business.service.account;
 
 import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
 
-public enum ProfitPressentAuditPpinion {
+public enum ProfitPressentAuditOpinion {
     // 审核中
     AUDIT_PROCESSING(ProfitPressentStatusChangeEvent.MARKET_AUDIT_PROCESSING),
     // 审核退回
@@ -12,7 +12,7 @@ public enum ProfitPressentAuditPpinion {
 
     private ProfitPressentStatusChangeEvent event;
 
-    ProfitPressentAuditPpinion(ProfitPressentStatusChangeEvent event) {
+    ProfitPressentAuditOpinion(ProfitPressentStatusChangeEvent event) {
         this.event = event;
     }
 

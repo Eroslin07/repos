@@ -3,13 +3,13 @@ package com.newtouch.uctp.module.business.service.account.impl;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
@@ -17,7 +17,8 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMa
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
-import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditPpinion;
+import com.newtouch.uctp.module.business.service.account.MerchantBankService;
+import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.ProfitCalcResultDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
@@ -51,6 +53,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     private MerchantAccountService merchantAccountService;
 
     @Resource
+    private MerchantBankService merchantBankService;
+
+    @Resource
     private MerchantProfitMapper merchantProfitMapper;
 
     @Resource
@@ -65,8 +70,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                                            Integer carSalesAmount,
                                            List<CostDTO> costs,
                                            List<TaxDTO> taxes) {
+        log.info("调用利润划入接口，accountNo:{},contractNo:{},vehicleReceiptAmount:{},carSalesAmount:{}",accountNo,contractNo,vehicleReceiptAmount,carSalesAmount);
         // 参数校验
-        this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs);
+        this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
         // 商户账户
         MerchantAccountDO merchantAccount = this.merchantAccountService.queryByAccountNo(accountNo);
         if (merchantAccount == null) {
@@ -89,6 +95,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 originalProfitTotalAmount,
                 costs,
                 taxes);
+
+        log.info("利润计算结果：{}", profitCalcResult);
 
         // 组装利润明细表记录
         List<MerchantProfitDO> profitList = this.buildProfitList(accountNo, contractNo, profitCalcResult);
@@ -151,21 +159,47 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Transactional
     @TenantIgnore
     public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds) {
-        return null;
+        String invoiceIdsStr = null;
+        if (!CollectionUtils.isEmpty(invoiceIds)) {
+            invoiceIdsStr = StringUtils.join(invoiceIds, "#");
+        }
+        log.info("调用利润提现接口，accountNo:{},merchantBankId:{},amount:{},invoiceIds:{}", accountNo, merchantBankId, amount, invoiceIdsStr);
+
+        // 根据银行卡ID查询账户
+        MerchantBankDO bank = merchantBankService.getById(merchantBankId);
+        if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo())) {
+            throw exception(ACC_PRESENT_ERROR);
+        }
+
+        MerchantProfitDO mp = MerchantProfitDO.builder()
+                .tradeType(AccountConstants.TRAN_PROFIT_PRESENT)
+                .tradeTo(AccountConstants.TRADE_TO_MY_PROFIT)
+                .accountNo(accountNo)
+                .profit(amount * -1)
+                .presentState(AccountConstants.PRESENT_PROFIT_APPLY)
+                .bankName(bank.getBankName())
+                .bankNo(bank.getBankNo())
+                .build();
+        // 保存
+        merchantProfitMapper.insert(mp);
+        // 触发提现申请
+        this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.APPLY);
+
+        return mp.getId();
     }
 
     @Override
     @TenantIgnore
     @Transactional
-    public void auditProfitPressent(Long id, ProfitPressentAuditPpinion auditPpinion) {
+    public void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditOpinion) {
         if (id == null) {
             throw exception(ACC_PRESENT_ERROR);
         }
-        if (auditPpinion == null) {
+        if (auditOpinion == null) {
             throw exception(ACC_PRESENT_ERROR);
         }
 
-        this.publishProfitPressentStatusChangeEvent(id, auditPpinion.getEvent());
+        this.publishProfitPressentStatusChangeEvent(id, auditOpinion.getEvent());
     }
 
     @Override
@@ -378,6 +412,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (taxes != null && !taxes.isEmpty()) {
             Set<String> taxTypeSet = new HashSet<>();
             for (TaxDTO tax : taxes) {
+                log.info("税费：{}", tax);
+
                 String taxType = tax.getType();
                 if (taxTypeSet.contains(taxType)) {
                     throw exception(ACC_TAX_TYPE_REPEAT);
@@ -407,6 +443,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (costs != null && !costs.isEmpty()) {
             Set<String> costTypeSet = new HashSet<>();
             for (CostDTO cost : costs) {
+                log.info("费用：{}", cost);
+
                 String costType = cost.getType();
                 Integer costAmount = cost.getAmount();
 
@@ -431,13 +469,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      * @param contractNo
      * @param vehicleReceiptAmount
      * @param carSalesAmount
-     * @param costs
      */
     private void recordedCheck(String accountNo,
                                      String contractNo,
                                      Integer vehicleReceiptAmount,
-                                     Integer carSalesAmount,
-                                     List<CostDTO> costs) {
+                                     Integer carSalesAmount) {
         if (StringUtils.isBlank(accountNo)) {
             throw exception(ACC_ACCOUNT_NO_NOT_NULL);
         }

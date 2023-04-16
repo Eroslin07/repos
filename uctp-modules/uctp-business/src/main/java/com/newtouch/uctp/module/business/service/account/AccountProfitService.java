@@ -8,7 +8,6 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
-import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
 
 import java.util.List;
 
@@ -74,5 +73,5 @@ public interface AccountProfitService {
      * @param id 利润ID
      * @param auditPpinion 审核意见
      */
-    void auditProfitPressent(Long id, ProfitPressentAuditPpinion auditPpinion);
+    void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditPpinion);
 }

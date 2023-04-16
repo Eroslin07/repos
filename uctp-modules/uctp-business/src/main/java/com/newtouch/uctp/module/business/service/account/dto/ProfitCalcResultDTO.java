@@ -2,11 +2,13 @@ package com.newtouch.uctp.module.business.service.account.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Builder
+@ToString
 public class ProfitCalcResultDTO {
     // 现待回填保证金
     private Integer waitForBackCashTotalAmount;
