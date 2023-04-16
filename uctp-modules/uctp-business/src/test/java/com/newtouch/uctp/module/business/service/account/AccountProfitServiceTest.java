@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.account;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
@@ -60,7 +61,26 @@ public class AccountProfitServiceTest {
         profitQueryReqVO.setPageNo(1);
         profitQueryReqVO.setPageSize(10);
 
-        PageResult<ProfitRespVO> r = accountProfitService.profitList("1", profitQueryReqVO);
+        PageResult<ProfitRespVO> r = accountProfitService.profitList("11111111", profitQueryReqVO);
         Assertions.assertNotNull(r);
+    }
+
+    @Test
+    public void testProfitDetail() {
+        ProfitDetailRespVO pd = accountProfitService.profitDetail("11111111", 1647527558918410241L);
+        Assertions.assertNotNull(pd);
+    }
+
+    @Test
+    public void testProfitPresent() {
+        Long id = accountProfitService.profitPresent("11111111", 1L, 1, null);
+        Assertions.assertNotNull(id);
+    }
+
+    @Test
+    public void testAuditProfitPressent() throws InterruptedException {
+        accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
+        Thread.sleep(10);
+        accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_REJECT);
     }
 }

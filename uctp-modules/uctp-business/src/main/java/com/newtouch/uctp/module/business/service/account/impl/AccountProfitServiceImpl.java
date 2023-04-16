@@ -204,10 +204,13 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .tradeTo(AccountConstants.TRADE_TO_MY_PROFIT)
                 .accountNo(accountNo)
                 .profit(amount * -1)
-                .presentState(AccountConstants.PRESENT_PROFIT_APPLY)
+                .presentState(null) // 提现记录初始写入状态为null
                 .bankName(bank.getBankName())
                 .bankNo(bank.getBankNo())
                 .build();
+        mp.setDeleted(false);
+        mp.setRevision(0);
+
         // 保存
         merchantProfitMapper.insert(mp);
         // 触发提现申请
@@ -583,7 +586,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
 
             PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
-                    .presentType(PRESENT_TYPE_PROFIT)
+                    .presentType(TRADE_TO_BUY_CARS)
                     .occurredTime(now)
                     .status(PRESENT_PROFIT_CASH_BACK_WAIT)
                     .build();
