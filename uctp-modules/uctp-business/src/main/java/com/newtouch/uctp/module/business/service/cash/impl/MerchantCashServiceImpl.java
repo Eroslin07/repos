@@ -71,7 +71,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
                 break;
             case AccountConstants.TRADE_TYPE_BACK:
             case AccountConstants.TRADE_TYPE_PROFIT_BACK:
-                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_DEFAULT);
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
                 merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_INCOME);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 merchantCashDO.setContractNo(contractNo);
@@ -97,6 +97,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
     public void updateCashDeduction(String contractNo) {
         merchantCashMapper.update(new MerchantCashDO(), new LambdaUpdateWrapper<MerchantCashDO>()
                 .set(MerchantCashDO::getTradeType,AccountConstants.TRADE_TYPE_DEDUCTION)
-                .eq(MerchantCashDO::getContractNo,contractNo));
+                .eq(MerchantCashDO::getContractNo,contractNo)
+                .eq(MerchantCashDO::getTradeType,AccountConstants.TRADE_TYPE_PREEMPTION));
     }
 }

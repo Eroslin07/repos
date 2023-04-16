@@ -5,7 +5,7 @@ tenant-id: {{adminTenentId}}
 
 {
   "accountNo": "11111111",
-  "tranAmount": 4,
+  "tranAmount": 1,
   "contractNo": "3213232131323213"
 }
 
@@ -16,7 +16,7 @@ tenant-id: {{adminTenentId}}
 
 {
   "accountNo": "11111111",
-  "tranAmount": 2,
+  "tranAmount": 1,
   "contractNo": "3213232131323213"
 }
 
