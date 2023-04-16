@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,9 +36,9 @@ public class AccountCashRespVO {
 
         BeanUtils.copyProperties(merchantAccountDO, accountCashRespVO);
 
-        if (CollectionUtil.isNotEmpty(merchantCashList)) {
-            accountCashRespVO.setCashDetails(merchantCashList.stream().map(CashDetailRespVO::build).collect(Collectors.toList()));
-        }
+        accountCashRespVO.setCashDetails(
+                CollectionUtil.isNotEmpty(merchantCashList) ?
+                        merchantCashList.stream().map(CashDetailRespVO::build).collect(Collectors.toList()) : Collections.emptyList());
         return accountCashRespVO;
     }
 }

@@ -31,7 +31,7 @@ public class AccountCashController {
     }
 
     @PostMapping("/list")
-    @Operation(summary = "保证金明交易明细查询")
+    @Operation(summary = "保证金交易明细查询")
     public CommonResult<PageResult<CashDetailRespVO>> list(@Validated @RequestBody MerchantCashReqVO merchantCashReqVO) {
         return CommonResult.success(accountCashService.list(merchantCashReqVO));
     }
@@ -54,27 +54,28 @@ public class AccountCashController {
         return CommonResult.success(accountCashService.reserve(transactionRecordReqVO));
     }
 
-
-
     @PostMapping("/deduction")
     @Operation(summary = "保证金实占")
-    public CommonResult<String> deduction() {
-        return CommonResult.success("accountCashService.deduction()");
+    public CommonResult<Boolean> deduction(@Validated(ValidatedGroup.Deduction.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
+        return CommonResult.success(accountCashService.deduction(transactionRecordReqVO));
+    }
+
+    @GetMapping("/difference")
+    @Operation(summary = "待回填保证金")
+    public CommonResult<Integer> difference(@Validated(ValidatedGroup.Difference.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
+        return CommonResult.success(accountCashService.difference(transactionRecordReqVO));
     }
 
     @PostMapping("/back")
     @Operation(summary = "保证金回填")
-    public CommonResult<String> back() {
-        return CommonResult.success("accountCashService.back()");
+    public CommonResult<Boolean> back(@Validated(ValidatedGroup.Back.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
+        return CommonResult.success(accountCashService.back(transactionRecordReqVO));
     }
 
-    @PostMapping("/difference")
-    @Operation(summary = "待回填保证金")
-    public CommonResult<String> difference() {
-        return CommonResult.success("accountCashService.difference()");
+    @PostMapping("/profit/back")
+    @Operation(summary = "保证金回填-利润")
+    public CommonResult<Boolean> profitBack(@Validated(ValidatedGroup.ProfitBack.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
+        return CommonResult.success(accountCashService.profitBack(transactionRecordReqVO));
     }
-
-
-
 
 }

@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     public AccountCashRespVO recharge(TransactionRecordReqVO transactionRecordReqVO) {
 
         //增加保证金金额，版本号加1
-        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount());
+        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
 
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
 
@@ -120,7 +122,68 @@ public class AccountCashServiceImpl implements AccountCashService {
         //新增保证金变动记录
         merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_PREEMPTION, null, transactionRecordReqVO.getContractNo());
         //todo:保证金预占是否需要银行介入？
-        return Boolean.TRUE;
+        return count > 0;
+    }
+
+    //保证金实占
+    @Override
+    @Transactional
+    public Boolean deduction(TransactionRecordReqVO transactionRecordReqVO) {
+        String contractNo = transactionRecordReqVO.getContractNo();
+        //查询合同号预占金额
+        MerchantCashDO merchantCashDO = merchantCashService.queryContractNoAmount(contractNo, Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
+        String accountNo = merchantCashDO.getAccountNo();
+        Integer payAmount = merchantCashDO.getPayAmount();
+        if (StringUtils.isEmpty(accountNo) || payAmount == null || payAmount <= 0) {
+            throw new ServiceException(AccountConstants.ERROR_CODE_CONTRACT_NO_NOT_FOUND, AccountConstants.ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND);
+        }
+
+        //冻结金额扣除，版本号+1
+        int count = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_DEDUCTION);
+
+        //新增保证金变动记录
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
+        merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_DEDUCTION, null, contractNo);
+
+        //todo：是否调用银行接口扣除金额
+        return count > 0;
+    }
+
+    //待回填保证金
+    @Override
+    public Integer difference(TransactionRecordReqVO transactionRecordReqVO) {
+        //查询合同号预占金额
+        MerchantCashDO reserveCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
+        MerchantCashDO backCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Arrays.asList(AccountConstants.TRADE_TYPE_BACK,AccountConstants.TRADE_TYPE_PROFIT_BACK));
+        return reserveCashDO.getPayAmount() - backCashDO.getPayAmount();
+    }
+
+    //保证金回填
+    @Override
+    public Boolean back(TransactionRecordReqVO transactionRecordReqVO) {
+        //增加保证金金额，版本号加1
+        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
+
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
+        //TODO: 是否调用转账接口
+
+        //新增保证金变动记录
+        merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_BACK, null, transactionRecordReqVO.getContractNo());
+        return count > 0;
+    }
+
+    //保证金回填-利润
+    @Override
+    public Boolean profitBack(TransactionRecordReqVO transactionRecordReqVO) {
+        //增加保证金金额，版本号加1
+        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
+
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
+        //TODO: 是否调用转账接口
+
+        //新增保证金变动记录
+        merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_PROFIT_BACK, null, transactionRecordReqVO.getContractNo());
+        return count > 0;
     }
 
 
