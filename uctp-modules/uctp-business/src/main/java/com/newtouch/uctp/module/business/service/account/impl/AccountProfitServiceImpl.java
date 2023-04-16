@@ -101,14 +101,16 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 costs,
                 taxes);
 
-        log.info("利润计算结果：{}", profitCalcResult);
+        log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
 
         // 组装利润明细表记录
         List<MerchantProfitDO> profitList = this.buildProfitList(accountNo, contractNo, profitCalcResult);
         // 批量插入利润表
         this.merchantProfitMapper.insertBatch(profitList);
-        List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
+        log.info("合同：{}，利润记录至数据库", contractNo);
 
+        // 待写入的提现状态记录
+        List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
         // 回填保证金的提现利润清单
         List<MerchantProfitDO> backCashList = new ArrayList<>();
         // 需要立即付款的费用清单
@@ -137,12 +139,14 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (!statusRecordList.isEmpty()) {
             // 批量插入提现状态表
             this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
+            log.info("合同：{}，提现状态表记录至数据库", contractNo);
         }
 
         // 更新利润余额
         merchantAccount.setProfit(profitCalcResult.getProfitTotalAmount());
         int rows = this.merchantAccountService.updateByLock(merchantAccount);
         if (rows != 1) {
+            log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
             throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
         }
 
@@ -159,9 +163,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
             boolean backSuccessed;
             if (profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
+                log.info("合同：{}回填保证金有使用原有利润", contractNo);
                 // 使用的原有利润回填保证金
                 backSuccessed = accountCashService.profitBack(transactionRecordReqVO);
             } else {
+                log.info("合同：{}回填保证金未使用原有利润", contractNo);
                 // 未使用原有利润回填保证金
                 backSuccessed = accountCashService.back(transactionRecordReqVO);
             }
@@ -254,6 +260,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (auditOpinion == null) {
             throw exception(ACC_PRESENT_ERROR);
         }
+        log.info("提现审核，参数：{}，审核意见：{}", id, auditOpinion);
 
         // 触发事件
         this.publishProfitPressentStatusChangeEvent(id, auditOpinion.getEvent());
@@ -272,6 +279,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
                     int rows = this.merchantAccountService.updateByLock(ma);
                     if (rows != 1) {
+                        log.error("处理利润{}审核退回时，账户有变动，处理失败", id);
                         // 出现并发问题
                         throw exception(ACC_PRESENT_ERROR);
                     }
@@ -361,6 +369,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      */
     private void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
         if (event != null) {
+            log.info("利润【{}】触发【{}】事件", id, ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
+
             MerchantProfitDO profitDO = new MerchantProfitDO();
             profitDO.setId(id);
             LambdaUpdateWrapper<MerchantProfitDO> profitDOUpdateWrapper = new LambdaUpdateWrapper<>();
