@@ -17,4 +17,6 @@ public interface MerchantCashService {
     MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo);
 
     MerchantCashDO queryContractNoAmount(String contractNo, List<String> tradeTypes);
+
+    void updateCashDeduction(String contractNo);
 }

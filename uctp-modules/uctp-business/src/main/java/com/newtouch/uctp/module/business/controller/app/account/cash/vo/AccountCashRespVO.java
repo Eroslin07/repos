@@ -34,14 +34,12 @@ public class AccountCashRespVO {
     @Schema(description = "保证金交易明细")
     private List<CashDetailRespVO> cashDetails;
 
-    public static AccountCashRespVO build(MerchantAccountDO merchantAccountDO, List<MerchantCashDO> merchantCashList) {
+    public static AccountCashRespVO build(MerchantAccountDO merchantAccountDO, List<CashDetailRespVO> merchantCashList) {
         AccountCashRespVO accountCashRespVO = new AccountCashRespVO();
 
         BeanUtils.copyProperties(merchantAccountDO, accountCashRespVO);
 
-        accountCashRespVO.setCashDetails(
-                CollectionUtil.isNotEmpty(merchantCashList) ?
-                        merchantCashList.stream().map(CashDetailRespVO::build).collect(Collectors.toList()) : Collections.emptyList());
+        accountCashRespVO.setCashDetails(merchantCashList);
         return accountCashRespVO;
     }
 }

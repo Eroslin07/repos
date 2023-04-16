@@ -12,9 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PresentStatusRecordRespVO {
+    @Schema(description = "标识")
+    private Long presentNo;
 
     @Schema(description = "状态变更日期，格式：yyyy-MM-dd")
     private String occurredTime;
+
     @Schema(description = "状态")
     private String status;
 }

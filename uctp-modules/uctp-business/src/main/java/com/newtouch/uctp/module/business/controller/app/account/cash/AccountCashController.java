@@ -60,7 +60,7 @@ public class AccountCashController {
         return CommonResult.success(accountCashService.deduction(transactionRecordReqVO));
     }
 
-    @GetMapping("/difference")
+    @PostMapping("/difference")
     @Operation(summary = "待回填保证金")
     public CommonResult<Integer> difference(@Validated(ValidatedGroup.Difference.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
         return CommonResult.success(accountCashService.difference(transactionRecordReqVO));

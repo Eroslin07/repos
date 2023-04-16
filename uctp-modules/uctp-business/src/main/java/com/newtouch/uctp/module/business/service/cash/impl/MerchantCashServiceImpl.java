@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.service.cash.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -90,5 +91,12 @@ public class MerchantCashServiceImpl implements MerchantCashService {
     @Override
     public MerchantCashDO queryContractNoAmount(String contractNo, List<String> tradeTypes) {
         return merchantCashMapper.queryContractNoAmount(contractNo, tradeTypes);
+    }
+
+    @Override
+    public void updateCashDeduction(String contractNo) {
+        merchantCashMapper.update(new MerchantCashDO(), new LambdaUpdateWrapper<MerchantCashDO>()
+                .set(MerchantCashDO::getTradeType,AccountConstants.TRADE_TYPE_DEDUCTION)
+                .eq(MerchantCashDO::getContractNo,contractNo));
     }
 }
