@@ -171,6 +171,27 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             throw exception(ACC_PRESENT_ERROR);
         }
 
+        // 查询账户
+        MerchantAccountDO account = merchantAccountService.queryByAccountNo(accountNo);
+        if (account == null) {
+            throw exception(ACC_PRESENT_ERROR);
+        }
+
+        Integer profit = account.getProfit() == null ? 0 : account.getProfit(); // 余额
+        Integer freezeProfit = account.getFreezeProfit() == null ? 0 : account.getFreezeProfit(); // 冻结的余额
+        // 判断利润余额是否足够
+        if (profit.compareTo(amount) < 0) {
+            throw exception(ACC_PRESENT_PROFIT_INSUFFICIENT);
+        }
+        account.setProfit(profit - amount); // 从余额中扣除提现额度
+        account.setFreezeProfit(freezeProfit + amount); // 增加冻结额度
+
+        // 加锁更新
+        int rows = merchantAccountService.updateByLock(account);
+        if (rows != 1) {
+            throw exception(ACC_PRESENT_ERROR);
+        }
+
         MerchantProfitDO mp = MerchantProfitDO.builder()
                 .tradeType(AccountConstants.TRAN_PROFIT_PRESENT)
                 .tradeTo(AccountConstants.TRADE_TO_MY_PROFIT)
@@ -199,7 +220,29 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             throw exception(ACC_PRESENT_ERROR);
         }
 
+        // 触发事件
         this.publishProfitPressentStatusChangeEvent(id, auditOpinion.getEvent());
+
+        // 审核退回
+        if (auditOpinion == ProfitPressentAuditOpinion.AUDIT_REJECT) {
+            // 审核退回要解除冻结
+            MerchantProfitDO mp = this.merchantProfitMapper.selectById(id);
+            if (mp != null) {
+                MerchantAccountDO ma = this.merchantAccountService.queryByAccountNo(mp.getAccountNo());
+                if (ma != null) {
+                    Integer profit = ma.getProfit() == null ? 0 : ma.getProfit();
+                    Integer freezeProfit = ma.getFreezeProfit() == null ? 0 : ma.getFreezeProfit();
+                    ma.setProfit(profit + mp.getProfit() * -1);
+                    ma.setFreezeProfit(freezeProfit - mp.getProfit() * -1);
+
+                    int rows = this.merchantAccountService.updateByLock(ma);
+                    if (rows != 1) {
+                        // 出现并发问题
+                        throw exception(ACC_PRESENT_ERROR);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -301,6 +344,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             presentStatusRecordDO.setPresentType(PRESENT_TYPE_PROFIT);
             presentStatusRecordDO.setOccurredTime(LocalDateTime.now());
 
+            // 更新利润提现状态
             int rows = this.merchantProfitMapper.update(profitDO, profitDOUpdateWrapper);
 
             // 根据状态更新成功，则执行，否则报出异常
@@ -313,6 +357,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 }
             } else {
                 throw exception(ACC_PRESENT_ERROR);
+            }
+
+            if (event == ProfitPressentStatusChangeEvent.BANK_PROCESSING) {
+                // 如果触发了银行处理中事件，则需要发起支付
+                // TODO 调用支付接口
             }
         }
     }
