@@ -36,7 +36,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
 
     @Override
     @Transactional
-    public void insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo) {
+    public MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo) {
         MerchantCashDO merchantCashDO = new MerchantCashDO();
 
         merchantCashDO.setAccountBalance(merchantAccountDO.getCash() + merchantAccountDO.getProfit());
@@ -45,6 +45,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
         merchantCashDO.setTradeType(type);
         merchantCashDO.setAccountId(merchantAccountDO.getId());
         merchantCashDO.setAccountNo(merchantAccountDO.getAccountNo());
+        merchantCashDO.setDeleted(Boolean.FALSE);
 
         switch (type) {
             case AccountConstants.TRADE_TYPE_RECHARGE:
@@ -58,6 +59,8 @@ public class MerchantCashServiceImpl implements MerchantCashService {
                 merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
                 merchantCashDO.setTranRecordNo(tradeRecordNo);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
+                merchantCashDO.setPresentState(AccountConstants.PRESENT_CASH_SUCCESS);
+
                 break;
             case AccountConstants.TRADE_TYPE_PREEMPTION:
                 merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
@@ -81,6 +84,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
 
         }
         this.insert(merchantCashDO);
+        return merchantCashDO;
     }
 
     @Override

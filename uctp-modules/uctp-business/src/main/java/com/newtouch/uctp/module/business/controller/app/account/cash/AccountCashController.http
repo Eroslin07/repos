@@ -1,0 +1,39 @@
+###保证金提取-提取成功后返回我的保证金页面模型数据
+POST {{appBusinessUrl}}/uctp/account/cash/withdraw
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+{
+  "accountNo": "11111111",
+  "tranAmount": 100,
+  "revision": 9
+}
+
+###
+###保证金交易明细查询
+POST {{appBusinessUrl}}/uctp/account/cash/list
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+{
+  "accountNo": "11111111",
+  "pageNo": 1,
+  "pageSize": 5
+}
+
+###保证金充值-充值成功后返回我的保证金页面模型数据
+POST {{appBusinessUrl}}/uctp/account/cash/recharge
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+{
+  "accountNo": "11111111",
+  "tranAmount": 100,
+  "revision": 9
+}
+
+###保证金详情-我的保证金
+GET {{appBusinessUrl}}/uctp/account/cash/detail?accountNo=11111111
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+

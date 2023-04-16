@@ -37,6 +37,8 @@ public class MerchantCashDO extends BaseDO {
 
     private Integer accountBalance;//账户余额
 
+    private String presentState;//提现状态
+
     private Integer revision;//乐观锁
 
 }

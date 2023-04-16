@@ -28,6 +28,9 @@ public class AccountCashRespVO {
     @Schema(description = "保证金-可用余额")
     private Integer availableCash;
 
+    @Schema(description = "版本号")
+    private Integer revision;
+
     @Schema(description = "保证金交易明细")
     private List<CashDetailRespVO> cashDetails;
 

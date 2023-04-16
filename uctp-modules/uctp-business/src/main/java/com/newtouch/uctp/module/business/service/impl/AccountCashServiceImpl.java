@@ -7,8 +7,10 @@ import com.newtouch.uctp.module.business.controller.app.account.cash.vo.AccountC
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
+import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
+import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
@@ -19,10 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.newtouch.uctp.module.business.enums.AccountConstants.PRESENT_TYPE_PROFIT;
 
 @Service
 @Validated
@@ -31,7 +36,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     private final MerchantAccountService merchantAccountService;
     private final MerchantCashService merchantCashService;
-
+    private final MerchantPresentStatusRecordMapper merchantPresentStatusRecordMapper;
     //保证金详情
     @Override
     public AccountCashRespVO detail(String accountNo) {
@@ -93,8 +98,12 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public AccountCashRespVO withdraw(TransactionRecordReqVO transactionRecordReqVO) {
+
+
         //扣除保证金金额，版本号加1
         merchantAccountService.changeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), AccountConstants.TRADE_TYPE_WITHDRAW);
+
+
 
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
 
@@ -107,8 +116,26 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         //新增保证金变动记录
         String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
-        merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_WITHDRAW, tradeRecordNo, null);
+        MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_WITHDRAW, tradeRecordNo, null);
+
+        PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(),AccountConstants.PRESENT_STATUS_CASH_APPLY);
+        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
+        PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(),AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
+        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO1);
+        PresentStatusRecordDO presentStatusRecordDO2 = buildPresentStatusRecordDO(merchantCashDO.getId(),AccountConstants.PRESENT_STATUS_CASH_SUCCESS);
+        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO2);
+
         return this.detail(transactionRecordReqVO.getAccountNo());
+    }
+
+    private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {
+        PresentStatusRecordDO presentStatusRecord = new PresentStatusRecordDO();
+        presentStatusRecord.setStatus(presentStatus);
+        presentStatusRecord.setPresentType(AccountConstants.PRESENT_TYPE_CASH);
+        presentStatusRecord.setOccurredTime(LocalDateTime.now());
+        presentStatusRecord.setDeleted(Boolean.FALSE);
+        presentStatusRecord.setPresentNo(cashId);
+        return presentStatusRecord;
     }
 
     //保证金预占

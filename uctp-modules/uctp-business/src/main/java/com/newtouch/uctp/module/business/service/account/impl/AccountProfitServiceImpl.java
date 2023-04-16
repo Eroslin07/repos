@@ -145,7 +145,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         for (MerchantProfitDO mp : backCashList) {
             this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
             // 回填保证金（账户保证金在此接口更新）
-            this.merchantAccountService.rechargeCash(mp.getAccountNo(), mp.getProfit() * -1);
+            //this.merchantAccountService.rechargeCash(mp.getAccountNo(), mp.getProfit() * -1);
         }
         // 处理费用立即支付
         for (MerchantProfitDO mp : costWaitForPayList) {
