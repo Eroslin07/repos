@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
@@ -16,6 +17,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
+import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
@@ -54,6 +56,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Resource
     private MerchantBankService merchantBankService;
+
+    @Resource
+    private AccountCashService accountCashService;
 
     @Resource
     private MerchantProfitMapper merchantProfitMapper;
@@ -142,11 +147,25 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         }
 
         // 处理利润回填保证金提现状态
-        for (MerchantProfitDO mp : backCashList) {
+        for (int i = 0; i < backCashList.size(); i++) {
+            MerchantProfitDO mp = backCashList.get(i);
             this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
             // 回填保证金（账户保证金在此接口更新）
-            this.merchantAccountService.rechargeCash(mp.getAccountNo(), mp.getProfit() * -1);
+            TransactionRecordReqVO transactionRecordReqVO = new TransactionRecordReqVO();
+            transactionRecordReqVO.setAccountNo(mp.getAccountNo());
+            transactionRecordReqVO.setContractNo(mp.getContractNo());
+            transactionRecordReqVO.setTranAmount(mp.getProfit() * -1);
+            transactionRecordReqVO.setRevision(merchantAccount.getRevision());
+
+            if (profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
+                // 使用的原有利润回填保证金
+                accountCashService.profitBack(transactionRecordReqVO);
+            } else {
+                // 未使用原有利润回填保证金
+                accountCashService.back(transactionRecordReqVO);
+            }
         }
+
         // 处理费用立即支付
         for (MerchantProfitDO mp : costWaitForPayList) {
             this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.COST_PAY);
@@ -439,6 +458,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 现利润余额=原利润余额+本次收益-(本次实回填保证金-收车价)
         Integer nowProfitTotalAmount = originalProfitTotalAmount + tmpTheRevenueAmount - (tmpTheActualBackCashAmount - vehicleReceiptAmount);
 
+        // 本次使用原有利润金额=IF(原利润余额-现利润余额>0,原利润余额-现利润余额,0)
+        Integer theDeductionBackCashFromOriginalProfitAmount = originalProfitTotalAmount - nowProfitTotalAmount > 0 ? originalProfitTotalAmount - nowProfitTotalAmount : 0;
+
         ProfitCalcResultDTO result = ProfitCalcResultDTO.builder()
                 // 本次回填保证金
                 .backCashAmount(theBackCashAmount)
@@ -446,6 +468,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .profitAmount(theProfitAmount)
                 // 本次扣减补保证金
                 .deductionBackCashAmount(theDeductionBackCashAmount)
+                // 本次使用原有利润金额
+                .deductionBackCashFromOriginalProfitAmount(theDeductionBackCashFromOriginalProfitAmount)
                 // 本次待回填保证金
                 .waitForBackCashAmount(theWaitForBackCashAmount)
                 // 现利润总额
