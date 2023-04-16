@@ -4,7 +4,6 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
-import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +21,10 @@ public class AccountProfitServiceTest {
     @Resource
     private AccountProfitService accountProfitService;
 
+    public void openTest() {
+
+    }
+
     @Test
     public void testRecorded() {
         String accountNo = "11111111";
@@ -33,6 +36,13 @@ public class AccountProfitServiceTest {
         c.setAmount(1);
         c.setType("FEE_1");
         costs.add(c);
+        CostDTO c2 = new CostDTO();
+        c2.setAmount(2);
+        c2.setType("FEE_2");
+        c2.setPromptPayment(true);
+        c2.setBankNo("622000000");
+        c2.setBankName("张三");
+        costs.add(c2);
 
         List<TaxDTO> taxes = new ArrayList<>();
         TaxDTO t = new TaxDTO();
@@ -41,7 +51,7 @@ public class AccountProfitServiceTest {
         taxes.add(t);
 
         List<MerchantProfitDO> list = accountProfitService.recorded(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs, taxes);
-        Assertions.assertEquals(4, list.size());
+        Assertions.assertEquals(5, list.size());
     }
 
     @Test

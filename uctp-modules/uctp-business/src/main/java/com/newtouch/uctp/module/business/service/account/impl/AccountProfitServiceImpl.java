@@ -1,7 +1,7 @@
 package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.date.DateUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
@@ -134,10 +134,17 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
         }
 
+        // 更新利润余额
+        merchantAccount.setProfit(profitCalcResult.getProfitTotalAmount());
+        int rows = this.merchantAccountService.updateByLock(merchantAccount);
+        if (rows != 1) {
+            throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+        }
+
         // 处理利润回填保证金提现状态
         for (MerchantProfitDO mp : backCashList) {
             this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
-            // 回填保证金
+            // 回填保证金（账户保证金在此接口更新）
             this.merchantAccountService.rechargeCash(mp.getAccountNo(), mp.getProfit() * -1);
         }
         // 处理费用立即支付
@@ -248,9 +255,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Override
     @TenantIgnore
     public PageResult<ProfitRespVO> profitList(String accountNo, ProfitQueryReqVO query) {
-        QueryWrapper<MerchantProfitDO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ACCOUNT_NO", accountNo)
-                .orderByDesc("CREATE_TIME");
+        LambdaQueryWrapper<MerchantProfitDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MerchantProfitDO::getAccountNo, accountNo)
+                .orderByDesc(MerchantProfitDO::getCreateTime);
 
         PageResult<MerchantProfitDO> pr = merchantProfitMapper.selectPage(query, queryWrapper);
         List<MerchantProfitDO> profitDOList = pr.getList();
@@ -278,9 +285,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Override
     @TenantIgnore
     public ProfitDetailRespVO profitDetail(String accountNo, Long profitId) {
-        QueryWrapper<MerchantProfitDO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ID", profitId)
-                .eq("ACCOUNT_NO", accountNo);
+        LambdaQueryWrapper<MerchantProfitDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MerchantProfitDO::getId, profitId)
+                .eq(MerchantProfitDO::getAccountNo, accountNo);
 
         MerchantProfitDO p = merchantProfitMapper.selectOne(queryWrapper);
         if (p == null) {
@@ -296,9 +303,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             respVO.setTradeDate(null); // 暂无 todo 待补充
 
             // 查一下提现状态记录清单
-            QueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new QueryWrapper<>();
-            presentStatusRecordWrapper.eq("PRESENT_NO", profitId)
-                            .orderByAsc("OCCURRED_TIME"); // 交易状态变更时间升序
+            LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
+            presentStatusRecordWrapper.eq(PresentStatusRecordDO::getPresentNo, profitId)
+                            .orderByAsc(PresentStatusRecordDO::getOccurredTime); // 交易状态变更时间升序
 
             List<PresentStatusRecordDO> presentStatusRecords = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper);
             if (presentStatusRecords != null && !presentStatusRecords.isEmpty()) {
@@ -343,6 +350,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             presentStatusRecordDO.setStatus(event.getTargetStatus());
             presentStatusRecordDO.setPresentType(PRESENT_TYPE_PROFIT);
             presentStatusRecordDO.setOccurredTime(LocalDateTime.now());
+            presentStatusRecordDO.setDeleted(false);
 
             // 更新利润提现状态
             int rows = this.merchantProfitMapper.update(profitDO, profitDOUpdateWrapper);
@@ -564,6 +572,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTo(TRADE_TO_MY_PROFIT)
                     .presentState(null) // 卖车利润初始写入无提现状态
                     .build();
+            profit.setDeleted(false);
+            profit.setRevision(0);
 
             profitList.add(profit);
         }
@@ -577,6 +587,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .occurredTime(now)
                     .status(PRESENT_PROFIT_CASH_BACK_WAIT)
                     .build();
+            psr.setDeleted(false);
 
             presentStatusRecords.add(psr);
 
@@ -589,6 +600,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .presentState(PRESENT_PROFIT_CASH_BACK_WAIT) // 待回填保证金
                     .presentStatusRecords(presentStatusRecords)
                     .build();
+            profit.setDeleted(false);
+            profit.setRevision(0);
 
             profitList.add(profit);
         }
@@ -600,7 +613,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 String presentState = null;
                 List<PresentStatusRecordDO> presentStatusRecords = null;
                 if (isPromptPayment) {
-                    presentState = PRESENT_PROFIT_APPLY; // 如果费用立即付款，则需要将费用的提现状态改为申请登记
+                    presentState = PRESENT_PROFIT_APPLY; // 如果费用立即付款，则需要将费用的提现状态改为申请
                     if (presentStatusRecords == null) {
                         presentStatusRecords = new ArrayList<>();
 
@@ -609,6 +622,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                                 .occurredTime(now)
                                 .status(presentState)
                                 .build();
+                        psr.setDeleted(false);
 
                         presentStatusRecords.add(psr);
                     }
@@ -623,6 +637,19 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         .presentState(presentState)
                         .presentStatusRecords(presentStatusRecords)
                         .build();
+                profit.setDeleted(false);
+                profit.setRevision(0);
+
+                if (isPromptPayment) {
+                    if (StringUtils.isBlank(cost.getBankName())) {
+                        throw exception(ACC_PRESENT_PROFIT_BANK_NOT_NULL);
+                    }
+                    if (StringUtils.isBlank(cost.getBankNo())) {
+                        throw exception(ACC_PRESENT_PROFIT_BANK_NOT_NULL);
+                    }
+                    profit.setBankName(cost.getBankName());
+                    profit.setBankNo(cost.getBankNo());
+                }
 
                 profitList.add(profit);
             }
@@ -636,9 +663,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         .contractNo(contractNo)
                         .profit(tax.getAmount() * -1) // 税费为支出，记录负数
                         .tradeType(TRAN_PROFIT_TAX_COST)
-                        .tradeTo(TRADE_TO_MARKET) // 回填保证金动向为：我的保证金
+                        .tradeTo(TRADE_TO_MARKET) // 回填保证金动向为：市场方
                         .presentState(null) // 初始写入税费无提现状态
                         .build();
+                profit.setDeleted(false);
+                profit.setRevision(0);
 
                 profitList.add(profit);
             }
