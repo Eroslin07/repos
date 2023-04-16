@@ -71,7 +71,7 @@ public interface AccountProfitService {
     /**
      * 审核利润提现
      * @param id 利润ID
-     * @param auditPpinion 审核意见
+     * @param auditOpinion 审核意见
      */
-    void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditPpinion);
+    void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditOpinion);
 }

@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.account;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
@@ -28,9 +29,9 @@ public class AccountProfitServiceTest {
     @Test
     public void testRecorded() {
         String accountNo = "11111111";
-        String contractNo = "1001";
+        String contractNo = "1006";
         Integer vehicleReceiptAmount = 100;
-        Integer carSalesAmount = 130;
+        Integer carSalesAmount = 200;
         List<CostDTO> costs = new ArrayList<>();
         CostDTO c = new CostDTO();
         c.setAmount(1);
@@ -60,7 +61,33 @@ public class AccountProfitServiceTest {
         profitQueryReqVO.setPageNo(1);
         profitQueryReqVO.setPageSize(10);
 
-        PageResult<ProfitRespVO> r = accountProfitService.profitList("1", profitQueryReqVO);
+        PageResult<ProfitRespVO> r = accountProfitService.profitList("11111111", profitQueryReqVO);
         Assertions.assertNotNull(r);
+    }
+
+    @Test
+    public void testProfitDetail() {
+        ProfitDetailRespVO pd = accountProfitService.profitDetail("11111111", 1647527558918410241L);
+        Assertions.assertNotNull(pd);
+    }
+
+    @Test
+    public void testProfitPresent() {
+        Long id = accountProfitService.profitPresent("11111111", 1L, 5, null);
+        Assertions.assertNotNull(id);
+    }
+
+    @Test
+    public void testAuditProfitPressentReject() throws InterruptedException {
+        accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
+        Thread.sleep(10);
+        accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_REJECT);
+    }
+
+    @Test
+    public void testAuditProfitPressentApproved() throws InterruptedException {
+        accountProfitService.auditProfitPressent(1647578548698865666L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
+        Thread.sleep(10);
+        accountProfitService.auditProfitPressent(1647578548698865666L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
     }
 }
