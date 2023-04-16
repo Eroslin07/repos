@@ -614,7 +614,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
 
             PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
-                    .presentType(TRADE_TO_BUY_CARS)
+                    .presentType(PRESENT_TYPE_PROFIT)
                     .occurredTime(now)
                     .status(PRESENT_PROFIT_CASH_BACK_WAIT)
                     .build();

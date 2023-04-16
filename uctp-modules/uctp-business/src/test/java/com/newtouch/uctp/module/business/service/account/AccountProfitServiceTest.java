@@ -29,9 +29,9 @@ public class AccountProfitServiceTest {
     @Test
     public void testRecorded() {
         String accountNo = "11111111";
-        String contractNo = "1004";
+        String contractNo = "1006";
         Integer vehicleReceiptAmount = 100;
-        Integer carSalesAmount = 100;
+        Integer carSalesAmount = 200;
         List<CostDTO> costs = new ArrayList<>();
         CostDTO c = new CostDTO();
         c.setAmount(1);
