@@ -367,7 +367,7 @@ public class UctpCarInfoSearchUtils {
         String simple = "0";
         UctpCarInfoSearchUtils uctpCarInfoSearchUtils = new UctpCarInfoSearchUtils();
 //        uctpCarInfoSearchUtils.CarMotorcycleType("3.4.561", "0");
-//        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, carNo, mile, regDate, allLevel, token, url1, coefficients);
+        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, carNo, mile, regDate, allLevel, token, url1, coefficients);
 //        uctpCarInfoSearchUtils.CarMotorcycleType(url2, token, apiVersion, fromVersion, simple);
         JSONObject obj = uctpCarInfoSearchUtils.getCarBrandList(token, "宝马", url3);
         Map carSeriesList = uctpCarInfoSearchUtils.getCarSeriesList(token, "5", url4);

@@ -135,4 +135,26 @@ public class OCRUtil {
     }
 
 
+    /**
+     * 识别登记证书
+     * @return
+     */
+    public static String vehicleRegistrationCertificate(String filePath,String accessToken) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_registration_certificate";
+        try {
+            String imgParam = URLEncoder.encode(filePath, "UTF-8");
+
+            String param = "image=" + imgParam;
+
+            String result = HttpUtil.post(url, accessToken, param);
+            System.out.println(result);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

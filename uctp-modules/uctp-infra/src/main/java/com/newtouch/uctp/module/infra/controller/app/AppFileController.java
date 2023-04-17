@@ -59,7 +59,6 @@ public class AppFileController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('infra:file:delete')")
     public CommonResult<Boolean> deleteFile(@RequestParam("id") Long id) throws Exception {
         fileService.deleteFile(id);
         return success(true);
