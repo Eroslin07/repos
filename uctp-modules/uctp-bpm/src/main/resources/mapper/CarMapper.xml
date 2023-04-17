@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.bpm.dal.mysql.car.CarMapper">
+
+    <update id="updateCarStatus">
+        update uctp_car_info
+        set SALES_STATUS = #{statusOne},
+            STATUS=#{statusTwo},
+            STATUS_THREE=#{statusThree}
+        where ID=#{carId};
+    </update>
+</mapper>

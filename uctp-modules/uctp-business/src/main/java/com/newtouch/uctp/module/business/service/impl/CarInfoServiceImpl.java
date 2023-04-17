@@ -12,6 +12,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
+import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
@@ -29,6 +30,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
@@ -270,9 +272,10 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
-    public List<Map<String, Object>> getCarCountGroupByStatus() {
+    public List<HomeCountVO> getCarCountGroupByStatus() {
         List<Map<String, Object>> maps = carInfoMapper.selectCarCountGroupByStatus();
-        return this.initRetMap(maps);
+        List<Map<String, Object>> maps1 = this.initRetMap(maps);
+        return this.buildHomeCountRespVO(maps1);
     }
 
     @Override
@@ -479,14 +482,16 @@ public class CarInfoServiceImpl implements CarInfoService {
      * @return
      */
     private List<Map<String, Object>> initRetMap(List<Map<String, Object>> maps){
-        if (maps.size() == 4) {
+        if (maps.size() == 12) {
             //这里以后增加了状态删除即可
             return maps;
         }
+        //获取状态索引
         Map<Integer, Integer> mapIdx = new HashMap<>();
         for (int i = 0; i < maps.size(); i++) {
             mapIdx.put((Integer)maps.get(i).get("statusTwo"), i);
         }
+        //填充未查询到的状态
         List<Map<String, Object>> mapList = Lists.newArrayList();
         for (int i = 1; i <= 4; i++) {
             for (int j = 1; j <= 3; j++) {
@@ -499,11 +504,34 @@ public class CarInfoServiceImpl implements CarInfoService {
                     map.put("statusOne", i);
                     map.put("statusTwo", statusTwo);
                     map.put("num", 0);
+                    mapList.add(map);
                 }
-                mapList.add(map);
             }
         }
         return mapList;
+    }
+    private List<HomeCountVO> buildHomeCountRespVO(List<Map<String, Object>> mapList){
+        //按照第一级状态分组
+        Map<Integer, List<Map<String, Object>>> mapGroup = mapList.stream().collect(Collectors.groupingBy(map -> (Integer) map.get("statusOne")));
+        List<HomeCountVO> retList = Lists.newArrayList();
+        mapGroup.keySet().forEach(key -> {
+            HomeCountVO homeCount = new HomeCountVO();
+            homeCount.setStatus(key);
+            homeCount.setLabel(CarStatus.toType(key).text());
+            homeCount.setNum(null);
+            List<Map<String, Object>> mapChildList = mapGroup.get(key);
+            mapChildList.forEach(child-> {
+                HomeCountVO homeCountChild = new HomeCountVO();
+                Integer statusTwo = (Integer) child.get("statusTwo");
+                homeCountChild.setStatus(statusTwo);
+                homeCountChild.setLabel(CarStatus.toType(statusTwo).text());
+                homeCountChild.setNum(Long.valueOf(child.get("num").toString()));
+                homeCountChild.setChild(null);
+                homeCount.getChild().add(homeCountChild);
+            });
+            retList.add(homeCount);
+        });
+        return retList;
     }
     @Override
     public AppCarInfoAndDetailVO getCarInfoAndDetail(String id) {

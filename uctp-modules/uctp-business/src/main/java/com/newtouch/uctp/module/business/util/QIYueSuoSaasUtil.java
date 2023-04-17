@@ -93,12 +93,7 @@ public class QIYueSuoSaasUtil {
         } else {
             System.out.println("生成链接失败，失败原因：" + responseObject.getMessage());
         }
-
     }
 
-    public static void main(String[] args) {
-        test3();
-
-    }
 
 }

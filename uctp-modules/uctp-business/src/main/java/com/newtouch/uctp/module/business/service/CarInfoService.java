@@ -2,7 +2,6 @@ package com.newtouch.uctp.module.business.service;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
-import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 
@@ -106,7 +105,7 @@ public interface CarInfoService {
      * 获取APP首页车辆分类统计
      * @return
      */
-    List<Map<String, Object>> getCarCountGroupByStatus();
+    List<HomeCountVO> getCarCountGroupByStatus();
 
     /**
      * 获取APP首页卖车分页
