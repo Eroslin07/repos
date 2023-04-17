@@ -8,7 +8,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@TableName("uctp_invoices_details_list")
+@TableName("uctp_invoices_details")
 @Data
 @ToString(callSuper = true)
 @Builder

@@ -1,11 +1,15 @@
 package com.newtouch.uctp.module.business.service;
 
 
+import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
+//import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
 import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 消息 Service 接口
@@ -19,7 +23,7 @@ public interface NoticeService {
      * @return 消息do
      */
 
-    List<NoticeInfoDO> getNotices();
+    List<NoticeInfoDO> getNotices(String businessID);
     /**
      * 更新单个消息状态
      *
@@ -41,6 +45,22 @@ public interface NoticeService {
      */
     //void deleteAllNoticeStatus(String id);
     void deleteAllNoticeStatus(List<String> list);
+    /**
+     * 保存消息
+     *
+     */
+   // String saveTaskNotice1(String type, String contentType,String reason, BpmFormMainVO bpmFormMainVO);
 
+    String saveTaskNotice(String type, String contentType,String reason, BpmFormResVO bpmFormResVO);
+    /**
+     * 保存消息
+     *
+     */
+    String saveNotice(Map<String,String> map);
+    /**
+     * 获取未读消息条数
+     *
+     */
+    int getUnreadNoticeCount(String businessID);
 
 }
