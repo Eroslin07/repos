@@ -4,6 +4,16 @@ package com.newtouch.uctp.module.business.enums;
  * 资金管理枚举
  */
 public enum AccountEnum {
+    //损益类型：
+    PROFIT_LOSS_TYPE_INCOME("1", "收入"),
+    PROFIT_LOSS_TYPE_DISBURSEMENT("2", "支出"),
+
+    //交易去向：
+    TRADE_TO_BUY_CARS("1", "收车"),
+    TRADE_TO_MY_CASH("2", "我的保证金"),
+    TRADE_TO_MARKET("3", "市场方"),
+    TRADE_TO_MY_PROFIT("4", "我的利润"),
+
     // 利润：交易类型
     TRAN_PROFIT_SALES_PROFIT("1", "卖车利润"),
     TRAN_PROFIT_PRESENT("2", "利润提现"),
