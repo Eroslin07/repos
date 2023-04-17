@@ -16,15 +16,15 @@ const request = config => {
     config.header['Authorization'] = 'Bearer ' + getAccessToken()
   }
   // 设置租户 TODO 芋艿：强制 1 先
-  const tenantId = $store.state.user.tenantId
-  if (tenantId) {
-    config.header['tenant-id'] = tenantId;
-  }
-  // config.header['tenant-id'] = '1'
-  // // config.header['tenant-id'] = '150'
-  // if (config.headers && config.headers['tenant-id']) {
-  //   config.header['tenant-id'] = config.headers['tenant-id']
+  // const tenantId = $store.state.user.tenantId
+  // if (tenantId) {
+  //   config.header['tenant-id'] = tenantId;
   // }
+  // config.header['tenant-id'] = '1'
+  config.header['tenant-id'] = '150'
+  if (config.headers && config.headers['tenant-id']) {
+    config.header['tenant-id'] = config.headers['tenant-id']
+  }
   // get请求映射params参数
   if (config.params) {
     let url = config.url + '?' + tansParams(config.params)
