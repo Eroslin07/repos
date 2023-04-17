@@ -1,8 +1,5 @@
 package com.newtouch.uctp.module.business.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.newtouch.uctp.module.business.enums.MessagePushEnum;
 
 import java.util.HashMap;
 import java.util.Map;
