@@ -20,8 +20,8 @@ const request = config => {
   // if (tenantId) {
   //   config.header['tenant-id'] = tenantId;
   // }
-  config.header['tenant-id'] = '1'
-  // config.header['tenant-id'] = '150'
+  // config.header['tenant-id'] = '1'
+  config.header['tenant-id'] = '150'
   if (config.headers && config.headers['tenant-id']) {
     config.header['tenant-id'] = config.headers['tenant-id']
   }

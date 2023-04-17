@@ -1,8 +1,9 @@
 package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 
-import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmProcessInstanceExtDO;
-import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
 import org.flowable.engine.delegate.event.AbstractFlowableEngineEventListener;
@@ -11,8 +12,9 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
+import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmProcessInstanceExtDO;
+import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
 
 /**
  * 监听 {@link ProcessInstance} 的开始与完成，创建与更新对应的 {@link BpmProcessInstanceExtDO} 记录
@@ -25,6 +27,9 @@ public class BpmProcessInstanceEventListener extends AbstractFlowableEngineEvent
     @Resource
     @Lazy
     private BpmProcessInstanceService processInstanceService;
+    @Resource
+    @Lazy // 解决循环依赖
+    private BpmGlobalHandleListener bpmGlobalHandleListener;
 
     public static final Set<FlowableEngineEventType> PROCESS_INSTANCE_EVENTS = ImmutableSet.<FlowableEngineEventType>builder()
                      .add(FlowableEngineEventType.PROCESS_CREATED)
@@ -39,6 +44,7 @@ public class BpmProcessInstanceEventListener extends AbstractFlowableEngineEvent
     @Override
     protected void processCreated(FlowableEngineEntityEvent event) {
         processInstanceService.createProcessInstanceExt((ProcessInstance)event.getEntity());
+        bpmGlobalHandleListener.processCreated(event);
     }
 
     @Override
@@ -49,5 +55,6 @@ public class BpmProcessInstanceEventListener extends AbstractFlowableEngineEvent
     @Override
     protected void processCompleted(FlowableEngineEntityEvent event) {
         processInstanceService.updateProcessInstanceExtComplete((ProcessInstance)event.getEntity());
+        bpmGlobalHandleListener.processCompleted(event);
     }
 }

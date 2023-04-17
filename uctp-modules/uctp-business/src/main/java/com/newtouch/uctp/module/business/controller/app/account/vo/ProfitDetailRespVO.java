@@ -14,6 +14,8 @@ import java.util.List;
 public class ProfitDetailRespVO extends ProfitRespVO {
     @Schema(description = "交易去向")
     private String tradeTo;
+    @Schema(description = "交易去向中文名称")
+    private String tradeToText;
     @Schema(description = "交易合同号")
     private String contractNo;
     @Schema(description = "提现状态记录（交易类型为提现时返回该值）")

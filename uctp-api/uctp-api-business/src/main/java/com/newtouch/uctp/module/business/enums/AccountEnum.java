@@ -1,5 +1,10 @@
 package com.newtouch.uctp.module.business.enums;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
  * 资金管理枚举
  */
@@ -86,5 +91,27 @@ public enum AccountEnum {
 
     public String getValue() {
         return value;
+    }
+
+    public static Map<String, String> accountEnumMap;
+
+    static {
+        accountEnumMap = Arrays.stream(AccountEnum.values())
+                .collect(Collectors.toMap(AccountEnum::getKey, AccountEnum::getValue, (o1, o2) -> o1));
+    }
+
+    public static String getName(String key) {
+        if (key == null || key.trim().equals("")){
+            return null;
+        }
+
+        AccountEnum[] values = AccountEnum.values();
+        for (AccountEnum value : values) {
+            if (Objects.equals(value.key, key)) {
+                return value.value;
+            }
+        }
+
+        return null;
     }
 }

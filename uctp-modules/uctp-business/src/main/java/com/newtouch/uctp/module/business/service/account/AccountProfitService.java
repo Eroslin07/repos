@@ -4,7 +4,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
-import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummaryRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -17,6 +17,11 @@ import java.util.List;
  * @author zhangjun
  */
 public interface AccountProfitService {
+    //利润查询类型：1：利润明细 2：冻结明细 3：支出 4：收入
+    int ALL_PROFIT = 1;
+    int FREEZE_PROFIT = 2;
+    int DISBURSEMENT = 3;
+    int INCOME = 4;
 
     /**
      * 利润划入
@@ -40,7 +45,7 @@ public interface AccountProfitService {
      * @param accountNo
      * @return
      */
-    MerchantAccountDO queryByAccountNo(String accountNo);
+    ProfitSummaryRespVO summary(String accountNo);
 
     /**
      * 利润提现

@@ -80,7 +80,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Transactional
     public AppBpmCarInfoRespVO insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
         //保存之前先删除
-        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(), 1, 1);
+        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(), 1, 11);
         if(carInfoDOS.size()>0){
             for (CarInfoDO carInfo:carInfoDOS) {
                 Long id = carInfo.getId();

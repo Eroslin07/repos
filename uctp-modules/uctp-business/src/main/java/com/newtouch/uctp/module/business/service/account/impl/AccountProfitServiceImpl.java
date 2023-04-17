@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -83,10 +80,16 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (merchantAccount == null) {
             throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
         }
-        Integer originalWaitForBackCashTotalAmount = 0; // 账户表暂无待回填保证金 todo
+
+        // 查询待回填保证金总额
+        TransactionRecordReqVO originalWaitForBackCashReq = new TransactionRecordReqVO();
+        originalWaitForBackCashReq.setAccountNo(accountNo);
+        Integer originalWaitForBackCashTotalAmount = accountCashService.difference(originalWaitForBackCashReq);
         if (originalWaitForBackCashTotalAmount == null) {
             originalWaitForBackCashTotalAmount = 0;
         }
+        log.info("合同{}，待回填保证金总额{}", contractNo, originalWaitForBackCashTotalAmount);
+        originalWaitForBackCashTotalAmount = originalWaitForBackCashTotalAmount * -1; // 接口返回是负数
         Integer originalProfitTotalAmount = merchantAccount.getProfit();
         if (originalProfitTotalAmount == null) {
             originalProfitTotalAmount = 0;
@@ -214,8 +217,19 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Override
     @TenantIgnore
-    public MerchantAccountDO queryByAccountNo(String accountNo) {
-        return merchantAccountService.queryByAccountNo(accountNo);
+    @Transactional
+    public ProfitSummaryRespVO summary(String accountNo) {
+        MerchantAccountDO account = merchantAccountService.queryByAccountNo(accountNo);
+        TransactionRecordReqVO waitForBackCashReq = new TransactionRecordReqVO();
+        waitForBackCashReq.setAccountNo(accountNo);
+
+        Integer waitForBackCashAmount = accountCashService.difference(waitForBackCashReq);
+        ProfitSummaryRespVO respVO = new ProfitSummaryRespVO();
+        respVO.setProfit(account.getProfit());
+        respVO.setFreezeProfit(account.getFreezeProfit());
+        respVO.setCashBack(waitForBackCashAmount);
+
+        return respVO;
     }
 
     @Override
@@ -263,6 +277,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .accountNo(accountNo)
                 .profit(amount * -1)
                 .presentState(null) // 提现记录初始写入状态为null
+                .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记为支付
+                .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
                 .bankName(bank.getBankName())
                 .bankNo(bank.getBankNo())
                 .build();
@@ -321,6 +337,27 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         LambdaQueryWrapper<MerchantProfitDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MerchantProfitDO::getAccountNo, accountNo)
                 .orderByDesc(MerchantProfitDO::getCreateTime);
+        switch (query.getType()) {
+            case  FREEZE_PROFIT:
+                // 交易类型是利润提现，才会有冻结
+                queryWrapper.eq(MerchantProfitDO::getTradeType, AccountEnum.TRAN_PROFIT_PRESENT.getKey());
+
+                String[] presentStateArr = new String[]{
+                        AccountEnum.PRESENT_PROFIT_APPLY.getKey(),
+                        AccountEnum.PRESENT_PROFIT_AUDIT_PROCESSING.getKey(),
+                        AccountEnum.PRESENT_PROFIT_AUDIT_APPROVED.getKey(),
+                        AccountEnum.PRESENT_PROFIT_BANK_PROCESSING.getKey()
+                };
+
+                queryWrapper.in(MerchantProfitDO::getPresentState, presentStateArr);
+                break;
+            case  INCOME:
+                queryWrapper.eq(MerchantProfitDO::getProfitLossType, AccountEnum.PROFIT_LOSS_TYPE_INCOME.getKey());
+                break;
+            case DISBURSEMENT:
+                queryWrapper.eq(MerchantProfitDO::getProfitLossType, AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey());
+                break;
+        }
 
         PageResult<MerchantProfitDO> pr = merchantProfitMapper.selectPage(query, queryWrapper);
         List<MerchantProfitDO> profitDOList = pr.getList();
@@ -328,10 +365,13 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             List<ProfitRespVO> profitVOList = new ArrayList<>();
             for (MerchantProfitDO pdo : profitDOList) {
                 ProfitRespVO pvo = ProfitRespVO.builder()
-                        .profitLossType(null) // 损益类型
-                        .tradeDate(null)
+                        .tradeDate(DateUtil.format(pdo.getTradeTime(), NORM_DATE_PATTERN))
                         .tradeType(pdo.getTradeType())
+                        .tradeTypeText(pdo.getTradeTypeText())
                         .presentState(pdo.getPresentState())
+                        .presentStateText(pdo.getPresentStateText())
+                        .profitLossType(pdo.getProfitLossType())
+                        .profitLossTypeText(pdo.getProfitLossTypeText())
                         .amount(pdo.getProfit())
                         .build();
 
@@ -359,10 +399,14 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             ProfitDetailRespVO respVO = new ProfitDetailRespVO();
             respVO.setContractNo(p.getContractNo());
             respVO.setTradeType(p.getTradeType());
+            respVO.setTradeTypeText(p.getTradeTypeText());
             respVO.setPresentState(p.getPresentState());
+            respVO.setPresentStateText(p.getPresentStateText());
             respVO.setAmount(p.getProfit());
             respVO.setTradeTo(p.getTradeTo());
+            respVO.setTradeToText(p.getTradeToText());
             respVO.setProfitLossType(p.getProfitLossType());
+            respVO.setProfitLossTypeText(p.getProfitLossTypeText());
             respVO.setTradeDate(p.getTradeTime() == null ? "" : DateUtil.format(p.getTradeTime(), NORM_DATE_PATTERN));
 
             // 查一下提现状态记录清单
@@ -377,6 +421,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
                             .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATE_PATTERN))
                             .status(psr.getStatus())
+                            .statusText(psr.getStatusText())
                             .build();
 
                     presentStatusRespRecords.add(psrrvo);
