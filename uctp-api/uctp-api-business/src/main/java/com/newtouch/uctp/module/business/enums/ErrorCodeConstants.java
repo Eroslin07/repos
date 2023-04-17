@@ -34,4 +34,9 @@ public interface ErrorCodeConstants {
     ErrorCode ACC_CAR_SALES_AMOUNT_LESS_THAN_ZERO = new ErrorCode(1005000206, "卖车金额不能为负");
     ErrorCode ACC_COST_TYPE_REPEAT = new ErrorCode(1005000207, "费用类型不能重复");
     ErrorCode ACC_TAX_TYPE_REPEAT = new ErrorCode(1005000208, "税费类型不能重复");
+    ErrorCode ACC_MERCHANT_ACCOUNT_NOT_EXISTS = new ErrorCode(1005000209, "商户账户不存在");
+    ErrorCode ACC_PRESENT_ERROR = new ErrorCode(1005000210, "提现处理错误");
+    ErrorCode ACC_PRESENT_PROFIT_INSUFFICIENT = new ErrorCode(1005000211, "利润余额不足");
+    ErrorCode ACC_PRESENT_PROFIT_BANK_NOT_NULL = new ErrorCode(1005000212, "银行账户不能为空");
+    ErrorCode ACC_PRESENT_PROFIT_RECORDED_ERROR = new ErrorCode(1005000212, "利润划入出错");
 }

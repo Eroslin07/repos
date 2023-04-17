@@ -3,30 +3,34 @@ package com.newtouch.uctp.module.business.enums;
 public class AccountConstants {
 
     //交易类型：保证金-充值
-    public static final String TRADE_TYPE_RECHARGE = "1";
+    public static final String TRADE_TYPE_RECHARGE = "保证金-充值";
     //交易类型：保证金-回填
-    public static final String TRADE_TYPE_BACK = "2";
+    public static final String TRADE_TYPE_BACK = "保证金-回填";
+    //交易类型：保证金-利润回填
+    public static final String TRADE_TYPE_PROFIT_BACK = "保证金-利润回填";
     //交易类型：保证金-提现
-    public static final String TRADE_TYPE_WITHDRAW = "3";
+    public static final String TRADE_TYPE_WITHDRAW = "保证金-提现";
     //交易类型：保证金-扣减
-    public static final String TRADE_TYPE_DEDUCTION = "4";
+    public static final String TRADE_TYPE_DEDUCTION = "保证金-扣减";
     //交易类型：保证金-预占
-    public static final String TRADE_TYPE_PREEMPTION = "5";
+    public static final String TRADE_TYPE_PREEMPTION = "保证金-预占";
     //交易类型：保证金-释放
-    public static final String TRADE_TYPE_RELEASE = "6";
+    public static final String TRADE_TYPE_RELEASE = "保证金-释放";
 
     //损益类型-收入
-    public static final String PROFIT_LOSS_TYPE_INCOME = "1";
+    public static final String PROFIT_LOSS_TYPE_INCOME = "收入";
     //损益类型-支出
-    public static final String PROFIT_LOSS_TYPE_DISBURSEMENT = "2";
+    public static final String PROFIT_LOSS_TYPE_DISBURSEMENT = "支出";
 
-    //默认支付渠道-兴业银行
-    public static final String DEFAULT_PAY_CHANNEL = "1";
+    //支付渠道-兴业银行
+    public static final String PAY_CHANNEL_DEFAULT = "兴业银行";
+    //支付渠道-平台
+    public static final String PAY_CHANNEL_PLATFORM= "平台";
 
     //交易去向-收车
-    public static final String TRADE_TO_BUY_CARS = "1";
+    public static final String TRADE_TO_BUY_CARS = "收车";
     //交易去向-我的保证金
-    public static final String TRADE_TO_MY_CASH = "2";
+    public static final String TRADE_TO_MY_CASH = "我的保证金";
     //交易去向-市场方
     public static final String TRADE_TO_MARKET = "3";
     //交易去向-我的利润
@@ -61,7 +65,7 @@ public class AccountConstants {
     //利润-税费
     public static final String TRAN_PROFIT_TAX_COST = "5";
 
-    // 利润：提现类型
+    // 利润：提现状态
     //待回填保证金
     public static final String PRESENT_PROFIT_CASH_BACK_WAIT = "1";
     //已回填保证金
@@ -91,6 +95,10 @@ public class AccountConstants {
     // 提现申请
     public static final String PRESENT_STATUS_BANK_SUCCESS = "4";
 
+    // 提现类型C：保证金提现P：利润提现
+    public static final String PRESENT_TYPE_CASH = "C";
+    public static final String PRESENT_TYPE_PROFIT = "P";
+
     public static Integer ERROR_CODE_ACCOUNT_NOT_FOUND = 90010001;
     public static String ERROR_MESSAGE_ACCOUNT_NOT_FOUND = "未查询到当前账号信息";
 
@@ -103,4 +111,22 @@ public class AccountConstants {
     public static Integer ERROR_CODE_INSUFFICIENT_AVAILABLE_BALANCE = 90010004;
     public static String ERROR_MESSAGE_INSUFFICIENT_AVAILABLE_BALANCE = "当前账户可用余额不足。";
 
+    public static Integer ERROR_CODE_CONTRACT_NO_NOT_FOUND = 90010005;
+    public static String ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND = "未查询到当前合同号冻结流水明细。";
+
+    public static Integer ERROR_CODE_INSUFFICIENT_FREEZE_CASH = 90010006;
+    public static String ERROR_MESSAGE_INSUFFICIENT_FREEZE_CASH = "当前账户冻结金额不足。";
+
+
+    // 保证金提现状态-发起提现申请
+    public static final String PRESENT_STATUS_CASH_APPLY = "发起提现申请";
+    // 保证金提现状态-银行处理中
+    public static final String PRESENT_STATUS_CASH_PROCESSING = "银行处理中";
+    // 保证金提现状态-到账成功
+    public static final String PRESENT_STATUS_CASH_SUCCESS = "到账成功";
+
+    // 保证金提现状态-保证金提现中
+    public static final String PRESENT_CASH_PROCESSING = "保证金提现中";
+    // 保证金提现状态-保证金提现
+    public static final String PRESENT_CASH_SUCCESS = "保证金提现";
 }

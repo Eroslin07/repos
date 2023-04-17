@@ -5,6 +5,8 @@ import com.newtouch.uctp.module.business.controller.app.account.cash.vo.Merchant
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 
+import java.util.List;
+
 
 public interface MerchantCashService {
 
@@ -12,5 +14,9 @@ public interface MerchantCashService {
 
     int insert(MerchantCashDO merchantCashDO);
 
-    int insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo);
+    MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo);
+
+    MerchantCashDO queryContractNoAmount(String contractNo, List<String> tradeTypes);
+
+    void updateCashDeduction(String contractNo);
 }

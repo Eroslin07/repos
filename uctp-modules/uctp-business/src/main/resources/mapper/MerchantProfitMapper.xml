@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper">
+
+    <insert id="insertBatchProfit" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO uctp_merchant_profit
+        (account_id, account_no, trade_type, trade_to, contract_no, profit, bank_no, bank_name, present_state, profit_balance, cash_back, revision, createor, create_time, updater, update_time, deleted)
+        <foreach item="item" collection="profitList" separator=",">
+            (#{item.username}, #{item.password}, #{item.email}, #{item.bio})
+        </foreach>
+    </insert>
+</mapper>

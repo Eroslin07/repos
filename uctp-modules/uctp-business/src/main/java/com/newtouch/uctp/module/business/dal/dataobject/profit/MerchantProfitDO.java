@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.dal.dataobject.profit;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
@@ -19,7 +20,7 @@ public class MerchantProfitDO extends BaseDO {
 
     @TableId
     private Long id; // 主键标识
-    private Long accountId; // 账户标识
+    //private Long accountId; // 账户标识
     private String accountNo; // 商户账户号
     private String tradeType; // 交易类型
     private String tradeTo; // 交易去向
@@ -30,6 +31,7 @@ public class MerchantProfitDO extends BaseDO {
     private String presentState;// 提现状态
     private Integer revision; // 乐观锁
     // 提现状态记录列表
+    @TableField(exist = false)
     private List<PresentStatusRecordDO> presentStatusRecords;
 
 }

@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.validation.BindingResult;
@@ -54,7 +53,7 @@ import static com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCode
  *
  * @author 芋道源码
  */
-@Aspect
+//@Aspect
 @Slf4j
 public class OperateLogAspect {
 

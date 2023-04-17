@@ -12,4 +12,16 @@ public class ValidatedGroup {
 
     //保证金预占
     public interface Reserve{};
+
+    //保证金实占
+    public interface Deduction{};
+
+    //待回填保证金
+    public interface Difference{};
+
+    //保证金回填
+    public interface Back{};
+
+    //保证金-利润回填
+    public interface ProfitBack{};
 }

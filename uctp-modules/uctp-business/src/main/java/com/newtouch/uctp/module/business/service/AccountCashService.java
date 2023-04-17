@@ -43,10 +43,42 @@ public interface AccountCashService {
     AccountCashRespVO withdraw(TransactionRecordReqVO transactionRecordReqVO);
 
     /**
-     * 保证金预占/冻结
+     * 保证金预占-冻结
      *
-     * @param transactionRecordReqVO 账户号/交易金额/版本号
-     * @return 预占/冻结结果：true/false
+     * @param transactionRecordReqVO 账户号/交易金额/交易合同号
+     * @return 保证金预占-冻结结果：true/false
      */
     Boolean reserve(TransactionRecordReqVO transactionRecordReqVO);
+
+    /**
+     * 保证金实占-扣除冻结
+     *
+     * @param transactionRecordReqVO 交易合同号
+     * @return 保证金实占-扣除冻结结果：true/false
+     */
+    Boolean deduction(TransactionRecordReqVO transactionRecordReqVO);
+
+    /**
+     * 待回填保证金
+     *
+     * @param transactionRecordReqVO 交易合同号
+     * @return 待回填保证金金额，单位-分
+     */
+    Integer difference(TransactionRecordReqVO transactionRecordReqVO);
+
+    /**
+     * 保证金回填
+     *
+     * @param transactionRecordReqVO 账户号/交易金额/交易合同号
+     * @return 保证金回填结果：true/false
+     */
+    Boolean back(TransactionRecordReqVO transactionRecordReqVO);
+
+    /**
+     * 保证金回填-利润
+     *
+     * @param transactionRecordReqVO 账户号/交易金额/交易合同号
+     * @return 保证金回填-利润结果：true/false
+     */
+    Boolean profitBack(TransactionRecordReqVO transactionRecordReqVO);
 }
