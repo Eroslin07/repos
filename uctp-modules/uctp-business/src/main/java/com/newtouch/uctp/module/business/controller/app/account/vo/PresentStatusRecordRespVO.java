@@ -34,7 +34,7 @@ public class PresentStatusRecordRespVO {
                 .presentNo(presentStatusRecordDO.getPresentNo())
                 .occurredTime(DateUtil.format(presentStatusRecordDO.getOccurredTime(), NORM_DATETIME_PATTERN))
                 .status(presentStatusRecordDO.getStatus())
-                .statusText(AccountEnum.getName(presentStatusRecordDO.getStatus()))
+                .statusText(AccountEnum.accountEnumMap.get(presentStatusRecordDO.getStatus()))
                 .build();
     }
 }

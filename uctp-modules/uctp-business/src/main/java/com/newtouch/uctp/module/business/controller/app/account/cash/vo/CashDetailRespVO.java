@@ -77,11 +77,11 @@ public class CashDetailRespVO {
         CashDetailRespVO cashDetailRespVO = new CashDetailRespVO();
         if (merchantCashDO != null) {
             BeanUtils.copyProperties(merchantCashDO, cashDetailRespVO);
-            cashDetailRespVO.setPayChannelName(AccountEnum.getName(cashDetailRespVO.getPayChannel()));
-            cashDetailRespVO.setProfitLossTypeName(AccountEnum.getName(cashDetailRespVO.getProfitLossType()));
-            cashDetailRespVO.setTradeTypeName(AccountEnum.getName(cashDetailRespVO.getTradeType()));
-            cashDetailRespVO.setTradeToName(AccountEnum.getName(cashDetailRespVO.getTradeTo()));
-            cashDetailRespVO.setPresentStateName(AccountEnum.getName(cashDetailRespVO.getPresentState()));
+            cashDetailRespVO.setPayChannelName(AccountEnum.accountEnumMap.get(cashDetailRespVO.getPayChannel()));
+            cashDetailRespVO.setProfitLossTypeName(AccountEnum.accountEnumMap.get(cashDetailRespVO.getProfitLossType()));
+            cashDetailRespVO.setTradeTypeName(AccountEnum.accountEnumMap.get(cashDetailRespVO.getTradeType()));
+            cashDetailRespVO.setTradeToName(AccountEnum.accountEnumMap.get(cashDetailRespVO.getTradeTo()));
+            cashDetailRespVO.setPresentStateName(AccountEnum.accountEnumMap.get(cashDetailRespVO.getPresentState()));
 
             if (merchantCashDO.getCreateTime() != null) {
                 cashDetailRespVO.setCreateTime(DateUtil.format(merchantCashDO.getCreateTime(), NORM_DATETIME_PATTERN));
