@@ -15,7 +15,7 @@
 		</view>
 		<!-- 收车/卖车 -->
 		<view class="menu-box">
-			<view class="menu-item">
+			<view class="menu-item" @click="buyCar">
 				<view class="item-title">
 					<text style="margin-right:5px;">我要收车</text>
 					<u-icon name="arrow-right" :size="15" color="#fff">
@@ -25,7 +25,7 @@
 					COLLECT
 				</view>
 			</view>
-			<view class="menu-item sell-box">
+			<view class="menu-item sell-box" @click="sellingCar">
 				<view class="item-title">
 					<text style="margin-right:5px;">我要卖车</text>
 					<u-icon name="arrow-right" :size="15" color="#fff">
@@ -40,7 +40,7 @@
 		<view class="deal-dynamic">
 			<h3 class="align-center">交易动态</h3>
 			<view class="cars-status" v-for="item in gatherData ||4" :key="item">
-				<view class="left-title">
+				<view class="left-title" @click="tabCarStatus">
 					<view class="">收车中</view>
 					<view class="">
 						2
@@ -211,7 +211,7 @@
 				})
 				this.getList(this.formData)
 			},
-			// 我要买车
+			// 我要收车
 			buyCar() {
 				this.$tab.navigateTo('/subPages/home/bycar/index');
 			},
