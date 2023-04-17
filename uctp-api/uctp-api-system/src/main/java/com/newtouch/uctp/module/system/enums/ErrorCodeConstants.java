@@ -17,8 +17,11 @@ public interface ErrorCodeConstants {
     ErrorCode AUTH_TOKEN_EXPIRED = new ErrorCode(1002000006, "Token 已经过期");
     ErrorCode AUTH_MOBILE_NOT_EXISTS = new ErrorCode(1002000007, "手机号不存在");
     ErrorCode AUTH_MOBILE_IS_EXIST = new ErrorCode(1002000008, "该手机号已注册");
-    ErrorCode AUTH_MOBILE_NOT_EXIST = new ErrorCode(1002000008, "该手机号未注册");
-    ErrorCode AUTH_REGISTER_ERROR = new ErrorCode(1002000008, "注册失败");
+    ErrorCode AUTH_TAXNUM_IS_EXIST = new ErrorCode(1002000009, "该营业执照号已存在");
+    ErrorCode AUTH_IDCARD_IS_EXIST = new ErrorCode(1002000010, "该身份证已注册");
+    ErrorCode AUTH_NAME_IS_EXIST = new ErrorCode(1002000011, "该营业执照号名称已注册");
+    ErrorCode AUTH_MOBILE_NOT_EXIST = new ErrorCode(1002000012, "该手机号未注册");
+    ErrorCode AUTH_REGISTER_ERROR = new ErrorCode(1002000013, "注册失败");
 
     // ========== 菜单模块 1002001000 ==========
     ErrorCode MENU_NAME_DUPLICATE = new ErrorCode(1002001000, "已经存在该名字的菜单");

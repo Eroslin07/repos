@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 后台用户 Service 实现类
@@ -28,5 +29,10 @@ public class UserExtServiceImpl implements UserExtService {
     @Override
     public int deleteByUserId(Long userId) {
         return userExtMapper.deleteByUserId(userId);
+    }
+
+    @Override
+    public List<UserExtDO> selectByIDCard(String IDCard) {
+        return userExtMapper.selectByIDCard(IDCard);
     }
 }

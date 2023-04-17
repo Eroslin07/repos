@@ -296,6 +296,11 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
+    public List getTenantListWithType(String type,String value) {
+        return tenantMapper.selectList(type,value);
+    }
+
+    @Override
     public PageResult<TenantDO> getTenantPage(TenantPageReqVO pageReqVO) {
         return tenantMapper.selectPage(pageReqVO);
     }

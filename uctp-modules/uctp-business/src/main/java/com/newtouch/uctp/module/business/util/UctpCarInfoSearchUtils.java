@@ -95,34 +95,38 @@ public class UctpCarInfoSearchUtils {
             String Recommended_high_sold_price = null;
             //转换系数类型  默认为0.2,
             Double coefficient = new Double(StringUtil.isEmpty(coefficients) ? "0.2" : coefficients);
-            for (Object map : maps.entrySet()) {
-                if (((Map.Entry) map).getKey().equals("model_price")) {
-                    //指导价
-                    model_price = ((Map.Entry) map).getValue().toString();
-                } else if (((Map.Entry) map).getKey().equals("eval_prices")) {
-                    JSONArray jsonArray = (JSONArray) ((Map.Entry) map).getValue();
-                    for (int i = 0; i < jsonArray.size(); i++) {
-                        JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                        if (jsonObject.get("condition").equals("excellent")) {
-                            dealer_high_sold_price = jsonObject.get("dealer_high_sold_price").toString();
-                        } else if (jsonObject.get("condition").equals("normal")) {
-                            dealer_low_sold_price = jsonObject.get("dealer_low_sold_price").toString();
+            if(maps.get("status").equals("0")){
+                mapinfo.put("msg","上牌年份不合理");
+            }else{
+                for (Object map : maps.entrySet()) {
+                    if (((Map.Entry) map).getKey().equals("model_price")) {
+                        //指导价
+                        model_price = ((Map.Entry) map).getValue().toString();
+                    } else if (((Map.Entry) map).getKey().equals("eval_prices")) {
+                        JSONArray jsonArray = (JSONArray) ((Map.Entry) map).getValue();
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                            if (jsonObject.get("condition").equals("excellent")) {
+                                dealer_high_sold_price = jsonObject.get("dealer_high_sold_price").toString();
+                            } else if (jsonObject.get("condition").equals("normal")) {
+                                dealer_low_sold_price = jsonObject.get("dealer_low_sold_price").toString();
+                            }
                         }
                     }
                 }
-            }
-            //  add():加法， subtract():减法:, multiply():乘法; divide():除法，
-            Recommended_low_sold_price = String.format("%.2f", new BigDecimal(dealer_low_sold_price).multiply(new BigDecimal(1 - coefficient)));
-            Recommended_high_sold_price = String.format("%.2f", new BigDecimal(dealer_high_sold_price).multiply(new BigDecimal(1 + coefficient)));
-            //            System.out.println("model_price" + "------" + model_price);
-            mapinfo.put("dealer_low_sold_price", dealer_low_sold_price);
-            mapinfo.put("dealer_high_sold_price", dealer_high_sold_price);
-            mapinfo.put("Recommended_low_sold_price", Recommended_low_sold_price);
-            mapinfo.put("Recommended_high_sold_price", Recommended_high_sold_price);
-            mapinfo.put("model_price", model_price);
-            mapinfo.put("msg", "success");
+                //  add():加法， subtract():减法:, multiply():乘法; divide():除法，
+                Recommended_low_sold_price = String.format("%.2f", new BigDecimal(dealer_low_sold_price).multiply(new BigDecimal(1 - coefficient)));
+                Recommended_high_sold_price = String.format("%.2f", new BigDecimal(dealer_high_sold_price).multiply(new BigDecimal(1 + coefficient)));
+                //            System.out.println("model_price" + "------" + model_price);
+                mapinfo.put("dealer_low_sold_price", dealer_low_sold_price);
+                mapinfo.put("dealer_high_sold_price", dealer_high_sold_price);
+                mapinfo.put("Recommended_low_sold_price", Recommended_low_sold_price);
+                mapinfo.put("Recommended_high_sold_price", Recommended_high_sold_price);
+                mapinfo.put("model_price", model_price);
+                mapinfo.put("msg", "success");
 
-            getMethod.releaseConnection();
+                getMethod.releaseConnection();
+            }
             return mapinfo;
 
         } catch (IOException e) {

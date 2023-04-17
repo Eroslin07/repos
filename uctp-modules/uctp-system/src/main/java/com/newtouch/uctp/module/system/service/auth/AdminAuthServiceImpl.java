@@ -163,6 +163,20 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         if(userService.getUserByMobile(reqVO.getPhone())!=null){
             throw exception(AUTH_MOBILE_IS_EXIST);
         }
+        //查询身份证是否注册
+        if(userExtService.selectByIDCard(reqVO.getIdCard())!=null){
+            throw exception(AUTH_IDCARD_IS_EXIST);
+        }
+        //查询营业执照号是否注册
+        if(deptService.selectByTaxNum(reqVO.getTaxNum())!=null){
+            throw exception(AUTH_TAXNUM_IS_EXIST);
+        }
+
+        //查询商户名称是否注册
+        if(deptService.selectByName(reqVO.getBusinessName())!=null){
+            throw exception(AUTH_NAME_IS_EXIST);
+        }
+
 //        String decrypt = RASClientUtil.jsencryptDecryptByPrivateKeyLong(reqVO.getPassword());
         HashMap<Object, Object> map = new HashMap<>();
         try {
