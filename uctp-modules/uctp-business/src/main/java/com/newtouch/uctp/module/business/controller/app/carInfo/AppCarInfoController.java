@@ -99,8 +99,8 @@ public class AppCarInfoController {
 
     @GetMapping("/home/count")
     @Operation(summary = "获得APP首页统计")
-    public CommonResult<List<Map<String, Object>>> getCarCountGroupByStatus() {
-        List<Map<String, Object>> list = carInfoService.getCarCountGroupByStatus();
+    public CommonResult<List<HomeCountVO>> getCarCountGroupByStatus() {
+        List<HomeCountVO> list = carInfoService.getCarCountGroupByStatus();
         return success(list);
     }
 

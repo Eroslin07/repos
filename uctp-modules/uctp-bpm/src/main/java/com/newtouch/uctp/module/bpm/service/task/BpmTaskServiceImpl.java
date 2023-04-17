@@ -421,7 +421,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     @Override
     public PageResult<BpmTaskTodoRespVO> getTodoTaskPageV2(Long loginUserId, BpmTaskTodoReqVO pageVO) {
         Page<BpmTaskTodoRespVO> page = MyBatisUtils.buildPage(pageVO);
-        bpmFormMainMapper.getBpmTaskTodo(page, pageVO);
+        bpmFormMainMapper.getBpmTaskTodo(page, pageVO, loginUserId);
         return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
