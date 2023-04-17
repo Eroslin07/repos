@@ -515,9 +515,9 @@
 					natureOfOperat: '',
 					carType: '',
 					firstRegistDate: dateTime,
-					scrapDate: '',
-					annualInspectionDate: '',
-					insuranceEndData: '',
+					scrapDate: dateTime,
+					annualInspectionDate: dateTime,
+					insuranceEndData: dateTime,
 					licensePlateNum: '',
 					certificateNo: '',
 					colour: '',
@@ -776,8 +776,8 @@
 					}
 				},
 				fairValue: {
-					value1: '13.19',
-					value2: '15.20'
+					value1: '',
+					value2: ''
 				},
 				showSex: false,
 				range: [
@@ -872,53 +872,122 @@
 						if (index == 1) {
 							// 识别行驶证
 							_this.carForm.drivingLicenseUrl = _this[`fileList${index}`];
+							_this.$modal.loading("行驶证识别中，请耐心等待...")
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
 								getVehicleLicense({ vehicleLicense: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.words_result['发动机号码']) {
 										let vin = data.words_result['车辆识别代号'].words;
-										_this.carForm.vin = vin;
-										_this.carForm.engineNum = data.words_result['发动机号码'].words;
-										_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
-										_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
-										_this.carForm.carType = data.words_result['车辆类型'].words;
-										_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-										_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-										_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
-										_this.carForm.firstRegistDate = data.words_result['注册日期'].words;
-										let y = _this.carForm.firstRegistDate.slice(0, 4);
-										let m = _this.carForm.firstRegistDate.slice(4, 6);
-										let d = _this.carForm.firstRegistDate.slice(6);
-										_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
-										// 根据品牌查询id
-										_this.carBrandList();
-										// getCarInfo({ VIN: vin }).then((result) => {
-										// 	_this.$modal.closeLoading();
-										// 	if (result.data['1']) {
-										// 		// 数据回显
-										// 	} else if (result.data['2']) {
-										// 		// 
-										// 	} else if (result.data['3']) {
-										// 		_this.carForm.vin = vin;
-										// 		_this.carForm.engineNum = data.words_result['发动机号码'].words;
-										// 		_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
-										// 		_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
-										// 		_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-										// 		_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-										// 		_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
-										// 		_this.carForm.firstRegistDate = data.words_result['注册日期'].words;
-										// 		let y = _this.carForm.firstRegistDate.slice(0, 4);
-										// 		let m = _this.carForm.firstRegistDate.slice(4, 6);
-										// 		let d = _this.carForm.firstRegistDate.slice(6);
-										// 		_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
-										// 	}
-										// 	// 根据品牌查询id
-										// 	_this.carBrandList();
-										// })
-									}
-									if (i == res.tempFilePaths.length - 1) {
-										_this.upload(res, index);
+										getCarInfo({ VIN: vin }).then((result) => {
+											_this.$modal.closeLoading();
+											if (result.data['1']) {
+												// 数据回显
+												_this.carId = result.data['1'].carInfoDetails.carId;
+												_this.carForm = {
+													drivingLicenseUrl: result.data['1'].fileB,
+													certificateUrl: result.data['1'].fileC,
+													carUrl: result.data['1'].fileA,
+													vin: result.data['1'].carInfo.vin,
+													natureOfOperat: result.data['1'].carInfoDetails.natureOfOperat,
+													carType: result.data['1'].carInfo.carType,
+													firstRegistDate: result.data['1'].carInfoDetails.firstRegistDate,
+													scrapDate: result.data['1'].carInfo.scrapDate,
+													annualInspectionDate: result.data['1'].carInfo.annualInspectionDate,
+													insuranceEndData: result.data['1'].carInfo.insuranceEndData,
+													licensePlateNum: result.data['1'].carInfo.plateNum,
+													certificateNo: result.data['1'].carInfoDetails.certificateNo,
+													colour: result.data['1'].carInfoDetails.colour,
+													engineNum: result.data['1'].carInfo.engineNum,
+													brandType: result.data['1'].carInfo.brandType,
+													model: result.data['1'].carInfo.model,
+													brand: result.data['1'].carInfo.brand,
+													remarks: result.data['1'].carInfo.remarks,
+													insurance: result.data['1'].carInfo.insurance,
+													mileage: result.data['1'].carInfoDetails.mileage.toString(),
+													checkboxValue: [],
+													key: result.data['1'].carInfoDetails.proceduresAndSpareParts.vehicleKey,
+													other: result.data['1'].carInfoDetails.proceduresAndSpareParts.accidentVehicle,
+												}
+												result.data['1'].fileA.forEach((item, index) => {
+													if (index == 0) {
+														_this.fileList2 = [item];
+													} else if (index == 1) {
+														_this.fileList5 = [item];
+													} else if (index == 2) {
+														_this.fileList6 = [item];
+													} else if (index == 3) {
+														_this.fileList7 = [item];
+													}
+												})
+												_this.fileList1 = result.data['1'].fileB;
+												_this.fileList1.status = 'success';
+												_this.fileList3 = result.data['1'].fileC;
+												let obj = result.data['1'].carInfoDetails.proceduresAndSpareParts
+												for (let key in obj) {
+													if (obj[key] == true) {
+														_this.carForm.checkboxValue.push(key);
+													}
+													if (key == 'vehicleKey') {
+														if (obj[key] != 0) {
+															_this.carForm.checkboxValue.push(key);
+														}
+													}
+													if (key == 'accidentVehicle') {
+														if (obj[key] != '') {
+															_this.carForm.checkboxValue.push(key);
+														}
+													}
+												}
+												// 卖家信息
+												_this.sellerForm = {
+													vehicleReceiptAmount: result.data['1'].carInfo.vehicleReceiptAmount,
+													payType: result.data['1'].carInfoDetails.payType ? result.data['1'].carInfoDetails.payType : 0,
+													transManageName: result.data['1'].carInfoDetails.transManageName,
+													collection: result.data['1'].carInfoDetails.collection ? result.data['1'].carInfoDetails.collection : 0,
+													sellerIdCard: result.data['1'].carInfoDetails.sellerIdCard,
+													sellerIdCardUrl: result.data['1'].fileD,
+													sellerName: result.data['1'].carInfoDetails.sellerName,
+													thirdSellerName: result.data['1'].carInfoDetails.thirdSellerName,
+													sellerTel: result.data['1'].carInfoDetails.sellerTel,
+													sellerAdder: result.data['1'].carInfoDetails.sellerAdder,
+													remitType: result.data['1'].carInfoDetails.remitType ? result.data['1'].carInfoDetails.remitType : '转账',
+													bankName: result.data['1'].carInfoDetails.bankName,
+													bankCard: result.data['1'].carInfoDetails.bankCard,
+													thirdBankCard: result.data['1'].carInfoDetails.thirdBankCard,
+												}
+												result.data['1'].fileD.forEach((item, index) => {
+													if (index == 0) {
+														_this.fileList4 = item;
+													} else if (index == 1) {
+														_this.fileList8 = item;
+													}
+												})
+											} else if (result.data['2']) {
+												_this.$modal.msg("车辆已存在");
+												_this[`fileList${index}`] = [];
+												_this.carForm.drivingLicenseUrl = [];
+											} else if (result.data['3']) {
+												_this.carForm.vin = vin;
+												_this.carForm.engineNum = data.words_result['发动机号码'].words;
+												_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
+												_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
+												_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+												_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
+												let rdate = data.words_result['注册日期'].words;
+												let y = rdate.slice(0, 4);
+												let m = rdate.slice(4, 6);
+												let d = rdate.slice(6);
+												_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
+												
+												if (i == res.tempFilePaths.length - 1) {
+													_this.upload(res, index);
+												}
+											}
+											// 根据品牌查询id
+											_this.carBrandList();
+										})
 									}
 								})
 							}
@@ -1016,8 +1085,7 @@
 			// 查询品牌id
 			carBrandList() {
 				let data = {
-					// brand_name: this.carForm.brand
-					brand_name: '宝马'
+					brand_name: this.carForm.brand
 				}
 				getCarBrandList(data).then((res) => {
 					// 根据品牌id查询车系
@@ -1069,7 +1137,7 @@
 			handleStep() {
 				this.$refs.carForm.validate().then(res => {
 					if (this.modelId) {
-						this.handleDraft('step');
+						this.getFairValue();
 					} else {
 						this.$modal.msg("请选择车型");
 					}
@@ -1122,6 +1190,7 @@
 				
 				let list = [...this.fileList2, ...this.fileList5, ...this.fileList6, ...this.fileList7];
 				let data = {
+					id: this.carId,
 					deptId: this.$store.state.user.deptId,
 					tenantId: this.$store.state.user.tenantId,
 					carUrl: list.map((item) => { return item.id }),
@@ -1150,11 +1219,10 @@
 					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
-						this.carId = res.data.carInfo.id;
+						this.carId = res.data.carInfoDetails.id;
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
-						this.getFairValue();
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
@@ -1165,11 +1233,19 @@
 			// 查询公允价值
 			getFairValue() {
 				let data = {
-					carId: this.carId,
-					modelId: this.modelId
+					modelId: this.modelId,
+					plateNum: this.carForm.licensePlateNum,
+					mileage: this.carForm.mileage,
+					firstRegistDate: this.carForm.firstRegistDate
 				}
 				getFairValue(data).then((res) => {
-					console.log(res)
+					if (res.msg == 'success') {
+						this.fairValue.value1 = res.Recommended_low_sold_price;
+						this.fairValue.value1 = res.Recommended_high_sold_price;
+						this.handleDraft('step');
+					} else {
+						this.$modal.msg(res.msg);
+					}
 				})
 			},
 			// 收款方式选择框确定
@@ -1254,10 +1330,11 @@
 									formMain: {
 										merchantId: res.data.thirdId,
 										thirdId: res.data.thirdId,
-										formDataJson: {
-											carInfo: res.data.carInfo,
-											transactionInfo: res.data.transactionInfo
-										}
+										// formDataJson: {
+										// 	carInfo: res.data.carInfo,
+										// 	carInfoDetails: res.data.carInfoDetails
+										// },
+										formDataJson: res.data
 									}
 								}
 							}
