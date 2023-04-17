@@ -24,4 +24,7 @@ public class ValidatedGroup {
 
     //保证金-利润回填
     public interface ProfitBack{};
+
+    //保证金释放
+    public interface Release{};
 }

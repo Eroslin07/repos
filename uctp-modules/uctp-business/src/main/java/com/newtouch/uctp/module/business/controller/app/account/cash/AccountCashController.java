@@ -78,4 +78,9 @@ public class AccountCashController {
         return CommonResult.success(accountCashService.profitBack(transactionRecordReqVO));
     }
 
+    @PostMapping("/release")
+    @Operation(summary = "保证金释放")
+    public CommonResult<Boolean> release(@Validated(ValidatedGroup.Release.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
+        return CommonResult.success(accountCashService.release(transactionRecordReqVO));
+    }
 }

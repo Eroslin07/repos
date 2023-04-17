@@ -79,14 +79,14 @@ public class AccountCashServiceImpl implements AccountCashService {
             if (CollectionUtil.isNotEmpty(withdrawIds)) {
                 LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
                 presentStatusRecordWrapper.in(PresentStatusRecordDO::getPresentNo, withdrawIds).eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
-                        .orderByAsc(PresentStatusRecordDO::getOccurredTime,PresentStatusRecordDO::getId); // 交易状态变更时间升序
+                        .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId); // 交易状态变更时间升序
 
                 map = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper)
                         .stream().map(psr -> PresentStatusRecordRespVO.builder()
-                        .presentNo(psr.getPresentNo())
-                        .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
-                        .status(psr.getStatus())
-                        .build()).collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
+                                .presentNo(psr.getPresentNo())
+                                .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
+                                .status(psr.getStatus())
+                                .build()).collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
             }
 
             for (MerchantCashDO merchantCashDO : list) {
@@ -164,16 +164,6 @@ public class AccountCashServiceImpl implements AccountCashService {
         return this.detail(transactionRecordReqVO.getAccountNo());
     }
 
-    private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {
-        PresentStatusRecordDO presentStatusRecord = new PresentStatusRecordDO();
-        presentStatusRecord.setStatus(presentStatus);
-        presentStatusRecord.setPresentType(AccountConstants.PRESENT_TYPE_CASH);
-        presentStatusRecord.setOccurredTime(LocalDateTime.now());
-        presentStatusRecord.setDeleted(Boolean.FALSE);
-        presentStatusRecord.setPresentNo(cashId);
-        return presentStatusRecord;
-    }
-
     //保证金预占
     @Override
     @Transactional
@@ -205,7 +195,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         int count = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_DEDUCTION);
 
         //更改保证金预占记录为实占
-        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
+        //MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
         //merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_DEDUCTION, null, contractNo);
         merchantCashService.updateCashDeduction(contractNo);
 
@@ -215,25 +205,44 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     //待回填保证金
     @Override
+    @Transactional
     public Integer difference(TransactionRecordReqVO transactionRecordReqVO) {
-        //查询合同号预占金额
-        MerchantCashDO reserveCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
-        MerchantCashDO backCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Arrays.asList(AccountConstants.TRADE_TYPE_BACK, AccountConstants.TRADE_TYPE_PROFIT_BACK));
+//        //查询商户实占金额
+//        MerchantCashDO deductionCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Collections.singletonList(AccountConstants.TRADE_TYPE_DEDUCTION));
+//        //查询商户回填金额
+//        MerchantCashDO backCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Arrays.asList(AccountConstants.TRADE_TYPE_BACK, AccountConstants.TRADE_TYPE_PROFIT_BACK));
+//
+//        //预占金额 - 回填金额（保证金回填+利润回填）
+//        int amount = 0;
+//
+//        if (deductionCashDO != null && deductionCashDO.getPayAmount() != null && deductionCashDO.getPayAmount() > 0){
+//            amount = deductionCashDO.getPayAmount();
+//            if (backCashDO != null && backCashDO.getPayAmount() != null && backCashDO.getPayAmount() > 0) {
+//                amount -= backCashDO.getPayAmount();
+//            }
+//        }
 
-        //预占金额 - 回填金额（保证金回填+利润回填）
         int amount = 0;
-
-        if (reserveCashDO != null && reserveCashDO.getPayAmount() != null && reserveCashDO.getPayAmount() > 0){
-            amount = reserveCashDO.getPayAmount();
-            if (backCashDO != null && backCashDO.getPayAmount() != null && backCashDO.getPayAmount() > 0) {
-                amount -= backCashDO.getPayAmount();
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
+        if (merchantAccountDO != null && merchantAccountDO.getCash() != null) {
+            Integer cash = merchantAccountDO.getCash();
+            Integer availableCash = 0;
+            Integer freezeCash = 0;
+            if (merchantAccountDO.getAvailableCash() != null) {
+                availableCash = merchantAccountDO.getAvailableCash();
             }
+
+            if (merchantAccountDO.getFreezeCash() != null) {
+                freezeCash = merchantAccountDO.getFreezeCash();
+            }
+            amount = cash - availableCash - freezeCash;
         }
         return amount;
     }
 
     //保证金回填
     @Override
+    @Transactional
     public Boolean back(TransactionRecordReqVO transactionRecordReqVO) {
         //增加保证金金额，版本号加1
         int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
@@ -248,6 +257,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     //保证金回填-利润
     @Override
+    @Transactional
     public Boolean profitBack(TransactionRecordReqVO transactionRecordReqVO) {
         //增加保证金金额，版本号加1
         int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
@@ -260,5 +270,36 @@ public class AccountCashServiceImpl implements AccountCashService {
         return count > 0;
     }
 
+    //保证金释放-冻结解冻
+    @Override
+    @Transactional
+    public Boolean release(TransactionRecordReqVO transactionRecordReqVO) {
+        String contractNo = transactionRecordReqVO.getContractNo();
+        //查询合同号预占金额
+        MerchantCashDO merchantCashDO = merchantCashService.queryContractNoAmount(contractNo, Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
+        String accountNo = merchantCashDO.getAccountNo();
+        Integer payAmount = merchantCashDO.getPayAmount();
+        if (StringUtils.isEmpty(accountNo) || payAmount == null || payAmount <= 0) {
+            throw new ServiceException(AccountConstants.ERROR_CODE_CONTRACT_NO_NOT_FOUND, AccountConstants.ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND);
+        }
 
+        //冻结解冻，版本号+1
+        int count = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_RELEASE);
+
+        //更改保证金预占记录为实占
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
+        merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_RELEASE, null, contractNo);
+        return count > 0;
+    }
+
+
+    private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {
+        PresentStatusRecordDO presentStatusRecord = new PresentStatusRecordDO();
+        presentStatusRecord.setStatus(presentStatus);
+        presentStatusRecord.setPresentType(AccountConstants.PRESENT_TYPE_CASH);
+        presentStatusRecord.setOccurredTime(LocalDateTime.now());
+        presentStatusRecord.setDeleted(Boolean.FALSE);
+        presentStatusRecord.setPresentNo(cashId);
+        return presentStatusRecord;
+    }
 }

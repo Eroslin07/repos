@@ -1,3 +1,13 @@
+###保证金释放
+POST {{appBusinessUrl}}/uctp/account/cash/release
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+{
+  "contractNo": "5463643"
+}
+
+###
 ###保证金回填-利润
 POST {{appBusinessUrl}}/uctp/account/cash/profit/back
 Content-Type: application/json
@@ -26,7 +36,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "3213232131323213"
+  "accountNo": "11111111"
 }
 
 ###保证金实占
@@ -47,7 +57,7 @@ tenant-id: {{adminTenentId}}
 {
   "accountNo": "11111111",
   "tranAmount": 10,
-  "contractNo": "3213232131323213"
+  "contractNo": "5463643"
 }
 
 ###

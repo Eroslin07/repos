@@ -9,7 +9,6 @@
         <result column="freeze_cash" jdbcType="INTEGER" property="freezeCash"/>
         <result column="available_cash" jdbcType="INTEGER" property="availableCash"/>
         <result column="freeze_profit" jdbcType="INTEGER" property="freezeProfit"/>
-        <result column="tenant_id" jdbcType="BIGINT" property="tenantId"/>
         <result column="deleted" jdbcType="BIT" property="deleted"/>
         <result column="revision" jdbcType="INTEGER" property="revision"/>
         <result column="creator" jdbcType="VARCHAR" property="creator"/>
@@ -26,7 +25,6 @@
         freeze_cash,
         available_cash,
         freeze_profit,
-        tenant_id,
         deleted,
         revision,
         creator,
