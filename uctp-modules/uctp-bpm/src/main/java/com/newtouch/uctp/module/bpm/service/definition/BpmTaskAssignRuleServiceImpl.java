@@ -3,6 +3,22 @@ package com.newtouch.uctp.module.bpm.service.definition;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.UserTask;
+import org.flowable.common.engine.api.FlowableException;
+import org.flowable.engine.delegate.DelegateExecution;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
 import com.newtouch.uctp.framework.common.util.object.ObjectUtils;
@@ -15,8 +31,8 @@ import com.newtouch.uctp.module.bpm.convert.definition.BpmTaskAssignRuleConvert;
 import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmTaskAssignRuleDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmUserGroupDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.definition.BpmTaskAssignRuleMapper;
-import com.newtouch.uctp.module.bpm.enums.definition.BpmTaskAssignRuleTypeEnum;
 import com.newtouch.uctp.module.bpm.enums.DictTypeConstants;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmTaskAssignRuleTypeEnum;
 import com.newtouch.uctp.module.bpm.framework.flowable.core.behavior.script.BpmTaskAssignScript;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.PostApi;
@@ -26,19 +42,6 @@ import com.newtouch.uctp.module.system.api.permission.PermissionApi;
 import com.newtouch.uctp.module.system.api.permission.RoleApi;
 import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
-import com.google.common.annotations.VisibleForTesting;
-import lombok.extern.slf4j.Slf4j;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.UserTask;
-import org.flowable.common.engine.api.FlowableException;
-import org.flowable.engine.delegate.DelegateExecution;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.*;
 
 import static cn.hutool.core.text.CharSequenceUtil.format;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -273,7 +276,7 @@ public class BpmTaskAssignRuleServiceImpl implements BpmTaskAssignRuleService {
         }
 
         // 移除被禁用的用户
-        removeDisableUsers(assigneeUserIds);
+        //removeDisableUsers(assigneeUserIds);
         // 如果候选人为空，抛出异常
         if (CollUtil.isEmpty(assigneeUserIds)) {
             log.error("[calculateTaskCandidateUsers][流程任务({}/{}/{}) 任务规则({}) 找不到候选人]", execution.getId(),

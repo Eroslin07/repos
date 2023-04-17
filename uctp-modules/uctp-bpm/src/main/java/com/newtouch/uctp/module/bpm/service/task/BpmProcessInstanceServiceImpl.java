@@ -15,10 +15,7 @@ import java.util.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.IdentityService;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.RuntimeService;
+import org.flowable.engine.*;
 import org.flowable.engine.delegate.event.FlowableCancelledEvent;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
@@ -112,6 +109,8 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     public IdentityService identityService;
     @Resource
     private RedisTemplate redisTemplate;
+    @Resource
+    private TaskService bpmEngTaskService;
 
 
     @Override
@@ -242,6 +241,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         updateBpmFormMainDO.setProcInstId(procInstId);
         updateBpmFormMainDO.setDoneTime(updateBpmFormMainDO.getSubmitTime());
         bpmFormMainMapper.updateById(updateBpmFormMainDO);
+        List<String> procInsts = new ArrayList<>();
+        procInsts.add(procInstId);
+        List<Task> taskList = taskService.getTasksByProcessInstanceIds(procInsts);
+        if (!CollectionUtils.isEmpty(taskList)) {
+            bpmEngTaskService.complete(taskList.get(0).getId());
+        }
 
         return String.valueOf(businessKey);
     }
