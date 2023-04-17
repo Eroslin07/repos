@@ -26,15 +26,15 @@ public class PresentStatusRecordRespVO {
     @Schema(description = "状态")
     private String status;
 
-    @Schema(description = "状态名称")
-    private String statusName;
+    @Schema(description = "状态中文名称")
+    private String statusText;
 
     public static PresentStatusRecordRespVO build(PresentStatusRecordDO presentStatusRecordDO) {
         return PresentStatusRecordRespVO.builder()
                 .presentNo(presentStatusRecordDO.getPresentNo())
                 .occurredTime(DateUtil.format(presentStatusRecordDO.getOccurredTime(), NORM_DATETIME_PATTERN))
                 .status(presentStatusRecordDO.getStatus())
-                .statusName(AccountEnum.getName(presentStatusRecordDO.getStatus()))
+                .statusText(AccountEnum.getName(presentStatusRecordDO.getStatus()))
                 .build();
     }
 }

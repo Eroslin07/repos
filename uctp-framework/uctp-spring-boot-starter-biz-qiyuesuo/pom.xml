@@ -29,6 +29,25 @@
             <artifactId>uctp-spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.google.guava</groupId>-->
+<!--            <artifactId>guava</artifactId>-->
+<!--            <optional>true</optional> &lt;!&ndash; 设置为可选，因为使用到 @VisibleForTesting 用于单元测试 &ndash;&gt;-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
 
         <!-- 契约锁相关依赖 -->
         <dependency>
@@ -38,6 +57,10 @@
             <scope>system</scope>
             <systemPath>${pom.basedir}/lib/sdk-java-3.5.2.jar</systemPath>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
