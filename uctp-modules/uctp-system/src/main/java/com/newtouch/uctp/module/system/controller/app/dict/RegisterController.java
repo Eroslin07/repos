@@ -181,7 +181,7 @@ public class RegisterController {
     @Operation(summary = "获得租户下拉")
 //    @PreAuthorize("@ss.hasPermission('system:tenant:getTenantlist')")
     public CommonResult<List> getTenantlist() {
-        List list = tenantService.getTenantListWithType("type","1");
+        List list = tenantService.getTenantListWithType(1,1L);
         return success(list);
     }
 

@@ -296,8 +296,8 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public List getTenantListWithType(String type,String value) {
-        return tenantMapper.selectList(type,value);
+    public List getTenantListWithType(Integer type,Long id) {
+        return tenantMapper.selectList(type,id);
     }
 
     @Override

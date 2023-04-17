@@ -52,11 +52,11 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
 
     default List<DeptDO> selectByTaxNum(String taxNum) {
         return selectList(new LambdaQueryWrapperX<DeptDO>()
-                .likeIfPresent(DeptDO::getTax_num,taxNum));
+                .eqIfPresent(DeptDO::getTax_num,taxNum));
     }
 
     default List<DeptDO> selectByName(String name) {
         return selectList(new LambdaQueryWrapperX<DeptDO>()
-                .likeIfPresent(DeptDO::getName,name));
+                .eqIfPresent(DeptDO::getName,name));
     }
 }

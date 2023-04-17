@@ -164,16 +164,19 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             throw exception(AUTH_MOBILE_IS_EXIST);
         }
         //查询身份证是否注册
-        if(userExtService.selectByIDCard(reqVO.getIdCard())!=null){
+        List<UserExtDO> userExtDOS = userExtService.selectByIDCard(reqVO.getIdCard());
+        if(userExtService.selectByIDCard(reqVO.getIdCard()).size()>0){
             throw exception(AUTH_IDCARD_IS_EXIST);
         }
         //查询营业执照号是否注册
-        if(deptService.selectByTaxNum(reqVO.getTaxNum())!=null){
+        List<DeptDO> deptDOS1 = deptService.selectByTaxNum(reqVO.getTaxNum());
+        if(deptService.selectByTaxNum(reqVO.getTaxNum()).size()>0){
             throw exception(AUTH_TAXNUM_IS_EXIST);
         }
 
         //查询商户名称是否注册
-        if(deptService.selectByName(reqVO.getBusinessName())!=null){
+        List<DeptDO> deptDOS2 = deptService.selectByName(reqVO.getBusinessName());
+        if(deptService.selectByName(reqVO.getBusinessName()).size()>0){
             throw exception(AUTH_NAME_IS_EXIST);
         }
 
