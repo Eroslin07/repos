@@ -2,11 +2,13 @@ package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
-import com.newtouch.uctp.module.bpm.service.task.BpmActivityService;
-import com.newtouch.uctp.module.bpm.service.task.BpmTaskService;
-import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
 import org.flowable.engine.delegate.event.AbstractFlowableEngineEventListener;
@@ -16,9 +18,10 @@ import org.flowable.task.api.Task;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
+import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
+import com.newtouch.uctp.module.bpm.service.task.BpmActivityService;
+import com.newtouch.uctp.module.bpm.service.task.BpmTaskService;
 
 /**
  * 监听 {@link org.flowable.task.api.Task} 的开始与完成，创建与更新对应的 {@link BpmTaskExtDO} 记录
@@ -36,6 +39,10 @@ public class BpmTaskEventListener extends AbstractFlowableEngineEventListener {
     @Resource
     @Lazy // 解决循环依赖
     private BpmActivityService activityService;
+
+    @Resource
+    @Lazy // 解决循环依赖
+    private BpmGlobalHandleListener bpmGlobalHandleListener;
 
     public static final Set<FlowableEngineEventType> TASK_EVENTS = ImmutableSet.<FlowableEngineEventType>builder()
             .add(FlowableEngineEventType.TASK_CREATED)
@@ -56,11 +63,13 @@ public class BpmTaskEventListener extends AbstractFlowableEngineEventListener {
     @Override
     protected void taskCompleted(FlowableEngineEntityEvent event) {
         taskService.updateTaskExtComplete((Task)event.getEntity());
+        bpmGlobalHandleListener.taskCompleted(event);
     }
 
     @Override
     protected void taskAssigned(FlowableEngineEntityEvent event) {
         taskService.updateTaskExtAssign((Task)event.getEntity());
+        bpmGlobalHandleListener.taskAssigned(event);
     }
 
     @Override
