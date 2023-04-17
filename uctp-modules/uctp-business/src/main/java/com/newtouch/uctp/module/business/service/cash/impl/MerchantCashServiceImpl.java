@@ -71,18 +71,12 @@ public class MerchantCashServiceImpl implements MerchantCashService {
                 break;
             case AccountConstants.TRADE_TYPE_BACK:
             case AccountConstants.TRADE_TYPE_PROFIT_BACK:
+            case AccountConstants.TRADE_TYPE_RELEASE:
                 merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
                 merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_INCOME);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 merchantCashDO.setContractNo(contractNo);
                 break;
-            case AccountConstants.TRADE_TYPE_DEDUCTION:
-                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
-                merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
-                merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_BUY_CARS);
-                merchantCashDO.setContractNo(contractNo);
-                break;
-
         }
         this.insert(merchantCashDO);
         return merchantCashDO;

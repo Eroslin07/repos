@@ -21,7 +21,7 @@ public interface MerchantCashMapper extends BaseMapperX<MerchantCashDO> {
                 .eq(MerchantCashDO::getAccountNo, merchantCashReq.getAccountNo())
                 .orderByDesc(MerchantCashDO::getCreateTime);
         if (merchantCashReq.getType() == 2) {
-            queryWrapper.in(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_PREEMPTION);
+            queryWrapper.in(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_PREEMPTION, AccountConstants.TRADE_TYPE_RELEASE);
         }
         return selectPage(merchantCashReq, queryWrapper);
 

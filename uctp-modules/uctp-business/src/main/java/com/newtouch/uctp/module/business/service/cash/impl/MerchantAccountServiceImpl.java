@@ -45,7 +45,7 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
             throw new ServiceException(AccountConstants.ERROR_CODE_REVERSION_ERROR, AccountConstants.ERROR_MESSAGE_REVERSION_ERROR);
         }
 
-        if (AccountConstants.TRADE_TYPE_DEDUCTION.equals(tradeType)) {
+        if (AccountConstants.TRADE_TYPE_DEDUCTION.equals(tradeType) || AccountConstants.TRADE_TYPE_RELEASE.equals(tradeType)) {
             if (merchantAccountDO == null || merchantAccountDO.getFreezeCash() < tranAmount) {
                 //冻结金额不足
                 throw new ServiceException(AccountConstants.ERROR_CODE_INSUFFICIENT_FREEZE_CASH, AccountConstants.ERROR_MESSAGE_INSUFFICIENT_FREEZE_CASH);
@@ -57,18 +57,22 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
             }
         }
 
+        merchantAccountDO.setRevision(merchantAccountDO.getRevision() + 1);
         switch (tradeType) {
             case AccountConstants.TRADE_TYPE_WITHDRAW:
                 merchantAccountDO.setCash(merchantAccountDO.getCash() - tranAmount);
                 merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() - tranAmount);
                 break;
             case AccountConstants.TRADE_TYPE_PREEMPTION:
-                merchantAccountDO.setCash(merchantAccountDO.getCash() - tranAmount);
                 merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() - tranAmount);
                 merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() + tranAmount);
                 break;
             case AccountConstants.TRADE_TYPE_DEDUCTION:
                 merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() - tranAmount);
+                break;
+            case AccountConstants.TRADE_TYPE_RELEASE:
+                merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() - tranAmount);
+                merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() + tranAmount);
                 break;
         }
         return merchantAccountMapper.updateById(merchantAccountDO);

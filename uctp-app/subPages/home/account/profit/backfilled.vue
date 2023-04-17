@@ -1,19 +1,15 @@
 <template>
 	<view class="freeze">
 		<uni-card>
-			<view style="padding: 10px 0;border-bottom: 1px solid #f5f5f5;">
-				<view class="text" style="font-size: 16px;">保证金冻结总额</view>
-				<view class="text" style="margin-top: 10px;">100,500<text style="font-size: 14px;">元</text></view>
-			</view>
-			<view style="padding: 10px 0;color: #333333;">
-				<view>保证金提现中：1,000.00元</view>
-				<view>保证金预扣：200,000元</view>
+			<view style="padding: 10px 0;">
+				<view class="text" style="font-size: 16px;">待回填保证金总额</view>
+				<view class="text" style="margin-top: 10px;">-100,500<text style="font-size: 14px;">元</text></view>
 			</view>
 		</uni-card>
 		
 		<uni-card>
 			<view style="padding: 10px 0;border-bottom: 1px solid #f5f5f5;">
-				<view style="font-size: 16px;color: #333333;">保证金冻结明细</view>
+				<view style="font-size: 16px;color: #333333;">待回填保证金明细</view>
 			</view>
 			<view style="padding: 10px;">
 				<u-list style="height: 100%;">
@@ -42,21 +38,15 @@
 			return {
 				indexList: [{
 					status: 1,
-					title: '保证金提现中'
-				}, {
-					status: 2,
-					title: '保证金预扣'
+					title: '待回填保证金'
 				}]
 			}
 		},
 		methods: {
 			handleClick(val) {
-				if (val == '保证金提现中') {
-					// 保证金提现中
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
-				} else if (val == '保证金预扣') {
-					// 保证金预扣
-					this.$tab.navigateTo('/subPages/home/account/bond/withhold');
+				if (val == '待回填保证金') {
+					// 待回填保证金
+					this.$tab.navigateTo('/subPages/home/account/profit/backfilledDetile');
 				}
 			}
 		}

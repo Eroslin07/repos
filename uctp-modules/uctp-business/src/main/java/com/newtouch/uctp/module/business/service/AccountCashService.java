@@ -81,4 +81,12 @@ public interface AccountCashService {
      * @return 保证金回填-利润结果：true/false
      */
     Boolean profitBack(TransactionRecordReqVO transactionRecordReqVO);
+
+    /**
+     * 保证金释放-冻结解冻
+     *
+     * @param transactionRecordReqVO 账户号
+     * @return 保证金释放-冻结解冻结果：true/false
+     */
+    Boolean release(TransactionRecordReqVO transactionRecordReqVO);
 }

@@ -11,8 +11,8 @@
 				</view>
 				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">100,500<text style="font-size: 12px;">元</text></view>
 				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="冻结余额 100,000 元"></u--text></view>
-				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="待回填保证金0元"></u--text></view>
-				<button class="button" @click="handleRecharge" style="background-color: #fa6401;color: #fff;">提现</button>
+				<view style="margin-bottom: 16px;" @click="handleBackfilled"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="待回填保证金0元"></u--text></view>
+				<button class="button" @click="handleWithdrawal" style="background-color: #fa6401;color: #fff;">提现</button>
 			</view>
 		</view>
 		
@@ -20,7 +20,7 @@
 			<view class="jiaoyi">
 				<u-row justify="space-between" customStyle="margin-bottom: 10px;">
 					<u-col span="4">
-						<view class="title">保证金交易明细</view>
+						<view class="title">利润交易明细</view>
 					</u-col>
 					<u-col span="4">
 						<view style="text-align: right;" @click="handleWhole">全部 ></view>
@@ -63,7 +63,7 @@
 					title: '卖车利润'
 				}, {
 					status: 4,
-					title: '带回填保证金'
+					title: '待回填保证金'
 				}, {
 					status: 5,
 					title: '税费扣减'
@@ -97,43 +97,43 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal');
-			},
-			// 充值
-			handleRecharge() {
-				this.$tab.navigateTo('/subPages/home/account/bond/recharge');
+				this.$tab.navigateTo('/subPages/home/account/profit/withdrawal');
 			},
 			// 点击冻结余额
 			handleFreeze() {
-				this.$tab.navigateTo('/subPages/home/account/bond/freeze');
+				this.$tab.navigateTo('/subPages/home/account/profit/freeze');
+			},
+			// 点击待回填保证金
+			handleBackfilled() {
+				this.$tab.navigateTo('/subPages/home/account/profit/backfilled');
 			},
 			// 点击全部
 			handleWhole() {
-				this.$tab.navigateTo('/subPages/home/account/bond/whole');
+				this.$tab.navigateTo('/subPages/home/account/profit/whole');
 			},
-			// 点击保证金明细列表
+			// 点击利润明细列表
 			handleClick(val) {
-				if (val == '保证金提现中') {
-					// 保证金提现中
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
-				} else if (val == '保证金提现') {
-					// 保证金提现明细
-					this.$tab.navigateTo('/subPages/home/account/bond/detailed');
+				if (val == '利润提现中') {
+					// 利润提现中
+					this.$tab.navigateTo('/subPages/home/account/profit/progressDetile');
+				} else if (val == '利润提现') {
+					// 利润提现
+					this.$tab.navigateTo('/subPages/home/account/profit/detailed');
+				} else if (val == '卖车利润') {
+					// 卖车利润
+					this.$tab.navigateTo('/subPages/home/account/profit/info');
+				} else if (val == '待回填保证金') {
+					// 待回填保证金
+					this.$tab.navigateTo('/subPages/home/account/profit/backfilledDetile');
+				} else if (val == '税费扣减') {
+					// 税费扣减
+					this.$tab.navigateTo('/subPages/home/account/profit/taxation');
+				} else if (val == '服务费扣减') {
+					// 服务费扣减
+					this.$tab.navigateTo('/subPages/home/account/profit/serviceCharge');
 				} else if (val == '保证金回填') {
 					// 保证金回填
-					this.$tab.navigateTo('/subPages/home/account/bond/info');
-				} else if (val == '保证金预扣') {
-					// 保证金预扣
-					this.$tab.navigateTo('/subPages/home/account/bond/withhold');
-				} else if (val == '保证金充值') {
-					// 保证金充值
-					this.$tab.navigateTo('/subPages/home/account/bond/rechargeDetails');
-				} else if (val == '保证金预扣释放') {
-					// 保证金预扣释放
-					this.$tab.navigateTo('/subPages/home/account/bond/release');
-				} else if (val == '保证金实扣') {
-					// 保证金实扣
-					this.$tab.navigateTo('/subPages/home/account/bond/actualDeduction');
+					this.$tab.navigateTo('/subPages/home/account/profit/deduction');
 				}
 			}
 		}
