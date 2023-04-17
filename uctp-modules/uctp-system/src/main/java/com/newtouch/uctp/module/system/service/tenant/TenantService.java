@@ -61,6 +61,8 @@ public interface TenantService {
 
     List getTenantList();
 
+    List getTenantListWithType(Integer type,Long id);
+
     /**
      * 获得租户分页
      *

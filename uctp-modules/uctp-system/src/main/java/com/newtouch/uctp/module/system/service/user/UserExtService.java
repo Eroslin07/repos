@@ -31,4 +31,6 @@ public interface UserExtService {
     int insertUser(UserExtDO user);
 
     int deleteByUserId(Long userId);
+
+    List<UserExtDO> selectByIDCard(String IDCard);
 }

@@ -521,7 +521,7 @@
 			// 选择框确定
 			confirm(val) {
 				this.registerForm.marketLocation = val.value[0].id;
-				this.registerForm.marketLocationValue = val.value[0].contactName;
+				this.registerForm.marketLocationValue = val.value[0].name;
 				this.showSex = false;
 			},
 			// 选择框取消

@@ -13,6 +13,7 @@ import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReq
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 
 /**
  * 部门 Service 接口
@@ -146,4 +147,8 @@ public interface DeptService {
     List<DeptDO> getDeptByParentId(Long parentId);
 
     List<DeptDO> selectIsExist(String name, Integer status);
+
+    List<DeptDO> selectByTaxNum(String taxNum);
+
+    List<DeptDO> selectByName(String name);
 }

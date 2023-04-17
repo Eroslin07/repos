@@ -50,4 +50,10 @@ public interface TenantMapper extends BaseMapperX<TenantDO> {
         return selectList(TenantDO::getPackageId, packageId);
     }
 
+
+    default List<TenantDO> selectList(Integer type,Long id ) {
+        return selectList(new LambdaQueryWrapperX<TenantDO>()
+                .neIfPresent(TenantDO::getId, id)
+                .eqIfPresent(TenantDO::getType,type));
+    }
 }

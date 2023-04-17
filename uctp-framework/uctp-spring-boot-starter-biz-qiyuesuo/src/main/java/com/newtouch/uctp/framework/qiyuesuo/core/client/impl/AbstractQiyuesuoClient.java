@@ -68,9 +68,9 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient {
     }
 
     @Override
-    public final QiyuesuoCommonResult<Contract> draft(Contract contract) {
+    public final QiyuesuoCommonResult<SdkResponse<Contract>> draft(Contract contract) {
         //创建合同草稿
-        QiyuesuoCommonResult<Contract> result;
+        QiyuesuoCommonResult<SdkResponse<Contract>> result;
         try {
             result = doDraft(contract);
         } catch (Throwable ex) {
@@ -83,7 +83,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient {
         return result;
     }
 
-    protected abstract QiyuesuoCommonResult<Contract> doDraft(Contract contract)
+    protected abstract QiyuesuoCommonResult<SdkResponse<Contract>> doDraft(Contract contract)
             throws Throwable;
 
     @Override

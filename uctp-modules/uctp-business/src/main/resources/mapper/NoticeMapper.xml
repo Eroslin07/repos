@@ -11,15 +11,25 @@
             ,PHONE
             ,BUSINESS_ID as businessId
             ,TENANT_ID as tenantId
-            ,CREATED_BY as creator
-            ,CREATED_TIME as createTime
-            ,UPDATED_BY as updater
-            ,UPDATED_TIME as updateTime
+            ,CREATEOR as creator
+            ,CREATE_TIME as createTime
+            ,UPDATER as updater
+            ,UPDATE_TIME as updateTime
             ,status
             ,url
         from uctp_notice
-        where status in ('1','0')
+        where BUSINESS_ID=#{businessID} and PUSH_STATUS='0' and status in ('1','0') order by CREATE_TIME DESC
     </select>
+
+    <select id="getUnreadNoticeCount"  resultType="int">
+        select
+            count(1)
+        from uctp_notice
+        where BUSINESS_ID=#{businessID} and PUSH_STATUS='0' and status ='0'
+    </select>
+
+
+
 
     <update id="updateNoticeStatus" parameterType="map">
         update
