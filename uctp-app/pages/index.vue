@@ -39,23 +39,25 @@
 		<!-- 交易状态 -->
 		<view class="deal-dynamic">
 			<h3 class="align-center">交易动态</h3>
-			<view class="cars-status" v-for="item in gatherData ||4" :key="item">
-				<view class="left-title" @click="tabCarStatus">
-					<view class="">收车中</view>
-					<view class="">
-						2
+			<view class="cars-status" v-for="item in gatherData" :key="item.status">
+				<view class="left-title" @click="tabCarStatus(item)">
+					<view class="">{{item.label}}</view>
+					<view class="" style="padding-top:3px;">
+						{{item.num || 0 }}
 					</view>
 				</view>
 				<view class="right-content">
 					<u-row style="height:68px;">
-						<u-col span="4">
-							<view class="align-center">草稿<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
-							</view>
+						<u-col span="4" v-for="child in item.child" :key="child.status" @click="handleTabItem(item,child)">
 							<view class="align-center">
-								2
+								<text style="padding-right:3px;">{{child.label}}</text>
+								<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
+							</view>
+							<view class="align-center" style="padding-top:3px">
+								{{child.num}}
 							</view>
 						</u-col>
-						<u-col span="4">
+						<!-- <u-col span="4">
 							<view class="align-center">合同已发起<uni-icons type="right" size="12" color="#656C6E">
 								</uni-icons>
 							</view>
@@ -70,7 +72,7 @@
 							<view class="align-center">
 								2
 							</view>
-						</u-col>
+						</u-col> -->
 					</u-row>
 				</view>
 			</view>
@@ -182,9 +184,6 @@
 			getAcount() {
 				getHomeCount().then(res => {
 					this.gatherData = res.data
-					this.gatherData.sort(function(a, b) {
-						return a.salesStatus - b.salesStatus
-					})
 				}).catch((error) => {
 					for (let i = 0; i < 4; i++) {
 						this.gatherData.push({
@@ -220,8 +219,11 @@
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
 			// 收车中
-			tabCarStatus(text) {
-				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${text}`)
+			tabCarStatus(item) {
+				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${item}`)
+			},
+			handleTabItem(item,child){
+				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${child}`)
 			},
 			// 消息
 			handleMsg() {

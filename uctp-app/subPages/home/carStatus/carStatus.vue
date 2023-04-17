@@ -3,33 +3,14 @@
 		<u-search class="search" v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 			placeholder="请输入商户/车辆型号/单号">
 		</u-search>
-		<zb-dropdown-menu style="width: 100%">
-			<zb-dropdown-item name="品牌" :options="brandArr" v-model="formData.brand" @change="brandChange">
-			</zb-dropdown-item>
-			<zb-dropdown-item name="收车状态" :options="newCarStatus" v-model="checkStatus" @change="changeValue">
-			</zb-dropdown-item>
-		</zb-dropdown-menu>
-
-		<u-datetime-picker ref="datetimePicker" :show="timeShow" v-model="saleTime" mode="year-month"
-			@cancel="timeCancle" @confirm="timeConfirm">
-		</u-datetime-picker>
-		<!-- 筛选项 -->
-		<view class="tag-box">
-
-			<text class="tag-item" v-for="(item,index) in 2" :key="index">
-				宝马
-				<uni-icons style="padding-left:3px" color="#ccc" type="closeempty" size="14"></uni-icons>
-			</text>
-			<view class="" style="display: inline-block;">
-				<!-- <uni-icons style="padding-left:3px" color="#ccc" type="trash" size="14"></uni-icons> -->
-				<u--text style="font-size:12px;" prefixIcon="trash" iconStyle="font-size: 16px" text="清空"></u--text>
-			</view>
+		<!-- tab导航 -->
+		<view class="" style="margin: 0 auto">
+			<u-tabs :list="navList" lineColor="#FA6400" @change="handleChange"></u-tabs>
 		</view>
-
 		<!-- 列表 -->
 		<view>
 			<block>
-				<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" style="margin-top: 10px;">
+				<!-- <uni-card v-for="(tab, tabIndex) in 2|| tabList" :key="tabIndex" style="margin-top: 10px;">
 					<uni-row :gutter="30">
 						<uni-col :span="8">
 							<view class="car_left">
@@ -50,6 +31,33 @@
 							<view style="font-size: 10px;">创建时间:2023-03-1514:10</view>
 						</uni-col>
 					</uni-row>
+				</uni-card> -->
+				<uni-card v-for="(tab, tabIndex) in 2 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
+					<uni-row :gutter="30">
+						<uni-col :span="9">
+							<view class="car_left">
+								<view class="car_text cell-car-draft">代售已检测</view>
+								<image :src="tab.url" class="car-image"></image>
+							</view>
+						</uni-col>
+						<uni-col :span="15">
+							<h3 style="color:#000">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+							<view class="fs12">VIN：{{tab.vin}}</view>
+							<view class="fs12">{{tab.model}} | {{tab.mileage}}万公里</view>
+							<view class="fs12" style="color: #000;">收车价：
+								<text v-if="eyeIsShow" style="padding-right:3px;">{{tab.vehicleReceiptAmount}}元</text>
+								<text v-else style="padding-right:3px;">***元</text>
+								<text v-if="eyeIsShow" class="iconfont icon-open-eye"
+									@click="eyeIsShow=!eyeIsShow"></text>
+								<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+							</view>
+							<view class="fs12" style="color: #f60;">卖车价：
+								<text v-if="!eyeIsShow && tab.vehicleReceiptAmount">***元</text>
+								<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
+							</view>
+							<view class="fs12">创建时间：{{tab.createTime}}</view>
+						</uni-col>
+					</uni-row>
 				</uni-card>
 
 				<u-loadmore :status="status" loadingText="努力加载中..." />
@@ -68,6 +76,21 @@
 	export default {
 		data() {
 			return {
+				// tab导航
+				navList: [{
+						name: '全部'
+					},
+					{
+						name: '草稿'
+					},
+					{
+						name: '合同已发起'
+					},
+					{
+						name: '支付失败'
+					}
+				],
+
 				// 状态值数组
 				collectCarState: [{
 						text: '收车状态',
@@ -100,103 +123,27 @@
 				carStatsus: null,
 				formData: {
 					searchValue: null,
+					salesStatus: '',
+					status: '',
+					statusThree: '',
+					businessId: '',
 					"pageNo": 1,
-					"pageSize": 10,
-					brand: '',
-					salesStatus: null,
-					pickUpTime: null,
-					salesTime: null,
+					"pageSize": 10
 				},
 
-				//选中状态值
-				checkStatus: '',
+				// 是否展示价格
+				eyeIsShow: false,
 				// 加载更多
 				status: 'loadmore',
 				total: 0,
 				timer: {},
-				// 品牌数组
-				brandArr: [{
-						text: '品牌',
-						value: ''
-					},
-					{
-						text: '宝马',
-						value: 1
-					},
-					{
-						text: '奥迪',
-						value: 2
-					}
-				],
-
-				// 时间
-				saleTime: uni.$u.timeFormat(Number(new Date()), 'yyyy-mm'),
-				// 时间选择器
-				timeShow: false,
-				// 收车状态码
-				// statusNum: null
 			}
 		},
 		components: {
 			DropdownMenu,
 			DropdownItem
 		},
-		computed: {
-			newCarStatus() {
-				if (this.carStatsus == '收车中') {
-					return this.collectCarState
-				} else if (this.carStatsus == '待售中') {
-					return [{
-							text: '收车状态',
-							value: ''
-						}, {
-							text: '待售未检测',
-							value: 21
-						},
-						{
-							text: '待售已检测',
-							value: 22
-						},
-					]
-				} else if (this.carStatsus == '卖车中') {
-					return [{
-							text: '收车状态',
-							value: ''
-						},
-						{
-							text: '卖车草稿',
-							value: 31
-						}, {
-							text: '卖车委托已发起',
-							value: 32
-						}, {
-							text: '卖车合同已发起',
-							value: 33
-						}, {
-							text: '卖车待付款',
-							value: 34
-						}, {
-							text: '卖车退回草稿',
-							value: 35
-						}
-					]
-				} else {
-					return [{
-							text: '收车状态',
-							value: ''
-						},
-						{
-							text: '销售时间',
-							value: '销售时间'
-						},
-						{
-							text: '收车时间',
-							value: '收车时间'
-						}
-					]
-				}
-			}
-		},
+
 		mounted() {
 			this.getList(this.formData)
 		},
@@ -206,7 +153,6 @@
 					this.carStatsus = '收车中'
 					break;
 				case 2:
-					console.log(props.text)
 					this.carStatsus = '待售中'
 					break;
 				case 3:
@@ -219,8 +165,7 @@
 			uni.setNavigationBarTitle({
 				title: this.carStatsus,
 			})
-			this.formData.salesStatus = props.text
-			// this.statusNum = props.text
+			this.formData.salesStatus = props.text * 1 || 1
 		},
 		onPullDownRefresh() {
 			if (this.timer != null) {
@@ -271,6 +216,10 @@
 				})
 				this.getList(this.formData)
 			},
+			// tab导航
+			handleTabs() {
+				console.log(1111)
+			},
 			// 清除
 			clear(val) {
 				uni.showToast({
@@ -279,41 +228,10 @@
 				})
 				this.getList(this.formData)
 			},
-			// 品牌 
-			brandChange(val) {
-				this.getList(this.formData)
-			},
-
-			// 销售/收车时间
-			changeValue(val) {
-				if (val.value) {
-					this.timeShow = true;
-				}
-
-			},
-			// 时间 取消
-			timeCancle() {
-				this.timeShow = false
-				this.checkStatus = ''
-			},
-			// 时间 确认
-			timeConfirm() {
-				this.timeShow = false
-
-				this.$nextTick(() => {
-					let selectTime = uni.$u.timeFormat(this.saleTime, 'yyyy-mm') + '-01' + ' ' + '00:00:00'
-					if (this.checkStatus === '销售时间') {
-						this.formData.salesTime = [selectTime, selectTime]
-					} else if (this.checkStatus === '收车时间') {
-						this.formData.pickUpTime = [selectTime, selectTime]
-					} else {
-						this.formData.salesTime = ''
-						this.formData.pickUpTime = ''
-					};
-					this.getList(this.formData)
-					this.formData.checkStatus = ''
-				})
-
+			
+			// 查看详情
+			handleCard(){
+				console.log(2222)
 			}
 		}
 	}
@@ -323,71 +241,117 @@
 	.status-container {
 		width: 100%;
 		height: 100%;
+		padding: 0 15px;
 
 		.search {
 			padding: 10px 15px;
 		}
+
+		/deep/ .u-tabs__wrapper__nav__item {
+			// width:86px;
+			// margin:0 auto;
+		}
+		/deep/ view.data-v-48634e29, scroll-view.data-v-48634e29, swiper-item.data-v-48634e29 {
+			flex-grow:1 !important;
+		}
+
+		/deep/ .uni-card {
+			padding: 0 !important;
+			margin: 10px 0 0 !important;
+		}
+
+		.car-image {
+			width: 100%;
+			height: 100px;
+			border-radius: 8px;
+		}
+
+		.car_left {
+			position: relative;
+			border-radius: 8px;
+			overflow: hidden;
+
+			.car_text {
+				width: 100%;
+				text-align: center;
+				position: absolute;
+				bottom: 6px;
+				font-size: 12px;
+				padding: 0 5px;
+				border-radius: 0 0 8px 8px;
+				z-index: 999;
+			}
+
+			.cell-car-draft {
+				color: #fff;
+				background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
+			}
+		}
 	}
 
-	.cellDraft {
-		padding: 10px;
-		border-bottom: 1px solid #eee;
+	// .cellDraft {
+	// 	padding: 10px;
+	// 	border-bottom: 1px solid #eee;
+	// 	font-size: 12px;
+	// }
+
+	// .cellDraft:hover {
+	// 	background-color: #ccc;
+	// }
+
+	// .tag-box {
+	// 	width: 100vw;
+	// 	height: 50px;
+	// 	line-height: 50px;
+	// 	// padding: 0 15px;
+	// 	margin: 0 15px;
+	// 	margin-right: 15px;
+	// 	overflow-x: scroll;
+
+	// 	.tag-item {
+	// 		padding: 3px 5px;
+	// 		margin-right: 5px;
+	// 		border: 1px solid #ccc;
+	// 		border-radius: 5px;
+	// 	}
+	// }
+
+	// .car_left {
+	// 	position: relative;
+	// 	border-radius: 8px;
+	// 	overflow: hidden;
+
+	// 	.car_text {
+	// 		position: absolute;
+	// 		top: 0;
+	// 		left: 0;
+	// 		font-size: 12px;
+	// 		padding: 0 5px;
+	// 		border-radius: 3px;
+	// 	}
+	// }
+
+	// .cell-car-draft {
+	// 	color: #fff;
+	// 	background-image: linear-gradient(to right, #2A93EC, #88C4F4);
+	// }
+
+	// .car-sold {
+	// 	color: #fff;
+	// 	background-image: linear-gradient(to right, #1D9A6D, #A2EED3);
+	// }
+
+	// .car-sell-entrust {
+	// 	color: #fff;
+	// 	background-image: linear-gradient(to right, #DB6A43, #F2C9BB);
+	// }
+
+	// .car-unsold-untested {
+	// 	color: #fff;
+	// 	background-image: linear-gradient(to right, #C07F1D, #F4DDB9);
+	// }
+
+	.fs12 {
 		font-size: 12px;
-	}
-
-	.cellDraft:hover {
-		background-color: #ccc;
-	}
-
-	.tag-box {
-		width: 100vw;
-		height: 50px;
-		line-height: 50px;
-		// padding: 0 15px;
-		margin: 0 15px;
-		margin-right: 15px;
-		overflow-x: scroll;
-
-		.tag-item {
-			padding: 3px 5px;
-			margin-right: 5px;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-		}
-	}
-
-	.car_left {
-		position: relative;
-		border-radius: 8px;
-		overflow: hidden;
-
-		.car_text {
-			position: absolute;
-			top: 0;
-			left: 0;
-			font-size: 12px;
-			padding: 0 5px;
-			border-radius: 3px;
-		}
-	}
-
-	.cell-car-draft {
-		color: #fff;
-		background-image: linear-gradient(to right, #2A93EC, #88C4F4);
-	}
-
-	.car-sold {
-		color: #fff;
-		background-image: linear-gradient(to right, #1D9A6D, #A2EED3);
-	}
-
-	.car-sell-entrust {
-		color: #fff;
-		background-image: linear-gradient(to right, #DB6A43, #F2C9BB);
-	}
-
-	.car-unsold-untested {
-		color: #fff;
-		background-image: linear-gradient(to right, #C07F1D, #F4DDB9);
 	}
 </style>

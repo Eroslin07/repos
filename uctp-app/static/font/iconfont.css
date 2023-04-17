@@ -1,90 +1,103 @@
 @font-face {
-  font-family: "iconfont";
-  src: url('/static/font/iconfont.ttf') format('truetype');
+	font-family: "iconfont";
+	src: url('/static/font/iconfont.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: "iconfont";
+	/* Project id 4019977 */
+	src: url('/static/font/iconfont2.ttf') format('truetype');
 }
 
 .iconfont {
-  font-family: "iconfont" !important;
-  font-size: 16px;
-  display: inline-block;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	font-family: "iconfont" !important;
+	font-size: 16px;
+	display: inline-block;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-close-eye:before {
+	content: "\e901";
+}
+
+.icon-open-eye:before {
+	content: "\e8c7";
 }
 
 .icon-user:before {
-  content: "\e7ae";
+	content: "\e7ae";
 }
 
 .icon-password:before {
-  content: "\e8b2";
+	content: "\e8b2";
 }
 
 .icon-code:before {
-  content: "\e699";
+	content: "\e699";
 }
 
 .icon-setting:before {
-  content: "\e6cc";
+	content: "\e6cc";
 }
 
 .icon-share:before {
-  content: "\e739";
+	content: "\e739";
 }
 
 .icon-edit:before {
-  content: "\e60c";
+	content: "\e60c";
 }
 
 .icon-version:before {
-  content: "\e63f";
+	content: "\e63f";
 }
 
 .icon-service:before {
-  content: "\e6ff";
+	content: "\e6ff";
 }
 
 .icon-friendfill:before {
-  content: "\e726";
+	content: "\e726";
 }
 
 .icon-community:before {
-  content: "\e741";
+	content: "\e741";
 }
 
 .icon-people:before {
-  content: "\e736";
+	content: "\e736";
 }
 
 .icon-dianzan:before {
-  content: "\ec7f";
+	content: "\ec7f";
 }
 
 .icon-right:before {
-  content: "\e7eb";
+	content: "\e7eb";
 }
 
 .icon-logout:before {
-  content: "\e61d";
+	content: "\e61d";
 }
 
 .icon-help:before {
-  content: "\e616";
+	content: "\e616";
 }
 
 .icon-github:before {
-  content: "\e628";
+	content: "\e628";
 }
 
 .icon-aixin:before {
-  content: "\e601";
+	content: "\e601";
 }
 
 .icon-clean:before {
-  content: "\e607";
+	content: "\e607";
 }
 
 .icon-refresh:before {
-  content: "\e604";
+	content: "\e604";
 }
-
