@@ -1,7 +1,9 @@
 package com.newtouch.uctp.module.business.dal.dataobject;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 import lombok.*;
 
@@ -35,7 +37,7 @@ public class NoticeInfoDO extends BaseDO {
      */
     private String content;
     /**
-     * 类型(0站内消息 1短信买家 2短信卖家)
+     * 类型(0站内消息 1短信推送消息)
      */
     private String type;
     /**
@@ -49,7 +51,7 @@ public class NoticeInfoDO extends BaseDO {
     /**
      * 租户号
      */
-    private String tenantId;
+    private Long tenantId;
     /**
      * 消息状态
      */
@@ -58,7 +60,35 @@ public class NoticeInfoDO extends BaseDO {
      * 跳转路径/有就存，没有就不存
      */
     private String url;
+    /**
+     * 消息推送状态,只展示未推送消息
+     */
+    private String pushStatus;
+   /* *//**
+     * 内容模版枚举类型
+     *//*
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private String  contentType;
 
-
+    *//**
+     * 原因
+     *//*
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private String  reason;
+    *//**
+     * 合同号
+     *//*
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private String  contractNo;
+    *//**
+     * 合同名称
+     *//*
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private String  contractName;
+    *//**
+     * 金额（收车/卖车）
+     *//*
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private String price;*/
 
 }

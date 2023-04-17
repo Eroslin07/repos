@@ -4,6 +4,9 @@ import cn.hutool.core.util.ObjectUtil;
 
 import javax.annotation.Resource;
 
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
@@ -24,6 +27,8 @@ import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 public class BpmGlobalHandleListener {
     @Resource
     private BpmFormMainMapper bpmFormMainMapper;
+    @Resource
+    private NoticeApi noticeApi;
 
     /**
      * 流程创建时处理
@@ -53,15 +58,17 @@ public class BpmGlobalHandleListener {
 
         // TODO: 根据业务场景进行个性化处理
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.ZHSQ.name())) {
-
+            BpmFormResVO bpmFormResVO=new BpmFormResVO();
+            bpmFormResVO.setTitle(bpmFormMainVO.getTitle());
+            bpmFormResVO.setBusiType(bpmFormMainVO.getBusiType());
+            bpmFormResVO.setMerchantId(bpmFormMainVO.getMerchantId());
+            bpmFormResVO.setFormDataJson(bpmFormMainVO.getFormDataJson());
+             noticeApi.saveTaskNotice("1", "12", "", bpmFormResVO);
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
 
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
 
         }
-
-
-
 
         System.out.println(bpmFormMainVO);
     }
