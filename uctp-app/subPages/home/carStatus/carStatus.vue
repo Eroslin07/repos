@@ -5,12 +5,11 @@
 		</u-search>
 		<!-- tab导航 -->
 		<view class="" style="margin: 0 auto">
-			<u-tabs :list="navList" lineColor="#FA6400" @change="handleChange"></u-tabs>
+			<u-tabs :current="current" :list="navList" lineColor="#FA6400" @change="handleChange"></u-tabs>
 		</view>
 		<!-- 列表 -->
-		<view>
-			<block>
-				<!-- <uni-card v-for="(tab, tabIndex) in 2|| tabList" :key="tabIndex" style="margin-top: 10px;">
+
+		<!-- <uni-card v-for="(tab, tabIndex) in 2|| tabList" :key="tabIndex" style="margin-top: 10px;">
 					<uni-row :gutter="30">
 						<uni-col :span="8">
 							<view class="car_left">
@@ -32,47 +31,50 @@
 						</uni-col>
 					</uni-row>
 				</uni-card> -->
-				<uni-card v-for="(tab, tabIndex) in 2 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
-					<uni-row :gutter="30">
-						<uni-col :span="9">
-							<view class="car_left">
-								<view class="car_text cell-car-draft">代售已检测</view>
-								<image :src="tab.url" class="car-image"></image>
-							</view>
-						</uni-col>
-						<uni-col :span="15">
-							<h3 style="color:#000">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
-							<view class="fs12">VIN：{{tab.vin}}</view>
-							<view class="fs12">{{tab.model}} | {{tab.mileage}}万公里</view>
-							<view class="fs12" style="color: #000;">收车价：
-								<text v-if="eyeIsShow" style="padding-right:3px;">{{tab.vehicleReceiptAmount}}元</text>
-								<text v-else style="padding-right:3px;">***元</text>
-								<text v-if="eyeIsShow" class="iconfont icon-open-eye"
-									@click="eyeIsShow=!eyeIsShow"></text>
-								<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
-							</view>
-							<view class="fs12" style="color: #f60;">卖车价：
-								<text v-if="!eyeIsShow && tab.vehicleReceiptAmount">***元</text>
-								<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
-							</view>
-							<view class="fs12">创建时间：{{tab.createTime}}</view>
-						</uni-col>
-					</uni-row>
-				</uni-card>
-
-				<u-loadmore :status="status" loadingText="努力加载中..." />
-			</block>
+		<view class="" v-if="tabList.length>0">
+			<uni-card v-for="(tab, tabIndex) in 2 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
+				<uni-row :gutter="30">
+					<uni-col :span="9">
+						<view class="car_left">
+							<view class="car_text cell-car-draft">待售已检测</view>
+							<image :src="tab.url" class="car-image"></image>
+						</view>
+					</uni-col>
+					<uni-col :span="15">
+						<h3 style="color:#000">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<view class="fs12">VIN：{{tab.vin || '暂无'}}</view>
+						<view class="fs12">{{tab.model || '暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
+						<view class="fs12" style="color: #000;">收车价：
+							<text v-if="eyeIsShow" style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
+							<text v-else style="padding-right:3px;">***元</text>
+							<text v-if="eyeIsShow" class="iconfont icon-open-eye" @click="eyeIsShow=!eyeIsShow"></text>
+							<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+						</view>
+						<view class="fs12" style="color: #f60;">卖车价：
+							<text v-if="!eyeIsShow && tab.vehicleReceiptAmount">***元</text>
+							<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
+						</view>
+						<view class="fs12">创建时间：{{ tab.createTime }}</view>
+					</uni-col>
+				</uni-row>
+			</uni-card>
+			<u-loadmore :status="loadStatus" loadingText="努力加载中..." />
+		</view>
+		<view v-else class="empty-page">
+			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br/>
+			<text class="empty-text">暂无数据</text>
 		</view>
 	</view>
 </template>
 
 
 <script>
-	import DropdownMenu from './JP-dropdown-menu/JP-dropdown-menu.vue';
-	import DropdownItem from './JP-dropdown-menu/JP-dropdown-item.vue';
+	// import DropdownMenu from './JP-dropdown-menu/JP-dropdown-menu.vue';
+	// import DropdownItem from './JP-dropdown-menu/JP-dropdown-item.vue';
 	import {
 		getHomePageList
 	} from '@/api/home.js'
+
 	export default {
 		data() {
 			return {
@@ -90,92 +92,70 @@
 						name: '支付失败'
 					}
 				],
-
-				// 状态值数组
-				collectCarState: [{
-						text: '收车状态',
-						value: ''
-					}, {
-						text: '收车草稿',
-						value: 11
-					},
-					{
-						text: '收车委托已发起',
-						value: 12
-					},
-					{
-						text: '收车合同已发起',
-						value: 13
-					},
-					{
-						text: '收车支付失败',
-						value: 14
-					},
-					{
-						text: '收车退回草稿',
-						value: 15
-					},
-				],
-
+				current: 0,
 				// 列表
 				tabList: [],
-				//收车状态
-				carStatsus: null,
+
 				formData: {
 					searchValue: null,
-					salesStatus: '',
-					status: '',
-					statusThree: '',
-					businessId: '',
+					salesStatus: null,
+					status: null,
+					statusThree: null,
+					businessId: 103,
 					"pageNo": 1,
 					"pageSize": 10
 				},
+				detailData: {},
+				childData: {},
 
 				// 是否展示价格
 				eyeIsShow: false,
 				// 加载更多
-				status: 'loadmore',
+				loadStatus: 'loadmore',
 				total: 0,
 				timer: {},
 			}
 		},
-		components: {
-			DropdownMenu,
-			DropdownItem
-		},
+		// components: {
+		// 	DropdownMenu,
+		// 	DropdownItem
+		// },
 
 		mounted() {
 			this.getList(this.formData)
 		},
 		onLoad(props) {
-			switch (props.text * 1) {
-				case 1:
-					this.carStatsus = '收车中'
-					break;
-				case 2:
-					this.carStatsus = '待售中'
-					break;
-				case 3:
-					this.carStatsus = '卖车中'
-					break;
-				case 4:
-					this.carStatsus = '已售出'
-					break;
-			}
-			uni.setNavigationBarTitle({
-				title: this.carStatsus,
+			console.log(props)
+			this.detailData = JSON.parse(props.item)
+			let arr = this.detailData.child.map(v => {
+				return {
+					name: v.label,
+					...v
+				}
 			})
-			this.formData.salesStatus = props.text * 1 || 1
+			this.navList = [{
+				name: '全部',
+				status: ''
+			}, ...arr]
+			uni.setNavigationBarTitle({
+				title: this.detailData.label,
+			})
+			this.formData.salesStatus = this.detailData.status
+			if (props.child) {
+				this.childData = JSON.parse(props.child)
+				this.formData.status = this.childData.status
+				this.current = this.detailData.child.findIndex((val) => val.status == this.formData.status) + 1
+			}
 		},
 		onPullDownRefresh() {
 			if (this.timer != null) {
 				clearTimeout(this.timer)
 			}
 			if (this.tabList.length == this.total) {
-				this.status = 'nomore';
+				this.loadStatus = 'nomore';
 				return
 			}
-			this.status = 'loading';
+			this.loadStatus = 'loading';
 			this.timer = setTimeout(() => {
 				this.formData.pageNo += 1
 				this.getMore(this.formData)
@@ -185,18 +165,15 @@
 			// 获取list数据
 			getList(params) {
 				getHomePageList(params).then(res => {
-					this.tabList = res.data.list.map(v => {
-						let value = this.colorArr.find(t => t.status == v.status)
-						this.$set(v, 'verifyColor', value)
-					})
+					this.tabList = res.data.list
 					this.total = res.data.total;
 					if (this.total > 10) {
-						this.status = 'loadmore'
+						this.loadStatus = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.loadStatus = 'nomore'
 					}
 				}).catch((error) => {
-					this.status = 'nomore'
+					this.loadStatus = 'nomore'
 				})
 			},
 			getMore(params) {
@@ -204,9 +181,9 @@
 					this.tabList = [...this.tabList, ...res.data.list];
 					this.total = res.data.total;
 					if (this.total > this.tabList.length) {
-						this.status = 'loadmore'
+						this.loadStatus = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.loadStatus = 'nomore'
 					}
 				})
 			},
@@ -220,8 +197,10 @@
 				this.getList(this.formData)
 			},
 			// tab导航
-			handleChange() {
-				console.log(1111)
+			handleChange(val) {
+				console.log(val)
+				this.formData.status = this.detailData.child.find(item => item.status == val.status)?.status || ''
+				this.getList(this.formData)
 			},
 			// 清除
 			clear(val) {
@@ -291,6 +270,21 @@
 			.cell-car-draft {
 				color: #fff;
 				background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
+			}
+		}
+
+		.empty-page {
+			width:100%;
+			position: absolute;
+			left: 50%;
+			top: 45%;
+			transform: translate(-50%,-50%);
+			text-align: center;
+			.empty-img {
+				width:30%;	
+			}
+			.empty-text{
+				
 			}
 		}
 	}

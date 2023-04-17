@@ -6,7 +6,7 @@
 		</view>
 		<view style="margin-top: 85px;">
 			<uni-card
-				v-for="(tab, tabIndex) in tabList"
+				v-for="(tab, tabIndex) in 2"
 				:key="tabIndex"
 				@click="handleCard(tab.id)"
 				style="margin-top: 10px;"
@@ -14,7 +14,10 @@
 				<uni-row :gutter="30">
 					<uni-col :span="10">
 						<view class="car_left">
-							<view class="car_text cell-car-draft">代售已检测</view>
+							<view class="no-sell">
+								不能卖出
+							</view>
+							<view class="car_text cell-car-draft">待售已检测</view>
 							<image :src="tab.url" class="car-image"></image>
 						</view>
 					</uni-col>
@@ -137,18 +140,26 @@
 		position: relative;
 		border-radius: 8px;
 		overflow: hidden;
-	
-		.car_text {
+		background-color: #169bd5;
+			.car_text {
 			width: 100%;
 			text-align: center;
 			position: absolute;
-			bottom: 6px;
+			bottom: 0px;
 			font-size: 12px;
 			padding: 0 5px;
 			border-radius: 0 0 8px 8px;
 			z-index: 999;
 		}
-		
+		.no-sell{
+			position: absolute;
+			top:0;
+			left:0;
+			padding:0 2px;
+			background-color: rgba(0, 0, 0, .5);
+			font-size: 12px;
+			color:#fff;
+		}
 		.cell-car-draft {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);

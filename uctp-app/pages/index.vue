@@ -53,7 +53,10 @@
 					<view class="" style="padding-top:3px;">
 						{{item.num || 0 }} 辆
 					</view>
-					<image class="bcImgs" :src="leftImgSrc(item)" mode=""></image>
+					<image
+						:class="{'bcImgs':true,'fourItem':item.status==4,'btmposit':(item.status==2||item.status==3)}"
+						:src="leftImgSrc(item)" mode="">
+					</image>
 				</view>
 				<view class="right-content">
 					<u-row style="height:68px;">
@@ -167,34 +170,8 @@
 		methods: {
 			// 获取list数据
 			getList(params) {
-				let listArr = [{
-					status: 1,
-					label: '收车中'
-				}, {
-					status: 2,
-					label: '待售中'
-				}, {
-					status: 3,
-					label: '卖车中'
-				}, {
-					status: 4,
-					label: '已售出'
-				}]
-
-				this.$nextTick(() => {
-					this.tabList = listArr.map(v => {
-						let value = this.colorArr.find(t => t.status == v.status)
-						this.$set(v, 'verifyColor', value)
-						return v;
-					})
-				})
-
 				getHomePageList(params).then(res => {
-					this.tabList = res.data.list.map(v => {
-						let value = this.colorArr.find(t => t.status == v.status)
-						this.$set(v, 'verifyColor', value)
-						return v;
-					})
+					this.tabList = res.data.list
 					this.total = res.data.total;
 					if (this.total > 10) {
 						this.status = 'loadmore'
@@ -257,10 +234,11 @@
 			},
 			// 收车中
 			tabCarStatus(item) {
-				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${item}`)
+				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}`)
 			},
 			handleTabItem(item, child) {
-				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${child}`)
+				this.$tab.navigateTo(
+					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&child=${JSON.stringify(child)}`)
 			},
 
 			// 消息动态-背景图标
@@ -278,7 +256,7 @@
 					status: 4,
 					url: '/static/images/index/title-saled.png'
 				}, ]
-				return urlArr.find(val => val.status == item.status).url
+				return urlArr.find(val => val.status == item.status)?.url
 			},
 
 			// 消息
@@ -421,6 +399,16 @@
 						bottom: -15px;
 						left: 25px;
 					}
+
+					.fourItem {
+						width: 80px;
+						height: 80px;
+						bottom: -20px;
+					}
+
+					.btmposit {
+						bottom: -20px;
+					}
 				}
 
 				.right-content {
@@ -428,6 +416,7 @@
 					color: #656C6E;
 					font-size: 12px;
 				}
+
 			}
 		}
 	}
