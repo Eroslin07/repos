@@ -6,7 +6,7 @@ public interface MerchantAccountService {
 
     MerchantAccountDO queryByAccountNo(String accountNo);
 
-    int rechargeCash(String accountNo, Integer tranAmount, Integer revision);
+    int rechargeCash(String accountNo, Integer tranAmount, Integer revision, int type);
 
     int changeCash(String accountNo, Integer tranAmount, Integer revision, String tradeType);
 

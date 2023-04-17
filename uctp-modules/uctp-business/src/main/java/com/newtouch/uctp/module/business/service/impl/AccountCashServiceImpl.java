@@ -15,6 +15,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
+import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import com.newtouch.uctp.module.business.service.cash.MerchantCashService;
@@ -109,7 +110,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     public AccountCashRespVO recharge(TransactionRecordReqVO transactionRecordReqVO) {
 
         //增加保证金金额，版本号加1
-        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
+        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), 1);
 
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
 
@@ -245,7 +246,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Transactional
     public Boolean back(TransactionRecordReqVO transactionRecordReqVO) {
         //增加保证金金额，版本号加1
-        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
+        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), 2);
 
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
         //TODO: 是否调用转账接口
@@ -260,7 +261,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Transactional
     public Boolean profitBack(TransactionRecordReqVO transactionRecordReqVO) {
         //增加保证金金额，版本号加1
-        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision());
+        int count = merchantAccountService.rechargeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), 3);
 
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
         //TODO: 是否调用转账接口
@@ -290,6 +291,19 @@ public class AccountCashServiceImpl implements AccountCashService {
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
         merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_RELEASE, null, contractNo);
         return count > 0;
+    }
+
+    @Override
+    public List<Map<String, String>> codes() {
+        List<Map<String, String>> list = new ArrayList<>();
+
+        for (AccountEnum accountEnum : AccountEnum.values()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("code",accountEnum.getKey());
+            map.put("codeName",accountEnum.getValue());
+            list.add(map);
+        }
+        return list;
     }
 
 

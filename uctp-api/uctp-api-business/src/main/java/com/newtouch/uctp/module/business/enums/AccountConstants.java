@@ -3,97 +3,99 @@ package com.newtouch.uctp.module.business.enums;
 public class AccountConstants {
 
     //交易类型：保证金-充值
-    public static final String TRADE_TYPE_RECHARGE = "保证金-充值";
-    //交易类型：保证金-回填
-    public static final String TRADE_TYPE_BACK = "保证金-回填";
+    public static final String TRADE_TYPE_RECHARGE = "10011001";
+    //交易类型：保证金-卖车款回填
+    public static final String TRADE_TYPE_BACK = "10011002";
     //交易类型：保证金-利润回填
-    public static final String TRADE_TYPE_PROFIT_BACK = "保证金-利润回填";
+    public static final String TRADE_TYPE_PROFIT_BACK = "10011003";
     //交易类型：保证金-提现
-    public static final String TRADE_TYPE_WITHDRAW = "保证金-提现";
+    public static final String TRADE_TYPE_WITHDRAW = "10011004";
+    //交易类型：保证金-提现中
+    public static final String TRADE_TYPE_WITHDRAWING = "10011005";
     //交易类型：保证金-扣减
-    public static final String TRADE_TYPE_DEDUCTION = "保证金-扣减";
+    public static final String TRADE_TYPE_DEDUCTION = "10011006";
     //交易类型：保证金-预占
-    public static final String TRADE_TYPE_PREEMPTION = "保证金-预占";
+    public static final String TRADE_TYPE_PREEMPTION = "10011007";
     //交易类型：保证金-释放
-    public static final String TRADE_TYPE_RELEASE = "保证金-释放";
+    public static final String TRADE_TYPE_RELEASE = "10011008";
 
     //损益类型-收入
-    public static final String PROFIT_LOSS_TYPE_INCOME = "收入";
+    public static final String PROFIT_LOSS_TYPE_INCOME = "10021001";
     //损益类型-支出
-    public static final String PROFIT_LOSS_TYPE_DISBURSEMENT = "支出";
+    public static final String PROFIT_LOSS_TYPE_DISBURSEMENT = "10021002";
 
     //支付渠道-兴业银行
-    public static final String PAY_CHANNEL_DEFAULT = "兴业银行";
+    public static final String PAY_CHANNEL_DEFAULT = "10031001";
     //支付渠道-平台
-    public static final String PAY_CHANNEL_PLATFORM= "平台";
+    public static final String PAY_CHANNEL_PLATFORM= "10031002";
 
     //交易去向-收车
-    public static final String TRADE_TO_BUY_CARS = "收车";
+    public static final String TRADE_TO_BUY_CARS = "10041001";
     //交易去向-我的保证金
-    public static final String TRADE_TO_MY_CASH = "我的保证金";
+    public static final String TRADE_TO_MY_CASH = "10041002";
     //交易去向-市场方
-    public static final String TRADE_TO_MARKET = "3";
+    public static final String TRADE_TO_MARKET = "10041003";
     //交易去向-我的利润
-    public static final String TRADE_TO_MY_PROFIT = "4";
+    public static final String TRADE_TO_MY_PROFIT = "10041004";
 
     //客户类型-商户
-    public static final String CUST_TYPE_MERCHANT = "1";
+    public static final String CUST_TYPE_MERCHANT = "10051001";
     //客户类型-买车
-    public static final String CUST_TYPE_BUYER = "2";
+    public static final String CUST_TYPE_BUYER = "10051002";
     //客户类型-卖车
-    public static final String CUST_TYPE_SELLER = "3";
+    public static final String CUST_TYPE_SELLER = "10051003";
 
 
     //交易状态-待支付
-    public static final String TRAN_STATE_WAIT = "1";
+    public static final String TRAN_STATE_WAIT = "10061001";
     //交易状态-支付中
-    public static final String TRAN_STATE_DURING = "2";
+    public static final String TRAN_STATE_DURING = "10061002";
     //交易状态-支付成功
-    public static final String TRAN_STATE_SUCCESS = "3";
+    public static final String TRAN_STATE_SUCCESS = "10061003";
     //交易状态-支付失败
-    public static final String TRAN_STATE_FAIL = "4";
+    public static final String TRAN_STATE_FAIL = "10061004";
 
     // 利润：交易类型
     //卖车利润
-    public static final String TRAN_PROFIT_SALES_PROFIT = "1";
+    public static final String TRAN_PROFIT_SALES_PROFIT = "10101001";
     //利润提现
-    public static final String TRAN_PROFIT_PRESENT = "2";
+    public static final String TRAN_PROFIT_PRESENT = "10101002";
     //利润-保证金回填
-    public static final String TRAN_PROFIT_CASH_BACK = "3";
+    public static final String TRAN_PROFIT_CASH_BACK = "10101003";
     //利润-服务费
-    public static final String TRAN_PROFIT_SERVICE_COST = "4";
+    public static final String TRAN_PROFIT_SERVICE_COST = "10101004";
     //利润-税费
-    public static final String TRAN_PROFIT_TAX_COST = "5";
+    public static final String TRAN_PROFIT_TAX_COST = "10101005";
 
     // 利润：提现状态
     //待回填保证金
-    public static final String PRESENT_PROFIT_CASH_BACK_WAIT = "1";
+    public static final String PRESENT_PROFIT_CASH_BACK_WAIT = "10111001";
     //已回填保证金
-    public static final String PRESENT_PROFIT_CASH_BACK_DONE = "2";
+    public static final String PRESENT_PROFIT_CASH_BACK_DONE = "10111002";
     //申请登记
-    public static final String PRESENT_PROFIT_APPLY = "0";
+    public static final String PRESENT_PROFIT_APPLY = "10111000";
     //市场方退回
-    public static final String PRESENT_PROFIT_AUDIT_REJECT = "3";
+    public static final String PRESENT_PROFIT_AUDIT_REJECT = "10111003";
     //市场方审批中
-    public static final String PRESENT_PROFIT_AUDIT_PROCESSING = "4";
+    public static final String PRESENT_PROFIT_AUDIT_PROCESSING = "10111004";
     //市场方审批成功
-    public static final String PRESENT_PROFIT_AUDIT_APPROVED = "5";
+    public static final String PRESENT_PROFIT_AUDIT_APPROVED = "10111005";
     //银行处理
-    public static final String PRESENT_PROFIT_BANK_PROCESSING = "6";
+    public static final String PRESENT_PROFIT_BANK_PROCESSING = "10111006";
     //到账成功
-    public static final String PRESENT_PROFIT_BANK_SUCCESS = "7";
+    public static final String PRESENT_PROFIT_BANK_SUCCESS = "10111007";
     //到账失败
-    public static final String PRESENT_PROFIT_BANK_FAIL = "8";
+    public static final String PRESENT_PROFIT_BANK_FAIL = "10111008";
 
     // 提现：状态
     // 提现申请
-    public static final String PRESENT_STATUS_APPLY = "1";
+    public static final String PRESENT_STATUS_APPLY = "10071001";
     // 市场方审批中
-    public static final String PRESENT_STATUS_AUDIT = "2";
+    public static final String PRESENT_STATUS_AUDIT = "10071002";
     // 提现申请
-    public static final String PRESENT_STATUS_BANK_PROCESSING = "3";
+    public static final String PRESENT_STATUS_BANK_PROCESSING = "10071003";
     // 提现申请
-    public static final String PRESENT_STATUS_BANK_SUCCESS = "4";
+    public static final String PRESENT_STATUS_BANK_SUCCESS = "10071004";
 
     // 提现类型C：保证金提现P：利润提现
     public static final String PRESENT_TYPE_CASH = "C";
@@ -119,14 +121,14 @@ public class AccountConstants {
 
 
     // 保证金提现状态-发起提现申请
-    public static final String PRESENT_STATUS_CASH_APPLY = "发起提现申请";
+    public static final String PRESENT_STATUS_CASH_APPLY = "10081001";
     // 保证金提现状态-银行处理中
-    public static final String PRESENT_STATUS_CASH_PROCESSING = "银行处理中";
+    public static final String PRESENT_STATUS_CASH_PROCESSING = "10081002";
     // 保证金提现状态-到账成功
-    public static final String PRESENT_STATUS_CASH_SUCCESS = "到账成功";
+    public static final String PRESENT_STATUS_CASH_SUCCESS = "10081003";
 
     // 保证金提现状态-保证金提现中
-    public static final String PRESENT_CASH_PROCESSING = "保证金提现中";
+    public static final String PRESENT_CASH_PROCESSING = "10091001";
     // 保证金提现状态-保证金提现
-    public static final String PRESENT_CASH_SUCCESS = "保证金提现";
+    public static final String PRESENT_CASH_SUCCESS = "10091002";
 }
