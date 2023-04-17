@@ -76,7 +76,7 @@ public class QysConfigController {
     @GetMapping("/page")
    @Schema(description ="获得契约锁分页")
 //    @PreAuthorize("@ss.hasPermission('uctp:qys-config:query')")
-    public CommonResult<PageResult<QysConfigRespVO>> getQysConfigPage(@Valid QysConfigPageReqVO pageVO) {
+    public CommonResult<PageResult<QysConfigRespVO>> getQysConfigPage(@Valid @RequestBody QysConfigPageReqVO pageVO) {
         PageResult<QysConfigDO> pageResult = qysConfigService.getQysConfigPage(pageVO);
         return success(QysConfigConvert.INSTANCE.convertPage(pageResult));
     }

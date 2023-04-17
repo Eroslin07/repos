@@ -23,7 +23,7 @@ public interface QiyuesuoClient {
      * @param draftContract 契约锁接口接受的参数
      * @return
      */
-    QiyuesuoCommonResult<Contract> draft(Contract draftContract);
+    QiyuesuoCommonResult<SdkResponse<Contract>> draft(Contract draftContract);
 
     /**
      * 解析接收契约锁的接收结果

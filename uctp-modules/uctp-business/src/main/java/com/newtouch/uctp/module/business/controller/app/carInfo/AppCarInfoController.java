@@ -91,7 +91,7 @@ public class AppCarInfoController {
     }
     @GetMapping("/home/page")
     @Operation(summary = "获得APP首页分页")
-    public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid AppHomeCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid @RequestBody AppHomeCarInfoPageReqVO pageVO) {
         PageResult<AppHomeCarInfoRespVO> pageResult = carInfoService.getHomeCarInfoPage(pageVO);
         return success(pageResult);
 
@@ -106,7 +106,7 @@ public class AppCarInfoController {
 
     @GetMapping("/sell/page")
     @Operation(summary = "获得APP卖车分页")
-    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid AppSellCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid @RequestBody AppSellCarInfoPageReqVO pageVO) {
         PageResult<AppSellCarInfoPageRespVO> pageResult = carInfoService.getSellCarInfoPage(pageVO);
         return success(pageResult);
     }
