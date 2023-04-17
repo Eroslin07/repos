@@ -4,6 +4,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummaryRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -22,8 +23,8 @@ public class AccountProfitServiceTest {
     @Resource
     private AccountProfitService accountProfitService;
 
-    private String accountNo = "33333333";
-    private String contractNo = "1002";
+    private String accountNo = "55555555";
+    private String contractNo = "2005";
 
     @Test
     public void testRecorded() {
@@ -50,6 +51,12 @@ public class AccountProfitServiceTest {
 
         List<MerchantProfitDO> list = accountProfitService.recorded(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs, taxes);
         Assertions.assertEquals(5, list.size());
+    }
+
+    @Test
+    public void testSummary() {
+        ProfitSummaryRespVO summary = accountProfitService.summary(accountNo);
+        Assertions.assertNotNull(summary);
     }
 
     @Test

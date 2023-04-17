@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -83,10 +80,16 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         if (merchantAccount == null) {
             throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
         }
-        Integer originalWaitForBackCashTotalAmount = 0; // 账户表暂无待回填保证金 todo
+
+        // 查询待回填保证金总额
+        TransactionRecordReqVO originalWaitForBackCashReq = new TransactionRecordReqVO();
+        originalWaitForBackCashReq.setAccountNo(accountNo);
+        Integer originalWaitForBackCashTotalAmount = accountCashService.difference(originalWaitForBackCashReq);
         if (originalWaitForBackCashTotalAmount == null) {
             originalWaitForBackCashTotalAmount = 0;
         }
+        log.info("合同{}，待回填保证金总额{}", contractNo, originalWaitForBackCashTotalAmount);
+        originalWaitForBackCashTotalAmount = originalWaitForBackCashTotalAmount * -1; // 接口返回是负数
         Integer originalProfitTotalAmount = merchantAccount.getProfit();
         if (originalProfitTotalAmount == null) {
             originalProfitTotalAmount = 0;
@@ -214,8 +217,19 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Override
     @TenantIgnore
-    public MerchantAccountDO queryByAccountNo(String accountNo) {
-        return merchantAccountService.queryByAccountNo(accountNo);
+    @Transactional
+    public ProfitSummaryRespVO summary(String accountNo) {
+        MerchantAccountDO account = merchantAccountService.queryByAccountNo(accountNo);
+        TransactionRecordReqVO waitForBackCashReq = new TransactionRecordReqVO();
+        waitForBackCashReq.setAccountNo(accountNo);
+
+        Integer waitForBackCashAmount = accountCashService.difference(waitForBackCashReq);
+        ProfitSummaryRespVO respVO = new ProfitSummaryRespVO();
+        respVO.setProfit(account.getProfit());
+        respVO.setFreezeProfit(account.getFreezeProfit());
+        respVO.setCashBack(waitForBackCashAmount);
+
+        return respVO;
     }
 
     @Override
