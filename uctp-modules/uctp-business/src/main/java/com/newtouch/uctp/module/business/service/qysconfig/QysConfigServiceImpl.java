@@ -21,7 +21,7 @@ import java.util.List;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.QYS_CONFIG_NOT_EXISTS;
-import static com.newtouch.uctp.module.business.enums.QysConstants.AGENT_TOKEN;
+import static com.newtouch.uctp.module.business.enums.QysConstants.SECRET;
 
 /**
  * 契约锁 Service 实现类
@@ -84,24 +84,73 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public String callback(String signature, String timestamp, String content) {
+    public String certification(String signature, String timestamp, String content) throws Exception {
         log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
-        try {
-            //验证签名
-            String md5 = MD5.toMD5(timestamp + AGENT_TOKEN);
-            if (!StrUtil.equals(signature,md5)) {
-                log.error("验证签名不一致，md5【{}】,signature【{}】",md5,signature);
-                System.out.println("签名不一致");
-            }
-            //解密消息
-            String contentJson = CryptUtils.aesDerypt(content, AGENT_TOKEN);
-            JSONObject json = JSONObject.parseObject(contentJson);
-            log.info("解密消息，json【{}】",json);
-            System.out.println(json);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
         }
+        //解密消息
+        JSONObject jsonObject = this.decryptMessage(content);
+        //TODO 处理业务
         return "success";
+    }
+
+    @Override
+    public String status(String signature, String timestamp, String content) throws Exception {
+        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        JSONObject jsonObject = this.decryptMessage(content);
+        //TODO 处理业务
+        return "success";
+    }
+
+    @Override
+    public String verification(String signature, String timestamp, String content) throws Exception {
+        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        JSONObject jsonObject = this.decryptMessage(content);
+        //TODO 处理业务
+        return "success";
+    }
+
+    @Override
+    public String login(String signature, String timestamp, String content) throws Exception {
+        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        JSONObject jsonObject = this.decryptMessage(content);
+        //TODO 处理业务
+        return "success";
+    }
+
+    private Boolean verificationSignature(String signature, String timestamp){
+        String md5 = MD5.toMD5(timestamp + SECRET);
+        if (!StrUtil.equals(signature,md5)) {
+            log.error("验证签名不一致，md5【{}】,signature【{}】",md5,signature);
+            System.out.println("签名不一致");
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
+    }
+
+    private JSONObject decryptMessage(String content) throws Exception {
+        String contentJson = CryptUtils.aesDerypt(content, SECRET);
+        JSONObject json = JSONObject.parseObject(contentJson);
+        log.info("解密消息，json【{}】",json);
+        return json;
+//        Map<String, Object> map = JSONUtils.toMap(contentJson);
     }
 
 

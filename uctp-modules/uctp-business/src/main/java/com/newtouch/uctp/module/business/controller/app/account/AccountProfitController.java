@@ -3,7 +3,6 @@ package com.newtouch.uctp.module.business.controller.app.account;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
-import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,13 +31,9 @@ public class AccountProfitController {
         String accountNo = this.getAccountNoFromContext();
         log.info("查询账户{}的利润概要信息", accountNo);
 
-        MerchantAccountDO account = accountProfitService.queryByAccountNo(accountNo);
-        ProfitSummaryRespVO respVO = new ProfitSummaryRespVO();
-        respVO.setProfit(account.getProfit());
-        respVO.setFreezeProfit(account.getFreezeProfit());
-        respVO.setCashBack(null); // todo 账户表缺少待回填保证金
+        ProfitSummaryRespVO summary = accountProfitService.summary(accountNo);
 
-        return success(respVO);
+        return success(summary);
     }
 
     @PostMapping("/present")
