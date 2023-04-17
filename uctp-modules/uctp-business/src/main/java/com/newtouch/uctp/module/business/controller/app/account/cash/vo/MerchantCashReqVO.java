@@ -18,7 +18,7 @@ public class MerchantCashReqVO extends PageParam {
     @NotEmpty(message = "商户账户号不能为空")
     private String accountNo;
 
-    @Schema(description = "查询明细类型：1：保证金明细 2：冻结明细 默认：1")
+    @Schema(description = "查询明细类型：1：保证金明细 2：冻结明细 3：支出 4：收入 默认：1")
     private int type = 1;
 
 }

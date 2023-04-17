@@ -80,9 +80,9 @@ tenant-id: {{adminTenentId}}
 
 {
   "accountNo": "11111111",
-  "type": 2,
+  "type": 4,
   "pageNo": 1,
-  "pageSize": 5
+  "pageSize": 15
 }
 
 ###保证金充值-充值成功后返回我的保证金页面模型数据

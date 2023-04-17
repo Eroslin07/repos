@@ -21,7 +21,18 @@ public interface MerchantCashMapper extends BaseMapperX<MerchantCashDO> {
                 .eq(MerchantCashDO::getAccountNo, merchantCashReq.getAccountNo())
                 .orderByDesc(MerchantCashDO::getCreateTime);
         if (merchantCashReq.getType() == 2) {
+            //冻结明细
             queryWrapper.in(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_PREEMPTION, AccountConstants.TRADE_TYPE_RELEASE);
+        }
+
+        if (merchantCashReq.getType() == 3) {
+            //支出明细
+            queryWrapper.in(MerchantCashDO::getProfitLossType, AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
+        }
+
+        if (merchantCashReq.getType() == 4) {
+            //收入明细
+            queryWrapper.in(MerchantCashDO::getProfitLossType, AccountConstants.PROFIT_LOSS_TYPE_INCOME);
         }
         return selectPage(merchantCashReq, queryWrapper);
 
