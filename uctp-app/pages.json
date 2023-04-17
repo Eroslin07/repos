@@ -164,6 +164,66 @@
 				"navigationBarTitleText": "保证金交易明细"
 			}
 		}, {
+			"path": "home/account/profit/whole",
+			"style": {
+				"navigationBarTitleText": "利润交易明细"
+			}
+		}, {
+			"path": "home/account/profit/freeze",
+			"style": {
+				"navigationBarTitleText": "利润冻结明细"
+			}
+		}, {
+			"path": "home/account/profit/backfilled",
+			"style": {
+				"navigationBarTitleText": "待回填保证金明细"
+			}
+		}, {
+			"path": "home/account/profit/withdrawal",
+			"style": {
+				"navigationBarTitleText": "利润提现"
+			}
+		}, {
+			"path": "home/account/profit/progress",
+			"style": {
+				"navigationBarTitleText": "利润提现"
+			}
+		}, {
+			"path": "home/account/profit/progressDetile",
+			"style": {
+				"navigationBarTitleText": "利润提现中明细"
+			}
+		}, {
+			"path": "home/account/profit/info",
+			"style": {
+				"navigationBarTitleText": "卖车利润"
+			}
+		}, {
+			"path": "home/account/profit/detailed",
+			"style": {
+				"navigationBarTitleText": "利润提现明细"
+			}
+		}, {
+			"path": "home/account/profit/backfilledDetile",
+			"style": {
+				"navigationBarTitleText": "待回填保证金明细"
+			}
+		}, {
+			"path": "home/account/profit/taxation",
+			"style": {
+				"navigationBarTitleText": "税费扣减明细"
+			}
+		}, {
+			"path": "home/account/profit/serviceCharge",
+			"style": {
+				"navigationBarTitleText": "服务费扣减明细"
+			}
+		}, {
+			"path": "home/account/profit/deduction",
+			"style": {
+				"navigationBarTitleText": "保证金回填明细"
+			}
+		}, {
 			"path": "mine/avatar/index",
 			"style": {
 				"navigationBarTitleText": "修改头像"

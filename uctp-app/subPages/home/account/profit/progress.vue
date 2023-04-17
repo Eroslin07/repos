@@ -4,7 +4,7 @@
 			<u-steps current="1" direction="column" activeColor="#fa6401">
 				<u-steps-item title="发起提现申请">
 				</u-steps-item>
-				<u-steps-item title="市场方审批中" desc="请及时提交发票到市场处进行审批" v-if="type == 2">
+				<u-steps-item title="市场方审批中" desc="请及时提交发票到市场处进行审批">
 				</u-steps-item>
 				<u-steps-item title="银行处理中...">
 				</u-steps-item>
@@ -30,27 +30,11 @@
 	export default {
 		data() {
 			return {
-				type: null
-			}
-		},
-		onLoad(options) {
-			this.type = options.type;
-			if (options.type == 1) {
-				uni.setNavigationBarTitle({
-					title: '保证金提现'
-				});
-			} else if (options.type == 2) {
-				uni.setNavigationBarTitle({
-					title: '我的利润提现'
-				});
+				
 			}
 		},
 		onBackPress(options) {
-			if (this.type == 1) {
-				this.$tab.navigateTo('/subPages/home/account/bond');
-			} else if (this.type == 2) {
-				this.$tab.navigateTo('/subPages/home/account/profit');
-			}
+			this.$tab.navigateTo('/subPages/home/account/profit/profit');
 			return true;
 		},
 		methods: {

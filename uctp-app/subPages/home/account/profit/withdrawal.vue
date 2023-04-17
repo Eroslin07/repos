@@ -25,9 +25,8 @@
 				</u-input>
 			</view>
 			<view>可用利润余额13,000.00元。</view>
-		</uni-card>
-		<view style="padding: 20px;">
-			<view v-if="type == 2">
+			<view style="margin-top: 10px;">上传利润发票</view>
+			<view style="margin-top: 10px;">
 				<u-upload
 					:fileList="fileList1"
 					@afterRead="afterRead"
@@ -37,8 +36,9 @@
 					:maxCount="10"
 				></u-upload>
 			</view>
-			<button v-if="type == 1" class="button" @click="handleDefine">提现</button>
-			<button v-if="type == 2" class="button" @click="handleSubmit">提交申请</button>
+		</uni-card>
+		<view style="padding: 20px;">
+			<button class="button" @click="handleSubmit">提交申请</button>
 		</view>
 	</view>
 </template>
@@ -47,20 +47,7 @@
 	export default {
 		data() {
 			return {
-				type: null,
 				fileList1: []
-			}
-		},
-		onLoad(options) {
-			this.type = options.type;
-			if (options.type == 1) {
-				uni.setNavigationBarTitle({
-					title: '保证金提现'
-				});
-			} else if (options.type == 2) {
-				uni.setNavigationBarTitle({
-					title: '利润提现'
-				});
 			}
 		},
 		methods: {
@@ -108,13 +95,9 @@
 					});
 				})
 			},
-			// 确定
-			handleDefine() {
-				this.$tab.navigateTo('/subPages/home/account/progress?type=' + 1);
-			},
 			// 提交申请
 			handleSubmit() {
-				this.$tab.navigateTo('/subPages/home/account/progress?type=' + 2);
+				this.$tab.navigateTo('/subPages/home/account/profit/progress');
 			}
 		}
 	}
