@@ -969,6 +969,7 @@
 												_this.carForm.drivingLicenseUrl = [];
 											} else if (result.data['3']) {
 												_this.carForm.vin = vin;
+												_this.carForm.carType = data.words_result['车辆类型'].words;
 												_this.carForm.engineNum = data.words_result['发动机号码'].words;
 												_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
 												_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
@@ -1241,7 +1242,7 @@
 				getFairValue(data).then((res) => {
 					if (res.msg == 'success') {
 						this.fairValue.value1 = res.Recommended_low_sold_price;
-						this.fairValue.value1 = res.Recommended_high_sold_price;
+						this.fairValue.value2 = res.Recommended_high_sold_price;
 						this.handleDraft('step');
 					} else {
 						this.$modal.msg(res.msg);
