@@ -3,6 +3,8 @@ package com.newtouch.uctp.module.business.dal.dataobject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -27,6 +29,7 @@ public class CarInfoDO extends TenantBaseDO {
     /**
      * 车辆主表id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
