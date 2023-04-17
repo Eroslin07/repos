@@ -25,7 +25,7 @@
                  left join system_dept d on fm.merchant_id = d.id
                  left join system_users u on task.ASSIGNEE_ = u.id
                  left join system_users cu on fm.start_user_id = cu.id
-        where fm.status = 1
+        where fm.status = 1 and task.ASSIGNEE_ = #{loginUserId}
         <if test="todoReqVO.startUserName != null and todoReqVO.startUserName != ''">
             and cu.nickname like concat('%', #{todoReqVO.startUserName}, '%')
         </if>

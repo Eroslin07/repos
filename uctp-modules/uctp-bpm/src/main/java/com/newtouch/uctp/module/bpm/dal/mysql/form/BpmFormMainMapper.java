@@ -35,5 +35,5 @@ public interface BpmFormMainMapper extends BaseMapperX<BpmFormMainDO> {
     int deleteWorkFlowDetail(String tableName, Long businessKey);
 
 
-    Page<BpmTaskTodoRespVO> getBpmTaskTodo(Page<BpmTaskTodoRespVO> page, @Param("todoReqVO") BpmTaskTodoReqVO todoReqVO);
+    Page<BpmTaskTodoRespVO> getBpmTaskTodo(Page<BpmTaskTodoRespVO> page, @Param("todoReqVO") BpmTaskTodoReqVO todoReqVO, @Param("loginUserId")Long loginUserId);
 }
