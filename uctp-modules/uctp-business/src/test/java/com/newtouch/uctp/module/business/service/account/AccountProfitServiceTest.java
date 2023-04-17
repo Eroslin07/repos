@@ -22,14 +22,11 @@ public class AccountProfitServiceTest {
     @Resource
     private AccountProfitService accountProfitService;
 
-    public void openTest() {
-
-    }
+    private String accountNo = "33333333";
+    private String contractNo = "1001";
 
     @Test
     public void testRecorded() {
-        String accountNo = "11111111";
-        String contractNo = "1006";
         Integer vehicleReceiptAmount = 100;
         Integer carSalesAmount = 200;
         List<CostDTO> costs = new ArrayList<>();
@@ -48,7 +45,7 @@ public class AccountProfitServiceTest {
         List<TaxDTO> taxes = new ArrayList<>();
         TaxDTO t = new TaxDTO();
         t.setType("增值税");
-        t.setRate(BigDecimal.valueOf(0.2));
+        t.setRate(BigDecimal.valueOf(0.1));
         taxes.add(t);
 
         List<MerchantProfitDO> list = accountProfitService.recorded(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs, taxes);
@@ -61,19 +58,19 @@ public class AccountProfitServiceTest {
         profitQueryReqVO.setPageNo(1);
         profitQueryReqVO.setPageSize(10);
 
-        PageResult<ProfitRespVO> r = accountProfitService.profitList("11111111", profitQueryReqVO);
+        PageResult<ProfitRespVO> r = accountProfitService.profitList(accountNo, profitQueryReqVO);
         Assertions.assertNotNull(r);
     }
 
     @Test
     public void testProfitDetail() {
-        ProfitDetailRespVO pd = accountProfitService.profitDetail("11111111", 1647527558918410241L);
+        ProfitDetailRespVO pd = accountProfitService.profitDetail(accountNo, 1647527558918410241L);
         Assertions.assertNotNull(pd);
     }
 
     @Test
     public void testProfitPresent() {
-        Long id = accountProfitService.profitPresent("11111111", 1L, 5, null);
+        Long id = accountProfitService.profitPresent(accountNo, 1L, 5, null);
         Assertions.assertNotNull(id);
     }
 
