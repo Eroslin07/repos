@@ -55,48 +55,6 @@ public class AccountConstants {
     //交易状态-支付失败
     public static final String TRAN_STATE_FAIL = "10061004";
 
-    // 利润：交易类型
-    //卖车利润
-    public static final String TRAN_PROFIT_SALES_PROFIT = "10101001";
-    //利润提现
-    public static final String TRAN_PROFIT_PRESENT = "10101002";
-    //利润-保证金回填
-    public static final String TRAN_PROFIT_CASH_BACK = "10101003";
-    //利润-服务费
-    public static final String TRAN_PROFIT_SERVICE_COST = "10101004";
-    //利润-税费
-    public static final String TRAN_PROFIT_TAX_COST = "10101005";
-
-    // 利润：提现状态
-    //待回填保证金
-    public static final String PRESENT_PROFIT_CASH_BACK_WAIT = "10111001";
-    //已回填保证金
-    public static final String PRESENT_PROFIT_CASH_BACK_DONE = "10111002";
-    //申请登记
-    public static final String PRESENT_PROFIT_APPLY = "10111000";
-    //市场方退回
-    public static final String PRESENT_PROFIT_AUDIT_REJECT = "10111003";
-    //市场方审批中
-    public static final String PRESENT_PROFIT_AUDIT_PROCESSING = "10111004";
-    //市场方审批成功
-    public static final String PRESENT_PROFIT_AUDIT_APPROVED = "10111005";
-    //银行处理
-    public static final String PRESENT_PROFIT_BANK_PROCESSING = "10111006";
-    //到账成功
-    public static final String PRESENT_PROFIT_BANK_SUCCESS = "10111007";
-    //到账失败
-    public static final String PRESENT_PROFIT_BANK_FAIL = "10111008";
-
-    // 提现：状态
-    // 提现申请
-    public static final String PRESENT_STATUS_APPLY = "10071001";
-    // 市场方审批中
-    public static final String PRESENT_STATUS_AUDIT = "10071002";
-    // 提现申请
-    public static final String PRESENT_STATUS_BANK_PROCESSING = "10071003";
-    // 提现申请
-    public static final String PRESENT_STATUS_BANK_SUCCESS = "10071004";
-
     // 提现类型C：保证金提现P：利润提现
     public static final String PRESENT_TYPE_CASH = "C";
     public static final String PRESENT_TYPE_PROFIT = "P";
