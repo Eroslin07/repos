@@ -14,7 +14,7 @@ public class TransactionRecordReqVO {
 
     @Schema(description = "账户号")
     @NotEmpty(message = "商户账户号不能未空",
-            groups = {Recharge.class, Withdraw.class, Reserve.class, Back.class, ProfitBack.class})
+            groups = {Recharge.class, Withdraw.class, Reserve.class, Difference.class, Back.class, ProfitBack.class})
     private String accountNo;
 
     @Schema(description = "交易金额")
@@ -29,7 +29,7 @@ public class TransactionRecordReqVO {
 
     @Schema(description = "交易合同号")
     @NotEmpty(message = "交易合同号不能为空",
-            groups = {Reserve.class, Deduction.class, Difference.class, Back.class, ProfitBack.class})
+            groups = {Reserve.class, Deduction.class, Back.class, ProfitBack.class, Release.class})
     private String contractNo;
 
 }
