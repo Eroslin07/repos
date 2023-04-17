@@ -57,6 +57,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     //保证金明交易明细查询
     @Override
+    @SuppressWarnings("unchecked")
     public PageResult<CashDetailRespVO> list(MerchantCashReqVO merchantCashReqVO) {
         PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
 
@@ -196,8 +197,6 @@ public class AccountCashServiceImpl implements AccountCashService {
         int count = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_DEDUCTION);
 
         //更改保证金预占记录为实占
-        //MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
-        //merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_DEDUCTION, null, contractNo);
         merchantCashService.updateCashDeduction(contractNo);
 
         //todo：是否调用银行接口扣除金额
@@ -208,21 +207,6 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public Integer difference(TransactionRecordReqVO transactionRecordReqVO) {
-//        //查询商户实占金额
-//        MerchantCashDO deductionCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Collections.singletonList(AccountConstants.TRADE_TYPE_DEDUCTION));
-//        //查询商户回填金额
-//        MerchantCashDO backCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Arrays.asList(AccountConstants.TRADE_TYPE_BACK, AccountConstants.TRADE_TYPE_PROFIT_BACK));
-//
-//        //预占金额 - 回填金额（保证金回填+利润回填）
-//        int amount = 0;
-//
-//        if (deductionCashDO != null && deductionCashDO.getPayAmount() != null && deductionCashDO.getPayAmount() > 0){
-//            amount = deductionCashDO.getPayAmount();
-//            if (backCashDO != null && backCashDO.getPayAmount() != null && backCashDO.getPayAmount() > 0) {
-//                amount -= backCashDO.getPayAmount();
-//            }
-//        }
-
         int amount = 0;
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
         if (merchantAccountDO != null && merchantAccountDO.getCash() != null) {
@@ -275,9 +259,8 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public Boolean release(TransactionRecordReqVO transactionRecordReqVO) {
-        String contractNo = transactionRecordReqVO.getContractNo();
         //查询合同号预占金额
-        MerchantCashDO merchantCashDO = merchantCashService.queryContractNoAmount(contractNo, Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
+        MerchantCashDO merchantCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
         String accountNo = merchantCashDO.getAccountNo();
         Integer payAmount = merchantCashDO.getPayAmount();
         if (StringUtils.isEmpty(accountNo) || payAmount == null || payAmount <= 0) {
@@ -289,7 +272,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         //更改保证金预占记录为实占
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
-        merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_RELEASE, null, contractNo);
+        merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_RELEASE, null, transactionRecordReqVO.getContractNo());
         return count > 0;
     }
 

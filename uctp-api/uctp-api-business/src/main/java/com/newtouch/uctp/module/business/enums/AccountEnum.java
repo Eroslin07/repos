@@ -5,14 +5,14 @@ package com.newtouch.uctp.module.business.enums;
  */
 public enum AccountEnum {
     // 保证金：交易类型
-    TRADE_TYPE_RECHARGE("10011001", "充值"),
-    TRADE_TYPE_BACK("10011002", "卖车款回填"),
-    TRADE_TYPE_PROFIT_BACK("10011003", "利润回填"),
-    TRADE_TYPE_WITHDRAW("10011004", "提现"),
-    TRADE_TYPE_WITHDRAWING("10011005", "提现中"),
-    TRADE_TYPE_DEDUCTION("10011006", "扣减"),
-    TRADE_TYPE_PREEMPTION("10011007", "预占"),
-    TRADE_TYPE_RELEASE("10011008", "释放"),
+    TRADE_TYPE_RECHARGE("10011001", "保证金充值"),
+    TRADE_TYPE_BACK("10011002", "保证金回填"),
+    TRADE_TYPE_PROFIT_BACK("10011003", "保证金回填(利润)"),
+    TRADE_TYPE_WITHDRAW("10011004", "保证金提现"),
+    TRADE_TYPE_WITHDRAWING("10011005", "保证金提现中"),
+    TRADE_TYPE_DEDUCTION("10011006", "保证金实扣"),
+    TRADE_TYPE_PREEMPTION("10011007", "保证金预扣"),
+    TRADE_TYPE_RELEASE("10011008", "保证金预扣释放"),
 
     //损益类型
     PROFIT_LOSS_TYPE_INCOME("10021001", "收入"),
