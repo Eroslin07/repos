@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.business.controller.app.notice;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeReqVO;
 import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
 import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
@@ -74,7 +75,7 @@ public class AppNoticeInfoController {
     }
     @PostMapping("/saveTaskNotice")
     @Operation(summary = "保存消息")
-    public CommonResult saveTaskNotice(@RequestParam String type,@RequestParam String contentType,@RequestParam String reason,@RequestBody BpmFormMainVO infoVO){
+    public CommonResult saveTaskNotice(@RequestParam String type,@RequestParam String contentType,@RequestParam String reason,@RequestBody BpmFormResVO infoVO){
         String result = noticeService.saveTaskNotice(type,contentType,reason,infoVO);
         return success(result);
     }
