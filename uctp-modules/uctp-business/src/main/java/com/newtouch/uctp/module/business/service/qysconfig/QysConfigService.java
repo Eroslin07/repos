@@ -64,11 +64,35 @@ public interface QysConfigService {
     PageResult<QysConfigDO> getQysConfigPage(QysConfigPageReqVO pageReqVO);
 
     /**
-     * 电子签回调接口
+     * 电子签回调接口->企业认证回调地址：获取企业认证的进度和结果
      * @param signature 签名
      * @param timestamp 时间戳
      * @param content 内容
      * @return
      */
-    String callback(String signature, String timestamp, String content);
+    String certification(String signature, String timestamp, String content) throws Exception;
+    /**
+     * 电子签回调接口->6）合同状态回调地址：跟踪企业签约文件的签署状态和进度；
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content 内容
+     * @return
+     */
+    String status(String signature, String timestamp, String content) throws Exception;
+    /**
+     * 电子签回调接口->7）验证地址：若选择单点登录集成方案，用于单点登录集成的Ticket校验；
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content 内容
+     * @return
+     */
+    String verification(String signature, String timestamp, String content) throws Exception;
+    /**
+     * 电子签回调接口 ->8）平台登录地址：若选择单点登录集成方案，用于单点登录集成Ticket校验失败的重定向地址；
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content 内容
+     * @return
+     */
+    String login(String signature, String timestamp, String content) throws Exception;
 }

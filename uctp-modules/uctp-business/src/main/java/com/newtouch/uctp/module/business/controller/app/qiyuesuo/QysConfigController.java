@@ -81,11 +81,32 @@ public class QysConfigController {
         return success(QysConfigConvert.INSTANCE.convertPage(pageResult));
     }
 
-    @GetMapping("/callback")
-    @Schema(description = "saas模式契约锁回调")
-    public String callback(@RequestParam String signature,
+    @PostMapping("/callback/certification")
+    @Schema(description = "saas模式契约锁回调-企业认证")
+    public String callbackCertification(@RequestParam String signature,
                            @RequestParam String timestamp,
-                           @RequestParam String content) {
-        return qysConfigService.callback(signature, timestamp, content);
+                           @RequestParam String content) throws Exception {
+        return qysConfigService.certification(signature, timestamp, content);
+    }
+    @PostMapping("/callback/status")
+    @Schema(description = "saas模式契约锁回调-合同状态")
+    public String callbackStatus(@RequestParam String signature,
+                           @RequestParam String timestamp,
+                           @RequestParam String content) throws Exception {
+        return qysConfigService.status(signature, timestamp, content);
+    }
+    @PostMapping("/callback/verification")
+    @Schema(description = "saas模式契约锁回调-验证地址")
+    public String callbackVerification(@RequestParam String signature,
+                           @RequestParam String timestamp,
+                           @RequestParam String content) throws Exception {
+        return qysConfigService.verification(signature, timestamp, content);
+    }
+    @PostMapping("/callback/login")
+    @Schema(description = "saas模式契约锁回调-验证地址")
+    public String callbackLogin(@RequestParam String signature,
+                           @RequestParam String timestamp,
+                           @RequestParam String content) throws Exception {
+        return qysConfigService.login(signature, timestamp, content);
     }
 }
