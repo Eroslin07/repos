@@ -35,11 +35,14 @@
 
     <update id="rechargeCash">
         update uctp_merchant_account
-        set cash           = cash + #{tranAmount},
-            available_cash = available_cash + #{tranAmount},
-            revision       = revision + 1
+        set
+        <if test="type == 1">
+            cash = cash + #{tranAmount},
+        </if>
+        available_cash = available_cash + #{tranAmount},
+        revision = revision + 1
         where account_no = #{accountNo}
-        <if test="revision != null and revision != ''">
+        <if test="revision != null">
             and revision = #{revision}
         </if>
 

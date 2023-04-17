@@ -1,10 +1,18 @@
+###
+###字典值详情
+GET {{appBusinessUrl}}/uctp/account/cash/codes
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+
+###
 ###保证金释放
 POST {{appBusinessUrl}}/uctp/account/cash/release
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "5463643"
+  "contractNo": "222222222"
 }
 
 ###
@@ -14,9 +22,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111",
-  "tranAmount": 1,
-  "contractNo": "3213232131323213"
+  "accountNo": "22222222",
+  "tranAmount": 5,
+  "contractNo": "222222221"
 }
 
 ###保证金回填
@@ -25,9 +33,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111",
-  "tranAmount": 1,
-  "contractNo": "3213232131323213"
+  "accountNo": "22222222",
+  "tranAmount": 5,
+  "contractNo": "222222221"
 }
 
 ###待回填保证金
@@ -36,7 +44,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111"
+  "accountNo": "22222222"
 }
 
 ###保证金实占
@@ -45,7 +53,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "3213232131323213"
+  "contractNo": "222222221"
 }
 
 
@@ -55,9 +63,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111",
+  "accountNo": "22222222",
   "tranAmount": 10,
-  "contractNo": "5463643"
+  "contractNo": "222222222"
 }
 
 ###
@@ -67,9 +75,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111",
-  "tranAmount": 100,
-  "revision": 8
+  "accountNo": "22222222",
+  "tranAmount": 10,
+  "revision": 4
 }
 
 ###
@@ -79,10 +87,10 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111",
+  "accountNo": "22222222",
   "type": 2,
   "pageNo": 1,
-  "pageSize": 5
+  "pageSize": 15
 }
 
 ###保证金充值-充值成功后返回我的保证金页面模型数据
@@ -91,13 +99,13 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "11111111",
-  "tranAmount": 100,
-  "revision": 9
+  "accountNo": "22222222",
+  "tranAmount": 10,
+  "revision": 12
 }
 
 ###保证金详情-我的保证金
-GET {{appBusinessUrl}}/uctp/account/cash/detail?accountNo=11111111
+GET {{appBusinessUrl}}/uctp/account/cash/detail?accountNo=22222222
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 

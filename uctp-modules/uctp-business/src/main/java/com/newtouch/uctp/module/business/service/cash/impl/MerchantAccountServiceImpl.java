@@ -30,8 +30,8 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
 
     @Override
     @Transactional
-    public int rechargeCash(String accountNo, Integer tranAmount, Integer revision) {
-        return merchantAccountMapper.rechargeCash(accountNo, tranAmount, revision);
+    public int rechargeCash(String accountNo, Integer tranAmount, Integer revision, int type) {
+        return merchantAccountMapper.rechargeCash(accountNo, tranAmount, revision, type);
     }
 
     @Override

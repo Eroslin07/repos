@@ -7,6 +7,9 @@ import com.newtouch.uctp.module.business.controller.app.account.cash.vo.Merchant
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public interface AccountCashService {
 
@@ -89,4 +92,6 @@ public interface AccountCashService {
      * @return 保证金释放-冻结解冻结果：true/false
      */
     Boolean release(TransactionRecordReqVO transactionRecordReqVO);
+
+    List<Map<String, String>> codes();
 }
