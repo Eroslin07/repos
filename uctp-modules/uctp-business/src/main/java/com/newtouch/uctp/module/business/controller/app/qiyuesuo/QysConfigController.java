@@ -109,4 +109,12 @@ public class QysConfigController {
                            @RequestParam String content) throws Exception {
         return qysConfigService.login(signature, timestamp, content);
     }
+
+    @GetMapping("/test")
+    @Schema(description ="测试Id")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    public CommonResult<Long> testId(@RequestParam("id") Long id) {
+        return success(id);
+    }
+
 }

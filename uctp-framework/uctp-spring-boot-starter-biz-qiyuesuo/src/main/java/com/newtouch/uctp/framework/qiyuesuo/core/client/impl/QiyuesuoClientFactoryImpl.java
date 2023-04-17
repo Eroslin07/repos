@@ -2,7 +2,7 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client.impl;
 
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
-import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.QysClient;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import org.springframework.util.Assert;
@@ -27,7 +27,7 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
     private final ConcurrentMap<Long, AbstractQiyuesuoClient> channelIdClients = new ConcurrentHashMap<>();
 
     /**
-     * 短信客户端 Map
+     * 契约锁客户端 Map
      * key：渠道编码，使用 {@link QiyuesuoChannelProperties#getCode()} ()}
      *
      * 注意，一些场景下，需要获得某个渠道类型的客户端，所以需要使用它。
@@ -52,7 +52,7 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
         Assert.notNull(channelEnum, String.format("渠道类型(%s) 为空", channelEnum));
         // 创建客户端
         switch (channelEnum) {
-            case QIYUESUO: return new QysClient(properties);
+            case QIYUESUO: return new DefaultQiyuesuoClient(properties);
         }
         // 创建失败，错误日志 + 抛出异常
 //        log.error("[createQiyuesuoClient][配置({}) 找不到合适的客户端实现]", properties);

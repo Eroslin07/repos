@@ -6,9 +6,9 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoCli
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.bean.Contract;
 
-public class QysClient extends AbstractQiyuesuoClient {
-    public QysClient(QiyuesuoChannelProperties properties) {
-        super(properties, new QysCodeMapping());
+public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
+    public DefaultQiyuesuoClient(QiyuesuoChannelProperties properties) {
+        super(properties, new DefaultCodeMapping());
         Assert.notEmpty(properties.getApiKey(), "apiKey 不能为空");
         Assert.notEmpty(properties.getApiSecret(), "apiSecret 不能为空");
     }
