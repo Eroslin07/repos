@@ -185,7 +185,10 @@
 			// 获取list数据
 			getList(params) {
 				getHomePageList(params).then(res => {
-					this.tabList = res.data.list;
+					this.tabList = res.data.list.map(v => {
+						let value = this.colorArr.find(t => t.status == v.status)
+						this.$set(v, 'verifyColor', value)
+					})
 					this.total = res.data.total;
 					if (this.total > 10) {
 						this.status = 'loadmore'
@@ -217,7 +220,7 @@
 				this.getList(this.formData)
 			},
 			// tab导航
-			handleTabs() {
+			handleChange() {
 				console.log(1111)
 			},
 			// 清除
@@ -228,9 +231,9 @@
 				})
 				this.getList(this.formData)
 			},
-			
+
 			// 查看详情
-			handleCard(){
+			handleCard() {
 				console.log(2222)
 			}
 		}
@@ -251,8 +254,11 @@
 			// width:86px;
 			// margin:0 auto;
 		}
-		/deep/ view.data-v-48634e29, scroll-view.data-v-48634e29, swiper-item.data-v-48634e29 {
-			flex-grow:1 !important;
+
+		/deep/ view.data-v-48634e29,
+		scroll-view.data-v-48634e29,
+		swiper-item.data-v-48634e29 {
+			flex-grow: 1 !important;
 		}
 
 		/deep/ .uni-card {

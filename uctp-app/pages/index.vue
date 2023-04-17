@@ -24,6 +24,7 @@
 				<view class="item-desp">
 					COLLECT
 				</view>
+				<image class="img" src="/static/images/index/coll-car.png" mode="widthFix"></image>
 			</view>
 			<view class="menu-item sell-box" @click="sellingCar">
 				<view class="item-title">
@@ -34,21 +35,30 @@
 				<view class="item-desp sell-desp">
 					SELL
 				</view>
+				<image class="img" src="/static/images/index/sell-money.png" mode="widthFix"></image>
 			</view>
 		</view>
 		<!-- 交易状态 -->
 		<view class="deal-dynamic">
-			<h3 class="align-center">交易动态</h3>
-			<view class="cars-status" v-for="item in gatherData" :key="item.status">
-				<view class="left-title" @click="tabCarStatus(item)">
+			<h3 class="align-center">
+				<image style="width:60px;height:24px;" src="/static/images/index/trace.png" mode="widthFix"></image>
+			</h3>
+			<view v-for="item in gatherData" :key="item.status"
+				:class="{'cars-status':true,status1:item.status==1,status2:item.status==2,status3:item.status==3,status4:item.status==4}">
+
+				<view
+					:class="{'left-title':true,bc1:item.status==1,bc2:item.status==2,bc3:item.status==3,bc4:item.status==4}"
+					@click="tabCarStatus(item)">
 					<view class="">{{item.label}}</view>
 					<view class="" style="padding-top:3px;">
-						{{item.num || 0 }}
+						{{item.num || 0 }} 辆
 					</view>
+					<image class="bcImgs" :src="leftImgSrc(item)" mode=""></image>
 				</view>
 				<view class="right-content">
 					<u-row style="height:68px;">
-						<u-col span="4" v-for="child in item.child" :key="child.status" @click="handleTabItem(item,child)">
+						<u-col span="4" v-for="child in item.child" :key="child.status"
+							@click="handleTabItem(item,child)">
 							<view class="align-center">
 								<text style="padding-right:3px;">{{child.label}}</text>
 								<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
@@ -78,7 +88,7 @@
 			</view>
 		</view>
 		<!-- 加载图标 -->
-		<u-loadmore :status="status" loadingText="努力加载中..." />
+		<!-- <u-loadmore :status="status" loadingText="努力加载中..." /> -->
 	</view>
 </template>
 
@@ -115,6 +125,7 @@
 
 				// 统计数据
 				gatherData: [],
+
 			}
 		},
 		onLoad: function() {
@@ -156,8 +167,34 @@
 		methods: {
 			// 获取list数据
 			getList(params) {
+				let listArr = [{
+					status: 1,
+					label: '收车中'
+				}, {
+					status: 2,
+					label: '待售中'
+				}, {
+					status: 3,
+					label: '卖车中'
+				}, {
+					status: 4,
+					label: '已售出'
+				}]
+
+				this.$nextTick(() => {
+					this.tabList = listArr.map(v => {
+						let value = this.colorArr.find(t => t.status == v.status)
+						this.$set(v, 'verifyColor', value)
+						return v;
+					})
+				})
+
 				getHomePageList(params).then(res => {
-					this.tabList = res.data.list;
+					this.tabList = res.data.list.map(v => {
+						let value = this.colorArr.find(t => t.status == v.status)
+						this.$set(v, 'verifyColor', value)
+						return v;
+					})
 					this.total = res.data.total;
 					if (this.total > 10) {
 						this.status = 'loadmore'
@@ -222,9 +259,28 @@
 			tabCarStatus(item) {
 				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${item}`)
 			},
-			handleTabItem(item,child){
+			handleTabItem(item, child) {
 				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?text=${child}`)
 			},
+
+			// 消息动态-背景图标
+			leftImgSrc(item) {
+				let urlArr = [{
+					status: 1,
+					url: '/static/images/index/title-car.png',
+				}, {
+					status: 3,
+					url: '/static/images/index/title-sell.png'
+				}, {
+					status: 2,
+					url: '/static/images/index/title-sale.png'
+				}, {
+					status: 4,
+					url: '/static/images/index/title-saled.png'
+				}, ]
+				return urlArr.find(val => val.status == item.status).url
+			},
+
 			// 消息
 			handleMsg() {
 				this.$tab.navigateTo('/subPages/work/index')
@@ -270,13 +326,17 @@
 			color: #fff;
 
 			.menu-item {
+				position: relative;
 				flex: 1;
 				flex-shrink: 0;
 				height: 90px;
-				margin-right: 20px;
+				margin-right: 10px;
 				padding: 15px;
 				border-radius: 5px;
-				background-color: #088FFE;
+				// background-color: #088FFE;
+				background-image: url('/static/images/index/collBc.png');
+				background-repeat: no-repeat;
+				background-size: 100% 100%;
 
 				.item-title {
 					display: flex;
@@ -290,11 +350,20 @@
 					margin-top: 8px;
 					color: #96C6FE;
 				}
+
+				.img {
+					width: 75px;
+					height: 75px;
+					position: absolute;
+					bottom: -12px;
+					right: 5px;
+				}
 			}
 
 			.sell-box {
-				background-color: #DB6A43;
+				// background-color: #DB6A43;
 				margin-right: 0;
+				background-image: url('/static/images/index/sellBc.png');
 
 				.sell-desp {
 					color: #FFD7B1;
@@ -309,35 +378,49 @@
 			overflow-y: scroll;
 			padding: 15px;
 			margin-top: 10px;
-			background-color: #f6f6f6;
+			// background-color: #f6f6f6;
 			// background: url('/static/images/bc.jpg') no-repeat;
 			// background-size: 100% 100%;
+			background-image: linear-gradient(to bottom, #FFF9EB 10%, #fff 90%);
+			// background-image: linear-gradient(to right, red 30%, green);
 
 			.cars-status {
 				box-sizing: border-box;
 				width: 100%;
 				height: 70px;
-				border: 1px solid #088FFE;
+				// border: 1px solid #088FFE;
 				border-radius: 5px;
 				margin-top: 10px;
 				display: flex;
 				flex-direction: row;
 				align-items: center;
-				background-color: #96C6FE;
+				// background-color: #96C6FE;
 
 				.left-title {
+					position: relative;
 					width: 68px;
 					height: 68px;
+					border-top-left-radius: 4px;
+					border-bottom-left-radius: 4px;
+					overflow: hidden;
 					text-align: center;
 					font-size: 12px;
 					// background: url('/static/images/bc.jpg') no-repeat;
 					// background-size: 100% 100%;
-					background-color: #2A93EC;
+					// background-color: #2A93EC;
 					color: #fff;
 					display: flex;
 					flex-direction: column;
 					align-items: center;
 					justify-content: center;
+
+					.bcImgs {
+						width: 55px;
+						height: 55px;
+						position: absolute;
+						bottom: -15px;
+						left: 25px;
+					}
 				}
 
 				.right-content {
@@ -347,6 +430,42 @@
 				}
 			}
 		}
+	}
+
+	.status1 {
+		background-color: #96C6FE;
+		border: 1px solid #088FFE;
+	}
+
+	.status2 {
+		background-color: #FFEEE6;
+		border: 1px solid #C07843;
+	}
+
+	.status3 {
+		background-color: #FDF0F0;
+		border: 1px solid #CE999A;
+	}
+
+	.status4 {
+		background-color: #DCF1E9;
+		border: 1px solid #639C8B;
+	}
+
+	.bc1 {
+		background-color: #088FFE;
+	}
+
+	.bc2 {
+		background-color: #FA6500;
+	}
+
+	.bc3 {
+		background-color: #EF6667;
+	}
+
+	.bc4 {
+		background-color: #5BB4A3;
 	}
 
 	/* #ifdef MP-WEIXIN */
