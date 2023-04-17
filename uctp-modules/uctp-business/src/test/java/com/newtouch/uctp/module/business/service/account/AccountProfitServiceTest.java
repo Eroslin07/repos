@@ -23,7 +23,7 @@ public class AccountProfitServiceTest {
     private AccountProfitService accountProfitService;
 
     private String accountNo = "33333333";
-    private String contractNo = "1001";
+    private String contractNo = "1002";
 
     @Test
     public void testRecorded() {
@@ -63,8 +63,30 @@ public class AccountProfitServiceTest {
     }
 
     @Test
+    public void testProfitListForIncome() {
+        ProfitQueryReqVO profitQueryReqVO = new ProfitQueryReqVO();
+        profitQueryReqVO.setPageNo(1);
+        profitQueryReqVO.setPageSize(10);
+        profitQueryReqVO.setType(4);
+
+        PageResult<ProfitRespVO> r = accountProfitService.profitList(accountNo, profitQueryReqVO);
+        Assertions.assertNotNull(r);
+    }
+
+    @Test
+    public void testProfitListForFreeze() {
+        ProfitQueryReqVO profitQueryReqVO = new ProfitQueryReqVO();
+        profitQueryReqVO.setPageNo(1);
+        profitQueryReqVO.setPageSize(10);
+        profitQueryReqVO.setType(2);
+
+        PageResult<ProfitRespVO> r = accountProfitService.profitList(accountNo, profitQueryReqVO);
+        Assertions.assertNotNull(r);
+    }
+
+    @Test
     public void testProfitDetail() {
-        ProfitDetailRespVO pd = accountProfitService.profitDetail(accountNo, 1647527558918410241L);
+        ProfitDetailRespVO pd = accountProfitService.profitDetail(accountNo, 1647850179174305793L);
         Assertions.assertNotNull(pd);
     }
 
@@ -76,15 +98,15 @@ public class AccountProfitServiceTest {
 
     @Test
     public void testAuditProfitPressentReject() throws InterruptedException {
-        accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
+        accountProfitService.auditProfitPressent(1647853199840743426L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
-        accountProfitService.auditProfitPressent(1647533421515194369L, ProfitPressentAuditOpinion.AUDIT_REJECT);
+        accountProfitService.auditProfitPressent(1647853199840743426L, ProfitPressentAuditOpinion.AUDIT_REJECT);
     }
 
     @Test
     public void testAuditProfitPressentApproved() throws InterruptedException {
-        accountProfitService.auditProfitPressent(1647578548698865666L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
+        accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
-        accountProfitService.auditProfitPressent(1647578548698865666L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
+        accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
     }
 }

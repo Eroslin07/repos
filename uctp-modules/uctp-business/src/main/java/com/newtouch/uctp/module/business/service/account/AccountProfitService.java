@@ -17,6 +17,11 @@ import java.util.List;
  * @author zhangjun
  */
 public interface AccountProfitService {
+    //利润查询类型：1：利润明细 2：冻结明细 3：支出 4：收入
+    int ALL_PROFIT = 1;
+    int FREEZE_PROFIT = 2;
+    int DISBURSEMENT = 3;
+    int INCOME = 4;
 
     /**
      * 利润划入

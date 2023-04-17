@@ -11,5 +11,5 @@ public class ProfitSummaryRespVO {
     @Schema(description = "利润-冻结余额（单位为：分）")
     private Integer freezeProfit;
     @Schema(description = "待回填保证金（单位为：分）")
-    private String cashBack;
+    private Integer cashBack;
 }
