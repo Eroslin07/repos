@@ -24,6 +24,8 @@ public class ProfitCalcResultDTO {
     private Integer deductionBackCashFromOriginalProfitAmount;
     // 本次卖车利润
     private Integer profitAmount;
+    // 本次收益
+    private Integer revenueAmount;
     // 本次费用明细
     private List<CostDTO> costs;
     // 本次税收明细

@@ -154,26 +154,51 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         for (int i = 0; i < backCashList.size(); i++) {
             MerchantProfitDO mp = backCashList.get(i);
             this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
-            // 回填保证金（账户保证金在此接口更新）
-            TransactionRecordReqVO transactionRecordReqVO = new TransactionRecordReqVO();
-            transactionRecordReqVO.setAccountNo(mp.getAccountNo());
-            transactionRecordReqVO.setContractNo(mp.getContractNo());
-            transactionRecordReqVO.setTranAmount(mp.getProfit() * -1);
-            transactionRecordReqVO.setRevision(merchantAccount.getRevision() + 1);
 
-            boolean backSuccessed;
-            if (profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
-                log.info("合同：{}回填保证金有使用原有利润", contractNo);
-                // 使用的原有利润回填保证金
-                backSuccessed = accountCashService.profitBack(transactionRecordReqVO);
+            if (profitCalcResult.getRevenueAmount().compareTo(0) < 0 && profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
+                // 本次收益为负，并且使用了原有利润回填保证金，则需要分别调用回填保证金和使用原利润回填保证金接口
+                // 回填保证金
+                TransactionRecordReqVO backCash = new TransactionRecordReqVO();
+                backCash.setAccountNo(mp.getAccountNo());
+                backCash.setContractNo(mp.getContractNo());
+                backCash.setTranAmount((mp.getProfit() - profitCalcResult.getDeductionBackCashFromOriginalProfitAmount()) * -1); // 本次实际回填总额-占用原有的利润额度
+                backCash.setRevision(merchantAccount.getRevision() + 1); // 注意版本号
+
+                log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
+                boolean backSuccessed = accountCashService.back(backCash);
+                if (!backSuccessed) {
+                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                }
+
+                // 回填保证金（使用原有利润）
+                TransactionRecordReqVO backCashFromOriginalProfit = new TransactionRecordReqVO();
+                backCashFromOriginalProfit.setAccountNo(mp.getAccountNo());
+                backCashFromOriginalProfit.setContractNo(mp.getContractNo());
+                backCashFromOriginalProfit.setTranAmount(profitCalcResult.getDeductionBackCashFromOriginalProfitAmount() * -1); // 占用的原有利润
+                backCashFromOriginalProfit.setRevision(backCash.getRevision() + 1); // 注意版本号
+
+                log.info("合同：{}使用{}原有利润回填保证金", contractNo);
+                boolean profitBackSuccessed = accountCashService.profitBack(backCashFromOriginalProfit);
+                if (!profitBackSuccessed) {
+                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                }
             } else {
-                log.info("合同：{}回填保证金未使用原有利润", contractNo);
-                // 未使用原有利润回填保证金
-                backSuccessed = accountCashService.back(transactionRecordReqVO);
+                // 不使用原有利润回填保证金
+                // 回填保证金
+                TransactionRecordReqVO backCash = new TransactionRecordReqVO();
+                backCash.setAccountNo(mp.getAccountNo());
+                backCash.setContractNo(mp.getContractNo());
+                backCash.setTranAmount(mp.getProfit() * -1);
+                backCash.setRevision(merchantAccount.getRevision() + 1); // 注意版本号
+
+                log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
+                boolean backSuccessed = accountCashService.back(backCash);
+
+                if (!backSuccessed) {
+                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                }
             }
-            if (!backSuccessed) {
-                throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-            }
+
         }
 
         // 处理费用立即支付
@@ -494,6 +519,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .profitTotalAmount(nowProfitTotalAmount)
                 // 现待回填保证金总额
                 .waitForBackCashTotalAmount(nowWaitForBackCashTotalAmount)
+                // 本次收益
+                .revenueAmount(tmpTheRevenueAmount)
                 // 本次税收
                 .taxes(taxes)
                 // 本次费用
