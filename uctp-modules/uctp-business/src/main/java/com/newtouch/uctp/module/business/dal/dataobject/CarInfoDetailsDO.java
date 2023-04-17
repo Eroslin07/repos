@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
 
@@ -26,11 +28,13 @@ public class CarInfoDetailsDO extends TenantBaseDO {
     /**
      * id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
      * 车辆主表id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long carId;
     /**
      * 里程数,保留2位小数

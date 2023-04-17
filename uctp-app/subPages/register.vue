@@ -125,7 +125,7 @@
 				</u-form-item> -->
 				</uni-card>
 			</u--form>
-			<u-picker :show="showSex" :columns="range" keyName="contactName" title="请选择市场所在地" @confirm="confirm"
+			<u-picker :show="showSex" :columns="range" keyName="name" title="请选择市场所在地" @confirm="confirm"
 				@cancel="cancel"></u-picker>
 		</view>
 		<view class="footer">

@@ -14,13 +14,13 @@
 		<uni-card>
 			<u-grid col="2" :border="true">
 				<u-grid-item>
-					<view @click="handleClick(1)">
+					<view @click="handleClick(1)" style="text-align: center;">
 						<view>保证金 ></view>
 						<view>20.05万元</view>
 					</view>
 				</u-grid-item>
 				<u-grid-item>
-					<view @click="handleClick(2)">
+					<view @click="handleClick(2)" style="text-align: center;">
 						<view>利润 ></view>
 						<view>6,800.00元</view>
 					</view>

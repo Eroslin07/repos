@@ -2,22 +2,16 @@
 	<view class="agreement">
 		<uni-card :is-shadow="false" is-full>
 			<view class="text">
-				<u-row justify="space-between" customStyle="margin-bottom: 10px">
-					<u-col span="3">
-						<u-radio-group v-model="checkboxValue" placement="row" activeColor="#68b4c5">
-							<u-radio :customStyle="{marginBottom: '8px'}" label="《XX卖车合同》" name="1">
-							</u-radio>
-						</u-radio-group>
-					</u-col>
-					<u-col span="3">
-						<view class="demo-layout" @click="handleLook">查看</view>
-					</u-col>
-				</u-row>
+				<image src="../../../static/images/bycar/hetong2.png" class="hetong_image"></image>
+				<view style="margin-top: 20px;"  @click="handleLook">
+					<image src="../../../static/images/bycar/hetong1.png" class="form-image" style="width: 16pt;height: 16pt;"></image>
+					<text>《2021年03月20日卖车合同》</text>
+				</view>
 			</view>
 			<!-- 底部按钮 -->
-			<button @click="handleAffirm" class="button">合同签章</button>
-			<button @click="handleCancel" class="button">取消合同签章</button>
-			<button @click="handleClose" class="button">关闭</button>
+			<button @click="handleAffirm" class="button" style="background-color: #fff;color: #333;">合同签章</button>
+			<button @click="handleCancel" class="button" style="background-color: #fff;color: #333;">取消合同签章</button>
+			<button @click="handleClose" class="button">保存并关闭</button>
 		</uni-card>
 	</view>
 </template>
@@ -71,16 +65,21 @@
 	}
 	/* #endif */
 	
+	.hetong_image {
+		width: 66pt;
+		height: 66pt;
+	}
+	
 	.text {
 		padding: 200rpx 0;
 		font-size: 16px;
 		text-align: center;
-		color: #2aa4d9;
+		color: #fa6400;
 	}
 	
 	.button {
 		margin-top: 10px;
-		background-color: #50a8bc;
+		background-color: #fa6400;
 		color: #fff;
 	}
 </style>

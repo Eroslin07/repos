@@ -10,7 +10,7 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCodeMapping;
  *
  * @author 芋道源码
  */
-public class QysCodeMapping implements QiyuesuoCodeMapping {
+public class DefaultCodeMapping implements QiyuesuoCodeMapping {
 
     @Override
     public ErrorCode apply(String apiCode) {
