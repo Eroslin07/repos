@@ -396,13 +396,12 @@ public class AppCarInfoController {
             String token = "61f499b086392005f92009b91f8f966a";
             String modelId = String.valueOf(map.get("modelId"));//车型id
 //            String zone =carInfoDO.getPlateNum();//车牌
-            String zone = String.valueOf(map.get("platenNum"));//车牌
+            String zone = String.valueOf(map.get("plateNum"));//车牌
 
 //            String mile= String.valueOf(carInfoDetailsDO.getMileage());//里程
             String mile= String.valueOf(map.get("mileage"));//里程
-
 //            String regDate= String.valueOf(carInfoDetailsDO.getFirstRegistDate());//首次登记时间
-            String regDate= String.valueOf(map.get("firstRegistData"));//首次登记时间
+            String regDate= String.valueOf(map.get("firstRegistDate"));//首次登记时间
             String allLevel="1";//(是否返回多⻋况,1是，0:否) 默认1
 
             String url1 = "http://testapi.che300.com/service/getUsedCarPrice";
