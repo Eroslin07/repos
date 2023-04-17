@@ -52,6 +52,7 @@
 </template>
 
 <script>
+	import { getCarhList, getDetail } from '@/api/account/bond.js'
 	export default {
 		data() {
 			return {
@@ -83,10 +84,36 @@
 			this.$tab.switchTab('/pages/account/index');
 			return true;
 		},
+		mounted() {
+			this.$modal.loading("数据加载中，请耐心等待...");
+			this.getBondDetail();
+			this.getList();
+		},
 		methods: {
 			back() {
 				uni.navigateBack({
 					delta: 1
+				})
+			},
+			// 查询我的保证金
+			getBondDetail() {
+				getDetail({ accountNo: '' }).then((res) => {
+					
+				})
+			},
+			// 保证金交易明细查询
+			getList() {
+				let data = {
+					pageNo: 1,
+					pageSize: 10,
+					accountNo: '',
+					type: 1
+				}
+				getCarhList(data).then((res) => {
+					this.indexList = res.data.list;
+					this.$modal.closeLoading();
+				}).catch((error) => {
+					this.$modal.closeLoading();
 				})
 			},
 			// 提现

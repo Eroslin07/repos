@@ -33,10 +33,12 @@
 				</u-list>
 			</view>
 		</uni-card>
+		<u-loadmore :status="status" loadingText="努力加载中..." />
 	</view>
 </template>
 
 <script>
+	import { getCarhList } from '@/api/account/bond.js'
 	export default {
 		data() {
 			return {
@@ -46,10 +48,72 @@
 				}, {
 					status: 2,
 					title: '保证金预扣'
-				}]
+				}],
+				status: 'loadmore',
+				timer: null,
+				total: 0,
+				pageNo: 1,
+				pageSize: 10
 			}
 		},
+		mounted() {
+			this.getList();
+		},
+		onPullDownRefresh() {
+			if (this.timer != null) {
+				clearTimeout(this.timer)
+			}
+			if (this.indexList.length == this.total) {
+				this.status = 'nomore';
+				return
+			}
+			this.status = 'loading';
+			this.timer = setTimeout(() => {
+				this.pageNo += 1
+				this.getMore();
+			}, 1000)
+		},
 		methods: {
+			// 保证金冻结明细查询
+			getList() {
+				let data = {
+					pageNo: this.pageNo,
+					pageSize: this.pageSize,
+					accountNo: '',
+					type: 2
+				}
+				this.$modal.loading("数据加载中，请耐心等待...")
+				getCarhList(data).then((res) => {
+					this.indexList = res.data.list;
+					this.total = res.data.total;
+					if (this.total > 10) {
+						this.status = 'loadmore'
+					} else {
+						this.status = 'nomore'
+					}
+					this.$modal.closeLoading();
+				}).catch((error) => {
+					this.status = 'nomore'
+					this.$modal.closeLoading();
+				})
+			},
+			getMore(params) {
+				let data = {
+					pageNo: this.pageNo,
+					pageSize: this.pageSize,
+					accountNo: '',
+					type: i
+				}
+				getCarhList(data).then((res) => {
+					this.indexList = [...this.indexList, ...res.data.list];
+					this.total = res.data.total;
+					if (this.total > this.indexList.length) {
+						this.status = 'loadmore'
+					} else {
+						this.status = 'nomore'
+					}
+				})
+			},
 			handleClick(val) {
 				if (val == '保证金提现中') {
 					// 保证金提现中
