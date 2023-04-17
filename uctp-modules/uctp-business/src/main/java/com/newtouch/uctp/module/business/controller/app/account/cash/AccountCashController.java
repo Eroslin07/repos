@@ -6,7 +6,6 @@ import com.newtouch.uctp.module.business.controller.app.account.cash.vo.AccountC
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
-import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.impl.ValidatedGroup;
 import io.swagger.v3.oas.annotations.Operation;

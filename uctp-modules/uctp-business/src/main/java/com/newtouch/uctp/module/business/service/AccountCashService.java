@@ -64,7 +64,7 @@ public interface AccountCashService {
     /**
      * 待回填保证金
      *
-     * @param transactionRecordReqVO 交易合同号
+     * @param transactionRecordReqVO 账户号
      * @return 待回填保证金金额，单位-分
      */
     Integer difference(TransactionRecordReqVO transactionRecordReqVO);
@@ -93,5 +93,10 @@ public interface AccountCashService {
      */
     Boolean release(TransactionRecordReqVO transactionRecordReqVO);
 
+    /**
+     * 查询虚拟账户相关枚举值
+     *
+     * @return 查询结果 {@link com.newtouch.uctp.module.business.enums.AccountEnum}
+     */
     List<Map<String, String>> codes();
 }
