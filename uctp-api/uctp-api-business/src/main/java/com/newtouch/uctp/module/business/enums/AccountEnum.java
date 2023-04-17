@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.business.enums;
 
+import java.util.Objects;
+
 /**
  * 资金管理枚举
  */
@@ -86,5 +88,20 @@ public enum AccountEnum {
 
     public String getValue() {
         return value;
+    }
+
+    public static String getName(String key) {
+        if (key == null || key.trim().equals("")){
+            return null;
+        }
+
+        AccountEnum[] values = AccountEnum.values();
+        for (AccountEnum value : values) {
+            if (Objects.equals(value.key, key)) {
+                return value.value;
+            }
+        }
+
+        return null;
     }
 }

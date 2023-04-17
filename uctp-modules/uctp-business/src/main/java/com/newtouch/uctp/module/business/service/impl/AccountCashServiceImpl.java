@@ -1,7 +1,6 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
@@ -10,10 +9,12 @@ import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDeta
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
+import com.newtouch.uctp.module.business.dal.mysql.TransactionRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
@@ -29,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 
 @Service
 @Validated
@@ -39,6 +39,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     private final MerchantAccountService merchantAccountService;
     private final MerchantCashService merchantCashService;
     private final MerchantPresentStatusRecordMapper merchantPresentStatusRecordMapper;
+    private final TransactionRecordMapper transactionRecordMapper;
 
     //保证金详情
     @Override
@@ -69,35 +70,44 @@ public class AccountCashServiceImpl implements AccountCashService {
         if (CollectionUtil.isNotEmpty(list)) {
 
             List<Long> withdrawIds = new ArrayList<>();
+            List<String> tranRecordNos = new ArrayList<>();
             for (MerchantCashDO merchantCashDO : list) {
                 if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType())) {
+                    //保证金提取明细ID，后续填充保证金提取流程明细
                     withdrawIds.add(merchantCashDO.getId());
+
+                    if (StringUtils.isNotEmpty(merchantCashDO.getTranRecordNo())) {
+                        //保证金交易流水，后续查询银行交易信息
+                        tranRecordNos.add(merchantCashDO.getTranRecordNo());
+                    }
                 }
             }
 
             // 查寻提现状态记录
-            Map<Long, List<PresentStatusRecordRespVO>> map = new HashMap<>();
-
+            Map<Long, List<PresentStatusRecordRespVO>> statusRecordMap = new HashMap<>();
+            Map<String, String> transactionRecordMap = new HashMap<>();
             if (CollectionUtil.isNotEmpty(withdrawIds)) {
-                LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
-                presentStatusRecordWrapper.in(PresentStatusRecordDO::getPresentNo, withdrawIds).eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
-                        .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId); // 交易状态变更时间升序
-
-                map = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper)
-                        .stream().map(psr -> PresentStatusRecordRespVO.builder()
-                                .presentNo(psr.getPresentNo())
-                                .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
-                                .status(psr.getStatus())
-                                .build()).collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
+                statusRecordMap = merchantPresentStatusRecordMapper.selectList(new LambdaQueryWrapper<PresentStatusRecordDO>()
+                        .in(PresentStatusRecordDO::getPresentNo, withdrawIds)
+                        .eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
+                        .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId))
+                        .stream()
+                        .map(PresentStatusRecordRespVO::build)
+                        .collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
             }
+
+//            if (CollectionUtil.isNotEmpty(tranRecordNos)) {
+//                transactionRecordMap = transactionRecordMapper.selectList(new LambdaQueryWrapper<TransactionRecordDO>()
+//                        .in(TransactionRecordDO::getTranNo, tranRecordNos))
+//                        .stream()
+//                        .collect(Collectors.toMap(TransactionRecordDO::getTranNo, TransactionRecordDO::getPayeeBankAccount, (o1, o2) -> o2));
+//            }
 
             for (MerchantCashDO merchantCashDO : list) {
                 CashDetailRespVO build = CashDetailRespVO.build(merchantCashDO);
-                build.setPresentStatusRecords(map.get(merchantCashDO.getId()));
-
-                //todo：payeeBankAccount 到账银行卡
-                build.setPayeeBankAccount("3213213213");
-
+                build.setPresentStatusRecords(statusRecordMap.get(merchantCashDO.getId()));
+                //build.setPayeeBankAccount(transactionRecordMap.get(merchantCashDO.getTranRecordNo()));
+                build.setPayeeBankAccount("3141592654");
                 voList.add(build);
             }
         }
@@ -282,8 +292,8 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         for (AccountEnum accountEnum : AccountEnum.values()) {
             Map<String, String> map = new HashMap<>();
-            map.put("code",accountEnum.getKey());
-            map.put("codeName",accountEnum.getValue());
+            map.put("code", accountEnum.getKey());
+            map.put("codeName", accountEnum.getValue());
             list.add(map);
         }
         return list;
