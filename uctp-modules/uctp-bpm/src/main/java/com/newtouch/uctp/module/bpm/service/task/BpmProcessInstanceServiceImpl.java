@@ -241,12 +241,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         updateBpmFormMainDO.setProcInstId(procInstId);
         updateBpmFormMainDO.setDoneTime(updateBpmFormMainDO.getSubmitTime());
         bpmFormMainMapper.updateById(updateBpmFormMainDO);
-        List<String> procInsts = new ArrayList<>();
+        /*List<String> procInsts = new ArrayList<>();
         procInsts.add(procInstId);
         List<Task> taskList = taskService.getTasksByProcessInstanceIds(procInsts);
         if (!CollectionUtils.isEmpty(taskList)) {
             bpmEngTaskService.complete(taskList.get(0).getId());
-        }
+        }*/
 
         return String.valueOf(businessKey);
     }
