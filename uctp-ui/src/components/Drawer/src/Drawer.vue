@@ -73,7 +73,7 @@ import { ref, shallowRef } from 'vue'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
 
 const message = useMessage()
-const emit = defineEmits(['handleCloseDrawer', 'handleUpdataList'])
+const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])
 // const emit = defineEmits(['handleUpdataList'])
 const activeName = ref('BaseInfo')
 const comps = shallowRef([
@@ -147,7 +147,7 @@ const dialogSubmit = () => {
       message.success('提交成功')
       dialogFormVisible.value = false
       emit('handleCloseDrawer')
-      emit('handleUpdataList')
+      emit('handleUpdateList')
     })
     .catch((err) => {
       console.log(err)
