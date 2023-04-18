@@ -9,9 +9,8 @@ import lombok.Data;
 */
 @Data
 public class QysConfigBaseVO {
-
-    @Schema(description = "乐观锁")
-    private Integer revision;
+    @Schema(description = "类型")
+    private String code;
 
     @Schema(description = "访问地址")
     private String serverUrl;
@@ -21,6 +20,9 @@ public class QysConfigBaseVO {
 
     @Schema(description = "访问密匙")
     private String accessSecret;
+
+    @Schema(description = "saas密匙")
+    private String secret;
 
     @Schema(description = "状态(0未启用 1启用)")
     private Integer status;

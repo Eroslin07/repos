@@ -5,9 +5,11 @@ import com.newtouch.uctp.module.system.api.sms.dto.code.SmsCodeSendReqDTO;
 import com.newtouch.uctp.module.system.api.sms.dto.code.SmsCodeUseReqDTO;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
 import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
+import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.RoleDO;
+import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -31,6 +33,14 @@ public interface AuthConvert {
             .roles(convertSet(roleList, RoleDO::getCode))
             .permissions(convertSet(menuList, MenuDO::getPermission))
             .build();
+    }
+
+    default AuthPermissionInfoRespVO convert(AdminUserDO user, DeptDO dept, TenantDO tenant, List<RoleDO> roleList, List<MenuDO> menuList) {
+        return AuthPermissionInfoRespVO.builder()
+                .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId()).deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar()).build())
+                .roles(convertSet(roleList, RoleDO::getCode))
+                .permissions(convertSet(menuList, MenuDO::getPermission))
+                .build();
     }
 
     AuthMenuRespVO convertTreeNode(MenuDO menu);

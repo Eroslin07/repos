@@ -16,7 +16,10 @@ import java.util.List;
  * @author 芋道源码
  */
 public interface QysConfigService {
-
+    /**
+     * 初始化契约锁客户端
+     */
+    void initLocalCache();
     /**
      * 创建契约锁
      *
@@ -95,4 +98,6 @@ public interface QysConfigService {
      * @return
      */
     String login(String signature, String timestamp, String content) throws Exception;
+
+    void test();
 }

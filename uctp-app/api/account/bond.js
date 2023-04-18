@@ -4,7 +4,7 @@ import request from '@/utils/request'
 export function getDetail(data) {
 	return request({
 		url: '/uctp/account/cash/detail',
-		'method': 'POST',
+		'method': 'GET',
 		'params': data
 	})
 }
@@ -13,6 +13,15 @@ export function getDetail(data) {
 export function getCarhList(data) {
 	return request({
 		url: '/uctp/account/cash/list',
+		'method': 'POST',
+		'data': data
+	})
+}
+
+// 保证金提现
+export function getWithdraw(data) {
+	return request({
+		url: '/uctp/account/cash/withdraw',
 		'method': 'POST',
 		'data': data
 	})

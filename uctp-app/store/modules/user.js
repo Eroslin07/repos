@@ -8,20 +8,24 @@ const baseUrl = config.baseUrl
 
 const user = {
   state: {
-    id: 0, // 用户编号
+    id: storage.get(constant.id), // 用户编号
     name: storage.get(constant.name),
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
     permissions: storage.get(constant.permissions),
     phone: uni.getStorageSync('PHONE'),
-    deptId: uni.getStorageSync('DEPT_ID'),
-    tenantId: uni.getStorageSync('TENANT_ID'),
+    deptId: uni.getStorageSync('DEPT_ID') || storage.get(constant.deptId),
+    tenantId: uni.getStorageSync('TENANT_ID') || storage.get(constant.tenantId),
+    deptName: uni.getStorageSync('SET_DEPTNAME') || storage.get(constant.deptName),
+    tenantName: uni.getStorageSync('SET_TENANTNAME') || storage.get(constant.tenantName),
     accountNo: '22222222'
   },
 
   mutations: {
     SET_ID: (state, id) => {
       state.id = id
+      storage.set(constant.id, id)
+      uni.setStorageSync('SET_ID', id)
     },
     SET_NAME: (state, name) => {
       state.name = name
@@ -49,11 +53,21 @@ const user = {
       storage.set(constant.deptId, deptId)
       uni.setStorageSync('DEPT_ID', deptId)
     },
+    SET_DEPTNAME: (state, deptName) => {
+      state.deptName = deptName
+      storage.set(constant.deptName, deptName)
+      uni.setStorageSync('SET_DEPTNAME', deptName)
+    },
     SET_TENANTID: (state, tenantId) => {
       state.tenantId = tenantId
       storage.set(constant.tenantId, tenantId)
       uni.setStorageSync('TENANT_ID', tenantId)
-    }
+    },
+    SET_TENANTNAME: (state, tenantName) => {
+      state.tenantName = tenantName
+      storage.set(constant.tenantName, tenantName)
+      uni.setStorageSync('SET_TENANTNAME', tenantName)
+    },
   },
 
   actions: {
@@ -107,7 +121,9 @@ const user = {
           commit('SET_NAME', nickname)
           commit('SET_AVATAR', avatar)
           commit('SET_DEPTID', deptId)
+          commit('SET_DEPTNAME', user.deptName)
           commit('SET_TENANTID', tenantId)
+          commit('SET_TENANTNAME', user.tenantName)
           commit('SET_ID', user.id)
           resolve(res)
         }).catch(error => {
