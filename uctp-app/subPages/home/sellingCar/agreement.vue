@@ -46,9 +46,7 @@
 			},
 			// 关闭
 			handleClose() {
-				uni.navigateBack({
-					delta: 1
-				})
+				this.$tab.reLaunch('/pages/index');
 			}
 		}
 	}
