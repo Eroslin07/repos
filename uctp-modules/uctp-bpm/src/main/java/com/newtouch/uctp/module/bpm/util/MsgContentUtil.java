@@ -1,7 +1,8 @@
-package com.newtouch.uctp.module.business.util;
+package com.newtouch.uctp.module.bpm.util;
 
 
-import com.newtouch.uctp.module.business.enums.StationInfoEnum;
+
+import com.newtouch.uctp.module.bpm.eunms.StationInfoEnum;
 
 import java.util.HashMap;
 import java.util.Map;

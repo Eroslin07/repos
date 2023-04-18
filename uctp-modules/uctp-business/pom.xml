@@ -159,12 +159,6 @@
             <artifactId>uctp-api-system</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>1.0.1</version>
-            <scope>compile</scope>
-        </dependency>
         <!--        <dependency>-->
 <!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
 <!--            <artifactId>uctp-api-infra</artifactId>-->
