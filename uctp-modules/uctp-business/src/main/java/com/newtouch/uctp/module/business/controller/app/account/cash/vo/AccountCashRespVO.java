@@ -1,16 +1,11 @@
 package com.newtouch.uctp.module.business.controller.app.account.cash.vo;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
-import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Schema(description = "账户保证金详情")
 @Data
@@ -36,9 +31,7 @@ public class AccountCashRespVO {
 
     public static AccountCashRespVO build(MerchantAccountDO merchantAccountDO, List<CashDetailRespVO> merchantCashList) {
         AccountCashRespVO accountCashRespVO = new AccountCashRespVO();
-
         BeanUtils.copyProperties(merchantAccountDO, accountCashRespVO);
-
         accountCashRespVO.setCashDetails(merchantCashList);
         return accountCashRespVO;
     }
