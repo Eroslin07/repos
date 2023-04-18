@@ -137,5 +137,7 @@ uctp:
       - system_tenant
       - act_ru_task
       - bpm_task_assign_rule
+      - bpm_process_definition_ext
+      - bpm_process_instance_ext
 
 debug: false
