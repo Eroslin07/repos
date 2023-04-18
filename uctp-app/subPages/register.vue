@@ -579,14 +579,24 @@
 						let createData = { procDefKey, variables };
 						setCreate(createData).then((ress) => {
 							this.$modal.closeLoading()
-							this.$modal.msg("已提交审核");
-							// #ifndef MP-WEIXIN
-							clearInterval(this.timer);
-							this.$tab.reLaunch('/pages/login')
-							// #endif
-							// #ifdef MP-WEIXIN
-							this.$tab.reLaunch('/pages/wx_login')
-							// #endif
+							uni.showModal({
+							  title: '提示',
+								showCancel: false,
+							  content: '您的注册信息已提交市场方进行审核，审核通过后将短信通知您。',
+							  confirmText: '知道了',
+								confirmColor: '#fa6401',
+								success: function (res) {
+									if (res.confirm) {
+										// #ifndef MP-WEIXIN
+										clearInterval(this.timer);
+										this.$tab.reLaunch('/pages/login')
+										// #endif
+										// #ifdef MP-WEIXIN
+										this.$tab.reLaunch('/pages/wx_login')
+										// #endif
+									}
+								}
+							})
 						}).catch((error) => {
 							this.$modal.msgError("发起流程失败");
 						})
