@@ -59,6 +59,9 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "品牌/车型")
     private String model;
 
+    @Schema(description = "车型id")
+    private String modelId;
+
     @Schema(description = "登记证书url")
     private List<String>  certificateUrl;
 
