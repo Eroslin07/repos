@@ -401,7 +401,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         bpmFormMainMapper.updateById(bpmFormMainDO);
 
         // 发送流程被通过的消息
-        messageService.sendMessageWhenProcessInstanceApprove(BpmProcessInstanceConvert.INSTANCE.convert2ApprovedReq(instance));
+        //messageService.sendMessageWhenProcessInstanceApprove(BpmProcessInstanceConvert.INSTANCE.convert2ApprovedReq(instance));
 
         // 发送流程实例的状态事件
         processInstanceResultEventPublisher.sendProcessInstanceResultEvent(
