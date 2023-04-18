@@ -14,8 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 
 @Tag(name = "商户保证金管理")
@@ -84,11 +82,5 @@ public class AccountCashController {
     @Operation(summary = "保证金释放")
     public CommonResult<Boolean> release(@Validated(ValidatedGroup.Release.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
         return CommonResult.success(accountCashService.release(transactionRecordReqVO));
-    }
-
-    @GetMapping("/codes")
-    @Operation(summary = "字典值详情")
-    public CommonResult<List<Map<String, String>>> codes() {
-        return CommonResult.success(accountCashService.codes());
     }
 }

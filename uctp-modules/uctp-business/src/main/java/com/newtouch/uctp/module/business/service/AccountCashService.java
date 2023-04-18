@@ -93,10 +93,4 @@ public interface AccountCashService {
      */
     Boolean release(TransactionRecordReqVO transactionRecordReqVO);
 
-    /**
-     * 查询虚拟账户相关枚举值
-     *
-     * @return 查询结果 {@link com.newtouch.uctp.module.business.enums.AccountEnum}
-     */
-    List<Map<String, String>> codes();
 }
