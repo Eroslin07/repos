@@ -65,9 +65,12 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String transManageName;
     @Schema(description = "车辆类型")
     private String carType;
-    @Schema(description = "品牌型号")
+    @Schema(description = "车辆型号")
     private String model;
     @Schema(description = "登记证书编号")
     private String certificateNo;
-
+    @Schema(description = "品牌型号")
+    private String brandType;
+    @Schema(description = "车型id")
+    private String modelId;
 }

@@ -3,18 +3,17 @@ package com.newtouch.uctp.module.bpm.service.notice.Ipml;
 
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
+import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.notice.NoticeInfoDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.notice.NoticeMapper;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.util.MsgContentUtil;
-import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String saveTaskNotice(String type, String contentType, String reason, BpmFormResVO bpmFormMainVO) {
+    public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         Map<String ,String> map =new HashMap<>();
         map.put("type",type);
         map.put("contentType",contentType);

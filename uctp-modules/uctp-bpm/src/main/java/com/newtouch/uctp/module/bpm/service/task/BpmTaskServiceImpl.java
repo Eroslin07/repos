@@ -259,6 +259,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
 
         // 完成任务，审批通过
         variables.put("formDataJson", formDataJsonVariable);
+        variables.put("reason", reqVO.getReason());
         taskService.complete(task.getId(), variables);
         // 更新任务拓展表为通过
         taskExtMapper.updateByTaskId(
