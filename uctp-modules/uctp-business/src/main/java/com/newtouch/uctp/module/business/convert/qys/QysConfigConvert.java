@@ -1,11 +1,11 @@
-package com.newtouch.uctp.module.business.convert.qysconfig;
+package com.newtouch.uctp.module.business.convert.qys;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigCreateReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigRespVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigUpdateReqVO;
-import com.newtouch.uctp.module.business.dal.dataobject.qysconfig.QysConfigDO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigRespVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
+import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

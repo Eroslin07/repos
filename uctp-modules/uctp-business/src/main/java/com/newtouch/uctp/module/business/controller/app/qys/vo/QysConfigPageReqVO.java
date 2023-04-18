@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo;
+package com.newtouch.uctp.module.business.controller.app.qys.vo;
 
 import com.newtouch.uctp.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
