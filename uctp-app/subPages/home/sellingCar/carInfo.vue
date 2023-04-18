@@ -719,15 +719,12 @@
 				this.carForm = res.data;
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
-				for (let [key, val] of res.data.feesAndCommitments) {
-					if (val == true) {
+				for (let key in res.data.feesAndCommitments) {
+					if (res.data.feesAndCommitments[key] == true) {
 						this.carForm.checkboxValue.push(key);
 					}
 				}
 				this.showOverlay = false;
-				if (this.carForm.sellAmount) {
-					this.handleBlur(this.carForm.sellAmount);
-				}
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
