@@ -121,10 +121,10 @@
 					"pageNo": 1,
 					"pageSize": 10,
 				},
-				status: 'loadmore',
+				// status: 'loadmore',
 				// currentPage: 1,
-				total: 0,
-				timer: {},
+				// total: 0,
+				// timer: {},
 
 				// 统计数据
 				gatherData: [],
@@ -139,24 +139,24 @@
 		},
 
 		mounted() {
-			this.getList(this.formData);
+			// this.getList(this.formData);
 
 		},
 
-		onPullDownRefresh() {
-			if (this.timer != null) {
-				clearTimeout(this.timer)
-			}
-			if (this.tabList.length == this.total) {
-				this.status = 'nomore';
-				return
-			}
-			this.status = 'loading';
-			this.timer = setTimeout(() => {
-				this.formData.pageNo += 1
-				this.getMore(this.formData)
-			}, 1000)
-		},
+		// onPullDownRefresh() {
+		// 	if (this.timer != null) {
+		// 		clearTimeout(this.timer)
+		// 	}
+		// 	if (this.tabList.length == this.total) {
+		// 		this.status = 'nomore';
+		// 		return
+		// 	}
+		// 	this.status = 'loading';
+		// 	this.timer = setTimeout(() => {
+		// 		this.formData.pageNo += 1
+		// 		this.getMore(this.formData)
+		// 	}, 1000)
+		// },
 		// filters:{
 		// 	filterMIle(val){
 		// 		console.log(val,'val')
@@ -169,30 +169,30 @@
 		// },
 		methods: {
 			// 获取list数据
-			getList(params) {
-				getHomePageList(params).then(res => {
-					this.tabList = res.data.list
-					this.total = res.data.total;
-					if (this.total > 10) {
-						this.status = 'loadmore'
-					} else {
-						this.status = 'nomore'
-					}
-				}).catch((error) => {
-					this.status = 'nomore'
-				})
-			},
-			getMore(params) {
-				getHomePageList(params).then(res => {
-					this.tabList = [...this.tabList, ...res.data.list];
-					this.total = res.data.total;
-					if (this.total > this.tabList.length) {
-						this.status = 'loadmore'
-					} else {
-						this.status = 'nomore'
-					}
-				})
-			},
+			// getList(params) {
+			// 	getHomePageList(params).then(res => {
+			// 		this.tabList = res.data.list
+			// 		this.total = res.data.total;
+			// 		if (this.total > 10) {
+			// 			this.status = 'loadmore'
+			// 		} else {
+			// 			this.status = 'nomore'
+			// 		}
+			// 	}).catch((error) => {
+			// 		this.status = 'nomore'
+			// 	})
+			// },
+			// getMore(params) {
+			// 	getHomePageList(params).then(res => {
+			// 		this.tabList = [...this.tabList, ...res.data.list];
+			// 		this.total = res.data.total;
+			// 		if (this.total > this.tabList.length) {
+			// 			this.status = 'loadmore'
+			// 		} else {
+			// 			this.status = 'nomore'
+			// 		}
+			// 	})
+			// },
 
 			//获取统计数据
 			getAcount() {
@@ -214,7 +214,7 @@
 					title: '搜索：' + val,
 					icon: 'none'
 				})
-				this.getList(this.formData)
+				// this.getList(this.formData)
 			},
 			// 清除
 			clear(val) {
@@ -222,7 +222,7 @@
 					title: '清除：' + val,
 					icon: 'none'
 				})
-				this.getList(this.formData)
+				// this.getList(this.formData)
 			},
 			// 我要收车
 			buyCar() {
@@ -351,7 +351,7 @@
 
 		.deal-dynamic {
 			width: 100%;
-			height: calc(100vh - 370px);
+			height: calc(100vh - 340px);
 			overflow-x: hidden;
 			overflow-y: scroll;
 			padding: 15px;

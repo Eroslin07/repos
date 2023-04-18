@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="search_header">
-			<view style="margin-bottom: 10px;">请选择您要售卖的车辆</view>
+			<view class="tip-text" style="margin-bottom: 10px;">请选择您要售卖的车辆</view>
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear" placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
 		<view style="margin-top: 85px;">
@@ -112,6 +112,10 @@
 </script>
 
 <style lang="scss" scoped>
+	.tip-text{
+		margin-bottom:10px;
+		font-size:12px;
+	}
 	.search_header {
 		position: fixed;
 		top: 44px;

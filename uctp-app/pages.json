@@ -346,7 +346,9 @@
 		}, {
 			"path": "home/carStatus/carStatus",
 			"style": {
-				"navigationBarTitleText": "收车中"
+				"navigationBarTitleText": "收车中",
+				"onReachBottomDistance": 150,
+				"enablePullDownRefresh": true
 			}
 		}]
 	}],

@@ -31,8 +31,9 @@
 						</uni-col>
 					</uni-row>
 				</uni-card> -->
+		<!-- v-if="tabList.length>0" -->
 		<view class="" v-if="tabList.length>0">
-			<uni-card v-for="(tab, tabIndex) in 2 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
+			<uni-card v-for="(tab, tabIndex) in 6 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
@@ -59,9 +60,13 @@
 				</uni-row>
 			</uni-card>
 			<u-loadmore :status="loadStatus" loadingText="努力加载中..." />
+			<view v-if="loadStatus=='nomore'" class="btm-log">
+				<text class="paddingr20">助力车商</text>
+				<text>经纪转经销</text>
+			</view>
 		</view>
 		<view v-else class="empty-page">
-			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br/>
+			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
 			<text class="empty-text">暂无数据</text>
 		</view>
 	</view>
@@ -74,6 +79,7 @@
 	import {
 		getHomePageList
 	} from '@/api/home.js'
+import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
 
 	export default {
 		data() {
@@ -125,7 +131,6 @@
 			this.getList(this.formData)
 		},
 		onLoad(props) {
-			console.log(props)
 			this.detailData = JSON.parse(props.item)
 			let arr = this.detailData.child.map(v => {
 				return {
@@ -147,19 +152,32 @@
 				this.current = this.detailData.child.findIndex((val) => val.status == this.formData.status) + 1
 			}
 		},
+		// 下拉刷新
 		onPullDownRefresh() {
-			if (this.timer != null) {
-				clearTimeout(this.timer)
-			}
+
+			// if (this.tabList.length == this.total) {
+			// 	this.loadStatus = 'nomore';
+			// 	return
+			// }
+			// this.loadStatus = 'loading';
+			// this.timer = setTimeout(() => {
+			// 	this.formData.pageNo += 1
+			// 	this.getMore(this.formData)
+			// }, 1000)
+			console.log('下拉刷新')
+			this.getList(this.formData)
+		},
+		// 触底加载
+		onReachBottom() {
+
+			console.log('触底加载')
 			if (this.tabList.length == this.total) {
 				this.loadStatus = 'nomore';
 				return
 			}
 			this.loadStatus = 'loading';
-			this.timer = setTimeout(() => {
-				this.formData.pageNo += 1
-				this.getMore(this.formData)
-			}, 1000)
+			this.formData.pageNo += 1
+			this.getMore(this.formData)
 		},
 		methods: {
 			// 获取list数据
@@ -223,7 +241,7 @@
 	.status-container {
 		width: 100%;
 		height: 100%;
-		padding: 0 15px;
+		padding: 0 15px 40px;
 
 		.search {
 			padding: 10px 15px;
@@ -266,27 +284,41 @@
 				border-radius: 0 0 8px 8px;
 				z-index: 999;
 			}
-
-			.cell-car-draft {
-				color: #fff;
-				background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
-			}
 		}
-
+		// 待售未检测
+		.cell-car-draft {
+			color: #fff;
+			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
+		}
+		// 草稿
+		.cell-car-draft {
+			color: #fff;
+			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
+		}
+		// 合同已发起
 		.empty-page {
-			width:100%;
+			width: 100%;
 			position: absolute;
 			left: 50%;
 			top: 45%;
-			transform: translate(-50%,-50%);
+			transform: translate(-50%, -50%);
 			text-align: center;
+
 			.empty-img {
-				width:30%;	
+				width: 30%;
 			}
-			.empty-text{
-				
-			}
+
+			.empty-text {}
 		}
+	}
+
+	.btm-log {
+		text-align: center;
+		color: #ddd;
+	}
+
+	.paddingr20 {
+		padding-right: 20px;
 	}
 
 	// .cellDraft {
