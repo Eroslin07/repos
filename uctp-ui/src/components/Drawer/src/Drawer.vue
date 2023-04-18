@@ -14,8 +14,8 @@
         <h3></h3>
         <!-- <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3> -->
         <div class="btns" id="btns">
-          <el-button plain type="primary" @click="submitBtn">同意</el-button>
-          <el-button plain type="success">不同意</el-button>
+          <el-button plain type="primary" @click="submitBtn('同意')">同意</el-button>
+          <el-button plain type="success" @click="submitBtn('不同意')">不同意</el-button>
           <!-- <el-button plain type="danger">作废</el-button> -->
           <el-button plain type="info" @click="dravwerClose">关闭</el-button>
         </div>
@@ -117,26 +117,29 @@ const drawerVisible = computed(() => {
 function tabChange(name) {
   console.log(name)
 }
-
 // 提交
-const submitBtn = () => {
-  console.log('提交')
+const submitBtn = (text) => {
+  console.log(text)
+  dialogText.value = text
+  form.value.reason = '审批' + text
   dialogFormVisible.value = true
 }
 
 // 审批意见弹框
 const subLoading = ref(false)
 const dialogFormVisible = ref(false)
+const dialogText = ref('')
 const form = ref<any>({})
 const dialogSubmit = () => {
   if (!form.value.reason) return message.error('请输入审批意见')
   subLoading.value = true
   let data = {
-    // id: baseInfoData.data.taskId,
+    id: baseInfoData.data.taskId,
     reason: form.value.reason,
     variables: baseInfoData.data.variables
   }
-  detailAPI
+  data.variables.approvalType = dialogText.value == '同意' ? 'pass' : 'disagree'
+  data.variables = detailAPI
     .putApproveAPI(data)
     .then((res) => {
       console.log(res)
