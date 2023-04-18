@@ -78,10 +78,10 @@
 							placeholder="请选择登记日期"
 							border="none"
 						></u--input>
-						<u-icon
+						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
-						></u-icon>
+						></u-icon> -->
 					</u-form-item>
 					<u-form-item label="车牌号" prop="plateNum" borderBottom>
 						<u--input v-model="carForm.plateNum" readonly border="none" placeholder="请输入车牌号"></u--input>
@@ -97,13 +97,13 @@
 					</u-form-item>
 					<u-form-item label="品牌/车型" prop="model" borderBottom>
 						<u--input v-model="carForm.model" readonly border="none" placeholder="请输入品牌/车型"></u--input>
-						<u-icon
+						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
-						></u-icon>
+						></u-icon> -->
 					</u-form-item>
-					<u-form-item label="登记证号" prop="licensePlateNum" borderBottom>
-						<u--input v-model="carForm.licensePlateNum" readonly border="none" placeholder="请输入登记证号"></u--input>
+					<u-form-item label="登记证号" prop="certificateNo" borderBottom>
+						<u--input v-model="carForm.certificateNo" readonly border="none" placeholder="请输入登记证号"></u--input>
 					</u-form-item>
 					<u-form-item label="颜色" prop="colour" borderBottom>
 						<u--input v-model="carForm.colour" readonly border="none" placeholder="请输入颜色"></u--input>
@@ -481,6 +481,7 @@
 	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import { getIdCard, deleteImage } from '@/api/register'
 	import { getSellCarInfo, setSellCarInfo, getAmount } from '@/api/home/sellingCar.js'
+	import { getFairValue } from '@/api/home/bycar.js'
 	export default {
 		data() {
 			return {
@@ -571,12 +572,12 @@
 					check: '',
 				},
 				feesFormRules: {
-					carCondition: {
-						type: 'string',
-						required: true,
-						message: '请选择车辆情况',
-						trigger: ['blur', 'change']
-					},
+					// carCondition: {
+					// 	type: 'string',
+					// 	required: true,
+					// 	message: '请选择车辆情况',
+					// 	trigger: ['blur', 'change']
+					// },
 					rent: {
 						type: 'string',
 						required: true,
@@ -601,6 +602,10 @@
 						message: '请选择第三方检测费用',
 						trigger: ['blur', 'change']
 					}
+				},
+				fairValue: {
+					value1: '',
+					value2: ''
 				},
 				// 卖车方式
 				sexs: [{
@@ -694,11 +699,8 @@
 						trigger: ['change', 'blur'],
 					}]
 				},
-				fairValue: {
-					value1: '13.19',
-					value2: '15.20'
-				},
 				date: null,
+				modelId: null
 			}
 		},
 		onBackPress(options) {
@@ -719,15 +721,17 @@
 				this.carForm = res.data;
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
-				for (let key in res.data.feesAndCommitments) {
-					if (res.data.feesAndCommitments[key] == true) {
+				this.modelId=res.data.modelId;
+				for (let key in res.data.proceduresAndSpareParts) {
+					if (res.data.proceduresAndSpareParts[key] == true) {
 						this.carForm.checkboxValue.push(key);
 					}
 				}
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
-				this.$tab.navigateTo('/subPages/home/sellingCar/index');
+				this.showOverlay = false;
+				// this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
 		},
 		mounted() {
@@ -988,9 +992,9 @@
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.carForm.sellType,
-					vehicleCondition,
+					vehicleProblem: vehicleCondition,
 					feesAndCommitments,
-					proceduresAndSpareParts
+					proceduresAndSpareSell: proceduresAndSpareParts
 				}
 				setSellCarInfo(data).then((res) => {
 					this.showOverlay = false;
@@ -999,6 +1003,7 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
 						this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
@@ -1006,6 +1011,23 @@
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
+					}
+				})
+			},
+			// 查询公允价值
+			getFairValue() {
+				let data = {
+					modelId: this.modelId,
+					plateNum: this.carForm.licensePlateNum,
+					mileage: this.carForm.mileage,
+					firstRegistDate: this.carForm.firstRegistDate
+				}
+				getFairValue(data).then((res) => {
+					if (res.msg == 'success') {
+						this.fairValue.value1 = res.Recommended_low_sold_price;
+						this.fairValue.value2 = res.Recommended_high_sold_price;
+					} else {
+						this.$modal.msg(res.msg);
 					}
 				})
 			},
@@ -1096,7 +1118,7 @@
 			position: fixed;
 			bottom: 0;
 			background-color: #fff;
-			padding-bottom: 10px;
+			padding-bottom: 20px;
 			
 			.button {
 				width: 80%;
