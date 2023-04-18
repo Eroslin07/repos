@@ -1,10 +1,9 @@
 package com.newtouch.uctp.module.bpm.service.notice;
 
 
-import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
-import org.apache.ibatis.annotations.Param;
+import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -20,7 +19,7 @@ public interface NoticeService {
      * 保存消息
      *
      */
-    String saveTaskNotice(String type, String contentType,String reason, BpmFormResVO bpmFormResVO);
+    String saveTaskNotice(String type, String contentType,String reason, BpmFormMainVO bpmFormResVO);
     /**
      * 保存消息
      *
