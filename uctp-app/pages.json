@@ -162,23 +162,29 @@
 			"path": "home/account/bond/freeze",
 			"style": {
 				"navigationBarTitleText": "保证金冻结明细",
+				"onReachBottomDistance": 150,
 				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "home/account/bond/whole",
 			"style": {
 				"navigationBarTitleText": "保证金交易明细",
+				"onReachBottomDistance": 150,
 				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "home/account/profit/whole",
 			"style": {
-				"navigationBarTitleText": "利润交易明细"
+				"navigationBarTitleText": "利润交易明细",
+				"onReachBottomDistance": 150,
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "home/account/profit/freeze",
 			"style": {
-				"navigationBarTitleText": "利润冻结明细"
+				"navigationBarTitleText": "利润冻结明细",
+				"onReachBottomDistance": 150,
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "home/account/profit/backfilled",

@@ -18,14 +18,18 @@
 			<view style="padding: 10px;">
 				<u-list style="height: 100%;">
 					<u-list-item v-for="(item, index) in indexList" :key="index">
-						<view @click="handleClick(item.title)" style="line-height: 30px;">
+						<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
 							<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
-								<u-col span="4">
-									<view class="title">{{ item.title }}</view>
-									<view class="note">2023-03-17</view>
+								<u-col span="8">
+									<view class="title">{{ item.tradeTypeName }}</view>
+									<view class="note">{{ item.createTime }}</view>
 								</u-col>
 								<u-col span="4">
-									<view class="title" style="text-align: right;">+100,000 ></view>
+									<view class="title" style="text-align: right;">
+										<text v-if="item.profitLossTypeName == '收入'">+</text>
+										<text v-if="item.profitLossTypeName == '支出'">-</text>
+										{{ $amount.getComdify(item.payAmount) }} >
+									</view>
 								</u-col>
 							</u-row>
 						</view>
@@ -42,13 +46,7 @@
 	export default {
 		data() {
 			return {
-				indexList: [{
-					status: 1,
-					title: '保证金提现中'
-				}, {
-					status: 2,
-					title: '保证金预扣'
-				}],
+				indexList: [],
 				status: 'loadmore',
 				timer: null,
 				total: 0,
@@ -59,7 +57,12 @@
 		mounted() {
 			this.getList();
 		},
+		// 下拉刷新
 		onPullDownRefresh() {
+			this.getList();
+		},
+		// 触底加载
+		onReachBottom() {
 			if (this.timer != null) {
 				clearTimeout(this.timer)
 			}
@@ -79,7 +82,7 @@
 				let data = {
 					pageNo: this.pageNo,
 					pageSize: this.pageSize,
-					accountNo: '',
+					accountNo: this.$store.state.user.accountNo,
 					type: 2
 				}
 				this.$modal.loading("数据加载中，请耐心等待...")
@@ -92,17 +95,19 @@
 						this.status = 'nomore'
 					}
 					this.$modal.closeLoading();
+					uni.stopPullDownRefresh();
 				}).catch((error) => {
 					this.status = 'nomore'
 					this.$modal.closeLoading();
+					uni.stopPullDownRefresh();
 				})
 			},
 			getMore(params) {
 				let data = {
 					pageNo: this.pageNo,
 					pageSize: this.pageSize,
-					accountNo: '',
-					type: i
+					accountNo: this.$store.state.user.accountNo,
+					type: 2
 				}
 				getCarhList(data).then((res) => {
 					this.indexList = [...this.indexList, ...res.data.list];
@@ -114,13 +119,13 @@
 					}
 				})
 			},
-			handleClick(val) {
-				if (val == '保证金提现中') {
-					// 保证金提现中
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+			handleClick(val, data) {
+				if (val == '保证金预扣释放') {
+					// 保证金预扣释放
+					this.$tab.navigateTo('/subPages/home/account/bond/release?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金预扣') {
 					// 保证金预扣
-					this.$tab.navigateTo('/subPages/home/account/bond/withhold');
+					this.$tab.navigateTo('/subPages/home/account/bond/withhold?data='+encodeURIComponent(JSON.stringify(data)));
 				}
 			}
 		}
