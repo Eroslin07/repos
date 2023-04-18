@@ -1329,8 +1329,8 @@
 								startUserId: this.$store.state.user.id,
 								formDataJson: {
 									formMain: {
-										merchantId: res.carInfoDetails.carId,
-										thirdId: res.carInfoDetails.carId,
+										merchantId: res.data.carInfoDetails.carId,
+										thirdId: res.data.carInfoDetails.carId,
 										// formDataJson: {
 										// 	carInfo: res.data.carInfo,
 										// 	carInfoDetails: res.data.carInfoDetails
@@ -1346,6 +1346,8 @@
 								this.$modal.msg("已提交审核");
 								this.$tab.reLaunch('/pages/index');
 							}).catch((error) => {
+								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msgError("发起流程失败");
 							})
 						}
@@ -1356,6 +1358,8 @@
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
+				}).catch((error) => {
+					this.showOverlay = false;
 				})
 			},
 			// 收车删除
