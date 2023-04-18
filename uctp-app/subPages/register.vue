@@ -139,6 +139,8 @@
 				</u-grid-item>
 			</u-grid>
 		</view>
+		<!-- 遮罩层 -->
+		<u-overlay :show="showOverlay"></u-overlay>
 	</view>
 </template>
 
@@ -159,6 +161,7 @@
 	export default {
 		data() {
 			return {
+				showOverlay: false,
 				showModal: false,
 				content: "万国二手车平台需要收集您的身份证号及银行账号用于验证您身份真实性，是否同意授权。",
 				title: "注册账号",
@@ -559,6 +562,7 @@
 						// confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
 					}
 					this.$modal.loading("提交中，请耐心等待...")
+					this.showOverlay = true;
 					register(data).then((res) => {
 						//  发起流程
 						data.idCardUrl = list;
@@ -579,6 +583,7 @@
 						let createData = { procDefKey, variables };
 						setCreate(createData).then((ress) => {
 							this.$modal.closeLoading()
+							this.showOverlay = false;
 							let _this = this;
 							uni.showModal({
 							  title: '提示',
@@ -600,9 +605,11 @@
 							})
 						}).catch((error) => {
 							this.$modal.msgError("发起流程失败");
+							this.showOverlay = false;
 						})
 					}).catch((error) => {
 						this.$modal.msgError("提交审核失败");
+						this.showOverlay = false;
 					})
 				})
 			},

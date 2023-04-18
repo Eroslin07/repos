@@ -482,6 +482,7 @@
 	import { getIdCard, deleteImage } from '@/api/register'
 	import { getSellCarInfo, setSellCarInfo, getAmount } from '@/api/home/sellingCar.js'
 	import { getFairValue } from '@/api/home/bycar.js'
+	import { setCreate } from '@/api/home'
 	export default {
 		data() {
 			return {
@@ -1006,7 +1007,37 @@
 						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
-						this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
+						if (this.fairValue.value1 <= data.sellAmount && data.sellAmount <= this.fairValue.value2) {
+							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
+						} else {
+							// 发起公允值审批流程
+							return
+							let procDefKey = "MGYZ";
+							let variables = {
+								marketName: this.$store.state.user.tenantName,
+								merchantName: this.$store.state.user.deptName,
+								startUserId: this.$store.state.user.id,
+								formDataJson: {
+									formMain: {
+										merchantId: res.carInfoDetails.carId,
+										thirdId: res.carInfoDetails.carId,
+										// formDataJson: {
+										// 	carInfo: res.data.carInfo,
+										// 	carInfoDetails: res.data.carInfoDetails
+										// },
+										formDataJson: res.data
+									}
+								}
+							}
+							let createData = { procDefKey, variables };
+							setCreate(createData).then((ress) => {
+								this.$modal.closeLoading()
+								this.$modal.msg("已提交审核");
+								this.$tab.reLaunch('/pages/index');
+							}).catch((error) => {
+								this.$modal.msgError("发起流程失败");
+							})
+						}
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
@@ -1033,8 +1064,26 @@
 			},
 			// 点击发起委托合同
 			handleEntrust() {
-				this.$refs.sellerForm.validate().then(res => {
-					this.handleDraft('entrust');
+				let _this = this;
+				_this.$refs.sellerForm.validate().then(res => {
+					let amount = _this.$amount.getDelcommafy(_this.sellerForm.sellAmount);
+					amount = amount / 10000;
+					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
+						_this.handleDraft('entrust');
+					} else {
+						uni.showModal({
+							title: '提示',
+							content: '您的卖车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+							confirmText: '是',
+							cancelText: '否',
+							confirmColor: '#fa6401',
+							success(ress) {
+								if (ress.confirm) {
+									_this.handleDraft('entrust');
+								}
+							}
+						})
+					}
 				})
 			},
 			// 点击卖家信息保存
