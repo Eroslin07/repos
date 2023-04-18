@@ -31,14 +31,15 @@
 						</uni-col>
 					</uni-row>
 				</uni-card> -->
-		<!-- v-if="tabList.length>0" -->
+
 		<view class="" v-if="tabList.length>0">
 			<uni-card v-for="(tab, tabIndex) in 6 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
-							<view class="car_text cell-car-draft">待售已检测</view>
-							<image :src="tab.url" class="car-image"></image>
+							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测</view>
+							<!-- <image :src="tab.url" class="car-image"></image> -->
+							<image src="/static/images/car.jpg" class="car-image"></image>
 						</view>
 					</uni-col>
 					<uni-col :span="15">
@@ -65,7 +66,7 @@
 				<text>经纪转经销</text>
 			</view>
 		</view>
-		<view v-else class="empty-page">
+		<view v-else  class="empty-page">
 			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
 			<text class="empty-text">暂无数据</text>
 		</view>
@@ -169,8 +170,6 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 		},
 		// 触底加载
 		onReachBottom() {
-
-			console.log('触底加载')
 			if (this.tabList.length == this.total) {
 				this.loadStatus = 'nomore';
 				return
@@ -182,6 +181,7 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 		methods: {
 			// 获取list数据
 			getList(params) {
+				this.$modal.loading("数据加载中...");
 				getHomePageList(params).then(res => {
 					this.tabList = res.data.list
 					this.total = res.data.total;
@@ -192,6 +192,8 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 					}
 				}).catch((error) => {
 					this.loadStatus = 'nomore'
+				}).finally(()=>{
+					this.$modal.closeLoading()
 				})
 			},
 			getMore(params) {
@@ -286,16 +288,25 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 			}
 		}
 		// 待售未检测
-		.cell-car-draft {
+		.cell-car-forSale {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
 		}
 		// 草稿
 		.cell-car-draft {
 			color: #fff;
-			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
+			background-image: linear-gradient(to right, rgba(132, 175, 206, .3) 0%, rgba(40, 163, 269, .8) 50%, rgba(132, 175, 206, .3) 100%);
 		}
 		// 合同已发起
+		.cell-car-contact{
+			color: #fff;
+			background-image: linear-gradient(to right, rgba(233, 158, 131, .3) 0%, rgba(218, 94, 45, .8) 50%, rgba(233, 158, 131, .3) 100%);
+		}
+		// 已售出
+		.cell-car-saled{
+			color: #fff;
+			background-image: linear-gradient(to right, rgba(114, 241, 181, .3) 0%, rgba(15, 156, 88, .8) 50%, rgba(114, 241, 181, .3) 100%);
+		}
 		.empty-page {
 			width: 100%;
 			position: absolute;

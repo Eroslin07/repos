@@ -2,15 +2,12 @@
 	<view>
 		<view class="search_header">
 			<view class="tip-text" style="margin-bottom: 10px;">请选择您要售卖的车辆</view>
-			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear" placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
+			<u-search v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
+				placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
 		<view style="margin-top: 85px;">
-			<uni-card
-				v-for="(tab, tabIndex) in 2"
-				:key="tabIndex"
-				@click="handleCard(tab.id)"
-				style="margin-top: 10px;"
-			>
+			<uni-card v-for="(tab, tabIndex) in 2" :key="tabIndex" @click="handleCard(tab.id)"
+				style="margin-top: 10px;">
 				<uni-row :gutter="30">
 					<uni-col :span="10">
 						<view class="car_left">
@@ -31,50 +28,92 @@
 				</uni-row>
 			</uni-card>
 		</view>
-		<u-modal
-			:show="show"
-			:showCancelButton="true"
-			confirmText="选择其它车辆"
-			cancelText="关闭卖车页面"
-			@confirm="handleConfirm"
-			@cancel="handleCancel"
-		>
+		<u-modal :show="show" :showCancelButton="true" confirmText="选择其它车辆" cancelText="关闭卖车页面" @confirm="handleConfirm"
+			@cancel="handleCancel">
 			<view>请先对该车辆进行检测处理，再进行卖车。</view>
 		</u-modal>
+
+		<!-- 加载 -->
+		<u-loadmore :status="loadStatus" />
 	</view>
 </template>
 
 <script>
-	import { getSellPage } from '@/api/home/sellingCar.js'
+	import {
+		getSellPage
+	} from '@/api/home/sellingCar.js'
 	export default {
 		data() {
 			return {
-				searchValue: '',
+				formData: {
+					statusThree: [221, 231],
+					searchValue: "",
+					businessId: 130,
+					pageNo: 1,
+					pageSize: 10,
+				},
+				// searchValue: '',
 				tabList: [],
+				total: 0,
 				show: false,
+				// 加载图标
+				loadStatus: 'loadmore'
 			}
 		},
 		mounted() {
-			this.getList();
+			this.getList(this.formData);
 		},
 		onBackPress(options) {
 			this.$tab.reLaunch('/pages/index');
 			return true;
 		},
+
+		// 下拉刷新
+		onPullDownRefresh() {
+			this.getList(this.formData)
+		},
+		// 触底刷新
+		onReachBottom() {
+			if (this.total == this.tabList.length) {
+				this.loadStatus = 'nomore'
+				return
+			}
+			this.loadStatus = 'loading'
+			this.formData.pageNo += 1
+			this.getMore(this.formData)
+		},
 		methods: {
-			getList() {
+			// 获取list
+			getList(data) {
 				this.tabList = [];
-				let data = {
-					pageNo: 1,
-					pageSize: 10,
-					searchValue: this.searchValue,
-					statusThree: [231, 221],
-					businessId: 130
-				}
 				this.$modal.loading("数据加载中...");
 				getSellPage(data).then((res) => {
-					this.$modal.closeLoading()
 					this.tabList = res.data.list
+					this.total = res.data.total
+					if (this.total > 10) {
+						this.loadStatus = 'loadmore'
+					} else {
+						this.loadStatus = 'nomore'
+					}
+				}).catch(() => {
+					this.loadStatus = 'nomore'
+				}).finally(() => {
+					this.$modal.closeLoading()
+				})
+
+			},
+			// 加载更多
+			getMore(data) {
+				getSellPage(data).then(res => {
+					this.tabList = [...this.tabList, ...res.data.list];
+					this.total = res.data.total
+					if (this.total > this.tabList.length) {
+						this.loadStatus = 'loadmore'
+					} else {
+						this.loadStatus = 'nomore'
+					}
+				}).catch(() => {
+					this.loadStatus = 'nomore'
 				})
 			},
 			// 搜索
@@ -83,6 +122,7 @@
 					title: '搜索：' + val,
 					icon: 'none'
 				})
+				this.getList(this.formData);
 			},
 			// 清除
 			clear(val) {
@@ -90,13 +130,14 @@
 					title: '清除：' + val,
 					icon: 'none'
 				})
+				this.getList(this.formData);
 			},
 			// 点击车辆卡片
 			handleCard(id) {
 				// this.show = true;
 				// this.$tab.navigateTo('/subPages/home/sellingCar/vehicleDetails');
 				// return
-				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id='+id);
+				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + id);
 			},
 			// 选择其它车辆
 			handleConfirm() {
@@ -112,10 +153,11 @@
 </script>
 
 <style lang="scss" scoped>
-	.tip-text{
-		margin-bottom:10px;
-		font-size:12px;
+	.tip-text {
+		margin-bottom: 10px;
+		font-size: 12px;
 	}
+
 	.search_header {
 		position: fixed;
 		top: 44px;
@@ -128,24 +170,25 @@
 		background-color: #fff;
 		z-index: 999;
 	}
-	
+
 	/deep/ .uni-card__header-extra-text {
 		color: #169bd5 !important;
 		font-size: 14px !important;
 	}
-	
+
 	.car-image {
 		width: 100%;
 		height: 100px;
 		border-radius: 8px;
 	}
-	
+
 	.car_left {
 		position: relative;
 		border-radius: 8px;
 		overflow: hidden;
 		background-color: #169bd5;
-			.car_text {
+
+		.car_text {
 			width: 100%;
 			text-align: center;
 			position: absolute;
@@ -155,15 +198,17 @@
 			border-radius: 0 0 8px 8px;
 			z-index: 999;
 		}
-		.no-sell{
+
+		.no-sell {
 			position: absolute;
-			top:0;
-			left:0;
-			padding:0 2px;
+			top: 0;
+			left: 0;
+			padding: 0 2px;
 			background-color: rgba(0, 0, 0, .5);
 			font-size: 12px;
-			color:#fff;
+			color: #fff;
 		}
+
 		.cell-car-draft {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
