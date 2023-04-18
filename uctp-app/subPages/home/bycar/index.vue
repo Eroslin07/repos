@@ -459,11 +459,7 @@
 			</u-grid>
 		</view>
 		<!-- 遮罩层 -->
-		<u-overlay :show="showOverlay">
-			<view class="warp">
-				<u-loading-icon text="草稿保存中..." textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
-			</view>
-		</u-overlay>
+		<u-overlay :show="showOverlay"></u-overlay>
 	</view>
 </template>
 
@@ -943,7 +939,7 @@
 												}
 												// 卖家信息
 												_this.sellerForm = {
-													vehicleReceiptAmount: result.data['1'].carInfo.vehicleReceiptAmount,
+													vehicleReceiptAmount: _this.$amount.getComdify(result.data['1'].carInfo.vehicleReceiptAmount),
 													payType: result.data['1'].carInfoDetails.payType ? Number(result.data['1'].carInfoDetails.payType) : 0,
 													transManageName: result.data['1'].carInfoDetails.transManageName,
 													collection: result.data['1'].carInfoDetails.collection ? Number(result.data['1'].carInfoDetails.collection) : 0,
@@ -1219,7 +1215,9 @@
 					remarks: this.carForm.remarks,
 					proceduresAndSpareParts
 				}
+				this.$modal.loading("提交中，请耐心等待...")
 				setCarInfo(data).then((res) => {
+					this.$modal.closeLoading()
 					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
@@ -1295,7 +1293,7 @@
 				}
 			},
 			saveSellerInfo(val) {
-				// this.showOverlay = true;
+				this.showOverlay = true;
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.carId,
@@ -1316,11 +1314,11 @@
 				}
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
-					this.showOverlay = false;
 					if (val == 'entrust') {
 						// 保存卖家信息并确认发起
 						if (this.fairValue.value1 <= data.vehicleReceiptAmount && data.vehicleReceiptAmount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
+							this.showOverlay = false;
 							this.$tab.navigateTo('/subPages/home/bycar/agreement');
 						} else {
 							// 发起公允值审批流程
@@ -1344,6 +1342,7 @@
 							let createData = { procDefKey, variables };
 							setCreate(createData).then((ress) => {
 								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msg("已提交审核");
 								this.$tab.reLaunch('/pages/index');
 							}).catch((error) => {
@@ -1353,6 +1352,7 @@
 					} else {
 						// 保存卖家草稿信息返回首页
 						this.$modal.closeLoading()
+						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
