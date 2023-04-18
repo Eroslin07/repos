@@ -47,6 +47,12 @@ public class AuthPermissionInfoRespVO {
         @Schema(description = "商户id")
         private Long deptId;
 
+        @Schema(description = "商户名称")
+        private String deptName;
+
+        @Schema(description = "市场名称")
+        private String tenantName;
+
     }
 
 }
