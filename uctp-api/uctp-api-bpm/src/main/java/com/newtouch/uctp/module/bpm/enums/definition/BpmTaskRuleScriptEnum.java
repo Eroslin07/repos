@@ -16,7 +16,9 @@ public enum BpmTaskRuleScriptEnum {
     START_USER(10L, "流程发起人"),
 
     LEADER_X1(20L, "流程发起人的一级领导"),
-    LEADER_X2(21L, "流程发起人的二级领导");
+    LEADER_X2(21L, "流程发起人的二级领导"),
+    GENERAL_APPROVAL(22L, "一般审批人员"),
+    FINANCIAL_APPROVAL(23L, "财务审批员");
 
     /**
      * 脚本编号

@@ -33,9 +33,11 @@
         a.STATUS as status,
         a.STATUS_THREE as statusThree,
         b.MILEAGE as mileage,
+        b.FIRST_REGIST_DATE as firstRegistDate,
         b.BUYER_NAME as firstParty,
         b.SELLER_NAME as secondParty,
-        d.url as url
+        d.url as url,
+        a.CREATE_TIME as createTime
     </sql>
 
 
