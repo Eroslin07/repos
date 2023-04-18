@@ -33,7 +33,7 @@
 				</uni-card> -->
 
 		<view class="" v-if="tabList.length>0">
-			<uni-card v-for="(tab, tabIndex) in 6 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
+			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab.id)">
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
@@ -108,7 +108,7 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 					salesStatus: null,
 					status: null,
 					statusThree: null,
-					businessId: 103,
+					businessId:this.$store.state.user.deptId,
 					"pageNo": 1,
 					"pageSize": 10
 				},
