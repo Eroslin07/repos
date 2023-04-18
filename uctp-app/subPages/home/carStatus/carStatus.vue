@@ -38,8 +38,8 @@
 					<uni-col :span="9">
 						<view class="car_left">
 							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测</view>
-							<!-- <image :src="tab.url" class="car-image"></image> -->
-							<image src="/static/images/car.jpg" class="car-image"></image>
+							<image :src="tab.url" class="car-image"></image>
+							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
 						</view>
 					</uni-col>
 					<uni-col :span="15">

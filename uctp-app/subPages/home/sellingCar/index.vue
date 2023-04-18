@@ -58,7 +58,7 @@
 				formData: {
 					statusThree: [221, 231],
 					searchValue: "",
-					businessId: 184,
+					businessId:this.$store.state.user.deptId,
 					pageNo: 1,
 					pageSize: 10,
 				},

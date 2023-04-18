@@ -10,7 +10,7 @@
 		<!-- 解决窗体沉浸，内容被导航栏遮盖问题 -->
 		<view :style="{height: `${navigateBarHeight}px`}"></view>
 		<!-- 轮播 -->
-		<view class="" style="height:130px;border-radius:4px;">
+		<view class="swiper-box" id="swiperBox">
 			<u-swiper indicator indicatorMode="dot" :list="swiperList"></u-swiper>
 		</view>
 		<!-- 收车/卖车 -->
@@ -286,16 +286,34 @@
 	.content {
 		width: 100%;
 		height: calc(100vh - 44px);
-		padding: 0 15px;
+		padding: 0 28rpx;
 		// height: 88vh;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		background-color: #f4f6f8;
 		margin-top: 44px;
 
+		// 轮播
+		#swiperBox {
+			height: 300rpx;
+			border-radius: 12rpx;
+
+			/deep/ .u-swiper.data-v-6b019429 {
+				height: 300rpx !important;
+			}
+
+			/deep/ .u-swiper__wrapper.data-v-6b019429 {
+				height: 300rpx !important;
+			}
+
+			/deep/ .u-swiper__wrapper__item__wrapper__image.data-v-6b019429 {
+				height: 300rpx !important;
+			}
+		}
+
 		.menu-box {
-			height: 90px;
-			margin-top: 15px;
+			height: 190rpx;
+			margin-top: 22rpx;
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
@@ -307,10 +325,11 @@
 				position: relative;
 				flex: 1;
 				flex-shrink: 0;
-				height: 90px;
-				margin-right: 10px;
-				padding: 15px;
-				border-radius: 5px;
+				height: 190rpx;
+				margin-right: 36rpx;
+				padding-top: 36rpx;
+				padding-left: 36rpx;
+				border-radius: 12rpx;
 				// background-color: #088FFE;
 				background-image: url('/static/images/index/collBc.png');
 				background-repeat: no-repeat;
@@ -321,12 +340,18 @@
 					flex-direction: row;
 					justify-content: flex-start;
 					align-items: center;
+					font-size: 32rpx;
+					font-weight: 500;
+					color: #FFFFFF;
+					line-height: 44rpx;
 				}
 
 				.item-desp {
-					font-size: 13px;
-					margin-top: 8px;
-					color: #96C6FE;
+					font-size: 24rpx;
+					font-family: PingFangSC-Medium, PingFang SC;
+					font-weight: 500;
+					color: #FFFFFF;
+					line-height: 34rpx;
 				}
 
 				.img {
@@ -344,7 +369,7 @@
 				background-image: url('/static/images/index/sellBc.png');
 
 				.sell-desp {
-					color: #FFD7B1;
+					color: #FFFFFF;
 				}
 			}
 		}
