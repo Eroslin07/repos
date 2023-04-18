@@ -98,6 +98,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         infoDO.setCarType(createReqVO.getCarType());//车辆类型
         infoDO.setBrandType(createReqVO.getBrandType());//品牌型号
         infoDO.setModel(createReqVO.getModel());//品牌/车型
+        infoDO.setModelId(createReqVO.getModelId());//车型id
         infoDO.setPlateNum(createReqVO.getPlateNum());
         infoDO.setEngineNum(createReqVO.getEngineNum());
         infoDO.setRemarks(createReqVO.getRemarks());
