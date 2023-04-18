@@ -38,7 +38,7 @@
 				<u-checkbox-group v-model="value">
 					<u-checkbox shape="circle" activeColor="#fd6601"></u-checkbox>
 					<view>同意
-						<text style="color: #fd6601;" @click="handleUserAgrement">《xx用户协议》</text>
+						<text style="color: #fd6601;" @click="handleUserAgrement">《用户协议》</text>
 						<text style="color: #fd6601;" @click="handlePrivacy">《隐私政策》</text>
 					</view>
 				</u-checkbox-group>
@@ -77,7 +77,7 @@
 					code: "",
 					uuid: ''
 				},
-				value: [],
+				value: [''],
 				wxcode: ''
 			}
 		},

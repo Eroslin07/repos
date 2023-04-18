@@ -884,6 +884,7 @@
 											if (result.data['1']) {
 												// 数据回显
 												_this.carId = result.data['1'].carInfoDetails.carId;
+												_this.modelId = result.data['1'].carInfo.modelId;
 												_this.carForm = {
 													drivingLicenseUrl: result.data['1'].fileB,
 													certificateUrl: result.data['1'].fileC,
@@ -1205,6 +1206,7 @@
 					certificateNo: this.carForm.certificateNo,
 					mileage: this.carForm.mileage,
 					model: this.carForm.model,
+					modelId: this.modelId,
 					carType: this.carForm.carType,
 					brandType: this.carForm.brandType,
 					brand: this.carForm.brand,

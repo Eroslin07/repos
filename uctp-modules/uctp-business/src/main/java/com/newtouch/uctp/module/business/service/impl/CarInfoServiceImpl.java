@@ -29,6 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,8 +108,13 @@ public class CarInfoServiceImpl implements CarInfoService {
         infoDO.setCheckStatus(0);
         infoDO.setBusinessId(createReqVO.getDeptId());
         infoDO.setTenantId(createReqVO.getTenantId());
-        infoDO.setScrapDate(createReqVO.getScrapDate());
-        infoDO.setAnnualInspectionDate(createReqVO.getAnnualInspectionDate());
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
+        String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
+        infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
+        infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+
         infoDO.setInsurance(createReqVO.getInsurance());
         infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
         infoDO.setSalesStatus(1);//收车中

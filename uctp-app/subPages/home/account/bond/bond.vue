@@ -1,7 +1,7 @@
 <template>
 	<view class="bond">
 		<!-- 自定义导航栏 -->
-		<!-- <u-navbar title="我的保证金" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
+		<u-navbar title="我的保证金" bgColor="rgba(0, 0, 0, 0)" leftIconColor="#fff" :titleStyle="{'color': '#fff'}" @leftClick="back" safeAreaInsetTop fixed></u-navbar>
 		<view style="position: relative;">
 			<view class="cost_image"></view>
 			<view class="statistics">

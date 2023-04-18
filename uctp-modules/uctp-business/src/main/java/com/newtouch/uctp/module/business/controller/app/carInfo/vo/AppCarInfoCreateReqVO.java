@@ -79,10 +79,10 @@ public class AppCarInfoCreateReqVO{
     private String remarks;
 
     @Schema(description = "使用年限至")
-    private LocalDateTime scrapDate;
+    private String scrapDate;
 
     @Schema(description = "年检签证有效期至")
-    private LocalDateTime annualInspectionDate;
+    private String annualInspectionDate;
 
     @Schema(description = "保险险种")
     private String insurance;

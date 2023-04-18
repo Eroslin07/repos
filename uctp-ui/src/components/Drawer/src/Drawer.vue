@@ -14,9 +14,9 @@
         <h3></h3>
         <!-- <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3> -->
         <div class="btns" id="btns">
-          <el-button plain type="primary" @click="submitBtn">提交</el-button>
-          <el-button plain type="success">退回</el-button>
-          <el-button plain type="danger">作废</el-button>
+          <el-button plain type="primary" @click="submitBtn">同意</el-button>
+          <el-button plain type="success">不同意</el-button>
+          <!-- <el-button plain type="danger">作废</el-button> -->
           <el-button plain type="info" @click="dravwerClose">关闭</el-button>
         </div>
       </template>
