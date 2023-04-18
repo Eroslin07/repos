@@ -16,6 +16,7 @@ public class MerchantBankDO extends BaseDO {
 
     @TableId
     private Long id;//账户主键标识
+    private String accountNo; // 商户账户号
     private String businessType; //业务类型',
     private String bankName; //开户银行名称',
     private String bankNo;//银行账号',

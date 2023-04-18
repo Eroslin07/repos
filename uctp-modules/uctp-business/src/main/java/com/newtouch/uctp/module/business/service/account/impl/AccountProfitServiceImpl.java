@@ -244,7 +244,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
         // 根据银行卡ID查询账户
         MerchantBankDO bank = merchantBankService.getById(merchantBankId);
-        if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo())) {
+        // 银行卡必须存在，且是当前账户的银行卡
+        if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo()) || !accountNo.equals(bank.getAccountNo())) {
             throw exception(ACC_PRESENT_ERROR);
         }
 
