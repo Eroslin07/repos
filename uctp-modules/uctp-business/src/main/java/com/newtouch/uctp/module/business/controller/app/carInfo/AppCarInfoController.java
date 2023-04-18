@@ -91,7 +91,7 @@ public class AppCarInfoController {
     }
     @GetMapping("/home/page")
     @Operation(summary = "获得APP首页分页")
-    public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid @RequestBody AppHomeCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid AppHomeCarInfoPageReqVO pageVO) {
         PageResult<AppHomeCarInfoRespVO> pageResult = carInfoService.getHomeCarInfoPage(pageVO);
         return success(pageResult);
 
@@ -106,8 +106,9 @@ public class AppCarInfoController {
 
     @GetMapping("/sell/page")
     @Operation(summary = "获得APP卖车分页")
-    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid @RequestBody AppSellCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid AppSellCarInfoPageReqVO pageVO) {
         PageResult<AppSellCarInfoPageRespVO> pageResult = carInfoService.getSellCarInfoPage(pageVO);
+        System.out.println(pageResult);
         return success(pageResult);
     }
 
@@ -130,9 +131,9 @@ public class AppCarInfoController {
 
     @PostMapping("/save/sell")
     @Operation(summary = "保存APP卖车填写数据")
-    public CommonResult<Boolean> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
+    public CommonResult<AppBpmCarInfoRespVO> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
         carInfoService.saveSellCarInfo(reqVO);
-        return success(true);
+        return success(carInfoService.saveSellCarInfo(reqVO));
     }
 
     @GetMapping("/delete/sell/{id}")
