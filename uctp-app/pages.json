@@ -28,7 +28,8 @@
 		}, {
 			"path": "pages/account/index",
 			"style": {
-				"navigationBarTitleText": "资金管理"
+				"navigationBarTitleText": "资金管理",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "pages/mine/index",
@@ -101,12 +102,14 @@
 		}, {
 			"path": "home/account/profit/profit",
 			"style": {
-				"navigationBarTitleText": "我的利润"
+				"navigationBarTitleText": "我的利润",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "home/account/bond/bond",
 			"style": {
-				"navigationBarTitleText": "我的保证金"
+				"navigationBarTitleText": "我的保证金",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "home/account/bond/withdrawal",
@@ -156,12 +159,14 @@
 		}, {
 			"path": "home/account/bond/freeze",
 			"style": {
-				"navigationBarTitleText": "保证金冻结明细"
+				"navigationBarTitleText": "保证金冻结明细",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "home/account/bond/whole",
 			"style": {
-				"navigationBarTitleText": "保证金交易明细"
+				"navigationBarTitleText": "保证金交易明细",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "home/account/profit/whole",

@@ -1,32 +1,41 @@
 <template>
 	<view class="account">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="资金管理" bgColor="rgba(0, 0, 0, 0)" :titleStyle="{'color': '#fff'}" safeAreaInsetTop fixed>
+			<view class="u-nav-slot" slot="left">
+				<view class="bank-logo"></view>
+			</view>
+		</u-navbar>
+		
 		<view style="position: relative;">
 			<view class="cost_image"></view>
 			<view class="notice">
 				<u-notice-bar :text="text" bgColor="#f8c089" color="#fa6805"></u-notice-bar>
 			</view>
 			<view class="statistics">
-				<view>资产总额</view>
-				<view style="font-size: 20px;">20.73万元</view>
+				<view style="margin-bottom: 10px;">资产总额</view>
+				<view style="font-size: 24px;">20.73<text style="font-size: 14px;">万元</text></view>
 			</view>
 		</view>
 		
-		<uni-card>
-			<u-grid col="2" :border="true">
-				<u-grid-item>
-					<view @click="handleClick(1)" style="text-align: center;">
-						<view>保证金 ></view>
-						<view>20.05万元</view>
-					</view>
-				</u-grid-item>
-				<u-grid-item>
-					<view @click="handleClick(2)" style="text-align: center;">
-						<view>利润 ></view>
-						<view>6,800.00元</view>
-					</view>
-				</u-grid-item>
-			</u-grid>
-		</uni-card>
+		<view style="margin-top: -75px;">
+			<uni-card>
+				<u-grid col="2" :border="true">
+					<u-grid-item>
+						<view @click="handleClick(1)" style="text-align: center;">
+							<view>保证金 ></view>
+							<view>20.05万元</view>
+						</view>
+					</u-grid-item>
+					<u-grid-item>
+						<view @click="handleClick(2)" style="text-align: center;">
+							<view>利润 ></view>
+							<view>6,800.00元</view>
+						</view>
+					</u-grid-item>
+				</u-grid>
+			</uni-card>
+		</view>
 		
 		<uni-card>
 			<view class="charts-box">
@@ -111,7 +120,7 @@
 	.account {
 		.cost_image {
 			width: 100%;
-			height: 180px;
+			height: 220pt;
 			background-image: url('../../static/images/cost/cost.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;
@@ -119,7 +128,7 @@
 		
 		.notice {
 			position: absolute;
-			top: 0;
+			top: 44px;
 		}
 		
 		.statistics {
@@ -128,7 +137,7 @@
 			font-size: 16px;
 			position: absolute;
 			left: 50%;
-			top: 50%;
+			top: 60%;
 			transform: translate(-50%, -100%);
 		}
 		
