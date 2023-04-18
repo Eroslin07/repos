@@ -579,6 +579,7 @@
 						let createData = { procDefKey, variables };
 						setCreate(createData).then((ress) => {
 							this.$modal.closeLoading()
+							let _this = this;
 							uni.showModal({
 							  title: '提示',
 								showCancel: false,
@@ -589,10 +590,10 @@
 									if (res.confirm) {
 										// #ifndef MP-WEIXIN
 										clearInterval(this.timer);
-										this.$tab.reLaunch('/pages/login')
+										_this.$tab.reLaunch('/pages/login')
 										// #endif
 										// #ifdef MP-WEIXIN
-										this.$tab.reLaunch('/pages/wx_login')
+										_this.$tab.reLaunch('/pages/wx_login')
 										// #endif
 									}
 								}
