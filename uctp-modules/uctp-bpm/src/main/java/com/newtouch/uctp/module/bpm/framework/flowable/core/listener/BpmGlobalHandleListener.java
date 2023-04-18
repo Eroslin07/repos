@@ -1,12 +1,10 @@
 package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 
 import javax.annotation.Resource;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
-import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
@@ -17,6 +15,8 @@ import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
+import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 
 /**
  * 流程引擎全局业务处理器
@@ -53,6 +53,10 @@ public class BpmGlobalHandleListener {
      */
     public void processCompleted(FlowableEngineEntityEvent event) {
         ProcessInstance processInstance = (ProcessInstance) event.getEntity();
+        // 流程完成时，判断流程通过与不通过的标识（通过：pass    不通过：disagree）
+        String approvalType = StrUtil.toStringOrNull(processInstance.getProcessVariables().get("approvalType"));
+        // 流程完成时，通过与不通过的审批意见
+        String reason = "";
         String businessKey = processInstance.getBusinessKey();
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
 
@@ -63,7 +67,7 @@ public class BpmGlobalHandleListener {
             bpmFormResVO.setBusiType(bpmFormMainVO.getBusiType());
             bpmFormResVO.setMerchantId(bpmFormMainVO.getMerchantId());
             bpmFormResVO.setFormDataJson(bpmFormMainVO.getFormDataJson());
-             noticeApi.saveTaskNotice("1", "12", "", bpmFormResVO);
+            noticeApi.saveTaskNotice("1", "12", "", bpmFormResVO);
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
 
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
