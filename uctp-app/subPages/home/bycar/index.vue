@@ -1272,7 +1272,8 @@
 			// 点击交易信息保存
 			handleSubmit(val) {
 				let _this = this;
-				let amount = _this.sellerForm.vehicleReceiptAmount / 10000;
+				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
+				amount = amount / 10000;
 				if (_this.fairValue.value1 <= amount <= _this.fairValue.value1) {
 					_this.saveSellerInfo(val);
 				} else {
@@ -1295,7 +1296,7 @@
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.carId,
-					vehicleReceiptAmount: this.sellerForm.vehicleReceiptAmount,
+					vehicleReceiptAmount: this.$amount.getDelcommafy(this.sellerForm.vehicleReceiptAmount),
 					collection: this.sellerForm.collection,
 					payType: this.sellerForm.payType,
 					transManageName: this.sellerForm.transManageName,
