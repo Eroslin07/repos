@@ -71,8 +71,10 @@
 		}, {
 			"path": "home/sellingCar/index",
 			"style": {
-				"navigationBarTitleText": "我要卖车"
+				"navigationBarTitleText": "我要卖车",
 				// "navigationStyle": "custom"
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 150
 			}
 		}, {
 			"path": "home/sellingCar/carInfo",
