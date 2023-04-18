@@ -1,12 +1,14 @@
 package com.newtouch.uctp.module.bpm.dal.mysql.definition;
 
-import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmTaskAssignRuleDO;
-import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
-import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.lang.Nullable;
 
-import java.util.List;
+import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
+import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
+import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmTaskAssignRuleDO;
 
 @Mapper
 public interface BpmTaskAssignRuleMapper extends BaseMapperX<BpmTaskAssignRuleDO> {
@@ -32,6 +34,5 @@ public interface BpmTaskAssignRuleMapper extends BaseMapperX<BpmTaskAssignRuleDO
                 .eq("task_definition_key", taskDefinitionKey));
     }
 
-
-
+    List<String> getTaskAssignRulesByRoleCode(@Param("roleCode") String roleCode);
 }

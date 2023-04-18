@@ -15,7 +15,8 @@ const user = {
     permissions: storage.get(constant.permissions),
     phone: uni.getStorageSync('PHONE'),
     deptId: uni.getStorageSync('DEPT_ID'),
-    tenantId: uni.getStorageSync('TENANT_ID')
+    tenantId: uni.getStorageSync('TENANT_ID'),
+    accountNo: '22222222'
   },
 
   mutations: {
@@ -107,6 +108,7 @@ const user = {
           commit('SET_AVATAR', avatar)
           commit('SET_DEPTID', deptId)
           commit('SET_TENANTID', tenantId)
+          commit('SET_ID', user.id)
           resolve(res)
         }).catch(error => {
           reject(error)
