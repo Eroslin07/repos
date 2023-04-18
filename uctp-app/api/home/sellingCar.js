@@ -5,7 +5,7 @@ export function getSellPage(data) {
 	return request({
 		url: '/uctp/car-info/sell/page',
 		'method': 'GET',
-		params: data
+		'params': data
 	})
 }
 

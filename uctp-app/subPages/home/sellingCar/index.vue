@@ -5,30 +5,37 @@
 			<u-search v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 				placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
+		<!-- status==22 未检测 -->
 		<view style="margin-top: 85px;">
-			<uni-card v-for="(tab, tabIndex) in 2" :key="tabIndex" @click="handleCard(tab.id)"
+			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)"
 				style="margin-top: 10px;">
-				<uni-row :gutter="30">
-					<uni-col :span="10">
+				<uni-row :gutter="20">
+					<uni-col :span="9">
 						<view class="car_left">
-							<view class="no-sell">
+							<view v-if="tab.status==22" class="no-sell">
 								不能卖出
 							</view>
-							<view class="car_text cell-car-draft">待售已检测</view>
+							<view class="car_text cell-car-draft">{{tab.status==22?'待售未检测':'待售已检测'}}</view>
 							<image :src="tab.url" class="car-image"></image>
 						</view>
 					</uni-col>
-					<uni-col :span="14">
-						<h3>{{tab.model}}</h3>
-						<view>VIN：{{tab.vin}}</view>
-						<view>{{tab.model}} | {{tab.mileage}}万公里</view>
-						<view style="color: #000;">收车价：{{tab.vehicleReceiptAmount}}元</view>
-						<view>创建时间：{{tab.createTime}}</view>
+					<uni-col :span="15">
+						<h3>{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<view class="fs12">VIN：{{tab.vin}}</view>
+						<view class="fs12">{{'2023-04' || '暂无'}} | {{tab.mileage || 0}} 万公里</view>
+						<view style="color: #000;" class="fs12">收车价：
+							<text v-if="isSHowMoney">{{tab.vehicleReceiptAmount || 0}} 元</text>
+							<text v-else>***元</text>
+							<text v-if="isSHowMoney" class="iconfont icon-open-eye"
+								@click.stop="isSHowMoney=!isSHowMoney"></text>
+							<text v-else class="iconfont icon-close-eye" @click.stop="isSHowMoney=!isSHowMoney"></text>
+						</view>
+						<view class="fs12">创建时间：{{tab.createTime || '暂无'}}</view>
 					</uni-col>
 				</uni-row>
 			</uni-card>
 		</view>
-		<u-modal :show="show" :showCancelButton="true" confirmText="选择其它车辆" cancelText="关闭卖车页面" @confirm="handleConfirm"
+		<u-modal :show="show" :showCancelButton="true" confirmText="上传检测报告" cancelText="取消" @confirm="handleConfirm"
 			@cancel="handleCancel">
 			<view>请先对该车辆进行检测处理，再进行卖车。</view>
 		</u-modal>
@@ -42,13 +49,16 @@
 	import {
 		getSellPage
 	} from '@/api/home/sellingCar.js'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
 	export default {
 		data() {
 			return {
 				formData: {
 					statusThree: [221, 231],
 					searchValue: "",
-					businessId: 130,
+					businessId: 184,
 					pageNo: 1,
 					pageSize: 10,
 				},
@@ -57,7 +67,9 @@
 				total: 0,
 				show: false,
 				// 加载图标
-				loadStatus: 'loadmore'
+				loadStatus: 'loadmore',
+				// 是否展示金额
+				isSHowMoney: false
 			}
 		},
 		mounted() {
@@ -84,11 +96,15 @@
 		},
 		methods: {
 			// 获取list
-			getList(data) {
+			getList(obj) {
 				this.tabList = [];
 				this.$modal.loading("数据加载中...");
-				getSellPage(data).then((res) => {
-					this.tabList = res.data.list
+				getSellPage(obj).then((res) => {
+					this.tabList = res.data.list.map(val => {
+						val.createTime = parseTime(val.createTime || Number(new Date()))
+						return val
+					})
+
 					this.total = res.data.total
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
@@ -103,9 +119,12 @@
 
 			},
 			// 加载更多
-			getMore(data) {
-				getSellPage(data).then(res => {
-					this.tabList = [...this.tabList, ...res.data.list];
+			getMore(obj) {
+				getSellPage(obj).then(res => {
+					this.tabList = [...this.tabList, ...res.data.list].map(val => {
+						val.createTime = parseTime(val.createTime || Number(new Date()))
+						return val;
+					})
 					this.total = res.data.total
 					if (this.total > this.tabList.length) {
 						this.loadStatus = 'loadmore'
@@ -133,20 +152,25 @@
 				this.getList(this.formData);
 			},
 			// 点击车辆卡片
-			handleCard(id) {
+			handleCard(item) {
 				// this.show = true;
 				// this.$tab.navigateTo('/subPages/home/sellingCar/vehicleDetails');
 				// return
-				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + id);
+				if (item.status == 22) {
+					this.show = true;
+					return
+				}
+				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
 			},
 			// 选择其它车辆
 			handleConfirm() {
 				this.show = false;
+				this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails');
 			},
 			// 关闭卖车页面
 			handleCancel() {
 				this.show = false;
-				this.$tab.reLaunch('/pages/index');
+				// this.$tab.reLaunch('/pages/index');
 			}
 		}
 	}
@@ -174,6 +198,10 @@
 	/deep/ .uni-card__header-extra-text {
 		color: #169bd5 !important;
 		font-size: 14px !important;
+	}
+
+	/deep/ .uni-card {
+		padding: 0 !important;
 	}
 
 	.car-image {
@@ -213,5 +241,9 @@
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
 		}
+	}
+
+	.fs12 {
+		font-size: 12px;
 	}
 </style>

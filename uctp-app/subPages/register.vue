@@ -359,6 +359,8 @@
 				this.showModal = false;
 				getTenantlist().then((res) => {
 					this.range.push(res.data)
+					this.registerForm.marketLocation = res.data[0].id;
+					this.registerForm.marketLocationValue = res.data[0].name;
 				})
 			},
 			handleChange(data) {
