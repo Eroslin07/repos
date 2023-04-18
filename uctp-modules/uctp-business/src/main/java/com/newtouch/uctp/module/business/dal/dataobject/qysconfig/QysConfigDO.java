@@ -1,9 +1,9 @@
 package com.newtouch.uctp.module.business.dal.dataobject.qysconfig;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
-import java.util.*;
-import com.baomidou.mybatisplus.annotation.*;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 契约锁 DO
@@ -11,14 +11,14 @@ import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
  * @author 芋道源码
  */
 @TableName("uctp_qys_config")
-@KeySequence("uctp_qys_config_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
+//@KeySequence("uctp_qys_config_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QysConfigDO extends BaseDO {
+public class QysConfigDO extends TenantBaseDO {
 
     /**
      * 乐观锁
@@ -41,6 +41,14 @@ public class QysConfigDO extends BaseDO {
      * 访问密匙
      */
     private String accessSecret;
+    /**
+     * saas秘钥
+     */
+    private String secret;
+    /**
+     * 编码
+     */
+    private String code;
     /**
      * 状态(0未启用 1启用)
      */

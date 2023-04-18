@@ -525,17 +525,20 @@ public class CarInfoServiceImpl implements CarInfoService {
             HomeCountVO homeCount = new HomeCountVO();
             homeCount.setStatus(key);
             homeCount.setLabel(CarStatus.toType(key).text());
-            homeCount.setNum(null);
+            Long num = 0L;
             List<Map<String, Object>> mapChildList = mapGroup.get(key);
-            mapChildList.forEach(child-> {
+            for (Map<String, Object> child : mapChildList) {
                 HomeCountVO homeCountChild = new HomeCountVO();
                 Integer statusTwo = (Integer) child.get("statusTwo");
                 homeCountChild.setStatus(statusTwo);
                 homeCountChild.setLabel(CarStatus.toType(statusTwo).text());
-                homeCountChild.setNum(Long.valueOf(child.get("num").toString()));
+                Long numSon = Long.valueOf(child.get("num").toString());
+                homeCountChild.setNum(numSon);
                 homeCountChild.setChild(null);
                 homeCount.getChild().add(homeCountChild);
-            });
+                num += numSon;
+            }
+            homeCount.setNum(num);
             retList.add(homeCount);
         });
         return retList;

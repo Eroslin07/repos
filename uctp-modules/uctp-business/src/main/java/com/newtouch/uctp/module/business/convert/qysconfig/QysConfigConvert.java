@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.convert.qysconfig;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigRespVO;
 import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigUpdateReqVO;
@@ -31,4 +32,5 @@ public interface QysConfigConvert {
     PageResult<QysConfigRespVO> convertPage(PageResult<QysConfigDO> page);
 
 
+    List<QiyuesuoChannelProperties> convert01(List<QysConfigDO> configDOS);
 }

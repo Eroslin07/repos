@@ -14,8 +14,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum QiyuesuoChannelEnum {
 
-    QIYUESUO("QYS", "契约锁"),
-    ;
+    DEFAULT("default", "默认契约锁模式"),
+    SAAS("saas", "SAAS契约锁模式");
 
     /**
      * 编码

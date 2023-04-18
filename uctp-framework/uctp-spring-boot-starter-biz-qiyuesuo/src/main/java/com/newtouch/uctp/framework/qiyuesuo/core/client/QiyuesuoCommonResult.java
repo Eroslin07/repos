@@ -1,6 +1,8 @@
 package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.lang.Assert;
+import com.newtouch.uctp.framework.common.exception.ErrorCode;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoFrameworkErrorCodeConstants;
 import lombok.Data;
@@ -31,10 +33,22 @@ public class QiyuesuoCommonResult<T> extends CommonResult<T> {
      */
     private String apiMsg;
 
-    /**
-     * API 请求编号
-     */
-    private String apiRequestId;
+
+    public static <T> QiyuesuoCommonResult<T> build(String apiCode, String apiMsg,
+                                               T data, QiyuesuoCodeMapping codeMapping) {
+        Assert.notNull(codeMapping, "参数 codeMapping 不能为空");
+        QiyuesuoCommonResult<T> result = new QiyuesuoCommonResult<T>().setApiCode(apiCode).setApiMsg(apiMsg);
+        result.setData(data);
+        // 翻译错误码
+        if (codeMapping != null) {
+            ErrorCode errorCode = codeMapping.apply(apiCode);
+            if (errorCode == null) {
+                errorCode = QiyuesuoFrameworkErrorCodeConstants.QIYUESUO_UNKNOWN;
+            }
+            result.setCode(errorCode.getCode()).setMsg(errorCode.getMsg());
+        }
+        return result;
+    }
 
     public static <T> QiyuesuoCommonResult<T> error(Throwable ex) {
         QiyuesuoCommonResult<T> result = new QiyuesuoCommonResult<>();

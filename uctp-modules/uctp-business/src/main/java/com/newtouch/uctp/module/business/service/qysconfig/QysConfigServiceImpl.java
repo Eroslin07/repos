@@ -3,6 +3,10 @@ package com.newtouch.uctp.module.business.service.qysconfig;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
+import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigUpdateReqVO;
@@ -15,7 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,12 +41,34 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Resource
     private QysConfigMapper qysConfigMapper;
+    @Resource
+    private QiyuesuoClientFactory qiyuesuoClientFactory;
+
+    @PostConstruct
+    @Override
+    public void initLocalCache() {
+        // 第一步：查询数据
+        List<QysConfigDO> configDOS = qysConfigMapper.selectList();
+        log.info("[initLocalCache][缓存契约锁client，数量为:{}]", configDOS.size());
+
+        // 第二步：构建缓存：创建或更新短信 Client
+//        List<QiyuesuoChannelProperties> propertiesList = QysConfigConvert.INSTANCE.convert01(configDOS);
+//        propertiesList.forEach(properties -> qiyuesuoClientFactory.createOrUpdateQiyuesuoClient(properties));
+        this.createOrUpdateQiyuesuoClient(configDOS);
+    }
+
+    private void createOrUpdateQiyuesuoClient(List<QysConfigDO> configDOS){
+        List<QiyuesuoChannelProperties> propertiesList = QysConfigConvert.INSTANCE.convert01(configDOS);
+        propertiesList.forEach(properties -> qiyuesuoClientFactory.createOrUpdateQiyuesuoClient(properties));
+    }
 
     @Override
     public Long createQysConfig(QysConfigCreateReqVO createReqVO) {
         // 插入
         QysConfigDO qysConfig = QysConfigConvert.INSTANCE.convert(createReqVO);
         qysConfigMapper.insert(qysConfig);
+        //刷新client
+        this.createOrUpdateQiyuesuoClient(Arrays.asList(qysConfig));
         // 返回
         return qysConfig.getId();
     }
@@ -52,6 +80,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         // 更新
         QysConfigDO updateObj = QysConfigConvert.INSTANCE.convert(updateReqVO);
         qysConfigMapper.updateById(updateObj);
+        //刷新client
+        this.createOrUpdateQiyuesuoClient(Arrays.asList(updateObj));
     }
 
     @Override
@@ -75,6 +105,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public List<QysConfigDO> getQysConfigList(Collection<Long> ids) {
+
         return qysConfigMapper.selectBatchIds(ids);
     }
 
@@ -133,6 +164,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         JSONObject jsonObject = this.decryptMessage(content);
         //TODO 处理业务
         return "success";
+    }
+
+    @Override
+    public void test() {
+        QiyuesuoClient qiyuesuoClient = qiyuesuoClientFactory.getQiyuesuoClient(1648231591874347009L);
+        QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
+        qiyuesuoClient.draft(null);
+        qiyuesuoSaasClient.companyAuthPageUrl(null);
     }
 
     private Boolean verificationSignature(String signature, String timestamp){
