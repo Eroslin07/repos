@@ -1316,7 +1316,8 @@
 				setSellerInfo(data).then((res) => {
 					if (val == 'entrust') {
 						// 保存卖家信息并确认发起
-						if (this.fairValue.value1 <= data.vehicleReceiptAmount && data.vehicleReceiptAmount <= this.fairValue.value2) {
+						let amount = data.vehicleReceiptAmount / 10000;
+						if (this.fairValue.value1 <= amount && data.vehicleReceiptAmount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
 							this.showOverlay = false;
 							this.$tab.navigateTo('/subPages/home/bycar/agreement');
