@@ -25,4 +25,13 @@ public interface CarMapper extends BaseMapperX<CarInfoDO> {
                         @Param("statusThree")Integer statusThree,
                         @Param("carId")Long carId);
 
+
+    default int  updateStatus(CarInfoDO carInfo){
+        return updateById(carInfo);
+    };
+
+    default CarInfoDO queryCarInfo(Long id){
+        return selectById(id);
+    }
+
 }

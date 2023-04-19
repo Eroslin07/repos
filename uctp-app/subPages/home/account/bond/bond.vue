@@ -115,7 +115,7 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal');
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available);
 			},
 			// 充值
 			handleRecharge() {

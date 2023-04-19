@@ -134,4 +134,13 @@ public class CarInfoDO extends TenantBaseDO {
      * 其他
      */
     private String other;
+
+    /**
+     * 流程状态
+     */
+    private String bpmStatus;
+    /**
+     * 流程意见
+     */
+    private String bpmReason;
 }

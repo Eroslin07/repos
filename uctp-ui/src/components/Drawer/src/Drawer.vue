@@ -9,18 +9,37 @@
       append-to-body
       destroy-on-close
       :show-close="false"
+      class="drawerSelf"
+      :with-header="false"
     >
       <template #header>
-        <h3></h3>
         <!-- <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3> -->
-        <div class="btns" id="btns">
-          <el-button plain type="primary" @click="submitBtn('同意')">同意</el-button>
-          <el-button plain type="success" @click="submitBtn('不同意')">不同意</el-button>
-          <!-- <el-button plain type="danger">作废</el-button> -->
-          <el-button plain type="info" @click="dravwerClose">关闭</el-button>
-        </div>
       </template>
       <template #default>
+        <div class="header">
+          <div
+            style="
+              font-size: 24px;
+              font-weight: bold;
+              text-align: center;
+              width: 100%;
+              color: #000000;
+            "
+            >{{
+              (baseInfoData.data?.variables?.marketName || '') +
+              (baseInfoData.data?.variables?.merchantName || '') +
+              '账号申请流程'
+            }}</div
+          >
+          <div class="btns" id="btns">
+            <el-button plain type="primary" @click="submitBtn('同意')">同意</el-button>
+            <el-button plain type="success" @click="submitBtn('不同意')">不同意</el-button>
+            <!-- <el-button plain type="danger">作废</el-button> -->
+            <el-button plain type="info" @click="dravwerClose">关闭</el-button>
+          </div>
+          <!-- <div style="float: left; font-size: 16px">单号：{{ baseInfoData.data?.serialNo }}</div> -->
+        </div>
+
         <div class="drawer_content">
           <el-tabs v-model="activeName" @tab-change="tabChange">
             <el-tab-pane
@@ -188,10 +207,13 @@ const dravwerClose = () => {
     font-size: 18px;
     font-weight: bold;
   }
-  .btns {
-    display: flex;
-    justify-content: flex-end;
-  }
+}
+.header {
+  display: flex;
+}
+.btns {
+  display: flex;
+  justify-content: flex-end;
 }
 
 #btns .el-button {

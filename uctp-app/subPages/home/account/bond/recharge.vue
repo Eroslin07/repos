@@ -3,7 +3,7 @@
 		<uni-card>
 			<view>
 				<view>充值金额</view>
-				<u-input border="none" v-model="amount" clearable :customStyle="{'height': '50px'}" fontSize="24px">
+				<u-input border="none" v-model="amount" type="number" clearable :customStyle="{'height': '50px'}" fontSize="24px">
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+	import { getRecharge } from '@/api/account/bond.js'
 	export default {
 		data() {
 			return {
@@ -49,7 +50,7 @@
 		methods: {
 			// 确定
 			handleDefine() {
-				if (this.amount == '') {
+				if (this.amount == '' || this.amount) {
 					this.$modal.msg("请输入需要充值的金额");
 				} else {
 					this.show = true;
@@ -62,10 +63,26 @@
 			// 微信支付
 			handleWeixin() {
 				this.$modal.msg("微信支付");
+				let data = {
+					accountNo: this.$store.state.user.accountNo,
+					tranAmount: this.amount,
+					revision: 3
+				}
+				getRecharge(data).then((res) => {
+					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+				})
 			},
 			// 云闪付
 			handleYunshanfu() {
 				this.$modal.msg("云闪付");
+				let data = {
+					accountNo: this.$store.state.user.accountNo,
+					tranAmount: this.amount,
+					revision: 3
+				}
+				getRecharge(data).then((res) => {
+					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+				})
 			}
 		}
 	}

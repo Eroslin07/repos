@@ -26,3 +26,12 @@ export function getWithdraw(data) {
 		'data': data
 	})
 }
+
+// 保证金提现
+export function getRecharge(data) {
+	return request({
+		url: '/uctp/account/cash/recharge',
+		'method': 'POST',
+		'data': data
+	})
+}
