@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="account_no" jdbcType="VARCHAR" property="accountNo"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="cash" jdbcType="INTEGER" property="cash"/>
         <result column="profit" jdbcType="INTEGER" property="profit"/>
         <result column="freeze_cash" jdbcType="INTEGER" property="freezeCash"/>
@@ -19,6 +20,7 @@
 
     <sql id="Base_Column_List">
         id,
+        merchant_id,
         account_no,
         cash,
         profit,

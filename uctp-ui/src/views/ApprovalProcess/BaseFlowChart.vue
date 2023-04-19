@@ -21,15 +21,14 @@ import * as DefinitionApi from '@/api/bpm/definition'
 import * as ActivityApi from '@/api/bpm/activity'
 import { setConfAndFields2 } from '@/utils/formCreate'
 import type { ApiAttrs } from '@form-create/element-ui/types/config'
+import { baseInfoData } from '@/views/workbench/basInfoValue'
 import { onMounted, ref } from 'vue'
-
-const { query } = useRoute() // 查询参数
 const message = useMessage() // 消息弹窗
 const processInstance = ref<any>({}) // 流程实例
 
 const processInstanceLoading = ref(false)
 
-const id = (query.id as unknown as number) || '3052e817-d521-11ed-93fa-005056c00008'
+const id = baseInfoData.data.procInstId
 
 const fApi = ref<ApiAttrs>()
 // 流程表单详情

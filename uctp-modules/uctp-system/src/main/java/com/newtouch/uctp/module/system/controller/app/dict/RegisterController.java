@@ -168,7 +168,7 @@ public class RegisterController {
     public CommonResult<String> orcVehicleRegistrationCertificate(@RequestBody Map map) {
         String ak="dzb9KhZMmaTdGd3rbnmXnc0u";
         String sk="K65GO95WOMOyloXZ4ZV72MKEX9EreG5H";
-        String vehicleRegistrationCertificate = String.valueOf(map.get("IDCardUrl"));
+        String vehicleRegistrationCertificate = String.valueOf(map.get("vehicleRegistrationCertificate"));
         String accessToken = OCRUtil.getAuth(ak, sk);//获取识别前的token
         String vehicleLicenseDetail = OCRUtil.vehicleRegistrationCertificate(vehicleRegistrationCertificate, accessToken);//调取百度识别营业执照sdk
         return success(vehicleLicenseDetail);

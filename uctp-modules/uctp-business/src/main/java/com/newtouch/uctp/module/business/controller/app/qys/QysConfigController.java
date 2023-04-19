@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 
@@ -103,12 +104,13 @@ public class QysConfigController {
         return qysConfigService.verification(signature, timestamp, content);
     }
     @PostMapping("/callback/login")
-    @Schema(description = "saas模式契约锁回调-验证地址")
+    @Schema(description = "saas模式契约锁回调-登录")
     public String callbackLogin(@RequestParam String signature,
                            @RequestParam String timestamp,
                            @RequestParam String content) throws Exception {
         return qysConfigService.login(signature, timestamp, content);
     }
+
 
     @GetMapping("/test")
     @Schema(description ="测试Id")

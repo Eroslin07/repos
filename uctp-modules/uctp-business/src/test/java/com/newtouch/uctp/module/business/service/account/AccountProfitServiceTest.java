@@ -8,23 +8,32 @@ import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummary
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
+@Slf4j
 public class AccountProfitServiceTest {
 
     @Resource
     private AccountProfitService accountProfitService;
 
+    @Resource
+    private RedissonClient redissonClient;
+
     private String accountNo = "55555555";
-    private String contractNo = "2005";
+    private String contractNo = "2006";
 
     @Test
     public void testRecorded() {
@@ -115,5 +124,39 @@ public class AccountProfitServiceTest {
         accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
         accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
+    }
+
+    @Test
+    public void testLock() throws InterruptedException {
+        RLock lock = redissonClient.getLock("UCTP:ACCOUNT:PROFIT:RECORDED:" + contractNo);
+        try {
+            // 锁10秒
+            //lock.lock(10, TimeUnit.SECONDS);
+            // 等待1s，由看门狗控制超时
+            boolean locked = lock.tryLock(1, TimeUnit.SECONDS);
+            log.info("locked: {}", locked);
+            new Thread(new Runnable() {
+                @SneakyThrows
+                @Override
+                public void run() {
+                    RLock lock2 = redissonClient.getLock("UCTP:ACCOUNT:PROFIT:RECORDED2:" + contractNo);
+                    boolean locked2 = lock2.tryLock(1, TimeUnit.SECONDS);
+                    log.info("locked2: {}", locked2);
+                }
+            }).start();
+            if (locked) {
+                log.info("start");
+                // 业务处理30秒
+                Thread.sleep(3 * 1000);
+
+            }
+
+        } finally {
+            log.info("finally");
+            // 被当前线程锁定，则需要解锁
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
     }
 }

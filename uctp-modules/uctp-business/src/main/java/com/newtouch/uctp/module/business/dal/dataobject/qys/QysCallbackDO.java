@@ -1,9 +1,10 @@
 package com.newtouch.uctp.module.business.dal.dataobject.qys;
 
-import lombok.*;
-import java.util.*;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+import lombok.*;
 
 /**
  * 契约锁回调日志 DO
@@ -32,7 +33,7 @@ public class QysCallbackDO extends BaseDO {
     /**
      * 契约锁回调类型
      */
-    private Byte type;
+    private Integer type;
     /**
      * 契约锁回调内容
      */

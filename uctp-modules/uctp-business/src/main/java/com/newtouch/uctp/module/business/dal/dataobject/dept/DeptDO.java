@@ -1,15 +1,14 @@
-package com.newtouch.uctp.module.system.dal.dataobject.dept;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+package com.newtouch.uctp.module.business.dal.dataobject.dept;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.enums.dept.MarketTenantDeptEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 部门表

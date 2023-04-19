@@ -26,6 +26,8 @@ public class ProfitCalcResultDTO {
     private Integer profitAmount;
     // 本次收益
     private Integer revenueAmount;
+    // 本次总费用
+    private Integer feeTotalAmount;
     // 本次费用明细
     private List<CostDTO> costs;
     // 本次税收明细

@@ -73,10 +73,10 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
     }
 //==============================正常模式方法========================================
     @Override
-    public final QiyuesuoCommonResult<Contract> draft(Contract contract) {
+    public final QiyuesuoCommonResult<Contract> defaultSend(Contract contract) {
         QiyuesuoCommonResult<Contract> result;
         try {
-            result = doDraft(contract);
+            result = doDefaultSend(contract);
         } catch (Throwable ex) {
             // 打印异常日志
 //            log.error("[draft][发起合同草稿异常，contract({}) ]",
@@ -87,16 +87,16 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
-    protected abstract QiyuesuoCommonResult<Contract> doDraft(Contract contract)
+    protected abstract QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract)
             throws Throwable;
 //==============================SAAS模式方法========================================
 
 
     @Override
-    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> companyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) {
+    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) {
         QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result;
         try {
-            result = doCompanyAuthPageUrl(request);
+            result = doSaasCompanyAuthPageUrl(request);
         } catch (Throwable ex) {
             // 打印异常日志
 //            log.error("[draft][发起合同草稿异常，contract({}) ]",
@@ -108,10 +108,10 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSUserAuthPageResult> userAuthPage(SaaSUserAuthPageRequest request) {
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(SaaSUserAuthPageRequest request) {
         QiyuesuoCommonResult<SaaSUserAuthPageResult> result;
         try {
-            result = doUserAuthPage(request);
+            result = doSaasUserAuthPage(request);
         } catch (Throwable ex) {
             // 打印异常日志
 //            log.error("[draft][发起合同草稿异常，contract({}) ]",
@@ -123,10 +123,10 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> privilegeUrl(SaasPrivilegeUrlRequest request) {
+    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(SaasPrivilegeUrlRequest request) {
         QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result;
         try {
-            result = doPrivilegeUrl(request);
+            result = doSaasPrivilegeUrl(request);
         } catch (Throwable ex) {
             // 打印异常日志
 //            log.error("[draft][发起合同草稿异常，contract({}) ]",
@@ -137,13 +137,13 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
-    protected abstract QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doPrivilegeUrl(SaasPrivilegeUrlRequest request)
+    protected abstract QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doSaasPrivilegeUrl(SaasPrivilegeUrlRequest request)
             throws Throwable;
 
-    protected abstract QiyuesuoCommonResult<SaaSUserAuthPageResult> doUserAuthPage(SaaSUserAuthPageRequest request)
+    protected abstract QiyuesuoCommonResult<SaaSUserAuthPageResult> doSaasUserAuthPage(SaaSUserAuthPageRequest request)
             throws Throwable;
 
 
-    protected abstract QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request)
+    protected abstract QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doSaasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request)
             throws Throwable;
 }

@@ -7,29 +7,35 @@
 			
 			<view v-for="(item, index) in list" :key="index">
 				<view v-if="tabCur === index" style="padding: 10px;">
-					<u-list style="height: 100%;">
-						<u-list-item v-for="(item, tabIndex) in indexList[index]" :key="tabIndex">
-							<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
-								<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
-									<u-col span="8">
-										<view class="title">{{ item.tradeTypeName }}</view>
-										<view class="note">{{ item.createTime }}</view>
-									</u-col>
-									<u-col span="4">
-										<view class="title" style="text-align: right;">
-											<text v-if="item.profitLossTypeName == '收入'">+</text>
-											<text v-if="item.profitLossTypeName == '支出'">-</text>
-											{{ $amount.getComdify(item.payAmount || 0) }} >
-										</view>
-									</u-col>
-								</u-row>
-							</view>
-						</u-list-item>
-					</u-list>
+					<view v-if="indexList[index].length != 0">
+						<u-list style="height: 100%;">
+							<u-list-item v-for="(item, tabIndex) in indexList[index]" :key="tabIndex">
+								<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
+									<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
+										<u-col span="8">
+											<view class="title">{{ item.tradeTypeName }}</view>
+											<view class="note">{{ item.createTime }}</view>
+										</u-col>
+										<u-col span="4">
+											<view class="title" style="text-align: right;">
+												<text v-if="item.profitLossTypeName == '收入'">+</text>
+												<text v-if="item.profitLossTypeName == '支出'">-</text>
+												{{ $amount.getComdify(item.payAmount || 0) }} >
+											</view>
+										</u-col>
+									</u-row>
+								</view>
+							</u-list-item>
+						</u-list>
+						
+						<u-loadmore :status="status" loadingText="努力加载中..." />
+					</view>
+					<view v-else  class="empty-page">
+						<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
+						<text class="empty-text">暂无数据</text>
+					</view>
 				</view>
 			</view>
-			
-			<u-loadmore :status="status" loadingText="努力加载中..." />
 		</u-sticky>
 	</view>
 </template>
@@ -196,7 +202,7 @@
 			handleClick(val, data) {
 				if (val == '保证金提现中') {
 					// 保证金提现中
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金提现') {
 					// 保证金提现明细
 					this.$tab.navigateTo('/subPages/home/account/bond/detailed?data='+encodeURIComponent(JSON.stringify(data)));
@@ -228,6 +234,19 @@
 	.whole {
 		border-top: 1px solid #f5f5f5;
 		height: 100vh;
+		position: relative;
+		
+		.empty-page {
+			width: 100%;
+			position: absolute;
+			left: 50%;
+			transform: translate(-50%, 50%);
+			text-align: center;
+		
+			.empty-img {
+				width: 30%;
+			}
+		}
 	}
 	
 	/deep/ .u-tabs__wrapper__nav__item  {
