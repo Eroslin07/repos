@@ -9,11 +9,11 @@
     > -->
     <el-container>
       <!-- <el-header class="header">山西万国市场商户张三账号申请待办</el-header> -->
-      <el-header class="header">{{
+      <!-- <el-header class="header">{{
         (baseInfoData.data.variables.marketName || '') +
         (baseInfoData.data.variables.merchantName || '') +
         '账号申请流程'
-      }}</el-header>
+      }}</el-header> -->
       <el-main>
         <div style="overflow: hidden; margin-bottom: 10px">
           <div style="float: left; font-size: 16px">单号：{{ baseInfoData.data.serialNo }}</div>
@@ -23,44 +23,44 @@
             <el-button v-if="type == 'need'" @click="terminationBtn">终止</el-button> -->
           </div>
         </div>
-        <el-card class="content-box">
-          <div>商户信息</div>
-          <el-row :gutter="20">
-            <el-col :span="6">手机号： {{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
-            <el-col :span="6">姓名： {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
-            <el-col :span="6">身份证号： {{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
-            <el-col :span="6"
-              >市场所在地： {{ mainValue.formDataJson.marketLocationValue || '暂无数据' }}</el-col
-            >
-          </el-row>
-          <div>对公银行账号：{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
-          <div>
-            <div>身份证图片</div>
-            <el-image
-              v-for="(img, index) in mainValue.formDataJson.idCardUrl"
-              :key="img.id"
-              style="width: 200px; height: 100px; margin-right: 10px"
-              :src="img.url"
-              :zoom-rate="1.2"
-              :preview-src-list="idcardUrlArr"
-              fit="cover"
-              :initial-index="index"
-            />
-          </div>
-          <div>
-            <div>营业执照图片</div>
-            <el-image
-              v-for="item in mainValue.formDataJson.businessLicense"
-              :key="item.id"
-              style="width: 200px; height: 100px"
-              :src="item.url"
-              :zoom-rate="1.2"
-              :preview-src-list="busUrlArr"
-              fit="cover"
-              :initial-index="0"
-            />
-          </div>
-        </el-card>
+        <!-- <el-card class="content-box"> -->
+        <div>商户信息</div>
+        <el-row :gutter="20">
+          <el-col :span="6">手机号： {{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
+          <el-col :span="6">姓名： {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
+          <el-col :span="6">身份证号： {{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
+          <el-col :span="6"
+            >市场所在地： {{ mainValue.formDataJson.marketLocationValue || '暂无数据' }}</el-col
+          >
+        </el-row>
+        <div>对公银行账号：{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
+        <div>
+          <div>身份证图片</div>
+          <el-image
+            v-for="(img, index) in mainValue.formDataJson.idCardUrl"
+            :key="img.id"
+            style="width: 200px; height: 100px; margin-right: 10px"
+            :src="img.url"
+            :zoom-rate="1.2"
+            :preview-src-list="idcardUrlArr"
+            fit="cover"
+            :initial-index="index"
+          />
+        </div>
+        <div>
+          <div>营业执照图片</div>
+          <el-image
+            v-for="item in mainValue.formDataJson.businessLicense"
+            :key="item.id"
+            style="width: 200px; height: 100px"
+            :src="item.url"
+            :zoom-rate="1.2"
+            :preview-src-list="busUrlArr"
+            fit="cover"
+            :initial-index="0"
+          />
+        </div>
+        <!-- </el-card> -->
       </el-main>
     </el-container>
     <!-- </XModal> -->
