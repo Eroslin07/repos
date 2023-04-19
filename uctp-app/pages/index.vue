@@ -63,7 +63,7 @@
 						<u-col span="4" v-for="child in item.child" :key="child.status"
 							@click="handleTabItem(item,child)">
 							<view class="align-center">
-								<text style="padding-right:3px;">{{child.label}}</text>
+								<text>{{child.label}}</text>
 								<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
 							</view>
 							<view class="align-center" style="padding-top:3px">
@@ -133,68 +133,16 @@
 		},
 		onLoad: function() {
 			this.getAcount();
-			this.getnavigateBarHeight();
 			/* #ifdef MP-WEIXIN */
-			// this.getnavigateBarHeight();
+			this.getnavigateBarHeight();
 			/* #endif */
 		},
 
 		mounted() {
 			// this.getList(this.formData);
-
 		},
 
-		// onPullDownRefresh() {
-		// 	if (this.timer != null) {
-		// 		clearTimeout(this.timer)
-		// 	}
-		// 	if (this.tabList.length == this.total) {
-		// 		this.status = 'nomore';
-		// 		return
-		// 	}
-		// 	this.status = 'loading';
-		// 	this.timer = setTimeout(() => {
-		// 		this.formData.pageNo += 1
-		// 		this.getMore(this.formData)
-		// 	}, 1000)
-		// },
-		// filters:{
-		// 	filterMIle(val){
-		// 		console.log(val,'val')
-		// 		if(val>10000){
-		// 			return parseFloat(val/10000).toFixed(2)
-		// 		}else{
-		// 			return val.toFixed(2)
-		// 		}
-		// 	}
-		// },
 		methods: {
-			// 获取list数据
-			// getList(params) {
-			// 	getHomePageList(params).then(res => {
-			// 		this.tabList = res.data.list
-			// 		this.total = res.data.total;
-			// 		if (this.total > 10) {
-			// 			this.status = 'loadmore'
-			// 		} else {
-			// 			this.status = 'nomore'
-			// 		}
-			// 	}).catch((error) => {
-			// 		this.status = 'nomore'
-			// 	})
-			// },
-			// getMore(params) {
-			// 	getHomePageList(params).then(res => {
-			// 		this.tabList = [...this.tabList, ...res.data.list];
-			// 		this.total = res.data.total;
-			// 		if (this.total > this.tabList.length) {
-			// 			this.status = 'loadmore'
-			// 		} else {
-			// 			this.status = 'nomore'
-			// 		}
-			// 	})
-			// },
-
 			//获取统计数据
 			getAcount() {
 				getHomeCount().then(res => {
@@ -284,7 +232,7 @@
 				let menuButtonObject = uni.getMenuButtonBoundingClientRect();
 				uni.getSystemInfo({
 					success: res => {
-						this.navigateBarHeight=res.statusBarHeight;
+						this.navigateBarHeight = res.statusBarHeight;
 						// let navHeight = menuButtonObject.height + (menuButtonObject.top - res
 						// 	.statusBarHeight) * 2; //导航栏高度=菜单按钮高度+（菜单按钮与顶部距离-状态栏高度）*2
 						// this.navigateBarHeight = navHeight + 4;
@@ -409,7 +357,7 @@
 			}
 
 			.cars-status {
-				box-sizing: border-box;
+				// box-sizing: border-box;
 				width: 100%;
 				height: 132rpx;
 				// border: 1px solid #088FFE;
@@ -428,7 +376,7 @@
 					border-bottom-left-radius: 12rpx;
 					overflow: hidden;
 					text-align: center;
-					font-size: 24rpx;
+					font-size: 20rpx;
 					// background: url('/static/images/bc.jpg') no-repeat;
 					// background-size: 100% 100%;
 					// background-color: #2A93EC;
@@ -442,25 +390,25 @@
 						width: 100rpx;
 						height: 100rpx;
 						position: absolute;
-						bottom:-25%;
-						right:-15%;
+						bottom: -25%;
+						right: -15%;
 					}
 
 					.firstItem {
 						width: 140rpx;
 						height: 140rpx;
-						right:-45%;
+						right: -45%;
 					}
 
 					.fourItem {
 						width: 144rpx;
 						height: 144rpx;
 						bottom: -30%;
-						right:-30%;
+						right: -30%;
 					}
 
 					.btmposit {
-						bottom:-25%;
+						bottom: -25%;
 					}
 				}
 
