@@ -55,9 +55,9 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone(map.get("phone"));
         infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
         infoDO.setStatus("0");
-        /*if (map.get("url")!=null) {
+        if (type.equals("0")&&map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
-        }*/
+        }
         infoDO.setPushStatus("0");
         infoDO.setType(type);
         String result="写入数据失败";
@@ -88,7 +88,7 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone(map.get("phone"));
         infoDO.setBusinessId(map.get("businessId"));
         infoDO.setStatus("0");
-        if (map.get("url")!=null) {
+        if (map.get("type").equals("0")&&map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
         }
         //默认状态为未推送
