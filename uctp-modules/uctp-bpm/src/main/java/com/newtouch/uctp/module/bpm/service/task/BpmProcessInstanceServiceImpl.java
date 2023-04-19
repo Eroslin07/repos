@@ -241,12 +241,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         updateBpmFormMainDO.setProcInstId(procInstId);
         updateBpmFormMainDO.setDoneTime(updateBpmFormMainDO.getSubmitTime());
         bpmFormMainMapper.updateById(updateBpmFormMainDO);
-        List<String> procInsts = new ArrayList<>();
+        /*List<String> procInsts = new ArrayList<>();
         procInsts.add(procInstId);
         List<Task> taskList = taskService.getTasksByProcessInstanceIds(procInsts);
         if (!CollectionUtils.isEmpty(taskList)) {
             bpmEngTaskService.complete(taskList.get(0).getId());
-        }
+        }*/
 
         return String.valueOf(businessKey);
     }
@@ -401,7 +401,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         bpmFormMainMapper.updateById(bpmFormMainDO);
 
         // 发送流程被通过的消息
-        messageService.sendMessageWhenProcessInstanceApprove(BpmProcessInstanceConvert.INSTANCE.convert2ApprovedReq(instance));
+        //messageService.sendMessageWhenProcessInstanceApprove(BpmProcessInstanceConvert.INSTANCE.convert2ApprovedReq(instance));
 
         // 发送流程实例的状态事件
         processInstanceResultEventPublisher.sendProcessInstanceResultEvent(

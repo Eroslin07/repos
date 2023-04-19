@@ -10,7 +10,7 @@
 		<!-- 解决窗体沉浸，内容被导航栏遮盖问题 -->
 		<view :style="{height: `${navigateBarHeight}px`}"></view>
 		<!-- 轮播 -->
-		<view class="" style="height:130px;border-radius:4px;">
+		<view class="swiper-box" id="swiperBox">
 			<u-swiper indicator indicatorMode="dot" :list="swiperList"></u-swiper>
 		</view>
 		<!-- 收车/卖车 -->
@@ -41,7 +41,7 @@
 		<!-- 交易状态 -->
 		<view class="deal-dynamic">
 			<h3 class="align-center">
-				<image style="width:60px;height:24px;" src="/static/images/index/trace.png" mode="widthFix"></image>
+				<image class="img-size" src="/static/images/index/trace.png" mode="widthFix"></image>
 			</h3>
 			<view v-for="item in gatherData" :key="item.status"
 				:class="{'cars-status':true,status1:item.status==1,status2:item.status==2,status3:item.status==3,status4:item.status==4}">
@@ -54,7 +54,7 @@
 						{{item.num || 0 }} 辆
 					</view>
 					<image
-						:class="{'bcImgs':true,'fourItem':item.status==4,'btmposit':(item.status==2||item.status==3)}"
+						:class="{'bcImgs':true,'firstItem':item.status==1,'fourItem':item.status==4,'btmposit':(item.status==2||item.status==3)}"
 						:src="leftImgSrc(item)" mode="">
 					</image>
 				</view>
@@ -133,8 +133,9 @@
 		},
 		onLoad: function() {
 			this.getAcount();
-			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
+			/* #ifdef MP-WEIXIN */
+			// this.getnavigateBarHeight();
 			/* #endif */
 		},
 
@@ -201,8 +202,23 @@
 				}).catch((error) => {
 					for (let i = 0; i < 4; i++) {
 						this.gatherData.push({
-							salesStatus: i,
-							num: 0
+							// salesStatus: i,
+							status: i + 1,
+							num: 0,
+							label: '收车中',
+							child: [{
+								status: 11,
+								num: 1,
+								label: '草稿'
+							}, {
+								status: 11,
+								num: 1,
+								label: '草稿'
+							}, {
+								status: 11,
+								num: 1,
+								label: '草稿'
+							}]
 						})
 					}
 				})
@@ -268,10 +284,10 @@
 				let menuButtonObject = uni.getMenuButtonBoundingClientRect();
 				uni.getSystemInfo({
 					success: res => {
-						let navHeight = menuButtonObject.height + (menuButtonObject.top - res
-							.statusBarHeight) * 2; //导航栏高度=菜单按钮高度+（菜单按钮与顶部距离-状态栏高度）*2
-						this.navigateBarHeight = navHeight + 4;
-						console.log(navHeight, 'navHeight')
+						this.navigateBarHeight=res.statusBarHeight;
+						// let navHeight = menuButtonObject.height + (menuButtonObject.top - res
+						// 	.statusBarHeight) * 2; //导航栏高度=菜单按钮高度+（菜单按钮与顶部距离-状态栏高度）*2
+						// this.navigateBarHeight = navHeight + 4;
 					},
 					fail(err) {
 						console.log(err);
@@ -286,16 +302,34 @@
 	.content {
 		width: 100%;
 		height: calc(100vh - 44px);
-		padding: 0 15px;
+		padding: 0 28rpx;
 		// height: 88vh;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		background-color: #f4f6f8;
 		margin-top: 44px;
 
+		// 轮播
+		#swiperBox {
+			height: 300rpx;
+			border-radius: 12rpx;
+
+			/deep/ .u-swiper.data-v-6b019429 {
+				height: 300rpx !important;
+			}
+
+			/deep/ .u-swiper__wrapper.data-v-6b019429 {
+				height: 300rpx !important;
+			}
+
+			/deep/ .u-swiper__wrapper__item__wrapper__image.data-v-6b019429 {
+				height: 300rpx !important;
+			}
+		}
+
 		.menu-box {
-			height: 90px;
-			margin-top: 15px;
+			height: 190rpx;
+			margin-top: 22rpx;
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
@@ -307,10 +341,11 @@
 				position: relative;
 				flex: 1;
 				flex-shrink: 0;
-				height: 90px;
-				margin-right: 10px;
-				padding: 15px;
-				border-radius: 5px;
+				height: 190rpx;
+				margin-right: 36rpx;
+				padding-top: 36rpx;
+				padding-left: 36rpx;
+				border-radius: 12rpx;
 				// background-color: #088FFE;
 				background-image: url('/static/images/index/collBc.png');
 				background-repeat: no-repeat;
@@ -321,17 +356,23 @@
 					flex-direction: row;
 					justify-content: flex-start;
 					align-items: center;
+					font-size: 32rpx;
+					font-weight: 500;
+					color: #FFFFFF;
+					line-height: 44rpx;
 				}
 
 				.item-desp {
-					font-size: 13px;
-					margin-top: 8px;
-					color: #96C6FE;
+					font-size: 24rpx;
+					font-family: PingFangSC-Medium, PingFang SC;
+					font-weight: 500;
+					color: #FFFFFF;
+					line-height: 34rpx;
 				}
 
 				.img {
-					width: 75px;
-					height: 75px;
+					width: 152rpx;
+					height: 152rpx;
 					position: absolute;
 					bottom: -12px;
 					right: 5px;
@@ -344,31 +385,36 @@
 				background-image: url('/static/images/index/sellBc.png');
 
 				.sell-desp {
-					color: #FFD7B1;
+					color: #FFFFFF;
 				}
 			}
 		}
 
 		.deal-dynamic {
 			width: 100%;
-			height: calc(100vh - 340px);
+			height: 750rpx;
 			overflow-x: hidden;
 			overflow-y: scroll;
-			padding: 15px;
-			margin-top: 10px;
+			padding: 22rpx 26rpx 58rpx;
+			margin-top: 24rpx;
 			// background-color: #f6f6f6;
 			// background: url('/static/images/bc.jpg') no-repeat;
 			// background-size: 100% 100%;
-			background-image: linear-gradient(to bottom, #FFF9EB 10%, #fff 90%);
+			background-image: linear-gradient(to bottom, #FFF9EB 72rpx, #fff 90%);
+
 			// background-image: linear-gradient(to right, red 30%, green);
+			.img-size {
+				width: 128rpx;
+				height: 44rpx;
+			}
 
 			.cars-status {
 				box-sizing: border-box;
 				width: 100%;
-				height: 70px;
+				height: 132rpx;
 				// border: 1px solid #088FFE;
-				border-radius: 5px;
-				margin-top: 10px;
+				border-radius: 12rpx;
+				margin-top: 22rpx;
 				display: flex;
 				flex-direction: row;
 				align-items: center;
@@ -376,13 +422,13 @@
 
 				.left-title {
 					position: relative;
-					width: 68px;
-					height: 68px;
-					border-top-left-radius: 4px;
-					border-bottom-left-radius: 4px;
+					width: 140rpx;
+					height: 132rpx;
+					border-top-left-radius: 12rpx;
+					border-bottom-left-radius: 12rpx;
 					overflow: hidden;
 					text-align: center;
-					font-size: 12px;
+					font-size: 24rpx;
 					// background: url('/static/images/bc.jpg') no-repeat;
 					// background-size: 100% 100%;
 					// background-color: #2A93EC;
@@ -393,28 +439,36 @@
 					justify-content: center;
 
 					.bcImgs {
-						width: 55px;
-						height: 55px;
+						width: 100rpx;
+						height: 100rpx;
 						position: absolute;
-						bottom: -15px;
-						left: 25px;
+						bottom:-25%;
+						right:-15%;
+					}
+
+					.firstItem {
+						width: 140rpx;
+						height: 140rpx;
+						right:-45%;
 					}
 
 					.fourItem {
-						width: 80px;
-						height: 80px;
-						bottom: -20px;
+						width: 144rpx;
+						height: 144rpx;
+						bottom: -30%;
+						right:-30%;
 					}
 
 					.btmposit {
-						bottom: -20px;
+						bottom:-25%;
 					}
 				}
 
 				.right-content {
 					flex: 1;
-					color: #656C6E;
-					font-size: 12px;
+					color: #333333;
+					font-size: 28rpx;
+					line-height: 40rpx;
 				}
 
 			}

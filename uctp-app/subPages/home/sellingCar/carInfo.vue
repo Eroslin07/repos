@@ -78,10 +78,10 @@
 							placeholder="请选择登记日期"
 							border="none"
 						></u--input>
-						<u-icon
+						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
-						></u-icon>
+						></u-icon> -->
 					</u-form-item>
 					<u-form-item label="车牌号" prop="plateNum" borderBottom>
 						<u--input v-model="carForm.plateNum" readonly border="none" placeholder="请输入车牌号"></u--input>
@@ -97,13 +97,13 @@
 					</u-form-item>
 					<u-form-item label="品牌/车型" prop="model" borderBottom>
 						<u--input v-model="carForm.model" readonly border="none" placeholder="请输入品牌/车型"></u--input>
-						<u-icon
+						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
-						></u-icon>
+						></u-icon> -->
 					</u-form-item>
-					<u-form-item label="登记证号" prop="licensePlateNum" borderBottom>
-						<u--input v-model="carForm.licensePlateNum" readonly border="none" placeholder="请输入登记证号"></u--input>
+					<u-form-item label="登记证号" prop="certificateNo" borderBottom>
+						<u--input v-model="carForm.certificateNo" readonly border="none" placeholder="请输入登记证号"></u--input>
 					</u-form-item>
 					<u-form-item label="颜色" prop="colour" borderBottom>
 						<u--input v-model="carForm.colour" readonly border="none" placeholder="请输入颜色"></u--input>
@@ -212,7 +212,7 @@
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;" @click="handleDetail">预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。明细请查看 ></view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
@@ -481,6 +481,8 @@
 	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import { getIdCard, deleteImage } from '@/api/register'
 	import { getSellCarInfo, setSellCarInfo, getAmount } from '@/api/home/sellingCar.js'
+	import { getFairValue } from '@/api/home/bycar.js'
+	import { setCreate } from '@/api/home'
 	export default {
 		data() {
 			return {
@@ -571,12 +573,12 @@
 					check: '',
 				},
 				feesFormRules: {
-					carCondition: {
-						type: 'string',
-						required: true,
-						message: '请选择车辆情况',
-						trigger: ['blur', 'change']
-					},
+					// carCondition: {
+					// 	type: 'string',
+					// 	required: true,
+					// 	message: '请选择车辆情况',
+					// 	trigger: ['blur', 'change']
+					// },
 					rent: {
 						type: 'string',
 						required: true,
@@ -601,6 +603,10 @@
 						message: '请选择第三方检测费用',
 						trigger: ['blur', 'change']
 					}
+				},
+				fairValue: {
+					value1: '',
+					value2: ''
 				},
 				// 卖车方式
 				sexs: [{
@@ -694,11 +700,8 @@
 						trigger: ['change', 'blur'],
 					}]
 				},
-				fairValue: {
-					value1: '13.19',
-					value2: '15.20'
-				},
 				date: null,
+				modelId: null
 			}
 		},
 		onBackPress(options) {
@@ -719,15 +722,17 @@
 				this.carForm = res.data;
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
-				for (let key in res.data.feesAndCommitments) {
-					if (res.data.feesAndCommitments[key] == true) {
+				this.modelId=res.data.modelId;
+				for (let key in res.data.proceduresAndSpareParts) {
+					if (res.data.proceduresAndSpareParts[key] == true) {
 						this.carForm.checkboxValue.push(key);
 					}
 				}
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
-				this.$tab.navigateTo('/subPages/home/sellingCar/index');
+				this.showOverlay = false;
+				// this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
 		},
 		mounted() {
@@ -980,7 +985,7 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.sellerForm.sellAmount,
+					sellAmount:this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: this.fileList4.map((item) => { return item.id }),
@@ -988,9 +993,9 @@
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.carForm.sellType,
-					vehicleCondition,
+					vehicleProblem: vehicleCondition,
 					feesAndCommitments,
-					proceduresAndSpareParts
+					proceduresAndSpareSell: proceduresAndSpareParts
 				}
 				setSellCarInfo(data).then((res) => {
 					this.showOverlay = false;
@@ -999,9 +1004,43 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
-						this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
+						console.log((data.sellAmount/10000))
+						if (this.fairValue.value1 <= (data.sellAmount/10000) && data.sellAmount <= this.fairValue.value2) {
+							console.log(1111)
+							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
+						} else {
+							console.log(2222)
+							// 发起公允值审批流程
+							return
+							let procDefKey = "MGYZ";
+							let variables = {
+								marketName: this.$store.state.user.tenantName,
+								merchantName: this.$store.state.user.deptName,
+								startUserId: this.$store.state.user.id,
+								formDataJson: {
+									formMain: {
+										merchantId: res.carInfoDetails.carId,
+										thirdId: res.carInfoDetails.carId,
+										// formDataJson: {
+										// 	carInfo: res.data.carInfo,
+										// 	carInfoDetails: res.data.carInfoDetails
+										// },
+										formDataJson: res.data
+									}
+								}
+							}
+							let createData = { procDefKey, variables };
+							setCreate(createData).then((ress) => {
+								this.$modal.closeLoading()
+								this.$modal.msg("已提交审核");
+								this.$tab.reLaunch('/pages/index');
+							}).catch((error) => {
+								this.$modal.msgError("发起流程失败");
+							})
+						}
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
@@ -1009,10 +1048,45 @@
 					}
 				})
 			},
+			// 查询公允价值
+			getFairValue() {
+				let data = {
+					modelId: this.modelId,
+					plateNum: this.carForm.plateNum,
+					mileage: this.carForm.mileage,
+					firstRegistDate: this.carForm.firstRegistDate
+				}
+				getFairValue(data).then((res) => {
+					if (res.msg == 'success') {
+						this.fairValue.value1 = res.Recommended_low_sold_price;
+						this.fairValue.value2 = res.Recommended_high_sold_price;
+					} else {
+						this.$modal.msg(res.msg);
+					}
+				})
+			},
 			// 点击发起委托合同
 			handleEntrust() {
-				this.$refs.sellerForm.validate().then(res => {
-					this.handleDraft('entrust');
+				let _this = this;
+				_this.$refs.sellerForm.validate().then(res => {
+					let amount = _this.$amount.getDelcommafy(_this.sellerForm.sellAmount);
+					amount = amount / 10000;
+					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
+						_this.handleDraft('entrust');
+					} else {
+						uni.showModal({
+							title: '提示',
+							content: '您的卖车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+							confirmText: '是',
+							cancelText: '否',
+							confirmColor: '#fa6401',
+							success(ress) {
+								if (ress.confirm) {
+									_this.handleDraft('entrust');
+								}
+							}
+						})
+					}
 				})
 			},
 			// 点击卖家信息保存
@@ -1096,7 +1170,7 @@
 			position: fixed;
 			bottom: 0;
 			background-color: #fff;
-			padding-bottom: 10px;
+			padding-bottom: 20px;
 			
 			.button {
 				width: 80%;

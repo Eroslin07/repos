@@ -2,7 +2,9 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client.impl;
 
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import org.springframework.util.Assert;
@@ -40,7 +42,7 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
         Arrays.stream(QiyuesuoChannelEnum.values()).forEach(channel -> {
             // 创建一个空的 QiyuesuoChannelProperties 对象
             QiyuesuoChannelProperties properties = new QiyuesuoChannelProperties().setCode(channel.getCode())
-                    .setApiKey("default default").setApiSecret("default");
+                    .setAccessKey("default default").setAccessSecret("default");
             // 创建 契约锁 客户端
             AbstractQiyuesuoClient client = createQiyuesuoClient(properties);
             channelCodeClients.put(channel.getCode(), client);
@@ -52,7 +54,8 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
         Assert.notNull(channelEnum, String.format("渠道类型(%s) 为空", channelEnum));
         // 创建客户端
         switch (channelEnum) {
-            case QIYUESUO: return new DefaultQiyuesuoClient(properties);
+            case DEFAULT: return new DefaultQiyuesuoClient(properties);
+            case SAAS: return new SaasQiyuesuoClient(properties);
         }
         // 创建失败，错误日志 + 抛出异常
 //        log.error("[createQiyuesuoClient][配置({}) 找不到合适的客户端实现]", properties);
@@ -61,16 +64,28 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
 
     @Override
     public QiyuesuoClient getQiyuesuoClient(Long channelId) {
-        return null;
+        return channelIdClients.get(channelId);
+    }
+
+    @Override
+    public QiyuesuoSaasClient getQiyuesuoSaasClient(Long channelId) {
+        return channelIdClients.get(channelId);
     }
 
     @Override
     public QiyuesuoClient getQiyuesuoClient(String channelCode) {
-        return null;
+        return channelCodeClients.get(channelCode);
     }
 
     @Override
     public void createOrUpdateQiyuesuoClient(QiyuesuoChannelProperties properties) {
-
+        AbstractQiyuesuoClient client = channelIdClients.get(properties.getId());
+        if (client == null) {
+            client = this.createQiyuesuoClient(properties);
+            client.init();
+            channelIdClients.put(client.getId(), client);
+        } else {
+            client.refresh(properties);
+        }
     }
 }

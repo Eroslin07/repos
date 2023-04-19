@@ -22,6 +22,8 @@ public class AppHomeCarInfoRespVO extends AppCarInfoBaseVO {
     private String secondParty;
     @Schema(description = "里程数")
     private String mileage;
+    @Schema(description = "首次登记时间")
+    private String firstRegistDate;
     @Schema(description = "图片地址")
     private String url;
 

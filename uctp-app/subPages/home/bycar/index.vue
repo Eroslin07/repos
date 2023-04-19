@@ -288,7 +288,7 @@
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							text="保证金可用余额150000元" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
-						<view style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus != 0">公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
 						<u-radio-group
@@ -301,9 +301,9 @@
 							<u-radio shape="circle" label="定金+尾款" :name="1"></u-radio>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
+					<!-- <u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
 						<u--input v-model="sellerForm.transManageName" border="none" placeholder="请输入转入地车辆管理所名称"></u--input>
-					</u-form-item>
+					</u-form-item> -->
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
 						<view class="text">卖家信息</view>
@@ -459,11 +459,7 @@
 			</u-grid>
 		</view>
 		<!-- 遮罩层 -->
-		<u-overlay :show="showOverlay">
-			<view class="warp">
-				<u-loading-icon text="草稿保存中..." textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
-			</view>
-		</u-overlay>
+		<u-overlay :show="showOverlay"></u-overlay>
 	</view>
 </template>
 
@@ -791,6 +787,7 @@
 				modelId: null,
 				modelName: null,
 				date: null,
+				fairStatus: 0
 			}
 		},
 		onBackPress(options) {
@@ -893,8 +890,8 @@
 													natureOfOperat: result.data['1'].carInfoDetails.natureOfOperat,
 													carType: result.data['1'].carInfo.carType,
 													firstRegistDate: result.data['1'].carInfoDetails.firstRegistDate,
-													scrapDate: result.data['1'].carInfo.scrapDate,
-													annualInspectionDate: result.data['1'].carInfo.annualInspectionDate,
+													scrapDate: uni.$u.timeFormat(result.data['1'].carInfo.scrapDate, 'yyyy-mm-dd'),
+													annualInspectionDate: uni.$u.timeFormat(result.data['1'].carInfo.annualInspectionDate, 'yyyy-mm-dd'),
 													insuranceEndData: result.data['1'].carInfo.insuranceEndData,
 													licensePlateNum: result.data['1'].carInfo.plateNum,
 													certificateNo: result.data['1'].carInfoDetails.certificateNo,
@@ -942,10 +939,10 @@
 												}
 												// 卖家信息
 												_this.sellerForm = {
-													vehicleReceiptAmount: result.data['1'].carInfo.vehicleReceiptAmount,
-													payType: result.data['1'].carInfoDetails.payType ? result.data['1'].carInfoDetails.payType : 0,
+													vehicleReceiptAmount: _this.$amount.getComdify(result.data['1'].carInfo.vehicleReceiptAmount),
+													payType: result.data['1'].carInfoDetails.payType ? Number(result.data['1'].carInfoDetails.payType) : 0,
 													transManageName: result.data['1'].carInfoDetails.transManageName,
-													collection: result.data['1'].carInfoDetails.collection ? result.data['1'].carInfoDetails.collection : 0,
+													collection: result.data['1'].carInfoDetails.collection ? Number(result.data['1'].carInfoDetails.collection) : 0,
 													sellerIdCard: result.data['1'].carInfoDetails.sellerIdCard,
 													sellerIdCardUrl: result.data['1'].fileD,
 													sellerName: result.data['1'].carInfoDetails.sellerName,
@@ -959,9 +956,9 @@
 												}
 												result.data['1'].fileD.forEach((item, index) => {
 													if (index == 0) {
-														_this.fileList4 = item;
+														_this.fileList4 = [item];
 													} else if (index == 1) {
-														_this.fileList8 = item;
+														_this.fileList8 = [item];
 													}
 												})
 											} else if (result.data['2']) {
@@ -1218,7 +1215,9 @@
 					remarks: this.carForm.remarks,
 					proceduresAndSpareParts
 				}
+				this.$modal.loading("提交中，请耐心等待...")
 				setCarInfo(data).then((res) => {
+					this.$modal.closeLoading()
 					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
@@ -1276,7 +1275,7 @@
 				let _this = this;
 				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
 				amount = amount / 10000;
-				if (_this.fairValue.value1 <= amount <= _this.fairValue.value1) {
+				if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
 					_this.saveSellerInfo(val);
 				} else {
 					uni.showModal({
@@ -1294,7 +1293,7 @@
 				}
 			},
 			saveSellerInfo(val) {
-				// this.showOverlay = true;
+				this.showOverlay = true;
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.carId,
@@ -1315,25 +1314,25 @@
 				}
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
-					this.showOverlay = false;
 					if (val == 'entrust') {
 						// 保存卖家信息并确认发起
-						if (this.fairValue.value1 <= data.vehicleReceiptAmount <= this.fairValue.value1) {
+						let amount = data.vehicleReceiptAmount / 10000;
+						if (this.fairValue.value1 <= amount && amount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
+							this.showOverlay = false;
 							this.$tab.navigateTo('/subPages/home/bycar/agreement');
 						} else {
-							this.$modal.msg("公允值发起流程开发中...");
-							return
 							// 发起公允值审批流程
 							let procDefKey = "SGYZ";
+							res.data.fairValue = this.fairValue;
 							let variables = {
-								marketName: res.data.marketName,
-								merchantName: res.data.merchantName,
-								startUserId: res.data.startUserId,
+								marketName: this.$store.state.user.tenantName,
+								merchantName: this.$store.state.user.deptName,
+								startUserId: this.$store.state.user.id,
 								formDataJson: {
 									formMain: {
-										merchantId: res.data.thirdId,
-										thirdId: res.data.thirdId,
+										merchantId: res.data.carInfoDetails.carId,
+										thirdId: res.data.carInfoDetails.carId,
 										// formDataJson: {
 										// 	carInfo: res.data.carInfo,
 										// 	carInfoDetails: res.data.carInfoDetails
@@ -1345,18 +1344,24 @@
 							let createData = { procDefKey, variables };
 							setCreate(createData).then((ress) => {
 								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msg("已提交审核");
 								this.$tab.reLaunch('/pages/index');
 							}).catch((error) => {
+								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msgError("发起流程失败");
 							})
 						}
 					} else {
 						// 保存卖家草稿信息返回首页
 						this.$modal.closeLoading()
+						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
+				}).catch((error) => {
+					this.showOverlay = false;
 				})
 			},
 			// 收车删除

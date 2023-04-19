@@ -61,7 +61,7 @@ public class BpmProcessInstanceController {
     @GetMapping("/get")
     @Operation(summary = "获得指定流程实例", description = "在【流程详细】界面中，进行调用")
     @Parameter(name = "id", description = "流程实例的编号", required = true)
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    //@PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public CommonResult<BpmProcessInstanceRespVO> getProcessInstance(@RequestParam("id") String id) {
         return success(processInstanceService.getProcessInstanceVO(id));
     }

@@ -32,15 +32,20 @@ public class QiyuesuoChannelProperties {
      * 契约锁 key
      */
     @NotEmpty(message = "契约锁key")
-    private String apiKey;
+    private String accessKey;
     /**
      * 契约锁的密钥
      */
     @NotEmpty(message = "契约锁的密钥不能为空")
-    private String apiSecret;
+    private String accessSecret;
+    /**
+     * 契约锁saas的密钥
+     */
+    @NotEmpty(message = "契约锁的密钥不能为空")
+    private String secret;
     /**
      * 契约锁的地址，注意区分测试地址和正式地址
      */
     @NotEmpty(message = "契约锁的地址不能为空")
-    private String apiUrl;
+    private String serverUrl;
 }

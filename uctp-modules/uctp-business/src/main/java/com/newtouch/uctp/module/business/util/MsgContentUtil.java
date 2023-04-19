@@ -1,6 +1,8 @@
 package com.newtouch.uctp.module.business.util;
 
 
+import com.newtouch.uctp.module.business.enums.StationInfoEnum;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,98 +70,121 @@ public class MsgContentUtil {
                 //收车
                 case "11":
                     result = "您的收车价格"+map.get("vehicleReceiptAmount")+"元偏离了市场公允价值，经由市场方审核不通过，原因："+map.get("reason")+"。请及时关注。";
-                    title="公允价值退回";
+                    //title="公允价值退回";
+                    title= StationInfoEnum.RECEIVE_FAIR_FAIL.getDesc();
                     break;
                 case "12":
                     result = "您的收车价格"+map.get("vehicleReceiptAmount")+"元价格偏离了市场公允价值，经由市场方审核通过，请及时处理合同签章。";
-                    title="公允价值通过";
+                    //title="公允价值通过";
+                    title= StationInfoEnum.RECEIVE_FAIR_SUCCESS.getDesc();
                     break;
                 case "13":
                     result = "您的合同编号"+map.get("contractId")+"，收车价格"+map.get("vehicleReceiptAmount")+"元的收车委托合同市场方已签章完成。";
-                    title="收车委托完成";
+                    //title="收车委托完成";
+                    title= StationInfoEnum.RECEIVE_W_CONTRACT_SUCCESS.getDesc();
                     break;
                 case "14":
                     result = "您的合同编号"+map.get("contractId")+"，收车价格"+map.get("vehicleReceiptAmount")+"元的收车款已成功支付给卖家，请关注。";
-                    title="收车交易成功";
+                    //title="收车交易成功";
+                    title= StationInfoEnum.RECEIVE_CONTRACT_SUCCESS.getDesc();
                     break;
                 case "15":
                     result = "您的合同编号"+map.get("contractId")+"，收车价格"+map.get("vehicleReceiptAmount")+"元的收车合同，因："+map.get("reason")+"。错误导致支付失败。请及时介入处理。";
-                    title="收车交易异常-收款款支付失败";
+                    //title="收车交易异常-收款款支付失败";
+                    title= StationInfoEnum.RECEIVE_CONTRACT_FAIL.getDesc();
                     break;
                 //卖车
                 case "21":
                     result = "您的卖车价格"+map.get("sellAmount")+"元偏离了市场公允价值，经由市场方审核不通过，原因："+map.get("reason")+"。请及时关注。";
-                    title="公允价值退回";
+                    //title="公允价值退回";
+                    title= StationInfoEnum.SELL_FAIR_FAIL1.getDesc();
                     break;
                 case "22":
                     result = "您的合同编号"+map.get("contractId")+"，卖车价格"+map.get("sellAmount")+"元价格偏离了市场公允价值，经由市场方审核通过，请及时处理合同签章。";
-                    title="公允价值通过";
+                    //title="公允价值通过";
+                    title= StationInfoEnum.SELL_FAIR_SUCCESS.getDesc();
                     break;
                 case "23":
                     result = "您的合同编号"+map.get("contractId")+"，卖车价格"+map.get("sellAmount")+"元的卖车委托合同市场方已签章完成。";
-                    title="收车委托完成";
+                    //title="收车委托完成";
+                    title= StationInfoEnum.SELL_W_CONTRACT_SUCCESS.getDesc();
                     break;
                 case "24":
                     result = "您的合同编号"+map.get("contractId")+"，卖车价格"+map.get("sellAmount")+"元的卖车款已收到，请关注。";
-                    title="收车交易成功";
+                    //title="收车交易成功";
+                    title= StationInfoEnum.SELL_CONTRACT_SUCCESS.getDesc();
                     break;
                 case "25":
                     result = "您的合同编号"+map.get("contractId")+"，卖车价格"+map.get("sellAmount")+"元的卖车款已过10分钟尚未支付，请及时提醒买家付款。";
-                    title="收车交易异常-未及时支付提醒";
+                    //title="收车交易异常-未及时支付提醒";
+                    title= StationInfoEnum.SELL_CONTRACT_FAIL.getDesc();
                     break;
                  //我的账号-保证金：
                 case "31":
                     result = "您的保证金充值已成功，请查看。";
-                    title="保证金充值";
+                    //title="保证金充值";
+                    title= StationInfoEnum.BOND_RECHARGE.getDesc();
                     break;
                 case "32":
                     result = "您有一笔保证金实扣用于收车业务，请查看。";
-                    title="保证金实扣";
+                    //title="保证金实扣";
+                    title= StationInfoEnum.BOND_DEDUCT.getDesc();
                     break;
                 case "33":
                     result = "您有一笔保证金入账，来源于保证金回填，请查看。";
-                    title="保证金回填";
+                    //title="保证金回填";
+                    title= StationInfoEnum.BOND_BACK_FILL.getDesc();
                     break;
                 case "34":
                     result = "您的保证金提现已成功，请查看。";
-                    title="保证金提现";
+                    //title="保证金提现";
+                    title= StationInfoEnum.BOND_SUCCESS.getDesc();
                     break;
                 case "35":
                     result = "您有一笔保证金预扣用于收车业务，请查看。";
-                    title="保证金预扣";
+                    //title="保证金预扣";
+                    title= StationInfoEnum.BOND_WITHHOLD.getDesc();
                     break;
                 case "36":
                     result = "您有一笔保证金预扣释放源于收车业务终止，请查看。";
-                    title="保证金预扣释放";
+                    //title="保证金预扣释放";
+                    title= StationInfoEnum.BOND_RELEASE.getDesc();
                     break;
                 //我的账号-利润
                 case "41":
                     result = "您有一笔卖车利润划入，请查看。";
-                    title="卖车利润";
+                    //title="卖车利润";
+                    title= StationInfoEnum.PROFIT_SELL.getDesc();
                     break;
                 case "42":
                     result = "您的利润提现已申请，目前正在审批中，，请查看。";
-                    title="利润提现中";
+                    //title="利润提现中";
+                    title= StationInfoEnum.PROFIT_WITHDRAWING.getDesc();
                     break;
                 case "43":
                     result = "您的利润提现已成功，请查看。";
-                    title="利润提现";
+                    //title="利润提现";
+                    title= StationInfoEnum.PROFIT_WITHDRAWAL.getDesc();
                     break;
                 case "44":
                     result = "您的卖车金额不足需预扣减，请查看。";
-                    title="待回填保证金";
+                    //title="待回填保证金";
+                    title= StationInfoEnum.WAITING_BACK_FILL.getDesc();
                     break;
                 case "45":
                     result = "您有一笔税费扣减，请查看。";
-                    title="税费扣减";
+                    //title="税费扣减";
+                    title= StationInfoEnum.TAX_DEDUCTION.getDesc();
                     break;
                 case "46":
                     result = "您有一笔服务费扣减，请查看。";
-                    title="服务费扣减";
+                    //title="服务费扣减";
+                    title= StationInfoEnum.TAX_DEDUCTION.getDesc();
                     break;
                 case "47":
                     result = "您有一笔利润扣减用于保证金回填，请查看。";
-                    title="保证金回填";
+                    //title="保证金回填";
+                    title= StationInfoEnum.BACK_FILL.getDesc();
                     break;
                 default:
                     result = "无匹配模版";

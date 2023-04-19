@@ -4,9 +4,8 @@ import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
-import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
+import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
@@ -91,7 +90,7 @@ public class AppCarInfoController {
     }
     @GetMapping("/home/page")
     @Operation(summary = "获得APP首页分页")
-    public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid @RequestBody AppHomeCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid AppHomeCarInfoPageReqVO pageVO) {
         PageResult<AppHomeCarInfoRespVO> pageResult = carInfoService.getHomeCarInfoPage(pageVO);
         return success(pageResult);
 
@@ -106,8 +105,9 @@ public class AppCarInfoController {
 
     @GetMapping("/sell/page")
     @Operation(summary = "获得APP卖车分页")
-    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid @RequestBody AppSellCarInfoPageReqVO pageVO) {
+    public CommonResult<PageResult<AppSellCarInfoPageRespVO>> getSellCarInfoPage(@Valid AppSellCarInfoPageReqVO pageVO) {
         PageResult<AppSellCarInfoPageRespVO> pageResult = carInfoService.getSellCarInfoPage(pageVO);
+        System.out.println(pageResult);
         return success(pageResult);
     }
 
@@ -130,9 +130,9 @@ public class AppCarInfoController {
 
     @PostMapping("/save/sell")
     @Operation(summary = "保存APP卖车填写数据")
-    public CommonResult<Boolean> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
+    public CommonResult<AppBpmCarInfoRespVO> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
         carInfoService.saveSellCarInfo(reqVO);
-        return success(true);
+        return success(carInfoService.saveSellCarInfo(reqVO));
     }
 
     @GetMapping("/delete/sell/{id}")

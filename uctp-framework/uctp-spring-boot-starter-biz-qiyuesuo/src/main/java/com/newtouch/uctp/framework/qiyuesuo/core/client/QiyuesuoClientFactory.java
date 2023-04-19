@@ -11,15 +11,22 @@ import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelPropert
 public interface QiyuesuoClientFactory {
 
     /**
-     * 获得短信 Client
+     * 获得契约锁 Client
      *
      * @param channelId 渠道编号
      * @return 短信 Client
      */
     QiyuesuoClient getQiyuesuoClient(Long channelId);
+    /**
+     * 获得契约锁SAAS模式 Client
+     *
+     * @param channelId 渠道编号
+     * @return 短信 Client
+     */
+    QiyuesuoSaasClient getQiyuesuoSaasClient(Long channelId);
 
     /**
-     * 获得短信 Client
+     * 获得契约锁 Client
      *
      * @param channelCode 渠道编码
      * @return 短信 Client
@@ -27,7 +34,7 @@ public interface QiyuesuoClientFactory {
     QiyuesuoClient getQiyuesuoClient(String channelCode);
 
     /**
-     * 创建短信 Client
+     * 创建契约锁 Client
      *
      * @param properties 配置对象
      */

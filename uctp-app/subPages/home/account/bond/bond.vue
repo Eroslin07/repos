@@ -6,8 +6,8 @@
 			<view class="cost_image"></view>
 			<view class="statistics">
 				<view><u--text suffixIcon="eye" iconStyle="font-size: 18px" text="可用余额"></u--text></view>
-				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">100,500<text style="font-size: 12px;">元</text></view>
-				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" text="冻结余额 100,000 元"></u--text></view>
+				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ available }}<text style="font-size: 12px;">元</text></view>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 '+blockedBalances+' 元'"></u--text></view>
 				<u-grid col="2">
 					<u-grid-item>
 						<button class="button" @click="handleWithdrawal" style="background-color: #fff;">提现</button>
@@ -33,14 +33,18 @@
 			<view style="padding: 10px;">
 				<u-list style="height: 100%;">
 					<u-list-item v-for="(item, index) in indexList" :key="index">
-						<view @click="handleClick(item.title)" style="line-height: 30px;">
+						<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
 							<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
-								<u-col span="4">
-									<view class="title">{{ item.title }}</view>
-									<view class="note">2023-03-17</view>
+								<u-col span="8">
+									<view class="title">{{ item.tradeTypeName }}</view>
+									<view class="note">{{ item.createTime }}</view>
 								</u-col>
 								<u-col span="4">
-									<view class="title" style="text-align: right;">+100,000 ></view>
+									<view class="title" style="text-align: right;">
+										<text v-if="item.profitLossTypeName == '收入'">+</text>
+										<text v-if="item.profitLossTypeName == '支出'">-</text>
+										{{ $amount.getComdify(item.payAmount || 0) }} >
+									</view>
 								</u-col>
 							</u-row>
 						</view>
@@ -56,6 +60,10 @@
 	export default {
 		data() {
 			return {
+				// 可用余额
+				available: 0,
+				// 冻结余额
+				blockedBalances: 0,
 				indexList: [{
 					status: 1,
 					title: '保证金提现中'
@@ -87,7 +95,6 @@
 		mounted() {
 			this.$modal.loading("数据加载中，请耐心等待...");
 			this.getBondDetail();
-			this.getList();
 		},
 		methods: {
 			back() {
@@ -97,20 +104,10 @@
 			},
 			// 查询我的保证金
 			getBondDetail() {
-				getDetail({ accountNo: '' }).then((res) => {
-					
-				})
-			},
-			// 保证金交易明细查询
-			getList() {
-				let data = {
-					pageNo: 1,
-					pageSize: 10,
-					accountNo: '',
-					type: 1
-				}
-				getCarhList(data).then((res) => {
-					this.indexList = res.data.list;
+				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
+					this.available = this.$amount.getComdify(res.data.availableCash);
+					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash);
+					this.indexList = res.data.cashDetails;
 					this.$modal.closeLoading();
 				}).catch((error) => {
 					this.$modal.closeLoading();
@@ -118,7 +115,7 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal');
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available);
 			},
 			// 充值
 			handleRecharge() {
@@ -133,28 +130,31 @@
 				this.$tab.navigateTo('/subPages/home/account/bond/whole');
 			},
 			// 点击保证金明细列表
-			handleClick(val) {
+			handleClick(val, data) {
 				if (val == '保证金提现中') {
 					// 保证金提现中
 					this.$tab.navigateTo('/subPages/home/account/bond/progress');
 				} else if (val == '保证金提现') {
 					// 保证金提现明细
-					this.$tab.navigateTo('/subPages/home/account/bond/detailed');
+					this.$tab.navigateTo('/subPages/home/account/bond/detailed?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金回填') {
 					// 保证金回填
-					this.$tab.navigateTo('/subPages/home/account/bond/info');
+					this.$tab.navigateTo('/subPages/home/account/bond/info?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金预扣') {
 					// 保证金预扣
-					this.$tab.navigateTo('/subPages/home/account/bond/withhold');
+					this.$tab.navigateTo('/subPages/home/account/bond/withhold?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金充值') {
 					// 保证金充值
-					this.$tab.navigateTo('/subPages/home/account/bond/rechargeDetails');
+					this.$tab.navigateTo('/subPages/home/account/bond/rechargeDetails?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金预扣释放') {
 					// 保证金预扣释放
-					this.$tab.navigateTo('/subPages/home/account/bond/release');
+					this.$tab.navigateTo('/subPages/home/account/bond/release?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金实扣') {
 					// 保证金实扣
-					this.$tab.navigateTo('/subPages/home/account/bond/actualDeduction');
+					this.$tab.navigateTo('/subPages/home/account/bond/actualDeduction?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金回填(利润)') {
+					// 保证金回填(利润)
+					this.$tab.navigateTo('/subPages/home/account/bond/info?data='+encodeURIComponent(JSON.stringify(data)));
 				}
 			}
 		}

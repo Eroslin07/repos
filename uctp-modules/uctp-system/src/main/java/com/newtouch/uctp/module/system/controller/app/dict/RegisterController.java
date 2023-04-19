@@ -8,12 +8,15 @@ import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
 import com.newtouch.uctp.framework.security.config.SecurityProperties;
 import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
 import com.newtouch.uctp.module.system.convert.auth.AuthConvert;
+import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.RoleDO;
+import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
 import com.newtouch.uctp.module.system.enums.permission.MenuTypeEnum;
 import com.newtouch.uctp.module.system.service.auth.AdminAuthService;
+import com.newtouch.uctp.module.system.service.dept.DeptService;
 import com.newtouch.uctp.module.system.service.permission.PermissionService;
 import com.newtouch.uctp.module.system.service.permission.RoleService;
 import com.newtouch.uctp.module.system.service.tenant.TenantService;
@@ -55,6 +58,9 @@ public class RegisterController {
     private AdminUserService userService;
 
     @Resource
+    private DeptService deptService;
+
+    @Resource
     private PermissionService permissionService;
     @Resource
     private RoleService roleService;
@@ -85,6 +91,8 @@ public class RegisterController {
     public CommonResult<AuthPermissionInfoRespVO> getPermissionInfo() {
         // 获得用户信息
         AdminUserDO user = userService.getUser(getLoginUserId());
+        DeptDO dept = deptService.getDept(user.getDeptId());
+        TenantDO tenant = tenantService.getTenant(user.getTenantId());
         if (user == null) {
             return null;
         }
@@ -96,7 +104,7 @@ public class RegisterController {
                 SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType(), MenuTypeEnum.BUTTON.getType()),
                 singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
         // 拼接结果返回
-        return success(AuthConvert.INSTANCE.convert(user, roleList, menuList));
+        return success(AuthConvert.INSTANCE.convert(user,dept,tenant, roleList, menuList));
     }
 
     @PostMapping("/logout")

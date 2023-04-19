@@ -33,7 +33,7 @@
         update_time
     </sql>
 
-    <update id="rechargeCash">
+    <update id="updateCash">
         update uctp_merchant_account
         set
         <if test="type == 1">

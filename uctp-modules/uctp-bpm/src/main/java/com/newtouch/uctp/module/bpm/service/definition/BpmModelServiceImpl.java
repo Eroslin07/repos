@@ -2,18 +2,13 @@ package com.newtouch.uctp.module.bpm.service.definition;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
-import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
-import com.newtouch.uctp.framework.common.util.json.JsonUtils;
-import com.newtouch.uctp.framework.common.util.object.PageUtils;
-import com.newtouch.uctp.framework.common.util.validation.ValidationUtils;
-import com.newtouch.uctp.module.bpm.controller.admin.definition.vo.model.*;
-import com.newtouch.uctp.module.bpm.convert.definition.BpmModelConvert;
-import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmFormDO;
-import com.newtouch.uctp.module.bpm.enums.definition.BpmModelFormTypeEnum;
-import com.newtouch.uctp.module.bpm.service.definition.dto.BpmModelMetaInfoRespDTO;
-import com.newtouch.uctp.module.bpm.service.definition.dto.BpmProcessDefinitionCreateReqDTO;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.impl.db.SuspensionState;
@@ -28,9 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.*;
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
+import com.newtouch.uctp.framework.common.util.json.JsonUtils;
+import com.newtouch.uctp.framework.common.util.object.PageUtils;
+import com.newtouch.uctp.framework.common.util.validation.ValidationUtils;
+import com.newtouch.uctp.module.bpm.controller.admin.definition.vo.model.*;
+import com.newtouch.uctp.module.bpm.convert.definition.BpmModelConvert;
+import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmFormDO;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmModelFormTypeEnum;
+import com.newtouch.uctp.module.bpm.service.definition.dto.BpmModelMetaInfoRespDTO;
+import com.newtouch.uctp.module.bpm.service.definition.dto.BpmProcessDefinitionCreateReqDTO;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.convertMap;
@@ -169,12 +172,12 @@ public class BpmModelServiceImpl implements BpmModelService {
 
         // 1.5 校验模型是否发生修改。如果未修改，则不允许创建
         BpmProcessDefinitionCreateReqDTO definitionCreateReqDTO = BpmModelConvert.INSTANCE.convert2(model, form).setBpmnBytes(bpmnBytes);
-        if (processDefinitionService.isProcessDefinitionEquals(definitionCreateReqDTO)) { // 流程定义的信息相等
+        /*if (processDefinitionService.isProcessDefinitionEquals(definitionCreateReqDTO)) { // 流程定义的信息相等
             ProcessDefinition oldProcessDefinition = processDefinitionService.getProcessDefinitionByDeploymentId(model.getDeploymentId());
             if (oldProcessDefinition != null && taskAssignRuleService.isTaskAssignRulesEquals(model.getId(), oldProcessDefinition.getId())) {
                 throw exception(MODEL_DEPLOY_FAIL_TASK_INFO_EQUALS);
             }
-        }
+        }*/
 
         // 2.1 创建流程定义
         String definitionId = processDefinitionService.createProcessDefinition(definitionCreateReqDTO);

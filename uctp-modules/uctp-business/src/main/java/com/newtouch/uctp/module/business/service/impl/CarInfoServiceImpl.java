@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
-import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
+import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
@@ -199,7 +199,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         for(int a=0;a<reqVO.getIdCardUrl().size();a++){//卖家身份证图片
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(reqVO.getIdCardUrl().get(a)));
-            businessFileDO.setMainId(id);//车辆明细表id
+            businessFileDO.setMainId(infoDetails.getCarId());//车辆明细表id
             businessFileDO.setFileType("4");
             businessFileService.insert(businessFileDO);
         }
@@ -525,17 +525,20 @@ public class CarInfoServiceImpl implements CarInfoService {
             HomeCountVO homeCount = new HomeCountVO();
             homeCount.setStatus(key);
             homeCount.setLabel(CarStatus.toType(key).text());
-            homeCount.setNum(null);
+            Long num = 0L;
             List<Map<String, Object>> mapChildList = mapGroup.get(key);
-            mapChildList.forEach(child-> {
+            for (Map<String, Object> child : mapChildList) {
                 HomeCountVO homeCountChild = new HomeCountVO();
                 Integer statusTwo = (Integer) child.get("statusTwo");
                 homeCountChild.setStatus(statusTwo);
                 homeCountChild.setLabel(CarStatus.toType(statusTwo).text());
-                homeCountChild.setNum(Long.valueOf(child.get("num").toString()));
+                Long numSon = Long.valueOf(child.get("num").toString());
+                homeCountChild.setNum(numSon);
                 homeCountChild.setChild(null);
                 homeCount.getChild().add(homeCountChild);
-            });
+                num += numSon;
+            }
+            homeCount.setNum(num);
             retList.add(homeCount);
         });
         return retList;

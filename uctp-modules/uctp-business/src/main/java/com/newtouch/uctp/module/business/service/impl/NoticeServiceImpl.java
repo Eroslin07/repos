@@ -14,6 +14,7 @@ import com.newtouch.uctp.module.business.util.ListUtil;
 import com.newtouch.uctp.module.business.util.MsgContentUtil;
 import liquibase.pro.packaged.S;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
@@ -91,6 +92,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormResVO bpmFormMainVO) {
         Map<String ,String> map =new HashMap<>();
         map.put("type",type);
@@ -102,7 +104,6 @@ public class NoticeServiceImpl implements NoticeService {
         map.put("sellAmount",jsonObject.getString("sellAmount"));
         map.put("contractId",jsonObject.getString("contractId"));
         infoDO.setId(UUID.randomUUID().toString());
-        //infoDO.setTitle(noticeInfoDO.getTitle());
         //根据不同的内容类型选择不同的内容模版
         Map<String, String> contentMap = MsgContentUtil.getContent(map);
         infoDO.setTitle(contentMap.get("title"));
@@ -112,21 +113,39 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setTenantId(tenantId);
         infoDO.setPhone(jsonObject.get("phone").toString());
         infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
-       /* infoDO.setTenantId("1");
-        infoDO.setCreator(map.getCreator());
-        if (map.getUpdater()!=null) {
-            infoDO.setUpdater(map.getUpdater());
-        }else {
-            infoDO.setUpdateTime(null);
-        }*/
-
         infoDO.setStatus("0");
-        /*if ((String) jsonMap.get("url")!=null)
-            infoDO.setUrl(jsonMap.get("url"));*/
-        //默认状态为未推送
+        if (type.equals("0")) {
+            //收车公允值通过需要添加跳转路径
+            if (contentType.equals("12")){
+                infoDO.setUrl("/subPages/home/bycar/agreement");
+            }else if(contentType.equals("22")){
+            //卖车公允值通过需要添加跳转路径
+                infoDO.setUrl("/subPages/home/sellingCar/agreement");
+            }
+        }
         infoDO.setPushStatus("0");
         infoDO.setType(type);
+        if (type.equals("1")) {
 
+            map.put("businessId",bpmFormMainVO.getMerchantId().toString());
+            map.put("phone",jsonObject.get("phone").toString());
+            //收车公允审批不通过
+            if (contentType.equals("21")){
+                map.put("type","0");
+                map.put("contentType","11");
+                //公允审批不通过的跳转路径
+                map.put("url","/subPages/home/bycar/index");
+                //添加站内消息
+                saveNotice(map);
+            }else if (contentType.equals("31")){
+                map.put("type","0");
+                map.put("contentType","21");
+                //卖车公允审批不通过的跳转路径
+                map.put("url","/subPages/home/sellingCar/carInfo");
+                //添加站内消息
+                saveNotice(map);
+            }
+        }
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
         if (insert>0)
@@ -134,89 +153,13 @@ public class NoticeServiceImpl implements NoticeService {
         return result;
     }
 
-
-    public String saveTaskNotice1(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
-
-        Map<String ,String> map =new HashMap<>();
-        map.put("type",type);
-        map.put("contentType",contentType);
-        map.put("reason",reason);
-        NoticeInfoDO infoDO=new NoticeInfoDO();
-        JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
-        map.put("vehicleReceiptAmount",jsonObject.getString("vehicleReceiptAmount"));
-        map.put("sellAmount",jsonObject.getString("sellAmount"));
-        map.put("contractId",jsonObject.getString("contractId"));
-        infoDO.setId(UUID.randomUUID().toString());
-        //infoDO.setTitle(noticeInfoDO.getTitle());
-        //根据不同的内容类型选择不同的内容模版
-        Map<String, String> contentMap = MsgContentUtil.getContent(map);
-        infoDO.setTitle(contentMap.get("title"));
-        infoDO.setContent(contentMap.get("content"));
-        //取上下文租户号
-        Long tenantId = TenantContextHolder.getTenantId();
-        infoDO.setTenantId(tenantId);
-        infoDO.setPhone(jsonObject.get("phone").toString());
-        infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
-       /* infoDO.setTenantId("1");
-        infoDO.setCreator(map.getCreator());
-        if (map.getUpdater()!=null) {
-            infoDO.setUpdater(map.getUpdater());
-        }else {
-            infoDO.setUpdateTime(null);
-        }*/
-
-        infoDO.setStatus("0");
-        /*if ((String) jsonMap.get("url")!=null)
-            infoDO.setUrl(jsonMap.get("url"));*/
-        //默认状态为未推送
-        infoDO.setPushStatus("0");
-        infoDO.setType(type);
-
-        String result="写入数据失败";
-        int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
-        return result;
-    }
 
 
 
     @Override
     public String saveNotice(Map<String,String> map) {
-       /* Map<String,String> map=new HashMap<>();
-        map.put("type",noticeInfoDO.getType());
-        map.put("contentType",noticeInfoDO.getContentType());
-        map.put("reason",noticeInfoDO.getReason());
-        //map.put("price",noticeInfoDO.getPrice());
-        //map.put("contractNo",noticeInfoDO.getContractNo());
-       // map.put("contractName",noticeInfoDO.getContractName());
-        NoticeInfoDO infoDO=new NoticeInfoDO();
-
-
-        infoDO.setId(UUID.randomUUID().toString());
-        infoDO.setTitle(noticeInfoDO.getTitle());
-        //根据不同的内容类型选择不同的内容模版
-        infoDO.setContent(MsgContentUtil.getContent(noticeInfoDO));
-        //先写死
-        infoDO.setTenantId("1");
-        infoDO.setPhone(noticeInfoDO.getPhone());
-        infoDO.setBusinessId(noticeInfoDO.getBusinessId());
-        infoDO.setTenantId(noticeInfoDO.getTenantId());
-        infoDO.setCreator(noticeInfoDO.getCreator());
-        if (noticeInfoDO.getUpdater()!=null) {
-            infoDO.setUpdater(noticeInfoDO.getUpdater());
-        }else {
-            infoDO.setUpdateTime(null);
-        }
-
-        infoDO.setStatus("0");
-        if (noticeInfoDO.getUrl()!=null)
-            infoDO.setUrl(noticeInfoDO.getUrl());
-        //默认状态为未推送
-        infoDO.setPushStatus("0");*/
 
         NoticeInfoDO infoDO=new NoticeInfoDO();
-       // JSONObject jsonObject = JSON.parseObject(map.get("data"));
 
         infoDO.setId(UUID.randomUUID().toString());
 
@@ -230,8 +173,8 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone( map.get("phone"));
         infoDO.setBusinessId(map.get("businessId"));
         infoDO.setStatus("0");
-        /*if ((String) jsonMap.get("url")!=null)
-            infoDO.setUrl(jsonMap.get("url"));*/
+        if (map.get("url")!=null)
+            infoDO.setUrl(map.get("url"));
         //默认状态为未推送
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));

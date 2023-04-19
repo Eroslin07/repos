@@ -33,13 +33,13 @@
 				</uni-card> -->
 
 		<view class="" v-if="tabList.length>0">
-			<uni-card v-for="(tab, tabIndex) in 6 || tabList" :key="tabIndex" @click="handleCard(tab.id)">
+			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab.id)">
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
 							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测</view>
-							<!-- <image :src="tab.url" class="car-image"></image> -->
-							<image src="/static/images/car.jpg" class="car-image"></image>
+							<image :src="tab.url" class="car-image"></image>
+							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
 						</view>
 					</uni-col>
 					<uni-col :span="15">
@@ -108,7 +108,7 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 					salesStatus: null,
 					status: null,
 					statusThree: null,
-					businessId: 103,
+					businessId:this.$store.state.user.deptId,
 					"pageNo": 1,
 					"pageSize": 10
 				},
