@@ -101,7 +101,7 @@ public class MsgContentUtil {
                     title= StationInfoEnum.SELL_FAIR_FAIL1.getDesc();
                     break;
                 case "22":
-                    result = "您的合同编号"+map.get("contractId")+"，卖车价格"+map.get("sellAmount")+"元价格偏离了市场公允价值，经由市场方审核通过，请及时处理合同签章。";
+                    result = "您的卖车价格"+map.get("sellAmount")+"元价格偏离了市场公允价值，经由市场方审核通过，请及时处理合同签章。";
                     //title="公允价值通过";
                     title= StationInfoEnum.SELL_FAIR_SUCCESS.getDesc();
                     break;
