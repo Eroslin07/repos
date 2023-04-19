@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -12,8 +14,10 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateRe
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.service.CarInfoService;
@@ -51,6 +55,9 @@ public class QysConfigServiceImpl implements QysConfigService {
     private CarInfoService carInfoService;
     @Resource
     private QysCallbackMapper qysCallbackMapper;
+    @Resource
+    private DeptMapper deptMapper;
+
     @PostConstruct
     @Override
     public void initLocalCache() {
@@ -131,16 +138,28 @@ public class QysConfigServiceImpl implements QysConfigService {
         //解密消息
         String json = this.decryptMessage(content);
         JSONObject jsonObject = JSON.parseObject(json);
-        String companyId = jsonObject.getString("companyId");
         String companyName = jsonObject.getString("companyName");
-        String registerNo = jsonObject.getString("registerNo");
-        //查询企业
-
+        String status = jsonObject.getString("status");
         QysCallbackDO qysCallbackDO = new QysCallbackDO();
         qysCallbackDO.setContent(json);
+        //目前根据saas文档来的
         qysCallbackDO.setType(1);
-        qysCallbackDO.setMainId(null);
+        //查询企业,后面确认下工商注册号是不是我们的一样
+        List<DeptDO> deptDOS = deptMapper.selectByName(companyName);
+        DeptDO deptDO = null;
+        if (CollUtil.isNotEmpty(deptDOS)) {
+            log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{}",companyName);
+            deptDO = deptDOS.get(0);
+            if (ObjectUtil.isNotNull(deptDO)) {
+                qysCallbackDO.setMainId(deptDO.getId());
+                deptDO.setAuth(Integer.valueOf(status));
+            }
+        }
+
         qysCallbackMapper.insert(qysCallbackDO);
+        if (ObjectUtil.isNotNull(deptDO)) {
+            deptMapper.updateById(deptDO);
+        }
         return "success";
     }
 
