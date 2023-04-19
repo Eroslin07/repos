@@ -398,11 +398,7 @@
 			</u-grid>
 		</view>
 		<!-- 遮罩层 -->
-		<u-overlay :show="showOverlay">
-			<view class="warp">
-				<u-loading-icon :text="textOverlay" textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
-			</view>
-		</u-overlay>
+		<u-overlay :show="showOverlay"></u-overlay>
 
 		<!-- 清空弹框 -->
 		<u-modal :show="deleteModal" content='确认清空已填数据吗?' showCancelButton :closeOnClickOverlay="false"
@@ -439,7 +435,6 @@
 		data() {
 			return {
 				showOverlay: false,
-				textOverlay: '',
 				carId: null,
 				vehicleInfor: true,
 				sellerInfor: false,
@@ -730,13 +725,12 @@
 		},
 		onLoad(options) {
 			this.carId = options.id;
-			this.textOverlay = '车辆详情加载中...';
 			this.showOverlay = true;
+			this.$modal.loading("数据加载中，请耐心等待...")
 			getSellCarInfo({
 				id: options.id
 			}).then((res) => {
 				this.carForm = res.data;
-				console.log(res.data, 'res.data')
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
@@ -748,9 +742,11 @@
 					}
 				}
 				this.showOverlay = false;
+				this.$modal.closeLoading();
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.showOverlay = false;
+				this.$modal.closeLoading();
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
 		},
@@ -950,7 +946,6 @@
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
-				this.textOverlay = '保存中...';
 				this.showOverlay = true;
 				// 车辆手续及备件
 				let proceduresAndSpareParts = {};
@@ -1038,22 +1033,24 @@
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts
 				}
+				this.$modal.loading("提交中，请耐心等待...");
 				setSellCarInfo(data).then((res) => {
-					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.showOverlay = false;
+						this.$modal.closeLoading()
 						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
 						if ((this.fairValue.value1 * 1) <= (data.sellAmount / 10000) && (data.sellAmount /
 								10000) <= (this.fairValue.value2 * 1)) {
-							// console.log(1111)
+							this.$modal.closeLoading()
+							this.showOverlay = false;
 							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
 						} else {
-							// console.log(2222)
 							// 发起公允值审批流程
 							let procDefKey = "MGYZ";
 							res.data.fairValue = this.fairValue;
@@ -1079,14 +1076,19 @@
 							};
 							setCreate(createData).then((ress) => {
 								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msg("已提交审核");
 								this.$tab.reLaunch('/pages/index');
 							}).catch((error) => {
+								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msgError("发起流程失败");
 							})
 						}
 					} else {
 						// 保存车辆草稿信息返回首页
+						this.$modal.closeLoading()
+						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
