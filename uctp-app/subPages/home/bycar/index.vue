@@ -883,7 +883,7 @@
 												_this.carId = result.data['1'].carInfoDetails.carId;
 												_this.modelId = result.data['1'].carInfo.modelId;
 												_this.carForm = {
-													drivingLicenseUrl: result.data['1'].fileB,
+													drivingLicenseUrl: result.data['1'].fileB.length == 0 ? _this[`fileList${index}`] : result.data['1'].fileB,
 													certificateUrl: result.data['1'].fileC,
 													carUrl: result.data['1'].fileA,
 													vin: result.data['1'].carInfo.vin,
@@ -918,8 +918,14 @@
 														_this.fileList7 = [item];
 													}
 												})
-												_this.fileList1 = result.data['1'].fileB;
-												_this.fileList1.status = 'success';
+												if (result.data['1'].fileB.length != 0) {
+													_this.fileList1 = result.data['1'].fileB;
+													_this.fileList1.status = 'success';
+												} else {
+													if (i == res.tempFilePaths.length - 1) {
+														_this.upload(res, index);
+													}
+												}
 												_this.fileList3 = result.data['1'].fileC;
 												let obj = result.data['1'].carInfoDetails.proceduresAndSpareParts
 												for (let key in obj) {

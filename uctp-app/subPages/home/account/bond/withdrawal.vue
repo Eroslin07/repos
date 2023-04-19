@@ -62,7 +62,7 @@
 					revision: 3
 				}
 				getWithdraw(data).then((res) => {
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data)));
 				})
 			},
 			// 点击全部提现
