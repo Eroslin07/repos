@@ -1,10 +1,19 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 
-import com.alibaba.fastjson.JSON;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
-import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
 import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
@@ -12,16 +21,6 @@ import com.newtouch.uctp.module.business.dal.mysql.NoticeMapper;
 import com.newtouch.uctp.module.business.service.NoticeService;
 import com.newtouch.uctp.module.business.util.ListUtil;
 import com.newtouch.uctp.module.business.util.MsgContentUtil;
-import liquibase.pro.packaged.S;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 
 /**
@@ -133,8 +132,8 @@ public class NoticeServiceImpl implements NoticeService {
             if (contentType.equals("21")){
                 map.put("type","0");
                 map.put("contentType","11");
-                //公允审批不通过的跳转路径
                 map.put("url","/subPages/home/bycar/index");
+                //公允审批不通过的跳转路径
                 //添加站内消息
                 saveNotice(map);
             }else if (contentType.equals("31")){
@@ -148,8 +147,9 @@ public class NoticeServiceImpl implements NoticeService {
         }
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
+        if (insert>0) {
+            result = "写入数据成功";
+        }
         return result;
     }
 
@@ -173,16 +173,18 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone( map.get("phone"));
         infoDO.setBusinessId(map.get("businessId"));
         infoDO.setStatus("0");
-        if (map.get("url")!=null)
+        if (map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
+        }
         //默认状态为未推送
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
 
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
+        if (insert>0) {
+            result = "写入数据成功";
+        }
         return result;
     }
 

@@ -7,18 +7,15 @@ import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDetailsDO;
-import com.newtouch.uctp.module.bpm.dal.dataobject.car.ProceduresAndSpareParts;
 import com.newtouch.uctp.module.bpm.dal.dataobject.notice.NoticeInfoDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.notice.NoticeMapper;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.util.MsgContentUtil;
-import liquibase.pro.packaged.S;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +40,9 @@ public class NoticeServiceImpl implements NoticeService {
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map
         Map<String ,String> map =getContentMaps(type,contentType,reason,bpmFormMainVO);
+        map.put("type",type);
+        map.put("contentType",contentType);
+        map.put("reason",reason);
         NoticeInfoDO infoDO=new NoticeInfoDO();
         infoDO.setId(UUID.randomUUID().toString());
         //根据不同的内容类型选择不同的内容模版
@@ -55,14 +55,16 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone(map.get("phone"));
         infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
         infoDO.setStatus("0");
-        if (map.get("url")!=null)
+        /*if (map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
+        }*/
         infoDO.setPushStatus("0");
         infoDO.setType(type);
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
+        if (insert>0) {
+            result = "写入数据成功";
+        }
         return result;
     }
 
@@ -86,16 +88,18 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone(map.get("phone"));
         infoDO.setBusinessId(map.get("businessId"));
         infoDO.setStatus("0");
-        if (map.get("url")!=null)
+        if (map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
+        }
         //默认状态为未推送
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
 
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
+        if (insert>0) {
+            result = "写入数据成功";
+        }
         return result;
     }
 
@@ -119,21 +123,23 @@ public class NoticeServiceImpl implements NoticeService {
 
             //收车公允值通过需要添加跳转路径
             if (contentType.equals("12")){
-                if (carInfo.getVehicleReceiptAmount()!=null)
-                    map.put("vehicleReceiptAmount",carInfo.getVehicleReceiptAmount().toString());
+                if (carInfo.getVehicleReceiptAmount()!=null) {
+                    map.put("vehicleReceiptAmount", carInfo.getVehicleReceiptAmount().toString());
+                }
                 map.put("phone",carInfoDetails.getSellerTel());
                 map.put("url","/subPages/home/bycar/agreement?type='1'&carId="+carInfoDetails.getCarId());
             }else if(contentType.equals("22")){
                 //卖车公允值通过需要添加跳转路径
-                if (carInfo.getSellAmount()!=null)
-                    map.put("sellAmount",carInfo.getSellAmount().toString());
+                if (carInfo.getSellAmount()!=null) {
+                    map.put("sellAmount", carInfo.getSellAmount().toString());
+                }
                 map.put("phone",carInfoDetails.getBuyerTel());
                 map.put("url","/subPages/home/sellingCar/agreement?type='1'&carId="+carInfoDetails.getCarId());
             }
 
         }else if(type.equals("1")){
-            CarInfoDetailsDO carInfoDetails = (CarInfoDetailsDO) jsonObject.get("carInfoDetails");
-            CarInfoDO carInfo = (CarInfoDO) jsonObject.get("carInfo");
+            CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON)jsonObject.get("carInfoDetails"),CarInfoDetailsDO.class);
+            CarInfoDO carInfo = JSON.toJavaObject((JSON)jsonObject.get("carInfo"),CarInfoDO.class);
 
             //map.put("businessId",bpmFormMainVO.getMerchantId().toString());
             map.put("phone",jsonObject.getString("phone"));
@@ -142,8 +148,9 @@ public class NoticeServiceImpl implements NoticeService {
                 map.put("type","0");
                 map.put("contentType","11");
                 map.put("phone",carInfoDetails.getSellerTel());
-                if (carInfo.getVehicleReceiptAmount()!=null)
-                    map.put("vehicleReceiptAmount",carInfo.getVehicleReceiptAmount().toString());
+                if (carInfo.getVehicleReceiptAmount()!=null) {
+                    map.put("vehicleReceiptAmount", carInfo.getVehicleReceiptAmount().toString());
+                }
                 //公允审批不通过的跳转路径
                 map.put("url","/subPages/home/bycar/index?type='1'&carId="+carInfoDetails.getCarId());
                 //添加站内消息
@@ -151,8 +158,9 @@ public class NoticeServiceImpl implements NoticeService {
             }else if (contentType.equals("31")){
                 map.put("type","0");
                 map.put("contentType","21");
-                if (carInfo.getSellAmount()!=null)
-                    map.put("sellAmount",carInfo.getSellAmount().toString());
+                if (carInfo.getSellAmount()!=null) {
+                    map.put("sellAmount", carInfo.getSellAmount().toString());
+                }
                 map.put("phone",carInfoDetails.getBuyerTel());
                 //卖车公允审批不通过的跳转路径
                 map.put("url","/subPages/home/sellingCar/carInfo?type='1'&carId="+carInfoDetails.getCarId());

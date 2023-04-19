@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.system.dal.dataobject.dept;
+package com.newtouch.uctp.module.business.dal.dataobject.dept;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.enums.dept.MarketTenantDeptEnum;
 
 /**
@@ -45,7 +44,7 @@ public class DeptDO extends TenantBaseDO {
     /**
      * 负责人
      *
-     * 关联 {@link AdminUserDO#getId()}
+     *
      */
     private Long leaderUserId;
     /**
