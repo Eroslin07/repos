@@ -47,7 +47,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="机动车登记证：">
+              <el-form-item label="机动车登记证书：">
                 <div>
                   <span
                     >{{
@@ -236,6 +236,8 @@
                 }}</div>
               </el-form-item>
             </el-col>
+          </el-row>
+          <el-row>
             <el-col :span="6">
               <el-form-item label="特殊约定：">
                 <div>{{
@@ -244,7 +246,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-
           <h3 style="font-weight: bold">交易信息</h3>
           <el-row>
             <el-col :span="6">
@@ -445,6 +446,7 @@ const setDialogTile = (type: string) => {
   actionType.value = type
   // dialogVisible.value = true
 }
+//时间戳转日期
 const formatDate = (time: string) => {
   let date = ''
   if (time) {

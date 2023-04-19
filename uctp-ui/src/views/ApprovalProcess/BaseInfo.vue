@@ -11,7 +11,7 @@
     <!-- 正向二手车统一发票和增值税发票待办 -->
     <ForwardDirection v-if="status == 'MCKP'" :type="'need'" />
     <!-- 卖车价格超公允值待办 -->
-    <SellCarPending v-if="status == 'MCHT'" :type="'need'" />
+    <SellCarPending v-if="status == 'MGYZ'" :type="'need'" />
     <!-- 利润提取代办 -->
     <Profit v-if="status == 'LRTQ'" :type="'need'" />
   </div>
