@@ -227,6 +227,7 @@
 <style lang="scss" scoped>
 	.whole {
 		border-top: 1px solid #f5f5f5;
+		height: 100vh;
 	}
 	
 	/deep/ .u-tabs__wrapper__nav__item  {

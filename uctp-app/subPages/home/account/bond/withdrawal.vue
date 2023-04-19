@@ -10,6 +10,7 @@
 				<u-input
 					border="none"
 					v-model="amount"
+					type="number"
 					clearable
 					:customStyle="{'height': '50px'}"
 					fontSize="24px"
@@ -21,11 +22,11 @@
 						type="tips"
 					></u--text>
 					<template slot="suffix">
-						<view style="color: #fa6401;">全部提现</view>
+						<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
 					</template>
 				</u-input>
 			</view>
-			<view>可用利润余额13,000.00元。</view>
+			<view>可用保证金余额{{ $amount.getComdify(allAmount) }}元。</view>
 		</uni-card>
 		<view style="padding: 20px;">
 			<button class="button" @click="handleDefine">提现</button>
@@ -34,13 +35,16 @@
 </template>
 
 <script>
+	import { getWithdraw } from '@/api/account/bond.js'
 	export default {
 		data() {
 			return {
-				amount: ''
+				amount: '',
+				allAmount: null
 			}
 		},
 		onLoad(options) {
+			this.allAmount = options.amount;
 			uni.setNavigationBarTitle({
 				title: '保证金提现'
 			});
@@ -48,8 +52,23 @@
 		methods: {
 			// 确定
 			handleDefine() {
-				this.$tab.navigateTo('/subPages/home/account/bond/progress');
+				if (this.amount == "" || !this.amount) {
+					this.$modal.msg("请输入需要提现的金额");
+					return
+				}
+				let data = {
+					accountNo: this.$store.state.user.accountNo,
+					tranAmount: this.amount,
+					revision: 3
+				}
+				getWithdraw(data).then((res) => {
+					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+				})
 			},
+			// 点击全部提现
+			handleQuanbu() {
+				this.amount = this.allAmount
+			}
 		}
 	}
 </script>
