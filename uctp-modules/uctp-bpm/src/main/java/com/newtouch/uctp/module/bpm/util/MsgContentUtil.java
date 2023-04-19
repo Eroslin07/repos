@@ -19,7 +19,7 @@ public class MsgContentUtil {
         if ("1".equals(map.get("type"))) {
             switch (map.get("contentType")) {
                 case "11":
-                    result="【二手车交易平台】您在二手车交易平台的账号注册流程因"+map.get("reason")+"原因审批未通过，请及时与市场方进行沟通。";
+                    result="【二手车交易平台】您在二手车交易平台的账号注册流程因【"+map.get("reason")+"】原因审批未通过，请及时与市场方进行沟通。";
                     break;
                 case "12":
                     result="【二手车交易平台】恭喜您已经成为二手车交易平台的一员，请登录二手车交易小程序进行使用";
@@ -34,10 +34,10 @@ public class MsgContentUtil {
                     result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，收车款"+map.get("vehicleReceiptAmount")+"元已成功支付给卖家，请关注。";
                     break;
                 case "24":
-                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，因【"+map.get("reason")+"】错误导致支付失败。请及时通知市场方介入处理。";
                     break;
                 case "25":
-                    result="【二手车交易平台】因"+map.get("reason")+"错误导致您的买车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
+                    result="【二手车交易平台】因【"+map.get("reason")+"】错误导致您的买车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "26":
                     result="【二手车交易平台】您的收车合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
@@ -53,10 +53,10 @@ public class MsgContentUtil {
                     result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，卖车款"+map.get("sellAmount")+"元已成功支付给卖家，请关注。";
                     break;
                 case "34":
-                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，因【"+map.get("reason")+"】错误导致支付失败。请及时通知市场方介入处理。";
                     break;
                 case "35":
-                    result="【二手车交易平台】因"+map.get("reason")+"错误导致您的卖车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
+                    result="【二手车交易平台】因【"+map.get("reason")+"】错误导致您的卖车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "36":
                     result="【二手车交易平台】您的卖车合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
@@ -70,7 +70,7 @@ public class MsgContentUtil {
             switch (map.get("contentType")) {
                 //收车
                 case "11":
-                    result = "您的收车价格"+map.get("vehicleReceiptAmount")+"元偏离了市场公允价值，经由市场方审核不通过，原因："+map.get("reason")+"。请及时关注。";
+                    result = "您的收车价格"+map.get("vehicleReceiptAmount")+"元偏离了市场公允价值，经由市场方审核不通过，因【"+map.get("reason")+"】。请及时关注。";
                     //title="公允价值退回";
                     title= StationInfoEnum.RECEIVE_FAIR_FAIL.getDesc();
                     break;
@@ -90,13 +90,13 @@ public class MsgContentUtil {
                     title= StationInfoEnum.RECEIVE_CONTRACT_SUCCESS.getDesc();
                     break;
                 case "15":
-                    result = "您的合同编号"+map.get("contractId")+"，收车价格"+map.get("vehicleReceiptAmount")+"元的收车合同，因："+map.get("reason")+"。错误导致支付失败。请及时介入处理。";
+                    result = "您的合同编号"+map.get("contractId")+"，收车价格"+map.get("vehicleReceiptAmount")+"元的收车合同，因【"+map.get("reason")+"】。错误导致支付失败。请及时介入处理。";
                     //title="收车交易异常-收款款支付失败";
                     title= StationInfoEnum.RECEIVE_CONTRACT_FAIL.getDesc();
                     break;
                 //卖车
                 case "21":
-                    result = "您的卖车价格"+map.get("sellAmount")+"元偏离了市场公允价值，经由市场方审核不通过，原因："+map.get("reason")+"。请及时关注。";
+                    result = "您的卖车价格"+map.get("sellAmount")+"元偏离了市场公允价值，经由市场方审核不通过，因【"+map.get("reason")+"】。请及时关注。";
                     //title="公允价值退回";
                     title= StationInfoEnum.SELL_FAIR_FAIL1.getDesc();
                     break;
