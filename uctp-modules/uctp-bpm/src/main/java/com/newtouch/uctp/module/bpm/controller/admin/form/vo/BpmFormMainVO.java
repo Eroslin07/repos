@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.bpm.controller.admin.form.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -73,5 +75,6 @@ public class BpmFormMainVO {
     /**
      * 第三方业务ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long thirdId;
 }

@@ -132,8 +132,8 @@ public class NoticeServiceImpl implements NoticeService {
             if (contentType.equals("21")){
                 map.put("type","0");
                 map.put("contentType","11");
-                //公允审批不通过的跳转路径
                 map.put("url","/subPages/home/bycar/index");
+                //公允审批不通过的跳转路径
                 //添加站内消息
                 saveNotice(map);
             }else if (contentType.equals("31")){
@@ -147,8 +147,9 @@ public class NoticeServiceImpl implements NoticeService {
         }
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
+        if (insert>0) {
+            result = "写入数据成功";
+        }
         return result;
     }
 
@@ -172,16 +173,18 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setPhone( map.get("phone"));
         infoDO.setBusinessId(map.get("businessId"));
         infoDO.setStatus("0");
-        if (map.get("url")!=null)
+        if (map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
+        }
         //默认状态为未推送
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
 
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
-        if (insert>0)
-            result="写入数据成功";
+        if (insert>0) {
+            result = "写入数据成功";
+        }
         return result;
     }
 

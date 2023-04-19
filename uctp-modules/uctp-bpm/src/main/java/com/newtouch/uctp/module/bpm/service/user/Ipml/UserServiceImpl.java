@@ -48,6 +48,5 @@ public class UserServiceImpl implements UserService {
         deptMapper.deleteDept(adminUserDO.getDeptId());
         userMapper.deleteUserExt(id);
         userMapper.deleteUser(id);
-
     }
 }
