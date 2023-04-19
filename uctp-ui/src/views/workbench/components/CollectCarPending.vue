@@ -319,7 +319,7 @@
                         .fileD"
                       :key="item.id"
                       style="width: 70px; height: 70px; margin-right: 5px"
-                      :src="item.src"
+                      :src="item.url"
                       fit="cover"
                       :zoom-rate="1.2"
                       :initial-index="0"
