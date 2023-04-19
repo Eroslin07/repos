@@ -74,7 +74,6 @@
         select
             <include refid="appPageColumn" />
         from uctp_car_info a
-        from uctp_car_info a
         inner join uctp_car_info_details b on a.id = b.CAR_ID and b.DELETED = 0
         left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1' and c.DELETED = 0
         left join infra_file d on c.ID = d.id and d.DELETED = 0

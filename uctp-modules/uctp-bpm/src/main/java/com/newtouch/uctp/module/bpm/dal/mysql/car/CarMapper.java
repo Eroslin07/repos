@@ -25,9 +25,24 @@ public interface CarMapper extends BaseMapperX<CarInfoDO> {
                         @Param("statusThree")Integer statusThree,
                         @Param("carId")Long carId);
 
-
-    default int  updateStatus(CarInfoDO carInfo){
-        return updateById(carInfo);
+    /**
+     * 流程修改车辆状态
+     * @param id
+     * @param salesStatus
+     * @param status
+     * @param statusThree
+     * @param bpmStatus
+     * @param bpmReason
+     * @return
+     */
+    default int  updateStatus(Long id,Integer salesStatus,Integer status,Integer statusThree,String bpmStatus,String bpmReason){
+        CarInfoDO carInfoDO = selectById(id);
+        carInfoDO.setSalesStatus(salesStatus);//1级状态
+        carInfoDO.setStatus(status);//2级状态
+        carInfoDO.setStatusThree(statusThree);//3级状态
+        carInfoDO.setBpmStatus(bpmStatus);//流程状态
+        carInfoDO.setBpmReason(bpmReason);//意见
+        return updateById(carInfoDO);
     };
 
     default CarInfoDO queryCarInfo(Long id){
