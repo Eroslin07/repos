@@ -442,6 +442,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfoDetails.setBuyerAdder( reqVO.getBuyerAdder() );
         carInfoDetails.setTransManageName( reqVO.getTransManageName() );
         carInfoDetails.setFeesAndCommitments( reqVO.getFeesAndCommitments() );
+        carInfoDetails.setProceduresAndSpareSell(reqVO.getProceduresAndSpareSell());
         carInfoDetails.setVehicleProblem(reqVO.getVehicleProblem());
         carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
         //保存卖车上传的身份证正反面图片
