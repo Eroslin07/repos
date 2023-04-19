@@ -57,11 +57,61 @@
 				</view>
 			</view>
 			<view class="car-status">
-				<text>车辆状态：</text>
-				<text @click="showAndHide">折叠/展开</text>
+				<u-tabs :list="tabsData" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
+					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
-			<view class="info-box">
-				<!-- 折叠信息 -->
+			<!-- 卡片信息 -->
+			<view class=" info-box">
+				<view v-if="tabCar=='0'">
+					<view class="car-upload">
+						<view class="car-upload-title">
+							<image src="../../../static/images/home/inspect-annually.svg"></image>
+							<text class="car-upload-title__title">车辆检测报告</text>
+							<text class="car-upload-title__text">未检测</text>
+						</view>
+						<view class="upload-content">
+							<u-upload :fileList="uploadeList" name="6" multiple :maxCount="1">
+								<view class="upload-text">
+									<text>上传检测报告</text>
+									<u-icon name="arrow-upward" color="#333333"
+										style="width: 30rpx;height: 30rpx;"></u-icon>
+								</view>
+							</u-upload>
+						</view>
+					</view>
+					<view class="driving-license">
+						<view class="driving-license__icon">
+
+						</view>
+						<text>行驶证</text>
+					</view>
+					<view class="driving-image">
+						<image src="../../../static/images/home/driving-license.svg" mode=""
+							style="width: 232rpx;height: 166rpx;"></image>
+					</view>
+					<view class="driving-content">
+						<view class="car-details">
+							<view class="car-item">
+								<text>发动机编号</text>
+								<text>19289098</text>
+							</view>
+							<view class="car-item">
+								<text>首次登录日期</text>
+								<text>2019年6月30日</text>
+							</view>
+						</view>
+						<view class="car-details">
+							<view class="car-item">
+								<text>车牌号</text>
+								<text>川A 2989</text>
+							</view>
+							<view class="car-item">
+								<text>使用性质</text>
+								<text>非营运</text>
+							</view>
+						</view>
+					</view>
+				</view>
 				<view v-if="!infoIsSHow" class="info-list" v-for="(item,index) in listData" :key="index">
 					<view class="info-img">
 						<image class="left-image" src="@/static/images/car.jpg" mode="widthFix"></image>
@@ -217,6 +267,21 @@
 					'https://cdn.uviewui.com/uview/swiper/swiper2.png',
 					'https://cdn.uviewui.com/uview/swiper/swiper3.png',
 				],
+				tabsData: [{
+						name: '车辆信息'
+					},
+					{
+						name: '合同信息'
+					},
+					{
+						name: '资金信息'
+					},
+					{
+						name: '发票信息'
+					},
+				],
+				tabCar: '0',
+				uploadeList: [],
 				listData: [{
 						title: '车辆信息',
 						status: '信息已完善'
@@ -255,10 +320,10 @@
 			};
 		},
 		methods: {
-			showAndHide() {
-				this.infoIsSHow = !this.infoIsSHow
+			changeTab(item) {
+				console.log(item)
+				this.tabCar = item.index
 			},
-
 			// 删除图片
 			deletePic(event) {
 				this[`fileList${event.name}`].splice(event.index, 1)
@@ -292,9 +357,9 @@
 
 <style lang="scss" scoped>
 	.car-info {
-		height: 100vh;
 		overflow: hidden;
 	}
+
 	.header-text {
 		width: 334rpx;
 		height: 52rpx;
@@ -307,6 +372,7 @@
 
 		text {
 			color: #FFFFFF;
+			line-height: 40rpx;
 		}
 
 		>text:first-child {
@@ -332,6 +398,8 @@
 		background-color: rgba(0, 0, 0, 0.35);
 		border-radius: 100px;
 		width: 35px;
+		height: 40rpx;
+		line-height: 40rpx;
 		@include flex;
 		justify-content: center;
 
@@ -349,6 +417,7 @@
 		margin-top: -22rpx;
 		position: relative;
 		z-index: 10;
+		border-bottom: 20rpx solid #FAFAFA;
 
 		>view {
 			margin-bottom: 18rpx;
@@ -439,6 +508,132 @@
 				}
 			}
 		}
+	}
+
+	.info-box {
+		padding: 24rpx 26rpx 160rpx;
+
+		.car-upload {
+			width: 698rpx;
+			height: 186rpx;
+			background: rgba(249, 249, 249, 0.02);
+			border-radius: 8rpx;
+			border: 2rpx solid #EDF3F6;
+
+			.car-upload-title {
+				width: 698rpx;
+				height: 78rpx;
+				background: linear-gradient(90deg, #F9F9F9 0%, #F9F9F9 100%);
+				border-radius: 8rpx;
+				display: flex;
+				align-items: center;
+				color: #ffffff;
+				padding: 0 16rpx;
+
+				image {
+					width: 48rpx;
+					height: 48rpx;
+					margin-right: 4rpx;
+				}
+
+				&__title {
+					font-size: 28rpx;
+					color: #333333;
+					margin-right: 18rpx;
+				}
+
+				&__text {
+					width: 106rpx;
+					height: 32rpx;
+					background: #FA6400;
+					border-radius: 4rpx;
+					text-align: center;
+					line-height: 32rpx;
+					font-size: 20rpx;
+				}
+			}
+
+			.upload-content {
+				height: calc(100% - 78rpx);
+				display: flex;
+				align-items: center;
+			}
+
+			.upload-text {
+				width: 100%;
+				display: flex;
+				margin: 0 auto;
+				justify-content: center;
+				color: #333333;
+
+				>text {
+					font-size: 28rpx;
+					margin-right: 6rpx;
+				}
+			}
+		}
+
+		.driving-license {
+			margin: 96rpx 0 40rpx;
+			padding: 4rpx;
+			display: flex;
+			align-items: center;
+
+			&__icon {
+				width: 12rpx;
+				height: 12rpx;
+				border-radius: 12rpx;
+				background: #FA6400;
+				margin-right: 16rpx;
+			}
+
+			text {
+				font-size: 30rpx;
+				font-weight: 500;
+				color: #333333;
+				line-height: 42rpx;
+
+			}
+		}
+
+		.driving-image {
+			width: 694rpx;
+			height: 280rpx;
+			background: #FEFEFE;
+			border-radius: 8rpx;
+			border: 2rpx solid #EDF3F6;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.driving-content {
+			width: 698rpx;
+			height: 146rpx;
+			background: #F9F9F9;
+			border-radius: 8rpx;
+			font-size: 24rpx;
+			.car-details {
+				display: flex;
+				justify-content: space-between;
+				position: relative;
+
+				.car-item {
+					width: 50%;
+					display: flex;
+					color: #333333;
+
+					>text:first-child {
+						color: #999999;
+						width: 136rpx;
+					}
+				}
+			}
+		}
+	}
+
+	/deep/ .u-upload__wrap>view {
+		width: 100%;
 	}
 
 	.info-list {
