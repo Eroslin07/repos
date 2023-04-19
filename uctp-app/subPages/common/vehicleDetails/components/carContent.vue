@@ -1,6 +1,7 @@
 <template>
 	<view class=" info-box">
-		<view v-if="tabCar=='0'">
+		<!-- 车辆信息 -->
+		<view v-if="tabCar=='0'" class="car-info-box">
 			<view class="car-upload">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
@@ -100,6 +101,210 @@
 				</view>
 			</view>
 		</view>
+		<!-- 合同信息 -->
+		<view v-if="tabCar=='1'" class="car-contract">
+			<view class="driving-license car-registration">
+				<view class="">
+					<view class="driving-license__icon">
+
+					</view>
+					<text>有效合同</text>
+				</view>
+				<view class="download">
+					<text>批量下载</text>
+					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+				</view>
+			</view>
+			<view class="contrart-info">
+				<view class="flex contrart-info__row">
+					<text>XXX某收车委托合同</text>
+					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+				<view class="flex">
+					<text>XXX某收车合同</text>
+					<view class="flex">
+						<text>卖家信息（第三方收款）</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+				<view class="flex  contrart-info__row">
+					<text>XXX某卖委托合同</text>
+					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+				<view class="flex">
+					<text>XXX某卖车合同</text>
+					<view class="flex">
+						<text>买家信息</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+			</view>
+			<view class="driving-license car-registration">
+				<view class="">
+					<view class="driving-license__icon">
+
+					</view>
+					<text>无效合同</text>
+				</view>
+				<view class="download">
+					<text>批量下载</text>
+					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+				</view>
+			</view>
+			<view class="contrart-info contrart-bottom">
+				<view class="flex contrart-info__row">
+					<view class="contart-info__">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某收车委托合同（已作废）</text>
+					</view>
+				</view>
+				<view class="flex">
+					<view class="">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某收车合同（已作废）</text>
+					</view>
+					<view class="flex">
+						<text>卖家信息（第三方收款）</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+				<view class="flex  contrart-info__row">
+					<view class="">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某卖委托合同（已作废）</text>
+					</view>
+				</view>
+				<view class="flex">
+					<view class="">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某卖车合同（已作废）</text>
+					</view>
+					<view class="flex">
+						<text>买家信息</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+			</view>
+			<view class="car-button">
+				<u-button text="签章" color="#FA6400"></u-button>
+			</view>
+		</view>
+		<view class="car-fund" v-if="tabCar=='2'">
+			<view class="car-upload">
+				<view class="car-upload-title">
+					<image src="../../../../static/images/home/bank-card.svg"></image>
+					<text class="car-upload-title__title">银行电子回单</text>
+					<text class="car-upload-title__text">待匹配</text>
+				</view>
+				<view class="upload-content">
+					<view class="upload-text" @click="photograph" v-if="carUpload">
+						<text>上传银行电子回单</text>
+						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
+					</view>
+					<view v-else class="upload-text">
+						<image src="../../../../static/images/home/checkmark.svg"></image>
+						<text>您已经上传检测报告!</text>
+						<u-icon name="trash" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
+					</view>
+				</view>
+			</view>
+			<view class="car-fund-info">
+				<view class="car-fund-info-title">
+					<view class="">
+						<u-icon name="rmb-circle-fill" style="width: 30rpx;height: 30rpx;margin-right: 10rpx;"
+							color="#FA6400"></u-icon>
+						<text class="car-upload-title__title">资金</text>
+					</view>
+					<view class="">
+						<text v-if="eyeIsShow" class="iconfont icon-open-eye" @click="eyeIsShow=!eyeIsShow"></text>
+						<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+					</view>
+				</view>
+				<view class="car-fund-info-content flex">
+					<view class="flex">
+						<view class="flex">
+							<text>收车款</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<view class="flex">
+								<text>公允价值-通过</text>
+								<u-icon name="arrow-right" style="width: 28rpx;height: 28rpx;" color="#FA6400"></u-icon>
+							</view>
+						</view>
+						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
+						<view class="flex">
+							<text>卖车款</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<view class="flex">
+								<text>公允价值-通过</text>
+								<u-icon name="arrow-right" style="width: 28rpx;height: 28rpx;" color="#FA6400"></u-icon>
+							</view>
+						</view>
+					</view>
+					<view class="flex">
+						<view class="flex">
+							<text>税</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+						</view>
+						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
+						<view class="flex">
+							<text>服务费</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+						</view>
+					</view>
+					<view class="flex">
+						<view class="flex">
+							<text>利润</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+						</view>
+						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
+						<view class="flex">
+							<text>待回填保证金</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+						</view>
+					</view>
+					<view class="flex">
+						<view class="flex">
+							<text>本次回填保证金</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+						</view>
+						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
+						<view class="flex">
+							<text>实际到账利润</text>
+							<text>{{eyeIsShow?'234':'****'}}元</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="car-invoice" v-if="tabCar=='3'">
+			<view class="flex">
+				<text>二手车销售统一发票(反向)</text>
+				<view class="flex">
+					<text>待开票</text>
+					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+			</view>
+			<view class="flex">
+				<text>二手车销售统一发票(正向)</text>
+				<view class="flex">
+					<text>待开票</text>
+					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+			</view>
+			<view class="flex">
+				<text>增值税发票</text>
+				<view class="flex">
+					<text>待开票</text>
+					<u-button text="下载PDF文件" style="width: 188rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+			</view>
+		</view>
+
 	</view>
 </template>
 
@@ -108,6 +313,7 @@
 		data() {
 			return {
 				carUpload: true,
+				eyeIsShow: false
 			}
 		},
 		props: ['tabCar'],
@@ -128,8 +334,16 @@
 </script>
 
 <style lang="scss" scoped>
+	.flex {
+		display: flex;
+	}
+
 	.info-box {
-		padding: 24rpx 26rpx 160rpx;
+
+		.car-info-box,
+		.car-fund {
+			padding: 24rpx 26rpx 160rpx;
+		}
 
 		.car-upload {
 			width: 698rpx;
@@ -275,6 +489,169 @@
 
 			.car-details .car-item>text:first-child {
 				width: 168rpx;
+			}
+		}
+
+		.car-contract {
+			padding-bottom: 160rpx;
+
+			.driving-license {
+				padding: 30rpx 36rpx 28rpx;
+				margin: 0;
+				justify-content: space-between;
+				border-bottom: 2rpx solid #F5F5F5;
+
+				>view {
+					display: flex;
+					align-items: center;
+				}
+
+				.download {
+					text {
+						color: #FA6400;
+					}
+
+				}
+			}
+
+			.contrart-info {
+				border-bottom: 20rpx solid #FAFAFA;
+				font-size: 24rpx;
+
+				>view {
+					color: #222222;
+					height: 128rpx;
+					margin-left: 32rpx;
+					padding-right: 38rpx;
+					border-bottom: 2rpx solid #F5F5F5;
+					flex-direction: column;
+					justify-content: center;
+
+					>view:nth-child(2) {
+						align-items: center;
+						color: #FA6400;
+					}
+				}
+
+				.contrart-info__row {
+					height: 78rpx;
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: center;
+				}
+
+				.contrart-info__text {
+					width: 106rpx;
+					height: 32rpx;
+					background: rgba(109, 114, 120, 0.6);
+					border-radius: 4rpx;
+					line-height: 32rpx;
+					text-align: center;
+					color: #FFFFFF;
+					font-size: 20rpx;
+					margin-right: 16rpx;
+				}
+			}
+
+			.contrart-bottom {
+				border-bottom: 2rpx solid #F5F5F5;
+			}
+
+			.car-button {
+				width: 696rpx;
+				height: 80rpx;
+				margin: 36rpx 28rpx 0;
+			}
+		}
+
+		.car-fund {
+			.car-fund-info {
+				margin-top: 26rpx;
+				width: 698rpx;
+				height: 810rpx;
+				background: rgba(249, 249, 249, 0.02);
+				border-radius: 8rpx;
+				border: 2rpx solid #EDF3F6;
+
+				.car-fund-info-title {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					width: 698rpx;
+					height: 78rpx;
+					padding: 0 34rpx 0 22rpx;
+					background: #F9F9F9;
+					border-radius: 8rpx;
+					color: #FA6400;
+
+					>view {
+						display: flex;
+						align-items: center;
+					}
+				}
+				.car-fund-info-content{
+					height: calc(100% - 78rpx);
+					flex-direction: column;
+					justify-content: space-evenly;
+					padding: 0 30rpx;
+					>view{
+						height: calc(100% / 4);
+						align-items: center;
+						border-bottom: 2rpx solid #F5F5F5;
+						position: relative;
+						>view{
+							width: 50%;
+							align-items: center;
+							flex-direction: column;
+							>text{
+								text-align: center;
+								&:first-child{
+									font-size: 28rpx;
+									font-weight: 400;
+									color: #999999;
+									line-height: 40rpx;
+								}
+								&:nth-child(2){
+									font-size: 32rpx;
+									font-weight: 500;
+									color: #333333;
+									line-height: 44rpx;
+								}
+							}
+							>view{
+								font-size: 24rpx;
+								align-items: center;
+								color: #FA6400;
+							}
+						}
+						&:last-child{
+							border: none;
+						}
+					}
+				}
+			}
+		}
+		.car-invoice{
+			padding: 0 0 160rpx 36rpx;
+			>view{
+				border-bottom: 2rpx solid #F5F5F5;
+				height: 160rpx;
+				padding-right: 32rpx;
+				flex-direction: column;
+				justify-content: space-evenly;
+				color: #222222;
+				>view{
+					justify-content: space-between;
+					>text{
+						width: 106rpx;
+						height: 32rpx;
+						background: #FA6400;
+						border-radius: 4rpx;
+						line-height: 32rpx;
+						text-align: center;
+						color: #FFFFFF;
+					}
+				}
 			}
 		}
 

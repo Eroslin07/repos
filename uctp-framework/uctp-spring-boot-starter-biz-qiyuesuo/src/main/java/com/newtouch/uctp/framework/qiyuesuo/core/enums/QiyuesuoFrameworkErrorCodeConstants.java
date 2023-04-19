@@ -12,6 +12,6 @@ import com.newtouch.uctp.framework.common.exception.ErrorCode;
 public interface QiyuesuoFrameworkErrorCodeConstants {
 
     ErrorCode EXCEPTION = new ErrorCode(2003000999, "调用异常");
-    ErrorCode QIYUESUO_UNKNOWN = new ErrorCode(2003000001, "未知错误，需要解析");
+    ErrorCode QIYUESUO_UNKNOWN = new ErrorCode(2003000001, "ERROR，服务器内部错误");
 
 }

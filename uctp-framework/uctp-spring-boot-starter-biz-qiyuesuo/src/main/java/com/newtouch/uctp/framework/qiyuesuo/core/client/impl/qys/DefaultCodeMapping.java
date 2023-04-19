@@ -17,7 +17,7 @@ public class DefaultCodeMapping implements QiyuesuoCodeMapping {
     @Override
     public ErrorCode apply(String apiCode) {
         switch (apiCode) {
-            case "OK": return GlobalErrorCodeConstants.SUCCESS;
+            case "0": return GlobalErrorCodeConstants.SUCCESS;
             default:
                 return QiyuesuoFrameworkErrorCodeConstants.QIYUESUO_UNKNOWN;
         }

@@ -2,7 +2,6 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.lang.Assert;
-import com.newtouch.uctp.framework.common.exception.ErrorCode;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoFrameworkErrorCodeConstants;
 import lombok.Data;
@@ -40,13 +39,14 @@ public class QiyuesuoCommonResult<T> extends CommonResult<T> {
         QiyuesuoCommonResult<T> result = new QiyuesuoCommonResult<T>().setApiCode(apiCode).setApiMsg(apiMsg);
         result.setData(data);
         // 翻译错误码
-        if (codeMapping != null) {
-            ErrorCode errorCode = codeMapping.apply(apiCode);
-            if (errorCode == null) {
-                errorCode = QiyuesuoFrameworkErrorCodeConstants.QIYUESUO_UNKNOWN;
-            }
-            result.setCode(errorCode.getCode()).setMsg(errorCode.getMsg());
-        }
+//        if (codeMapping != null) {
+//            ErrorCode errorCode = codeMapping.apply(apiCode);
+//            if (errorCode == null) {
+//                errorCode = QiyuesuoFrameworkErrorCodeConstants.QIYUESUO_UNKNOWN;
+//            }
+//            result.setCode(errorCode.getCode()).setMsg(errorCode.getMsg());
+//        }
+        result.setCode(55).setMsg(apiMsg);
         return result;
     }
 

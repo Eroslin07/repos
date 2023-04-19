@@ -7,7 +7,7 @@
       :showFooter="false"
       @close="closeDialog"
       style="height: 100%"
-      zIndex="3000"
+      :zIndex="3000"
     >
       <iframe
         src="https://element-plus.org/zh-CN/component/form.html#%E5%85%B8%E5%9E%8B%E8%A1%A8%E5%8D%95"
