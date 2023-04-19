@@ -8,7 +8,7 @@ const baseUrl = config.baseUrl
 
 const user = {
   state: {
-    id: storage.get(constant.id), // 用户编号
+    id: uni.getStorageSync('SET_ID') || storage.get(constant.id), // 用户编号
     name: storage.get(constant.name),
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
