@@ -25,6 +25,8 @@ import com.newtouch.uctp.module.business.service.account.event.ProfitPressentSta
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static cn.hutool.core.date.DatePattern.NORM_DATE_PATTERN;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -47,6 +50,9 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 @Validated
 @Slf4j
 public class AccountProfitServiceImpl implements AccountProfitService {
+
+    // 利润划入的锁key
+    public static final String LOCK_PREFIX = "UCTP:ACCOUNT:PROFIT:RECORDED:";
 
     @Resource
     private MerchantAccountService merchantAccountService;
@@ -63,6 +69,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Resource
     private MerchantPresentStatusRecordMapper merchantPresentStatusRecordMapper;
 
+    @Resource
+    private RedissonClient redissonClient;
+
     @Override
     @Transactional
     @TenantIgnore
@@ -73,154 +82,182 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                                            List<CostDTO> costs,
                                            List<TaxDTO> taxes) {
         log.info("调用利润划入接口，accountNo:{},contractNo:{},vehicleReceiptAmount:{},carSalesAmount:{}",accountNo,contractNo,vehicleReceiptAmount,carSalesAmount);
-        // 参数校验
-        this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
-        // 商户账户
-        MerchantAccountDO merchantAccount = this.merchantAccountService.queryByAccountNo(accountNo);
-        if (merchantAccount == null) {
-            throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
-        }
+        // 锁定当前合同，防止同一合同多次划入利润
+        RLock lock = redissonClient.getLock(LOCK_PREFIX + contractNo);
+        try {
+            // 等待1s，由看门狗控制超时
+            boolean locked = lock.tryLock(1, TimeUnit.SECONDS);
+            if (!locked) {
+                // 锁定失败，则表示重复划入
+                throw exception(ACC_PRESENT_PROFIT_RECORDED_REPEAT);
+            }
 
-        // 查询待回填保证金总额
-        TransactionRecordReqVO originalWaitForBackCashReq = new TransactionRecordReqVO();
-        originalWaitForBackCashReq.setAccountNo(accountNo);
-        Integer originalWaitForBackCashTotalAmount = accountCashService.difference(originalWaitForBackCashReq);
-        if (originalWaitForBackCashTotalAmount == null) {
-            originalWaitForBackCashTotalAmount = 0;
-        }
-        log.info("合同{}，待回填保证金总额{}", contractNo, originalWaitForBackCashTotalAmount);
-        originalWaitForBackCashTotalAmount = originalWaitForBackCashTotalAmount * -1; // 接口返回是负数
-        Integer originalProfitTotalAmount = merchantAccount.getProfit();
-        if (originalProfitTotalAmount == null) {
-            originalProfitTotalAmount = 0;
-        }
+            // 参数校验
+            this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
 
-        // 计算本次利润
-        ProfitCalcResultDTO profitCalcResult = this.calcProfit(accountNo,
-                vehicleReceiptAmount,
-                carSalesAmount,
-                originalWaitForBackCashTotalAmount,
-                originalProfitTotalAmount,
-                costs,
-                taxes);
+            // 先查询当前合同在数据库中是否已存在利润数据，存在则表示是重复划入
+            Long existsCurrentContractNo = this.merchantProfitMapper.selectCount(MerchantProfitDO::getContractNo, contractNo);
+            if (existsCurrentContractNo > 0) {
+                throw exception(ACC_PRESENT_PROFIT_RECORDED_REPEAT);
+            }
 
-        log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
-        if (carSalesAmount.compareTo(profitCalcResult.getFeeTotalAmount()) <= 0) {
-            // 如果本次合同卖车款小于或等于本次总费用（理论上不会出现，但要防止只能报异常处理）
-            log.error("合同：{}卖车款小于或等于总费用", contractNo);
+            // 商户账户
+            MerchantAccountDO merchantAccount = this.merchantAccountService.queryByAccountNo(accountNo);
+            if (merchantAccount == null) {
+                throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
+            }
+
+            // 查询待回填保证金总额
+            TransactionRecordReqVO originalWaitForBackCashReq = new TransactionRecordReqVO();
+            originalWaitForBackCashReq.setAccountNo(accountNo);
+            Integer originalWaitForBackCashTotalAmount = accountCashService.difference(originalWaitForBackCashReq);
+            if (originalWaitForBackCashTotalAmount == null) {
+                originalWaitForBackCashTotalAmount = 0;
+            }
+            log.info("合同{}，待回填保证金总额{}", contractNo, originalWaitForBackCashTotalAmount);
+            originalWaitForBackCashTotalAmount = originalWaitForBackCashTotalAmount * -1; // 接口返回是负数
+            Integer originalProfitTotalAmount = merchantAccount.getProfit();
+            if (originalProfitTotalAmount == null) {
+                originalProfitTotalAmount = 0;
+            }
+
+            // 计算本次利润
+            ProfitCalcResultDTO profitCalcResult = this.calcProfit(accountNo,
+                    vehicleReceiptAmount,
+                    carSalesAmount,
+                    originalWaitForBackCashTotalAmount,
+                    originalProfitTotalAmount,
+                    costs,
+                    taxes);
+
+            log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
+            if (carSalesAmount.compareTo(profitCalcResult.getFeeTotalAmount()) <= 0) {
+                // 如果本次合同卖车款小于或等于本次总费用（理论上不会出现，但要防止只能报异常处理）
+                log.error("合同：{}卖车款小于或等于总费用", contractNo);
+                throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+            }
+
+            // 组装利润明细表记录
+            List<MerchantProfitDO> profitList = this.buildProfitList(accountNo, contractNo, profitCalcResult);
+
+            // 批量插入利润表
+            this.merchantProfitMapper.insertBatch(profitList);
+            log.info("合同：{}，利润记录至数据库", contractNo);
+
+            // 待写入的提现状态记录
+            List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
+            // 回填保证金的提现利润清单
+            List<MerchantProfitDO> backCashList = new ArrayList<>();
+            // 需要立即付款的费用清单
+            List<MerchantProfitDO> costWaitForPayList = new ArrayList<>();
+
+            for (MerchantProfitDO mp : profitList) {
+                List<PresentStatusRecordDO> psrs = mp.getPresentStatusRecords();
+                if (psrs != null && !psrs.isEmpty()) {
+                    for (PresentStatusRecordDO psr : psrs) {
+                        psr.setPresentNo(mp.getId());
+                        statusRecordList.add(psr);
+                    }
+                }
+
+                if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(mp.getTradeType())) {
+                    // 保证金回填交易
+                    backCashList.add(mp);
+                } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(mp.getTradeType())
+                        && StringUtils.isNotBlank(mp.getBankNo())
+                        && StringUtils.isNotBlank(mp.getBankName())) {
+                    // 需要立即支付的费用
+                    costWaitForPayList.add(mp);
+                }
+            }
+
+            if (!statusRecordList.isEmpty()) {
+                // 批量插入提现状态表
+                this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
+                log.info("合同：{}，提现状态表记录至数据库", contractNo);
+            }
+
+            // 更新利润余额
+            merchantAccount.setProfit(profitCalcResult.getProfitTotalAmount());
+            int rows = this.merchantAccountService.updateByLock(merchantAccount);
+            if (rows != 1) {
+                log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
+                throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+            }
+
+            // 处理利润回填保证金提现状态
+            for (int i = 0; i < backCashList.size(); i++) {
+                MerchantProfitDO mp = backCashList.get(i);
+                this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
+
+                if (profitCalcResult.getRevenueAmount().compareTo(0) < 0 && profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
+                    // 本次收益为负，并且使用了原有利润回填保证金，则需要分别调用回填保证金和使用原利润回填保证金接口
+                    // 回填保证金
+                    TransactionRecordReqVO backCash = new TransactionRecordReqVO();
+                    backCash.setAccountNo(mp.getAccountNo());
+                    backCash.setContractNo(mp.getContractNo());
+                    backCash.setTranAmount((mp.getProfit() - profitCalcResult.getDeductionBackCashFromOriginalProfitAmount()) * -1); // 本次实际回填总额-占用原有的利润额度
+                    backCash.setRevision(merchantAccount.getRevision() + 1); // 注意版本号
+
+                    log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
+                    boolean backSuccessed = accountCashService.back(backCash);
+                    if (!backSuccessed) {
+                        log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
+                        throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                    }
+
+                    // 回填保证金（使用原有利润）
+                    TransactionRecordReqVO backCashFromOriginalProfit = new TransactionRecordReqVO();
+                    backCashFromOriginalProfit.setAccountNo(mp.getAccountNo());
+                    backCashFromOriginalProfit.setContractNo(mp.getContractNo());
+                    backCashFromOriginalProfit.setTranAmount(profitCalcResult.getDeductionBackCashFromOriginalProfitAmount() * -1); // 占用的原有利润
+                    backCashFromOriginalProfit.setRevision(backCash.getRevision() + 1); // 注意版本号
+
+                    log.info("合同：{}使用{}原有利润回填保证金", contractNo);
+                    boolean profitBackSuccessed = accountCashService.profitBack(backCashFromOriginalProfit);
+                    if (!profitBackSuccessed) {
+                        log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
+                        throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                    }
+                } else {
+                    // 不使用原有利润回填保证金
+                    // 回填保证金
+                    TransactionRecordReqVO backCash = new TransactionRecordReqVO();
+                    backCash.setAccountNo(mp.getAccountNo());
+                    backCash.setContractNo(mp.getContractNo());
+                    backCash.setTranAmount(mp.getProfit() * -1);
+                    backCash.setRevision(merchantAccount.getRevision() + 1); // 注意版本号
+
+                    log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
+                    boolean backSuccessed = accountCashService.back(backCash);
+
+                    if (!backSuccessed) {
+                        log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
+                        throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                    }
+                }
+
+            }
+
+            // 处理费用立即支付
+            for (MerchantProfitDO mp : costWaitForPayList) {
+                this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.COST_PAY);
+                // 调用支付接口
+                this.pay(mp.getBankName(), mp.getBankNo(), mp.getProfit() * -1);
+                // TODO 根据支付结果处理利润余额和利润冻结
+            }
+
+            return profitList;
+        } catch (InterruptedException e) {
+            log.error("获取利润划入锁错误", e);
+            Thread.currentThread().interrupt();
             throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-        }
-
-        // 组装利润明细表记录
-        List<MerchantProfitDO> profitList = this.buildProfitList(accountNo, contractNo, profitCalcResult);
-        // 批量插入利润表
-        this.merchantProfitMapper.insertBatch(profitList);
-        log.info("合同：{}，利润记录至数据库", contractNo);
-
-        // 待写入的提现状态记录
-        List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
-        // 回填保证金的提现利润清单
-        List<MerchantProfitDO> backCashList = new ArrayList<>();
-        // 需要立即付款的费用清单
-        List<MerchantProfitDO> costWaitForPayList = new ArrayList<>();
-
-        for (MerchantProfitDO mp : profitList) {
-            List<PresentStatusRecordDO> psrs = mp.getPresentStatusRecords();
-            if (psrs != null && !psrs.isEmpty()) {
-                for (PresentStatusRecordDO psr : psrs) {
-                    psr.setPresentNo(mp.getId());
-                    statusRecordList.add(psr);
-                }
-            }
-
-            if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(mp.getTradeType())) {
-                // 保证金回填交易
-                backCashList.add(mp);
-            } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(mp.getTradeType())
-                    && StringUtils.isNotBlank(mp.getBankNo())
-                    && StringUtils.isNotBlank(mp.getBankName())) {
-                // 需要立即支付的费用
-                costWaitForPayList.add(mp);
+        } finally {
+            // 被当前线程锁定，则需要解锁
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
             }
         }
-
-        if (!statusRecordList.isEmpty()) {
-            // 批量插入提现状态表
-            this.merchantPresentStatusRecordMapper.insertBatch(statusRecordList);
-            log.info("合同：{}，提现状态表记录至数据库", contractNo);
-        }
-
-        // 更新利润余额
-        merchantAccount.setProfit(profitCalcResult.getProfitTotalAmount());
-        int rows = this.merchantAccountService.updateByLock(merchantAccount);
-        if (rows != 1) {
-            log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
-            throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-        }
-
-        // 处理利润回填保证金提现状态
-        for (int i = 0; i < backCashList.size(); i++) {
-            MerchantProfitDO mp = backCashList.get(i);
-            this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
-
-            if (profitCalcResult.getRevenueAmount().compareTo(0) < 0 && profitCalcResult.getDeductionBackCashFromOriginalProfitAmount().compareTo(0) > 0) {
-                // 本次收益为负，并且使用了原有利润回填保证金，则需要分别调用回填保证金和使用原利润回填保证金接口
-                // 回填保证金
-                TransactionRecordReqVO backCash = new TransactionRecordReqVO();
-                backCash.setAccountNo(mp.getAccountNo());
-                backCash.setContractNo(mp.getContractNo());
-                backCash.setTranAmount((mp.getProfit() - profitCalcResult.getDeductionBackCashFromOriginalProfitAmount()) * -1); // 本次实际回填总额-占用原有的利润额度
-                backCash.setRevision(merchantAccount.getRevision() + 1); // 注意版本号
-
-                log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
-                boolean backSuccessed = accountCashService.back(backCash);
-                if (!backSuccessed) {
-                    log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
-                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-                }
-
-                // 回填保证金（使用原有利润）
-                TransactionRecordReqVO backCashFromOriginalProfit = new TransactionRecordReqVO();
-                backCashFromOriginalProfit.setAccountNo(mp.getAccountNo());
-                backCashFromOriginalProfit.setContractNo(mp.getContractNo());
-                backCashFromOriginalProfit.setTranAmount(profitCalcResult.getDeductionBackCashFromOriginalProfitAmount() * -1); // 占用的原有利润
-                backCashFromOriginalProfit.setRevision(backCash.getRevision() + 1); // 注意版本号
-
-                log.info("合同：{}使用{}原有利润回填保证金", contractNo);
-                boolean profitBackSuccessed = accountCashService.profitBack(backCashFromOriginalProfit);
-                if (!profitBackSuccessed) {
-                    log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
-                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-                }
-            } else {
-                // 不使用原有利润回填保证金
-                // 回填保证金
-                TransactionRecordReqVO backCash = new TransactionRecordReqVO();
-                backCash.setAccountNo(mp.getAccountNo());
-                backCash.setContractNo(mp.getContractNo());
-                backCash.setTranAmount(mp.getProfit() * -1);
-                backCash.setRevision(merchantAccount.getRevision() + 1); // 注意版本号
-
-                log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
-                boolean backSuccessed = accountCashService.back(backCash);
-
-                if (!backSuccessed) {
-                    log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
-                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-                }
-            }
-
-        }
-
-        // 处理费用立即支付
-        for (MerchantProfitDO mp : costWaitForPayList) {
-            this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.COST_PAY);
-            // 调用支付接口
-            this.pay(mp.getBankName(), mp.getBankNo(), mp.getProfit() * -1);
-            // TODO 根据支付结果处理利润余额和利润冻结
-        }
-
-        return profitList;
     }
 
     @Override
