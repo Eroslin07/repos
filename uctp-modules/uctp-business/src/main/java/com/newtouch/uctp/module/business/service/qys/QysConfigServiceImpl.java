@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
@@ -11,8 +12,11 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateRe
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
+import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +47,10 @@ public class QysConfigServiceImpl implements QysConfigService {
     private QysConfigMapper qysConfigMapper;
     @Resource
     private QiyuesuoClientFactory qiyuesuoClientFactory;
-
+    @Resource
+    private CarInfoService carInfoService;
+    @Resource
+    private QysCallbackMapper qysCallbackMapper;
     @PostConstruct
     @Override
     public void initLocalCache() {
@@ -116,54 +123,62 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public String certification(String signature, String timestamp, String content) throws Exception {
-        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
             return "fail";
         }
         //解密消息
-        JSONObject jsonObject = this.decryptMessage(content);
-        //TODO 处理业务
+        String json = this.decryptMessage(content);
+        JSONObject jsonObject = JSON.parseObject(json);
+        String companyId = jsonObject.getString("companyId");
+        String companyName = jsonObject.getString("companyName");
+        String registerNo = jsonObject.getString("registerNo");
+        //查询企业
 
-
+        QysCallbackDO qysCallbackDO = new QysCallbackDO();
+        qysCallbackDO.setContent(json);
+        qysCallbackDO.setType(1);
+        qysCallbackDO.setMainId(null);
+        qysCallbackMapper.insert(qysCallbackDO);
         return "success";
     }
 
     @Override
     public String status(String signature, String timestamp, String content) throws Exception {
-        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        log.info("[status]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
             return "fail";
         }
         //解密消息
-        JSONObject jsonObject = this.decryptMessage(content);
+        String json = this.decryptMessage(content);
         //TODO 处理业务
         return "success";
     }
 
     @Override
     public String verification(String signature, String timestamp, String content) throws Exception {
-        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        log.info("[verification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
             return "fail";
         }
         //解密消息
-        JSONObject jsonObject = this.decryptMessage(content);
+        String json = this.decryptMessage(content);
         //TODO 处理业务
         return "success";
     }
 
     @Override
     public String login(String signature, String timestamp, String content) throws Exception {
-        log.info("电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        log.info("[login]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
             return "fail";
         }
         //解密消息
-        JSONObject jsonObject = this.decryptMessage(content);
+        String json = this.decryptMessage(content);
         //TODO 处理业务
         return "success";
     }
@@ -172,9 +187,10 @@ public class QysConfigServiceImpl implements QysConfigService {
     public void test() {
         QiyuesuoClient qiyuesuoClient = qiyuesuoClientFactory.getQiyuesuoClient(1648231591874347009L);
         QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
-        qiyuesuoClient.draft(null);
-        qiyuesuoSaasClient.companyAuthPageUrl(null);
+        qiyuesuoClient.defaultSend(null);
+        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
     }
+
 
     private Boolean verificationSignature(String signature, String timestamp){
         String md5 = MD5.toMD5(timestamp + SECRET);
@@ -186,12 +202,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         return Boolean.TRUE;
     }
 
-    private JSONObject decryptMessage(String content) throws Exception {
-        String contentJson = CryptUtils.aesDerypt(content, SECRET);
-        JSONObject json = JSONObject.parseObject(contentJson);
-        log.info("解密消息，json【{}】",json);
-        return json;
-//        Map<String, Object> map = JSONUtils.toMap(contentJson);
+    private String decryptMessage(String content) throws Exception {
+        return CryptUtils.aesDerypt(content, SECRET);
     }
 
 

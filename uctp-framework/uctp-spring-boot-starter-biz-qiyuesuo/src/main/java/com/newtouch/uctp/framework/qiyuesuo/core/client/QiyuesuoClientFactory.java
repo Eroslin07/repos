@@ -26,12 +26,12 @@ public interface QiyuesuoClientFactory {
     QiyuesuoSaasClient getQiyuesuoSaasClient(Long channelId);
 
     /**
-     * 获得契约锁 Client
+     * 获得契约锁SAAS模式 Client
      *
      * @param channelCode 渠道编码
      * @return 短信 Client
      */
-    QiyuesuoClient getQiyuesuoClient(String channelCode);
+//    QiyuesuoSaasClient getQiyuesuoSaasClient(String channelCode);
 
     /**
      * 创建契约锁 Client

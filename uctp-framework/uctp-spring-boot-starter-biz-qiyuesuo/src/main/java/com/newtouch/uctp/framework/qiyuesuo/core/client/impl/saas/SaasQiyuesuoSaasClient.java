@@ -20,7 +20,7 @@ import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SdkResponse;
 
-public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
+public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     /**
      * 契约锁SaaS模式客户端
      */
@@ -30,7 +30,7 @@ public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
      */
 //    protected final QiyuesuoCodeMapping codeMapping;
 
-    public SaasQiyuesuoClient(QiyuesuoChannelProperties properties) {
+    public SaasQiyuesuoSaasClient(QiyuesuoChannelProperties properties) {
         super(properties, new DefaultCodeMapping());
 //        this.codeMapping = codeMapping;
         Assert.notEmpty(properties.getAccessKey(), "key 不能为空");
@@ -43,12 +43,12 @@ public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    protected QiyuesuoCommonResult<Contract> doDraft(Contract contract) throws Throwable {
-        return null;
+    protected QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract) throws Throwable {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
-    protected QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doPrivilegeUrl(SaasPrivilegeUrlRequest request) throws Throwable {
+    protected QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doSaasPrivilegeUrl(SaasPrivilegeUrlRequest request) throws Throwable {
         String response = client.service(request);
         SdkResponse<SaaSPrivilegeUrlResult> sdkResponse = JSONUtils.toQysResponse(response, SaaSPrivilegeUrlResult.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
@@ -58,7 +58,7 @@ public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    protected QiyuesuoCommonResult<SaaSUserAuthPageResult> doUserAuthPage(SaaSUserAuthPageRequest request) throws Throwable {
+    protected QiyuesuoCommonResult<SaaSUserAuthPageResult> doSaasUserAuthPage(SaaSUserAuthPageRequest request) throws Throwable {
         String response = client.service(request);
         SdkResponse<SaaSUserAuthPageResult> sdkResponse = JSONUtils.toQysResponse(response, SaaSUserAuthPageResult.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
@@ -68,7 +68,7 @@ public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    protected QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) throws Throwable {
+    protected QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doSaasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) throws Throwable {
         String response = client.service(request);
         SdkResponse<SaaSCompanyAuthPageResult> sdkResponse = JSONUtils.toQysResponse(response, SaaSCompanyAuthPageResult.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
@@ -79,11 +79,11 @@ public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
 
 
     @Override
-    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> companyAuthPageUrl(String companyName,
+    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName,
+                                                                                  String applicantInfo,
                                                                               String legalPerson,
                                                                               String registerNo,
-                                                                              StreamFile license,
-                                                                              String applicantInfo) {
+                                                                              StreamFile license) {
         SaasCompanyAuthPageUrlRequest request = new SaasCompanyAuthPageUrlRequest();
         Assert.notBlank(companyName, "companyName 不能为空");
         Assert.notBlank(applicantInfo, "applicantInfo 不能为空");
@@ -98,27 +98,32 @@ public class SaasQiyuesuoClient extends AbstractQiyuesuoClient {
         if (StrUtil.isNotBlank(registerNo)) {
             request.setRegisterNo(registerNo);
         }
-        return this.companyAuthPageUrl(request);
+        return this.saasCompanyAuthPageUrl(request);
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSUserAuthPageResult> userAuthPage(String contact, String contactType) {
+    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName, String applicantInfo) {
+        return this.saasCompanyAuthPageUrl(companyName,applicantInfo,null,null,null);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact, String contactType) {
         Assert.notBlank(contact, "contact 不能为空");
         Assert.notBlank(contactType, "contactType 不能为空");
         SaaSUserAuthPageRequest request = new SaaSUserAuthPageRequest();
         User user = new User(contact, contactType);
         request.setUser(user);
-        return this.userAuthPage(request);
+        return this.saasUserAuthPage(request);
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> privilegeUrl(Long companyId, String contact, String contactType) {
+    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact, String contactType) {
         Assert.notNull(companyId, "companyId 不能为空");
         Assert.notBlank(contact, "contact 不能为空");
         Assert.notBlank(contactType, "contactType 不能为空");
         SaasPrivilegeUrlRequest  request = new SaasPrivilegeUrlRequest ();
         User user = new User(contact, contactType);
         request.setUser(user);
-        return this.privilegeUrl(request);
+        return this.saasPrivilegeUrl(request);
     }
 }
