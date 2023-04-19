@@ -105,6 +105,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 taxes);
 
         log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
+        if (carSalesAmount.compareTo(profitCalcResult.getFeeTotalAmount()) <= 0) {
+            // 如果本次合同卖车款小于或等于本次总费用（理论上不会出现，但要防止只能报异常处理）
+            log.error("合同：{}卖车款小于或等于总费用", contractNo);
+            throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+        }
 
         // 组装利润明细表记录
         List<MerchantProfitDO> profitList = this.buildProfitList(accountNo, contractNo, profitCalcResult);
@@ -170,6 +175,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 log.info("合同：{}回填保证金{}}", contractNo, backCash.getTranAmount());
                 boolean backSuccessed = accountCashService.back(backCash);
                 if (!backSuccessed) {
+                    log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
                     throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
                 }
 
@@ -183,6 +189,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 log.info("合同：{}使用{}原有利润回填保证金", contractNo);
                 boolean profitBackSuccessed = accountCashService.profitBack(backCashFromOriginalProfit);
                 if (!profitBackSuccessed) {
+                    log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
                     throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
                 }
             } else {
@@ -198,6 +205,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 boolean backSuccessed = accountCashService.back(backCash);
 
                 if (!backSuccessed) {
+                    log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
                     throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
                 }
             }
@@ -246,13 +254,14 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         MerchantBankDO bank = merchantBankService.getById(merchantBankId);
         // 银行卡必须存在，且是当前账户的银行卡
         if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo()) || !accountNo.equals(bank.getAccountNo())) {
+            log.error("账户{}和银行卡{}不匹配", accountNo);
             throw exception(ACC_PRESENT_ERROR);
         }
 
         // 查询账户
         MerchantAccountDO account = merchantAccountService.queryByAccountNo(accountNo);
         if (account == null) {
-            throw exception(ACC_PRESENT_ERROR);
+            throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
         }
 
         Integer profit = account.getProfit() == null ? 0 : account.getProfit(); // 余额
@@ -267,6 +276,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 加锁更新
         int rows = merchantAccountService.updateByLock(account);
         if (rows != 1) {
+            log.error("账户：{}，利润提现时账户发生变更，利润提现失败", account);
             throw exception(ACC_PRESENT_ERROR);
         }
 
@@ -299,9 +309,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Transactional
     public void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditOpinion) {
         if (id == null) {
+            log.error("利润提现审核参数为空");
             throw exception(ACC_PRESENT_ERROR);
         }
         if (auditOpinion == null) {
+            log.error("利润提现审核参数为空");
             throw exception(ACC_PRESENT_ERROR);
         }
         log.info("提现审核，参数：{}，审核意见：{}", id, auditOpinion);
@@ -477,6 +489,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     this.publishProfitPressentStatusChangeEvent(id, event.getPostEvent());
                 }
             } else {
+                log.error("利润：{}，提现处理时账户发生变更，处理失败", id);
                 throw exception(ACC_PRESENT_ERROR);
             }
 
@@ -571,6 +584,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .waitForBackCashTotalAmount(nowWaitForBackCashTotalAmount)
                 // 本次收益
                 .revenueAmount(tmpTheRevenueAmount)
+                // 本次总费用
+                .feeTotalAmount(tmpFeeTotalAmount)
                 // 本次税收
                 .taxes(taxes)
                 // 本次费用
@@ -806,7 +821,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
                         .profit(tax.getAmount() * -1) // 税费为支出，记录负数
                         .tradeType(AccountEnum.TRAN_PROFIT_TAX_COST.getKey())
-                        .tradeTypeText(AccountEnum.TRAN_PROFIT_TAX_COST.getValue())
+                        .tradeTypeText(AccountEnum.TRAN_PROFIT_TAX_COST.getValue() + "-" + tax.getType())
                         .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 税费去向为：市场方
                         .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
                         .presentState(null) // 初始写入税费无提现状态
