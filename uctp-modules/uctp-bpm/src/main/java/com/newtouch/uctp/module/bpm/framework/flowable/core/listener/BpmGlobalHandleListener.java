@@ -81,13 +81,11 @@ public class BpmGlobalHandleListener {
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.ZHSQ.name())) {
             if ("pass".equals(approvalType)) {
                 //注册成功
-                //noticeApi.saveTaskNotice("1", "12", reason, bpmFormResVO);
                 noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
                 //更新用户状态
                 userService.updateUserStatus(bpmFormMainVO.getStartUserId());
             }else if ("disagree".equals(approvalType)){
                 //注册失败
-                //noticeApi.saveTaskNotice("1", "11", reason, bpmFormResVO);
                 noticeService.saveTaskNotice("1", "11", reason, bpmFormMainVO);
                 //删除用户
                 userService.deleteUser(bpmFormMainVO.getStartUserId());
@@ -95,12 +93,10 @@ public class BpmGlobalHandleListener {
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
            //收车公允审批不通过
             if ("disagree".equals(approvalType)) {
-                //noticeApi.saveTaskNotice("1", "21", reason, bpmFormResVO);
                 noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
                 //修改车辆状态
                 carMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
             } else if ("pass".equals(approvalType)) {
-                //noticeApi.saveTaskNotice("0", "12", reason, bpmFormResVO);
                 noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carMapper.selectById(bpmFormMainVO.getThirdId());
@@ -111,12 +107,10 @@ public class BpmGlobalHandleListener {
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允审批不通过
             if ("disagree".equals(approvalType)) {
-                //noticeApi.saveTaskNotice("1", "31", reason, bpmFormResVO);
                 noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
                 //修改车辆状态
                 carMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
             } else if ("pass".equals(approvalType)) {
-                //noticeApi.saveTaskNotice("0", "22", reason, bpmFormResVO);
                 noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carMapper.selectById(bpmFormMainVO.getThirdId());
