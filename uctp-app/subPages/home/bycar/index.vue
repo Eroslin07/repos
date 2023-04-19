@@ -306,6 +306,7 @@
 						</view> -->
 					</view>
 				</view>
+				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
 				<u--form labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404" @change="handelKey">
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
@@ -505,8 +506,9 @@
 						required: true,
 						message: '请填写车辆颜色',
 						trigger: ['blur', 'change']
-					}
+					},
 				},
+				chebi: false,
 				// 是否弹出登记日期
 				showDate: false,
 				showDateTime: dateTime,
@@ -696,6 +698,9 @@
 				})
 			},
 			handelKey(value) {
+				if (value.length != 0) {
+					this.chebi = false;
+				}
 				if (value.indexOf('vehicleKey') > -1) {
 					this.disabledKey = false;
 				} else {
@@ -1065,9 +1070,16 @@
 			},
 			// 下一步
 			handleStep() {
+				if (this.carForm.checkboxValue.length == 0) {
+					this.chebi = true;
+				} else {
+					this.chebi = false;
+				}
 				this.$refs.carForm.validate().then(res => {
 					if (this.modelId) {
-						this.getFairValue();
+						if (this.chebi == false) {
+							this.getFairValue();
+						}
 					} else {
 						this.$modal.msg("请选择车型");
 					}
