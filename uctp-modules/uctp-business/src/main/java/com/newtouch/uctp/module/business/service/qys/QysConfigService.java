@@ -100,4 +100,5 @@ public interface QysConfigService {
     String login(String signature, String timestamp, String content) throws Exception;
 
     void test();
+
 }

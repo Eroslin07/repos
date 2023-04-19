@@ -2,7 +2,7 @@ package com.newtouch.uctp.framework.qiyuesuo;
 
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
-import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoClient;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.bean.*;
@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 @SpringBootTest(classes = UctpSpringBootStarterBizQiyuesuoApplicationTests.class)
 class UctpSpringBootStarterBizQiyuesuoApplicationTests {
     private static DefaultQiyuesuoClient client;
-    private static SaasQiyuesuoClient saasClient;
+    private static SaasQiyuesuoSaasClient saasClient;
 
     @BeforeAll
     public static void before() {
@@ -33,7 +33,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
         properties.setAccessKey("yzFRkW26cb");
         properties.setAccessSecret("eiTI3RA2yaMBpwmCAZPiXmzewEZstT");
         properties.setServerUrl("https://openapi.qiyuesuo.cn");
-        saasClient = new SaasQiyuesuoClient(properties);
+        saasClient = new SaasQiyuesuoSaasClient(properties);
         saasClient.init();
     }
     @Test
@@ -71,7 +71,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
 
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
         draftContract.setSend(false); // 发起合同
-        QiyuesuoCommonResult<Contract> draft = client.draft(draftContract);
+        QiyuesuoCommonResult<Contract> draft = client.defaultSend(draftContract);
         Contract data = draft.getData();
     }
     @Test
@@ -84,7 +84,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
 
         urlRequest.setLicense(new StreamFile("营业执照", new FileInputStream("d:/R-C.jpg")));
 
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = saasClient.companyAuthPageUrl(urlRequest);
+        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = saasClient.saasCompanyAuthPageUrl(urlRequest);
         System.out.println(result);
     }
 

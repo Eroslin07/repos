@@ -29,18 +29,25 @@ public interface QiyuesuoSaasClient {
      * @param request 契约锁接口接受的参数
      * @return
      */
-    QiyuesuoCommonResult<SaaSCompanyAuthPageResult> companyAuthPageUrl(SaasCompanyAuthPageUrlRequest request);
+    QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request);
 
     /**
      * 公司认证
      * @param companyName 待认证公司名称
+     * @param applicantInfo 认证提交人信息（申请者姓名name， 联系方式contact，联系方式类型contactType：MOBILE、EMAIL），企业认证通过后，认证提交 人会自动成为该企业的系统管理员(例：{"name":"aaa","contact": "15100000000","contactType": "MOBILE"})
      * @param legalPerson 待认证公司法人姓名
      * @param registerNo 待认证公司注册号
      * @param license 营业执照（图片）
+     * @return
+     */
+    QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName,String applicantInfo, String legalPerson, String registerNo, StreamFile license);
+    /**
+     * 公司认证
+     * @param companyName 待认证公司名称
      * @param applicantInfo 认证提交人信息（申请者姓名name， 联系方式contact，联系方式类型contactType：MOBILE、EMAIL），企业认证通过后，认证提交 人会自动成为该企业的系统管理员(例：{"name":"aaa","contact": "15100000000","contactType": "MOBILE"})
      * @return
      */
-    QiyuesuoCommonResult<SaaSCompanyAuthPageResult> companyAuthPageUrl(String companyName, String legalPerson, String registerNo, StreamFile license,String applicantInfo);
+    QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName,String applicantInfo);
 
     /**
      * 调用此接口来获取个人认证页面链接，链接只能打开一次，链接有效期5分钟，页面会话有效期15分钟。
@@ -48,7 +55,7 @@ public interface QiyuesuoSaasClient {
      * @param request 契约锁接口接受的参数
      * @return
      */
-    QiyuesuoCommonResult<SaaSUserAuthPageResult> userAuthPage(SaaSUserAuthPageRequest request);
+    QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(SaaSUserAuthPageRequest request);
 
     /**
      * 调用此接口来获取个人认证页面链接，链接只能打开一次，链接有效期5分钟，页面会话有效期15分钟。
@@ -57,7 +64,7 @@ public interface QiyuesuoSaasClient {
      * @param contactType 联系类型：MOBILE（手机号），EMAIL（邮箱）
      * @return
      */
-    QiyuesuoCommonResult<SaaSUserAuthPageResult> userAuthPage(String contact,
+    QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact,
                                                               String contactType);
 
     /**
@@ -66,7 +73,7 @@ public interface QiyuesuoSaasClient {
      * @param request 契约锁接口接受的参数
      * @return
      */
-    QiyuesuoCommonResult<SaaSPrivilegeUrlResult> privilegeUrl(SaasPrivilegeUrlRequest request);
+    QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(SaasPrivilegeUrlRequest request);
     /**
      * 调用此接口，获取已认证企业的授权页面链接，企业在页面上授权后，在SAAS平台上可正常使用契约锁电子签相关功能。
      *
@@ -75,7 +82,9 @@ public interface QiyuesuoSaasClient {
      * @param contactType 联系类型：MOBILE（手机号），EMAIL（邮箱）
      * @return
      */
-    QiyuesuoCommonResult<SaaSPrivilegeUrlResult> privilegeUrl(Long companyId,
+    QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId,
                                                               String contact,
                                                               String contactType);
+
+
 }
