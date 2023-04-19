@@ -7,5 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface DeptMapper extends BaseMapperX<DeptDO> {
+    //物理上的删除
+    void deleteDept(Long userId);
 
 }

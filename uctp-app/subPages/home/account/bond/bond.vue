@@ -5,8 +5,8 @@
 		<view style="position: relative;">
 			<view class="cost_image"></view>
 			<view class="statistics">
-				<view><u--text suffixIcon="eye" iconStyle="font-size: 18px" text="可用余额"></u--text></view>
-				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ available }}<text style="font-size: 12px;">元</text></view>
+				<view><u--text :suffixIcon="eyeShow == true ? 'eye-off' : 'eye'" iconStyle="font-size: 18px;margin-left: 5px" text="可用余额" @click="handleEye"></u--text></view>
+				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : available }}<text style="font-size: 12px;">元</text></view>
 				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 '+blockedBalances+' 元'"></u--text></view>
 				<u-grid col="2">
 					<u-grid-item>
@@ -30,7 +30,7 @@
 					</u-col>
 				</u-row>
 			</view>
-			<view style="padding: 10px;">
+			<view style="padding: 10px;" v-if="indexList.length != 0">
 				<u-list style="height: 100%;">
 					<u-list-item v-for="(item, index) in indexList" :key="index">
 						<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
@@ -51,6 +51,10 @@
 					</u-list-item>
 				</u-list>
 			</view>
+			<view v-else class="empty-page">
+				<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
+				<text class="empty-text">暂无数据</text>
+			</view>
 		</view>
 	</view>
 </template>
@@ -60,32 +64,12 @@
 	export default {
 		data() {
 			return {
+				eyeShow: false,
 				// 可用余额
 				available: 0,
 				// 冻结余额
 				blockedBalances: 0,
-				indexList: [{
-					status: 1,
-					title: '保证金提现中'
-				}, {
-					status: 2,
-					title: '保证金提现'
-				}, {
-					status: 3,
-					title: '保证金回填'
-				}, {
-					status: 4,
-					title: '保证金预扣'
-				}, {
-					status: 5,
-					title: '保证金充值'
-				}, {
-					status: 6,
-					title: '保证金预扣释放'
-				}, {
-					status: 7,
-					title: '保证金实扣'
-				}]
+				indexList: []
 			}
 		},
 		onBackPress(options) {
@@ -101,6 +85,10 @@
 				uni.navigateBack({
 					delta: 1
 				})
+			},
+			// 是否隐藏金额
+			handleEye() {
+				this.eyeShow = !this.eyeShow;
 			},
 			// 查询我的保证金
 			getBondDetail() {
@@ -133,7 +121,7 @@
 			handleClick(val, data) {
 				if (val == '保证金提现中') {
 					// 保证金提现中
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金提现') {
 					// 保证金提现明细
 					this.$tab.navigateTo('/subPages/home/account/bond/detailed?data='+encodeURIComponent(JSON.stringify(data)));
@@ -194,6 +182,19 @@
 				padding: 0 10px;
 				line-height: 45px;
 				border-bottom: 1px solid #f5f5f5;
+			}
+		}
+		
+		.empty-page {
+			width: 100%;
+			position: absolute;
+			left: 50%;
+			top: 45%;
+			transform: translate(-50%, -50%);
+			text-align: center;
+		
+			.empty-img {
+				width: 30%;
 			}
 		}
 	}

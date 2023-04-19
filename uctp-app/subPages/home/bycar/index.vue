@@ -28,7 +28,7 @@
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
 						<view class="text">车辆基础信息</view>
 					</view>
-					<u-form-item label="上传车辆图片" :required="true">
+					<u-form-item label="上传车辆图片">
 					</u-form-item>
 					<u-form-item borderBottom prop="carUrl">
 						<view class="image">
@@ -542,12 +542,12 @@
 						message: '请上传机动车登记证书',
 						trigger: ['blur', 'change']
 					},
-					carUrl: {
-						type: 'array',
-						required: true,
-						message: '请上传车辆图片',
-						trigger: ['blur', 'change']
-					},
+					// carUrl: {
+					// 	type: 'array',
+					// 	required: true,
+					// 	message: '请上传车辆图片',
+					// 	trigger: ['blur', 'change']
+					// },
 					vin: {
 						type: 'string',
 						required: true,
@@ -883,7 +883,7 @@
 												_this.carId = result.data['1'].carInfoDetails.carId;
 												_this.modelId = result.data['1'].carInfo.modelId;
 												_this.carForm = {
-													drivingLicenseUrl: result.data['1'].fileB,
+													drivingLicenseUrl: result.data['1'].fileB.length == 0 ? _this[`fileList${index}`] : result.data['1'].fileB,
 													certificateUrl: result.data['1'].fileC,
 													carUrl: result.data['1'].fileA,
 													vin: result.data['1'].carInfo.vin,
@@ -918,8 +918,14 @@
 														_this.fileList7 = [item];
 													}
 												})
-												_this.fileList1 = result.data['1'].fileB;
-												_this.fileList1.status = 'success';
+												if (result.data['1'].fileB.length != 0) {
+													_this.fileList1 = result.data['1'].fileB;
+													_this.fileList1.status = 'success';
+												} else {
+													if (i == res.tempFilePaths.length - 1) {
+														_this.upload(res, index);
+													}
+												}
 												_this.fileList3 = result.data['1'].fileC;
 												let obj = result.data['1'].carInfoDetails.proceduresAndSpareParts
 												for (let key in obj) {
@@ -1324,6 +1330,7 @@
 						} else {
 							// 发起公允值审批流程
 							let procDefKey = "SGYZ";
+							res.data.fairValue = this.fairValue;
 							let variables = {
 								marketName: this.$store.state.user.tenantName,
 								merchantName: this.$store.state.user.deptName,

@@ -40,12 +40,13 @@
   </ContentWrap>
 </template>
 <script setup lang="ts" name="ToDoList">
+import { ElLoading } from 'element-plus'
 import { ref } from 'vue'
 import { allSchemas } from './toDoList.data'
 import { Drawer } from '@/components/Drawer'
 import * as ToDoList from '@/api/workbench/toDoList'
 // import * as RoleApi from '@/api/system/role'
-import { baseInfoData, infoLoading } from '../basInfoValue'
+import { baseInfoData } from '../basInfoValue'
 // 列表相关的变量
 const [registerTable, { reload }] = useXTable({
   allSchemas: allSchemas,
@@ -79,9 +80,9 @@ const handleExport = () => {
 
 // 点击申请单号
 const handleApplication = (row) => {
-  drawerVisible.value = true //打开抽屉
-  infoLoading.value = true
-  console.log(infoLoading, 'infoLoading')
+  const loadingInstance = ElLoading.service({ fullscreen: true })
+  // drawerVisible.value = true //打开抽屉
+  // console.log(infoLoading, 'infoLoading')
   const params = {
     taskId: row.taskId,
     businessKey: row.businessKey
@@ -89,14 +90,15 @@ const handleApplication = (row) => {
   ToDoList.getTaskFormInfoAPI(params)
     .then((response) => {
       baseInfoData.data = { ...response }
+      loadingInstance.close()
+      console.log(baseInfoData.data)
       // ZHSQ SGYZ SCKP SCKZH MCHT MCKP LRTQ
       status.value = response.busiType
-      infoLoading.value = false
-      // drawerVisible.value = true //打开抽屉
+      drawerVisible.value = true //打开抽屉
     })
     .catch((err) => {
       console.log(err)
-      infoLoading.value = false
+      loadingInstance.close()
     })
 }
 // 刷新列表数据

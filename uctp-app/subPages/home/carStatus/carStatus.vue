@@ -37,7 +37,8 @@
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
-							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测</view>
+							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测
+							</view>
 							<image :src="tab.url" class="car-image"></image>
 							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
 						</view>
@@ -49,8 +50,9 @@
 						<view class="fs12" style="color: #000;">收车价：
 							<text v-if="eyeIsShow" style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
 							<text v-else style="padding-right:3px;">***元</text>
-							<text v-if="eyeIsShow" class="iconfont icon-open-eye" @click="eyeIsShow=!eyeIsShow"></text>
-							<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+							<text v-if="eyeIsShow" class="iconfont icon-open-eye"
+								@click="tab.eyeIsShow=!tab.eyeIsShow"></text>
+							<text v-else class="iconfont icon-close-eye" @click="tab.eyeIsShow=!tab.eyeIsShow"></text>
 						</view>
 						<view class="fs12" style="color: #f60;">卖车价：
 							<text v-if="!eyeIsShow && tab.vehicleReceiptAmount">***元</text>
@@ -66,7 +68,7 @@
 				<text>经纪转经销</text>
 			</view>
 		</view>
-		<view v-else  class="empty-page">
+		<view v-else class="empty-page">
 			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
 			<text class="empty-text">暂无数据</text>
 		</view>
@@ -80,7 +82,7 @@
 	import {
 		getHomePageList
 	} from '@/api/home.js'
-import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
+	import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
 
 	export default {
 		data() {
@@ -108,15 +110,13 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 					salesStatus: null,
 					status: null,
 					statusThree: null,
-					businessId:this.$store.state.user.deptId,
+					businessId: this.$store.state.user.deptId,
 					"pageNo": 1,
 					"pageSize": 10
 				},
 				detailData: {},
 				childData: {},
 
-				// 是否展示价格
-				eyeIsShow: false,
 				// 加载更多
 				loadStatus: 'loadmore',
 				total: 0,
@@ -156,15 +156,6 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 		// 下拉刷新
 		onPullDownRefresh() {
 
-			// if (this.tabList.length == this.total) {
-			// 	this.loadStatus = 'nomore';
-			// 	return
-			// }
-			// this.loadStatus = 'loading';
-			// this.timer = setTimeout(() => {
-			// 	this.formData.pageNo += 1
-			// 	this.getMore(this.formData)
-			// }, 1000)
 			console.log('下拉刷新')
 			this.getList(this.formData)
 		},
@@ -183,7 +174,12 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 			getList(params) {
 				this.$modal.loading("数据加载中...");
 				getHomePageList(params).then(res => {
-					this.tabList = res.data.list
+					this.tabList = res.data.list.map(item => {
+						return {
+							eyeIsShow: false,
+							...item
+						}
+					})
 					this.total = res.data.total;
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
@@ -192,13 +188,18 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 					}
 				}).catch((error) => {
 					this.loadStatus = 'nomore'
-				}).finally(()=>{
+				}).finally(() => {
 					this.$modal.closeLoading()
 				})
 			},
 			getMore(params) {
 				getHomePageList(params).then(res => {
-					this.tabList = [...this.tabList, ...res.data.list];
+					this.tabList = [...this.tabList, ...res.data.list].map(item => {
+						return {
+							eyeIsShow: false,
+							...item
+						}
+					})
 					this.total = res.data.total;
 					if (this.total > this.tabList.length) {
 						this.loadStatus = 'loadmore'
@@ -287,26 +288,31 @@ import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup
 				z-index: 999;
 			}
 		}
+
 		// 待售未检测
 		.cell-car-forSale {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
 		}
+
 		// 草稿
 		.cell-car-draft {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(132, 175, 206, .3) 0%, rgba(40, 163, 269, .8) 50%, rgba(132, 175, 206, .3) 100%);
 		}
+
 		// 合同已发起
-		.cell-car-contact{
+		.cell-car-contact {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(233, 158, 131, .3) 0%, rgba(218, 94, 45, .8) 50%, rgba(233, 158, 131, .3) 100%);
 		}
+
 		// 已售出
-		.cell-car-saled{
+		.cell-car-saled {
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(114, 241, 181, .3) 0%, rgba(15, 156, 88, .8) 50%, rgba(114, 241, 181, .3) 100%);
 		}
+
 		.empty-page {
 			width: 100%;
 			position: absolute;
