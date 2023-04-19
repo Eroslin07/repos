@@ -111,11 +111,18 @@ public class QysConfigController {
         return qysConfigService.login(signature, timestamp, content);
     }
 
+    @PostMapping("/send")
+    @Schema(description ="发起契约锁合同")
+    @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
+    public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId) {
+        qysConfigService.send(carId);
+        return success(true);
+    }
 
     @GetMapping("/test")
     @Schema(description ="测试Id")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<Long> testId(@RequestParam("id") Long id) {
+    public CommonResult<Long> testId(@RequestParam("id") @NotNull Long id) {
         qysConfigService.test();
         return success(id);
     }
