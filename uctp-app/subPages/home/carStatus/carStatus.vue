@@ -33,7 +33,7 @@
 				</uni-card> -->
 
 		<view class="" v-if="tabList.length>0">
-			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab.id)">
+			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)">
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
@@ -48,14 +48,15 @@
 						<view class="fs12">VIN：{{tab.vin || '暂无'}}</view>
 						<view class="fs12">{{tab.model || '暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
 						<view class="fs12" style="color: #000;">收车价：
-							<text v-if="eyeIsShow" style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
+							<text v-if="tab.eyeIsShow"
+								style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
 							<text v-else style="padding-right:3px;">***元</text>
-							<text v-if="eyeIsShow" class="iconfont icon-open-eye"
+							<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
 								@click="tab.eyeIsShow=!tab.eyeIsShow"></text>
 							<text v-else class="iconfont icon-close-eye" @click="tab.eyeIsShow=!tab.eyeIsShow"></text>
 						</view>
 						<view class="fs12" style="color: #f60;">卖车价：
-							<text v-if="!eyeIsShow && tab.vehicleReceiptAmount">***元</text>
+							<text v-if="!tab.eyeIsShow && tab.vehicleReceiptAmount">***元</text>
 							<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
 						</view>
 						<view class="fs12">创建时间：{{ tab.createTime }}</view>
@@ -233,8 +234,13 @@
 			},
 
 			// 查看详情
-			handleCard() {
-				console.log(2222)
+			handleCard(item) {
+				console.log(item, 2222)
+				if (item.status === 31) {
+					this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
+					return;
+				}
+
 			}
 		}
 	}

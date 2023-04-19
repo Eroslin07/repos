@@ -36,3 +36,11 @@ export function setSellCarInfo(data) {
 		data: data
 	})
 }
+
+// 删除卖车草稿
+export function deleteSellDraft(id){
+	return request({
+		url:`/uctp/car-info/delete/sell/${id}`,
+		method:'GET'
+	})
+}

@@ -129,20 +129,7 @@
 				<!-- 选择登记日期 -->
 				<u-datetime-picker :show="showDate" v-model="carForm.firstRegistDate" mode="date" :formatter="formatter"
 					@cancel="showDate = false" @confirm="handleDate"></u-datetime-picker>
-				<!-- 费用明细 -->
-				<u-modal :show="showDetail" @confirm="showDetail = false">
-					<view>
-						<view>收车金额：{{ amountDetails.vehicleReceiptAmount }}元</view>
-						<view>卖车金额：{{ amountDetails.sellAmount }}元</view>
-						<view>过户服务费：{{ amountDetails.transferSell }}元</view>
-						<view>运营服务费（卖家）：{{ amountDetails.operation }}元</view>
-						<view>过户服务费（买家）：{{ amountDetails.transferBuy }}元</view>
-						<view>增值税费用：{{ amountDetails.vat }}元</view>
-						<view>杂税费用：{{ amountDetails.tax }}元</view>
-						<view>合计费用：{{ amountDetails.total }}元</view>
-						<view>利润：{{ amountDetails.profit }}元</view>
-					</view>
-				</u-modal>
+
 			</view>
 			<!-- 买家信息 -->
 			<view v-if="sellerInfor">
@@ -270,7 +257,7 @@
 				<u--form :model="feesForm" :rules="feesFormRules" ref="feesForm" labelPosition="left"
 					labelWidth="120px">
 					<u-form-item label="车况" :required="true" prop="carCondition"></u-form-item>
-					<u-form-item borderBottom>
+					<u-form-item borderBottom prop="conditionA">
 						<u-radio-group v-model="feesForm.conditionA" activeColor="#fd6404" shape="square">
 							<text>（</text>
 							<u-radio label="确保" :name="true"></u-radio>
@@ -279,7 +266,7 @@
 							<text>）里程表未被蓄意改动</text>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item borderBottom>
+					<u-form-item borderBottom prop="conditionB">
 						<u-radio-group v-model="feesForm.conditionB" activeColor="#fd6404" shape="square">
 							<text>（</text>
 							<u-radio label="是" :name="true"></u-radio>
@@ -288,7 +275,7 @@
 							<text>）事故车</text>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item borderBottom>
+					<u-form-item borderBottom prop="conditionC">
 						<u-radio-group v-model="feesForm.conditionC" activeColor="#fd6404" shape="square">
 							<text>（</text>
 							<u-radio label="是" :name="true"></u-radio>
@@ -297,7 +284,7 @@
 							<text>）泡水车</text>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item borderBottom>
+					<u-form-item borderBottom prop="conditionD">
 						<u-radio-group v-model="feesForm.conditionD" activeColor="#fd6404" shape="square">
 							<text>（</text>
 							<u-radio label="是" :name="true"></u-radio>
@@ -380,11 +367,25 @@
 				</u--form>
 			</view>
 		</uni-card>
+		<!-- 费用明细 -->
+		<u-modal :show="showDetail" @confirm="showDetail = false">
+			<view>
+				<view>收车金额：{{ amountDetails.vehicleReceiptAmount }}元</view>
+				<view>卖车金额：{{ amountDetails.sellAmount }}元</view>
+				<view>过户服务费：{{ amountDetails.transferSell }}元</view>
+				<view>运营服务费（卖家）：{{ amountDetails.operation }}元</view>
+				<view>过户服务费（买家）：{{ amountDetails.transferBuy }}元</view>
+				<view>增值税费用：{{ amountDetails.vat }}元</view>
+				<view>杂税费用：{{ amountDetails.tax }}元</view>
+				<view>合计费用：{{ amountDetails.total }}元</view>
+				<view>利润：{{ amountDetails.profit }}元</view>
+			</view>
+		</u-modal>
 		<view class="footer">
 			<!-- 底部按钮 -->
 			<u-grid col="3">
 				<u-grid-item>
-					<button @click="handleStep" class="button" style="background-image: none;color: #000;">删除</button>
+					<button @click="handleDelete" class="button" style="background-image: none;color: #000;">清空</button>
 				</u-grid-item>
 				<u-grid-item>
 					<button @click="handleStep" class="button" v-if="vehicleInfor">下一步</button>
@@ -402,6 +403,10 @@
 				<u-loading-icon :text="textOverlay" textSize="18" color="#fd6601" text-color="#fd6601"></u-loading-icon>
 			</view>
 		</u-overlay>
+
+		<!-- 清空弹框 -->
+		<u-modal :show="deleteModal" content='确认清空已填数据吗?' showCancelButton :closeOnClickOverlay="false"
+			@cancel="deleteModal=false" @confirm="deleteSubmit"></u-modal>
 	</view>
 </template>
 
@@ -420,7 +425,8 @@
 	import {
 		getSellCarInfo,
 		setSellCarInfo,
-		getAmount
+		getAmount,
+		deleteSellDraft
 	} from '@/api/home/sellingCar.js'
 	import {
 		getFairValue
@@ -428,6 +434,7 @@
 	import {
 		setCreate
 	} from '@/api/home'
+	import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
 	export default {
 		data() {
 			return {
@@ -560,21 +567,25 @@
 					// 	trigger: ['blur', 'change']
 					// },
 					conditionA: {
+						type: 'boolean',
 						required: true,
 						message: '请选择车辆情况',
 						trigger: ['blur', 'change']
 					},
 					conditionB: {
+						type: 'boolean',
 						required: true,
 						message: '请选择车辆情况',
 						trigger: ['blur', 'change']
 					},
 					conditionC: {
+						type: 'boolean',
 						required: true,
 						message: '请选择车辆情况',
 						trigger: ['blur', 'change']
 					},
 					conditionD: {
+						type: 'boolean',
 						required: true,
 						message: '请选择车辆情况',
 						trigger: ['blur', 'change']
@@ -701,7 +712,10 @@
 					}]
 				},
 				date: null,
-				modelId: null
+				modelId: null,
+
+				// 删除模态框
+				deleteModal: false,
 			}
 		},
 		onBackPress(options) {
@@ -722,9 +736,12 @@
 				id: options.id
 			}).then((res) => {
 				this.carForm = res.data;
+				console.log(res.data, 'res.data')
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
+				// 收车金额
+				this.sellerForm.vehicleReceiptAmount = res.data.vehicleReceiptAmount;
 				for (let key in res.data.proceduresAndSpareParts) {
 					if (res.data.proceduresAndSpareParts[key] == true) {
 						this.carForm.checkboxValue.push(key);
@@ -734,7 +751,7 @@
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.showOverlay = false;
-				// this.$tab.navigateTo('/subPages/home/sellingCar/index');
+				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
 		},
 		mounted() {
@@ -894,6 +911,20 @@
 					this.amountDetails = res.data;
 				})
 			},
+			// 删除
+			handleDelete() {
+				this.deleteModal = true;
+			},
+			// 确认删除
+			deleteSubmit() {
+				this.deleteModal = false;
+				deleteSellDraft(this.carForm.id).then(res => {
+					this.$modal.success('清空成功');
+					this.$tab.switchTab('/pages/index');
+				}).catch(() => {
+					console.log('清空失败')
+				})
+			},
 			// 下一步
 			handleStep() {
 				this.$refs.feesForm.validate().then(res => {
@@ -1019,10 +1050,10 @@
 						// 保存买家信息并确认发起
 						if ((this.fairValue.value1 * 1) <= (data.sellAmount / 10000) && (data.sellAmount /
 								10000) <= (this.fairValue.value2 * 1)) {
-							console.log(1111)
+							// console.log(1111)
 							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
 						} else {
-							console.log(2222)
+							// console.log(2222)
 							// 发起公允值审批流程
 							let procDefKey = "MGYZ";
 							res.data.fairValue = this.fairValue;
