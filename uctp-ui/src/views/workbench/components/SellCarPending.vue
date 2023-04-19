@@ -36,6 +36,7 @@
                     :src="url.url"
                     fit="fill"
                     :zoom-rate="1.2"
+                    :preview-src-list="fileB"
                   />
                 </div>
               </el-form-item>
@@ -56,6 +57,7 @@
                     :src="url.url"
                     fit="fill"
                     :zoom-rate="1.2"
+                    :preview-src-list="fileC"
                   />
                 </div>
               </el-form-item>
@@ -76,6 +78,7 @@
                     :src="url.url"
                     fit="fill"
                     :zoom-rate="1.2"
+                    :preview-src-list="fileA"
                   />
                 </div>
               </el-form-item>
@@ -314,6 +317,7 @@
                       fit="cover"
                       :zoom-rate="1.2"
                       :initial-index="0"
+                      :preview-src-list="fileD"
                     />
                   </div>
                 </div>
@@ -403,7 +407,26 @@ const setDialogTile = (type: string) => {
   actionType.value = type
   // dialogVisible.value = true
 }
-
+const fileB = computed(() => {
+  return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.map(
+    (item) => item.url
+  )
+})
+const fileC = computed(() => {
+  return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileC.map(
+    (item) => item.url
+  )
+})
+const fileA = computed(() => {
+  return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileA.map(
+    (item) => item.url
+  )
+})
+const fileD = computed(() => {
+  return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileD.map(
+    (item) => item.url
+  )
+})
 const identifyShow = ref(true)
 // const idCardShow = ref(false)
 
