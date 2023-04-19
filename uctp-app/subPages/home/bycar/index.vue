@@ -1324,6 +1324,7 @@
 						} else {
 							// 发起公允值审批流程
 							let procDefKey = "SGYZ";
+							res.data.fairValue = this.fairValue;
 							let variables = {
 								marketName: this.$store.state.user.tenantName,
 								merchantName: this.$store.state.user.deptName,

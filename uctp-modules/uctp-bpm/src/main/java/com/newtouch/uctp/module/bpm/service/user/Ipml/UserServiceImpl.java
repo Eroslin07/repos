@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id) {
         AdminUserDO adminUserDO = userMapper.selectById(id);
-        deptMapper.deleteById(adminUserDO.getDeptId());
+        deptMapper.deleteDept(adminUserDO.getDeptId());
         userMapper.deleteUserExt(id);
-        userMapper.deleteById(id);
+        userMapper.deleteUser(id);
 
     }
 }

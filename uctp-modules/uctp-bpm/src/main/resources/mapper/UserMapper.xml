@@ -16,7 +16,7 @@
     </delete>
 
     <delete id="deleteUser">
-        delete from system_user
+        delete from system_users
         where id=#{id};
     </delete>
 
