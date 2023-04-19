@@ -56,7 +56,7 @@ public class FeesAndCommitments implements Serializable {
 //    private Boolean transferC;
     //--------------------车辆折损费用------------------------------
     @Schema(description = "A-依据本协议第二条车辆价款的5%支付车辆折损费用,B-依据本协议第二条车辆价款的5%支付车辆折损费用")
-    private Boolean loss;
+    private String loss;
 //    /**
 //     * 依据本协议第二条车辆价款的5%支付车辆折损费用。
 //     */
@@ -69,7 +69,7 @@ public class FeesAndCommitments implements Serializable {
 //    private Boolean lossB;
     //--------------------第三方检测费用------------------------------
     @Schema(description = "A-全车检测费用,B-乙方（平台）无需承担")
-    private Boolean testing;
+    private String testing;
 //    /**
 //     * 全车检测费用。
 //     */
