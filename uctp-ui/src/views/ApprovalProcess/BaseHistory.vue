@@ -49,10 +49,8 @@ import { useUserStore } from '@/store/modules/user'
 import { onMounted, ref } from 'vue'
 
 import { baseInfoData } from '@/views/workbench/basInfoValue'
-console.log(baseInfoData.data, 'baseInfoData')
 
-const { query } = useRoute() // 查询参数
-const id = (query.id as unknown as number) || baseInfoData.data.procInstId
+const id = baseInfoData.data.procInstId
 const tasksLoad = ref(true)
 const tasks = ref<any[]>([])
 const runningTasks = ref<any[]>([]) // 运行中的任务
