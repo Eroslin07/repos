@@ -39,7 +39,7 @@
 						<view class="car_left">
 							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测
 							</view>
-							<image :src="tab.url" class="car-image"></image>
+							<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
 							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
 						</view>
 					</uni-col>
@@ -122,6 +122,7 @@
 				loadStatus: 'loadmore',
 				total: 0,
 				timer: {},
+				defaultUrl: '/static/images/title-car.png'
 			}
 		},
 		// components: {
@@ -237,7 +238,7 @@
 			handleCard(item) {
 				console.log(item, 2222)
 				if (item.status === 31) {
-					this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
+					this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id + '&&text=草稿');
 					return;
 				}
 

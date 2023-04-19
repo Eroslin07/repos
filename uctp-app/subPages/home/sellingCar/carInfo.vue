@@ -107,12 +107,12 @@
 					<u-form-item label="使用年限至" prop="scrapDate" borderBottom>
 						<u--input v-model="carForm.scrapDate" readonly disabledColor="#ffffff" placeholder="请选择"
 							border="none"></u--input>
-						<u-icon slot="right" name="arrow-right"></u-icon>
+						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="年检签证有效期" prop="annualInspectionDate" borderBottom>
 						<u--input v-model="carForm.annualInspectionDate" readonly disabledColor="#ffffff"
 							placeholder="请选择" border="none"></u--input>
-						<u-icon slot="right" name="arrow-right"></u-icon>
+						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="保险险种" prop="insurance" borderBottom>
 						<u--input v-model="carForm.insurance" readonly border="none" placeholder="请输入保险险种"></u--input>
@@ -120,7 +120,7 @@
 					<u-form-item label="保险期至" prop="insuranceEndData" borderBottom>
 						<u--input v-model="carForm.insuranceEndData" readonly disabledColor="#ffffff" placeholder="请选择"
 							border="none"></u--input>
-						<u-icon slot="right" name="arrow-right"></u-icon>
+						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<u--input v-model="carForm.remarks" border="none" placeholder="请输入特殊约定"></u--input>
@@ -143,14 +143,14 @@
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额">
+						<u-input v-model="sellerForm.vehicleReceiptAmount" disabled border="none" placeholder="请输入收车金额">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" border="none" @blur="handleBlur" placeholder="请输入卖车金额">
+						<u-input v-model="sellerForm.sellAmount" border="none" @focus="handleFocus" @blur="handleBlur" placeholder="请输入卖车金额">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -171,10 +171,10 @@
 							</u-radio>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
+					<!-- <u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
 						<u--input v-model="sellerForm.transManageName" border="none" placeholder="请输入转入地车辆管理所名称">
 						</u--input>
-					</u-form-item>
+					</u-form-item> -->
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
 							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
@@ -230,20 +230,22 @@
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 					</view>
-					<view class="text">车辆手续及备件</view>
+					<view class="text"><text style="color:#f00">*</text> 车辆手续及备件</view>
 				</view>
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
-					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404">
+					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
+						@change="changeValue">
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom
 							@click="item.name == 11 ? showKey = true : ''">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;">
-								<u--input v-model="carForm.key" disabled v-if="item.name == 'vehicleKey'"
-									disabledColor="#ffffff" placeholder="请选择" border="none"></u--input>
-								<u--input v-model="carForm.accidentVehicle" v-if="item.name == 'accidentVehicle'"
-									border="none" placeholder="请输入"></u--input>
+								<u--input v-model="carForm.vehicleKey" :disabled="isDisabledKey"
+									v-if="item.name == 'vehicleKey'" disabledColor="#ffffff" placeholder="请输入"
+									border="none"></u--input>
+								<u--input v-model="carForm.accidentVehicle" :disabled="isDisabledAcc"
+									v-if="item.name == 'accidentVehicle'"  disabledColor="#ffffff" border="none" placeholder="请输入"></u--input>
 							</view>
-							<u--text slot="right" v-if="item.name == 'vehicleKey'" prefixIcon="arrow-right" text="组">
+							<u--text slot="right" v-if="item.name == 'vehicleKey'" text="组">
 							</u--text>
 						</u-form-item>
 					</u-checkbox-group>
@@ -360,10 +362,10 @@
 							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
-					<u-form-item label="其他"></u-form-item>
-					<!-- <u-form-item>
-						<u--textarea placeholder="请输入内容" ></u--textarea>
-					</u-form-item> -->
+					<!-- <u-form-item label="其他"></u-form-item> -->
+					<u-form-item label="其他" borderBottom labelWidth="60">
+						<u--input v-model="otherValue" border="none" placeholder="请输入"></u--input>
+					</u-form-item>
 				</u--form>
 			</view>
 		</uni-card>
@@ -430,10 +432,13 @@
 	import {
 		setCreate
 	} from '@/api/home'
-	import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
 	export default {
 		data() {
 			return {
+				otherValue: '',
 				showOverlay: false,
 				carId: null,
 				vehicleInfor: true,
@@ -470,6 +475,8 @@
 					insuranceEndData: '',
 					remarks: '',
 					checkboxValue: [],
+					vehicleKey: '',
+					accidentVehicle: '',
 				},
 				// 车辆信息校验规则
 				carRules: {
@@ -537,6 +544,8 @@
 						name: 'accidentVehicle'
 					},
 				],
+				isDisabledKey: true,
+				isDisabledAcc: true,
 				showKey: false,
 				rangeKey: [
 					[{
@@ -545,10 +554,10 @@
 					}],
 				],
 				feesForm: {
-					conditionA: '',
-					conditionB: '',
-					conditionC: '',
-					conditionD: '',
+					conditionA:true,
+					conditionB:false,
+					conditionC: false,
+					conditionD: false,
 					rent: '',
 					business: '',
 					damage: '',
@@ -660,12 +669,12 @@
 						message: '请选择卖车方式',
 						trigger: ['blur', 'change']
 					},
-					transManageName: {
-						type: 'string',
-						required: true,
-						message: '请填写转入地车辆管理所名称',
-						trigger: ['blur', 'change']
-					},
+					// transManageName: {
+					// 	type: 'string',
+					// 	required: true,
+					// 	message: '请填写转入地车辆管理所名称',
+					// 	trigger: ['blur', 'change']
+					// },
 					buyerIdCard: [{
 						required: true,
 						message: '请填写身份证号',
@@ -724,6 +733,7 @@
 			return true;
 		},
 		onLoad(options) {
+			console.log(options,'options')
 			this.carId = options.id;
 			this.showOverlay = true;
 			this.$modal.loading("数据加载中，请耐心等待...")
@@ -731,22 +741,66 @@
 				id: options.id
 			}).then((res) => {
 				this.carForm = res.data;
+				this.carForm.scrapDate = parseTime(this.carForm.scrapDate);
+				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
+				this.carForm.remarks=''
 				this.modelId = res.data.modelId;
 				// 收车金额
-				this.sellerForm.vehicleReceiptAmount = res.data.vehicleReceiptAmount;
-				for (let key in res.data.proceduresAndSpareParts) {
-					if (res.data.proceduresAndSpareParts[key] == true) {
+				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount) ;
+				// 钥匙
+				if(this.carForm.vehicleKey){
+					this.isDisabledKey=false
+				}else{
+					this.isDisabledKey=true
+				}
+				// 其他
+				if(carForm.accidentVehicle){
+					this.isDisabledAcc=false
+				}else{
+					this.isDisabledAcc=true
+				}
+				
+				let obj;
+				if(options.text=='草稿'){
+					obj = res.data.proceduresAndSpareSell;
+				}else{
+					obj = res.data.proceduresAndSpareParts;
+				}
+				
+				for (let key in obj) {
+					if (obj[key] === true) {
 						this.carForm.checkboxValue.push(key);
 					}
+					if (key == 'vehicleKey') {
+						if (obj[key] != '') {
+							this.carForm.vehicleKey = obj[key];
+							this.carForm.checkboxValue.push(key);
+						}
+					}
+					if (key == 'accidentVehicle') {
+						if (obj[key] != '') {
+							this.carForm.accidentVehicle = obj[key];
+							this.carForm.checkboxValue.push(key);
+						}
+					}
 				}
+				this.feesForm={
+					...res.data.vehicleProblem,
+					rent:'',
+				}
+				
 				this.showOverlay = false;
 				this.$modal.closeLoading();
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.showOverlay = false;
 				this.$modal.closeLoading();
+				if(options.text=='草稿'){
+					this.$tab.navigateTo('/subPages/home/carStatus/carStatus')
+					return;
+				}
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			})
 		},
@@ -754,6 +808,29 @@
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
 		},
 		methods: {
+			changeValue(value) {
+				console.log(value,value.indexOf('vehicleKey'), 99999)
+				if (value.indexOf('vehicleKey') > 0) {
+					this.$nextTick(()=>{
+						this.isDisabledKey = false
+					})
+				} else {
+					this.$nextTick(()=>{
+						this.isDisabledKey = true
+					})
+				}
+				if (value.indexOf('accidentVehicle') > 0) {
+					this.$nextTick(()=>{
+						this.isDisabledAcc = false
+					})
+					
+				} else {
+					this.$nextTick(()=>{
+						this.isDisabledAcc = true
+					})
+					
+				}
+			},
 			back() {
 				uni.navigateBack({
 					delta: 1
@@ -815,6 +892,7 @@
 							}).then((ress) => {
 								let data = JSON.parse(ress.data);
 								if (data.words_result['公民身份号码']) {
+									_this.sellerForm.sellerAdder = data.words_result['住址'].words;
 									_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
 									_this.sellerForm.buyerName = data.words_result['姓名'].words;
 								}
@@ -906,6 +984,13 @@
 					this.sellerForm.profit = res.data.profit;
 					this.amountDetails = res.data;
 				})
+				let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
+				this.$set(this.sellerForm, 'sellAmount', amount);
+			},
+			//卖车金额获取焦点
+			handleFocus(){
+				let amount = this.$amount.getDelcommafy(this.sellerForm.sellAmount);
+				this.$set(this.sellerForm, 'sellAmount', amount);
 			},
 			// 删除
 			handleDelete() {
@@ -1001,7 +1086,7 @@
 					}
 				})
 				// 第三方检测费用
-				let check = ['lossA', 'lossB'];
+				let check = ['testingA', 'testingB'];
 				check.forEach((item) => {
 					if (item == this.feesForm.check) {
 						feesAndCommitments[item] = true;
