@@ -1,24 +1,21 @@
 package com.newtouch.uctp.module.business.controller.app.notice;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
-import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
-import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeReqVO;
-import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
-import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
-import com.newtouch.uctp.module.business.service.NoticeService;
-import com.newtouch.uctp.module.business.util.ListUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
+import com.newtouch.uctp.module.business.controller.app.notice.vo.NoticeVO;
+import com.newtouch.uctp.module.business.dal.dataobject.NoticeInfoDO;
+import com.newtouch.uctp.module.business.service.NoticeService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
