@@ -39,7 +39,6 @@ public class BpmTaskController {
 
     @GetMapping("/v2/todo-page")
     @Operation(summary = "获取 Todo 待办任务分页")
-    //@PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<PageResult<BpmTaskTodoRespVO>> getTodoTaskPageV2(@Valid BpmTaskTodoReqVO pageVO) {
         return success(taskService.getTodoTaskPageV2(getLoginUserId(), pageVO));
     }
@@ -49,6 +48,12 @@ public class BpmTaskController {
     @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<PageResult<BpmTaskDonePageItemRespVO>> getDoneTaskPage(@Valid BpmTaskDonePageReqVO pageVO) {
         return success(taskService.getDoneTaskPage(getLoginUserId(), pageVO));
+    }
+
+    @GetMapping("/v2/done-page")
+    @Operation(summary = "获取 Done 已办任务分页")
+    public CommonResult<PageResult<BpmTaskDoneRespVO>> getDoneTaskV2Page(@Valid BpmTaskDoneReqVO pageVO) {
+        return success(taskService.getDoneTaskPageV2(getLoginUserId(), pageVO));
     }
 
     @GetMapping("/list-by-process-instance-id")
