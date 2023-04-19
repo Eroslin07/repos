@@ -212,7 +212,7 @@
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;" @click="handleDetail">预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。明细请查看 ></view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
@@ -985,7 +985,7 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.sellerForm.sellAmount,
+					sellAmount:this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: this.fileList4.map((item) => { return item.id }),
@@ -1007,9 +1007,12 @@
 						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
-						if (this.fairValue.value1 <= data.sellAmount && data.sellAmount <= this.fairValue.value2) {
+						console.log((data.sellAmount/10000))
+						if (this.fairValue.value1 <= (data.sellAmount/10000) && data.sellAmount <= this.fairValue.value2) {
+							console.log(1111)
 							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
 						} else {
+							console.log(2222)
 							// 发起公允值审批流程
 							return
 							let procDefKey = "MGYZ";
@@ -1049,7 +1052,7 @@
 			getFairValue() {
 				let data = {
 					modelId: this.modelId,
-					plateNum: this.carForm.licensePlateNum,
+					plateNum: this.carForm.plateNum,
 					mileage: this.carForm.mileage,
 					firstRegistDate: this.carForm.firstRegistDate
 				}
