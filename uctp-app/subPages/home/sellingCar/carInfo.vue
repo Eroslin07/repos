@@ -18,37 +18,29 @@
 			<!-- 车辆信息 -->
 			<view v-if="vehicleInfor">
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+					</view>
 					<view class="text">车辆基础信息</view>
 				</view>
 				<view class="look-over">
 					<u-grid col="2">
 						<u-grid-item>
 							<uni-card @click="handleCollection">
-								<u--text style="font-size:12px;" prefixIcon="level" iconStyle="font-size: 30px; color: #e26e1f"
-									text="收车合同"></u--text>
+								<u--text style="font-size:12px;" prefixIcon="level"
+									iconStyle="font-size: 30px; color: #e26e1f" text="收车合同"></u--text>
 							</uni-card>
 						</u-grid-item>
 						<u-grid-item>
 							<uni-card @click="handleLookEntrust">
-								<u--text style="font-size:12px;" prefixIcon="level" iconStyle="font-size: 30px; color: #e26e1f"
-									text="委托合同"></u--text>
+								<u--text style="font-size:12px;" prefixIcon="level"
+									iconStyle="font-size: 30px; color: #e26e1f" text="委托合同"></u--text>
 							</uni-card>
 						</u-grid-item>
 					</u-grid>
 				</view>
-				<u--form
-					labelPosition="left"
-					:model="carForm"
-					:rules="carRules"
-					ref="carForm"
-					labelWidth="120px"
-				>
+				<u--form labelPosition="left" :model="carForm" :rules="carRules" ref="carForm" labelWidth="120px">
 					<u-collapse accordion>
-						<u-collapse-item
-							title="车辆图片"
-							name="carPicList"
-						>
+						<u-collapse-item title="车辆图片" name="carPicList">
 							<u-album :urls="carForm.carPicList" maxCount="4" rowCount="4"></u-album>
 						</u-collapse-item>
 						<!-- <u-collapse-item
@@ -71,13 +63,8 @@
 						<u--input v-model="carForm.vin" readonly border="none" placeholder="请输入17位车架号(VIN)"></u--input>
 					</u-form-item>
 					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom>
-						<u--input
-							v-model="carForm.firstRegistDate"
-							readonly
-							disabledColor="#ffffff"
-							placeholder="请选择登记日期"
-							border="none"
-						></u--input>
+						<u--input v-model="carForm.firstRegistDate" readonly disabledColor="#ffffff"
+							placeholder="请选择登记日期" border="none"></u--input>
 						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
@@ -87,7 +74,8 @@
 						<u--input v-model="carForm.plateNum" readonly border="none" placeholder="请输入车牌号"></u--input>
 					</u-form-item>
 					<u-form-item label="使用性质" prop="natureOfOperat" borderBottom>
-						<u--input v-model="carForm.natureOfOperat" readonly border="none" placeholder="请输入使用性质"></u--input>
+						<u--input v-model="carForm.natureOfOperat" readonly border="none" placeholder="请输入使用性质">
+						</u--input>
 					</u-form-item>
 					<u-form-item label="车辆类型" prop="carType" borderBottom>
 						<u--input v-model="carForm.carType" readonly border="none" placeholder="请输入车辆类型"></u--input>
@@ -103,7 +91,8 @@
 						></u-icon> -->
 					</u-form-item>
 					<u-form-item label="登记证号" prop="certificateNo" borderBottom>
-						<u--input v-model="carForm.certificateNo" readonly border="none" placeholder="请输入登记证号"></u--input>
+						<u--input v-model="carForm.certificateNo" readonly border="none" placeholder="请输入登记证号">
+						</u--input>
 					</u-form-item>
 					<u-form-item label="颜色" prop="colour" borderBottom>
 						<u--input v-model="carForm.colour" readonly border="none" placeholder="请输入颜色"></u--input>
@@ -116,60 +105,30 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="使用年限至" prop="scrapDate" borderBottom>
-						<u--input
-							v-model="carForm.scrapDate"
-							readonly
-							disabledColor="#ffffff"
-							placeholder="请选择"
-							border="none"
-						></u--input>
-						<u-icon
-							slot="right"
-							name="arrow-right"
-						></u-icon>
+						<u--input v-model="carForm.scrapDate" readonly disabledColor="#ffffff" placeholder="请选择"
+							border="none"></u--input>
+						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<u-form-item label="年检签证有效期" prop="annualInspectionDate" borderBottom>
-						<u--input
-							v-model="carForm.annualInspectionDate"
-							readonly
-							disabledColor="#ffffff"
-							placeholder="请选择"
-							border="none"
-						></u--input>
-						<u-icon
-							slot="right"
-							name="arrow-right"
-						></u-icon>
+						<u--input v-model="carForm.annualInspectionDate" readonly disabledColor="#ffffff"
+							placeholder="请选择" border="none"></u--input>
+						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<u-form-item label="保险险种" prop="insurance" borderBottom>
 						<u--input v-model="carForm.insurance" readonly border="none" placeholder="请输入保险险种"></u--input>
 					</u-form-item>
 					<u-form-item label="保险期至" prop="insuranceEndData" borderBottom>
-						<u--input
-							v-model="carForm.insuranceEndData"
-							readonly
-							disabledColor="#ffffff"
-							placeholder="请选择"
-							border="none"
-						></u--input>
-						<u-icon
-							slot="right"
-							name="arrow-right"
-						></u-icon>
+						<u--input v-model="carForm.insuranceEndData" readonly disabledColor="#ffffff" placeholder="请选择"
+							border="none"></u--input>
+						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<u--input v-model="carForm.remarks" border="none" placeholder="请输入特殊约定"></u--input>
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
-				<u-datetime-picker
-					:show="showDate"
-					v-model="carForm.firstRegistDate"
-					mode="date"
-					:formatter="formatter"
-					@cancel="showDate = false"
-					@confirm="handleDate"
-				></u-datetime-picker>
+				<u-datetime-picker :show="showDate" v-model="carForm.firstRegistDate" mode="date" :formatter="formatter"
+					@cancel="showDate = false" @confirm="handleDate"></u-datetime-picker>
 				<!-- 费用明细 -->
 				<u-modal :show="showDetail" @confirm="showDetail = false">
 					<view>
@@ -188,53 +147,51 @@
 			<!-- 买家信息 -->
 			<view v-if="sellerInfor">
 				<view class="text">买家信息</view>
-				<u--form
-					labelPosition="left"
-					:model="sellerForm"
-					:rules="sellerRules"
-					ref="sellerForm"
-					labelWidth="120px"
-				>
+				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
+					labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view
+							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+						</view>
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" prop="vehicleReceiptAmount" borderBottom>
 						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额">
-							<template slot="suffix"><view>元</view></template>
+							<template slot="suffix">
+								<view>元</view>
+							</template>
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
 						<u-input v-model="sellerForm.sellAmount" border="none" @blur="handleBlur" placeholder="请输入卖车金额">
-							<template slot="suffix"><view>元</view></template>
+							<template slot="suffix">
+								<view>元</view>
+							</template>
 						</u-input>
 					</u-form-item>
 					<view>
-						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+						<u--text style="font-size:12px;" prefixIcon="info-circle"
+							iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
-						<view style="margin-left: 15px;color: #e26e1f;" @click="handleDetail">预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。明细请查看 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;" @click="handleDetail">
+							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。明细请查看 ></view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
-						<u-radio-group
-							v-model="sellerForm.sellType"
-							placement="row"
-						>
-							<u-radio
-								:customStyle="{marginBottom: '8px'}"
-								v-for="(item, index) in sexs"
-								:key="index"
-								:label="item.label"
-								:name="item.value"
-							>
+						<u-radio-group v-model="sellerForm.sellType" placement="row">
+							<u-radio :customStyle="{marginBottom: '8px'}" v-for="(item, index) in sexs" :key="index"
+								:label="item.label" :name="item.value">
 							</u-radio>
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
-						<u--input v-model="sellerForm.transManageName" border="none" placeholder="请输入转入地车辆管理所名称"></u--input>
+						<u--input v-model="sellerForm.transManageName" border="none" placeholder="请输入转入地车辆管理所名称">
+						</u--input>
 					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view
+							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+						</view>
 						<view class="text">买家信息</view>
 					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
@@ -244,36 +201,20 @@
 						<view class="image">
 							<u-grid col="2">
 								<u-grid-item>
-									<u-upload
-										v-if="fileList4.length"
-										:fileList="fileList4"
-										@delete="deletePic"
-										name="4"
-										width="150"
-									></u-upload>
-									<image v-else src=".../../../static/images/home/ghm.png"
-										mode="widthFix" style="width: 150px;" @click="handleOcr(4)"></image>
-									<image
-										v-if="fileList4.length == 0"
-										src="../../../static/images/take.png"
-										class="icon-image"
-										@click="handleOcr(4)"></image>
+									<u-upload v-if="fileList4.length" :fileList="fileList4" @delete="deletePic" name="4"
+										width="150"></u-upload>
+									<image v-else src=".../../../static/images/home/ghm.png" mode="widthFix"
+										style="width: 150px;" @click="handleOcr(4)"></image>
+									<image v-if="fileList4.length == 0" src="../../../static/images/take.png"
+										class="icon-image" @click="handleOcr(4)"></image>
 								</u-grid-item>
 								<u-grid-item>
-									<u-upload
-										v-if="fileList5.length"
-										:fileList="fileList5"
-										@delete="deletePic"
-										name="5"
-										width="150"
-									></u-upload>
-									<image v-else src=".../../../static/images/home/rxm.png"
-										mode="widthFix" style="width: 150px;" @click="handleOcr(5)"></image>
-									<image
-										v-if="fileList5.length == 0"
-										src="../../../static/images/take.png"
-										class="icon-image"
-										@click="handleOcr(5)"></image>
+									<u-upload v-if="fileList5.length" :fileList="fileList5" @delete="deletePic" name="5"
+										width="150"></u-upload>
+									<image v-else src=".../../../static/images/home/rxm.png" mode="widthFix"
+										style="width: 150px;" @click="handleOcr(5)"></image>
+									<image v-if="fileList5.length == 0" src="../../../static/images/take.png"
+										class="icon-image" @click="handleOcr(5)"></image>
 								</u-grid-item>
 							</u-grid>
 						</view>
@@ -290,7 +231,8 @@
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
-					<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
+					<u--text style="font-size:12px;" prefixIcon="info-circle"
+						iconStyle="font-size: 16px; color: #e26e1f"
 						text="注意:在发起委托合同前，请检查您的相关信息,发起委托合同时会将信息自动带到后方合同作为重要信息使用。" color="#e26e1f"></u--text>
 				</view>
 			</view>
@@ -299,51 +241,37 @@
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<view v-if="vehicleInfor">
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+					</view>
 					<view class="text">车辆手续及备件</view>
 				</view>
-				<u--form
-					:model="carForm"
-					labelPosition="left"
-					labelWidth="120px"
-				>
+				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404">
-						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="item.name == 11 ? showKey = true : ''">
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom
+							@click="item.name == 11 ? showKey = true : ''">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;">
-								<u--input
-									v-model="carForm.key"
-									disabled
-									v-if="item.name == 'vehicleKey'"
-									disabledColor="#ffffff"
-									placeholder="请选择"
-									border="none"
-								></u--input>
-								<u--input v-model="carForm.accidentVehicle" v-if="item.name == 'accidentVehicle'" border="none" placeholder="请输入"></u--input>
+								<u--input v-model="carForm.key" disabled v-if="item.name == 'vehicleKey'"
+									disabledColor="#ffffff" placeholder="请选择" border="none"></u--input>
+								<u--input v-model="carForm.accidentVehicle" v-if="item.name == 'accidentVehicle'"
+									border="none" placeholder="请输入"></u--input>
 							</view>
-							<u--text
-								slot="right"
-								v-if="item.name == 'vehicleKey'"
-								prefixIcon="arrow-right"
-								text="组"></u--text>
+							<u--text slot="right" v-if="item.name == 'vehicleKey'" prefixIcon="arrow-right" text="组">
+							</u--text>
 						</u-form-item>
 					</u-checkbox-group>
 				</u--form>
 			</view>
-			<u-picker :show="showKey" :columns="rangeKey" keyName="label" @confirm="confirmKey" @cancel="showKey = false"></u-picker>
+			<u-picker :show="showKey" :columns="rangeKey" keyName="label" @confirm="confirmKey"
+				@cancel="showKey = false"></u-picker>
 		</uni-card>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<view v-if="vehicleInfor">
-				<u--form
-					:model="feesForm"
-					:rules="feesFormRules"
-					ref="feesForm"
-					labelPosition="left"
-					labelWidth="120px"
-				>
+				<u--form :model="feesForm" :rules="feesFormRules" ref="feesForm" labelPosition="left"
+					labelWidth="120px">
 					<u-form-item label="车况" :required="true" prop="carCondition"></u-form-item>
 					<u-form-item borderBottom>
-						<u-radio-group v-model="feesForm.conditionA" activeColor="#fd6404"  shape="square">
+						<u-radio-group v-model="feesForm.conditionA" activeColor="#fd6404" shape="square">
 							<text>（</text>
 							<u-radio label="确保" :name="true"></u-radio>
 							<text style="margin: 0 5px;">/</text>
@@ -378,12 +306,14 @@
 							<text>）火烧车</text>
 						</u-radio-group>
 					</u-form-item>
-					
+
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
+						<view
+							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+						</view>
 						<view class="text">其他费用及约定</view>
 					</view>
-					
+
 					<u-radio-group v-model="feesForm.rent" placement="column" activeColor="#fd6404" shape="square">
 						<u-form-item label="租金相关" :required="true" prop="rent"></u-form-item>
 						<u-form-item borderBottom>
@@ -403,7 +333,7 @@
 							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
-					
+
 					<u-radio-group v-model="feesForm.business" placement="column" activeColor="#fd6404" shape="square">
 						<u-form-item label="交易过户费" :required="true" prop="business"></u-form-item>
 						<u-form-item borderBottom>
@@ -419,7 +349,7 @@
 							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
-					
+
 					<u-radio-group v-model="feesForm.damage" placement="column" activeColor="#fd6404" shape="square">
 						<u-form-item label="车辆折损费用" :required="true" prop="damage"></u-form-item>
 						<u-form-item borderBottom>
@@ -431,7 +361,7 @@
 							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
-					
+
 					<u-radio-group v-model="feesForm.check" placement="column" activeColor="#fd6404" shape="square">
 						<u-form-item label="第三方检测费用" :required="true" prop="check"></u-form-item>
 						<u-form-item borderBottom>
@@ -477,12 +407,27 @@
 
 <script>
 	import config from '@/config'
-	import { getAccessToken } from '@/utils/auth'
-	import { urlTobase64 } from '@/utils/ruoyi.js'
-	import { getIdCard, deleteImage } from '@/api/register'
-	import { getSellCarInfo, setSellCarInfo, getAmount } from '@/api/home/sellingCar.js'
-	import { getFairValue } from '@/api/home/bycar.js'
-	import { setCreate } from '@/api/home'
+	import {
+		getAccessToken
+	} from '@/utils/auth'
+	import {
+		urlTobase64
+	} from '@/utils/ruoyi.js'
+	import {
+		getIdCard,
+		deleteImage
+	} from '@/api/register'
+	import {
+		getSellCarInfo,
+		setSellCarInfo,
+		getAmount
+	} from '@/api/home/sellingCar.js'
+	import {
+		getFairValue
+	} from '@/api/home/bycar.js'
+	import {
+		setCreate
+	} from '@/api/home'
 	export default {
 		data() {
 			return {
@@ -541,19 +486,54 @@
 				},
 				amountDetails: {},
 				// 车辆手续
-				checkboxList: [
-					{ label: '行驶证正、副本', name: 'drivingLicense'},
-					{ label: '购车发票', name: 'carInvoice' },
-					{ label: '机动车登记证', name: 'registrationCertificate' },
-					{ label: '购置税完税凭证', name: 'purchaseTax' },
-					{ label: '备胎', name: 'spareTire' },
-					{ label: '车船使用税完税凭证', name: 'carShipTax' },
-					{ label: '交强险保单', name: 'heavyTrafficInsurance' },
-					{ label: '商业险保单', name: 'commercialInsurance' },
-					{ label: '千斤顶', name: 'jack' },
-					{ label: '说明书', name: 'specification' },
-					{ label: '钥匙', name: 'vehicleKey' },
-					{ label: '其他', name: 'accidentVehicle' },
+				checkboxList: [{
+						label: '行驶证正、副本',
+						name: 'drivingLicense'
+					},
+					{
+						label: '购车发票',
+						name: 'carInvoice'
+					},
+					{
+						label: '机动车登记证',
+						name: 'registrationCertificate'
+					},
+					{
+						label: '购置税完税凭证',
+						name: 'purchaseTax'
+					},
+					{
+						label: '备胎',
+						name: 'spareTire'
+					},
+					{
+						label: '车船使用税完税凭证',
+						name: 'carShipTax'
+					},
+					{
+						label: '交强险保单',
+						name: 'heavyTrafficInsurance'
+					},
+					{
+						label: '商业险保单',
+						name: 'commercialInsurance'
+					},
+					{
+						label: '千斤顶',
+						name: 'jack'
+					},
+					{
+						label: '说明书',
+						name: 'specification'
+					},
+					{
+						label: '钥匙',
+						name: 'vehicleKey'
+					},
+					{
+						label: '其他',
+						name: 'accidentVehicle'
+					},
 				],
 				showKey: false,
 				rangeKey: [
@@ -579,6 +559,26 @@
 					// 	message: '请选择车辆情况',
 					// 	trigger: ['blur', 'change']
 					// },
+					conditionA: {
+						required: true,
+						message: '请选择车辆情况',
+						trigger: ['blur', 'change']
+					},
+					conditionB: {
+						required: true,
+						message: '请选择车辆情况',
+						trigger: ['blur', 'change']
+					},
+					conditionC: {
+						required: true,
+						message: '请选择车辆情况',
+						trigger: ['blur', 'change']
+					},
+					conditionD: {
+						required: true,
+						message: '请选择车辆情况',
+						trigger: ['blur', 'change']
+					},
 					rent: {
 						type: 'string',
 						required: true,
@@ -664,16 +664,16 @@
 						required: true,
 						message: '请填写身份证号',
 						trigger: ['blur', 'change']
-					},{
+					}, {
 						validator(rule, value, data, callback) {
 							let iphoneReg = (
 								/^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
 							);
-							if(!iphoneReg.test(value)){
+							if (!iphoneReg.test(value)) {
 								return false;
 							}
 						},
-						message:"身份证格式不正确",
+						message: "身份证格式不正确",
 						trigger: ['blur', 'change']
 					}],
 					buyerName: {
@@ -687,7 +687,7 @@
 						required: true,
 						message: '请填写手机号',
 						trigger: ['blur', 'change']
-					},{
+					}, {
 						validator(rule, value, data, callback) {
 							let iphoneReg = (
 								/^(13[0-9]|14[1579]|15[0-3,5-9]|16[6]|17[0123456789]|18[0-9]|19[89])\d{8}$/
@@ -718,11 +718,13 @@
 			this.carId = options.id;
 			this.textOverlay = '车辆详情加载中...';
 			this.showOverlay = true;
-			getSellCarInfo({ id: options.id }).then((res) => {
+			getSellCarInfo({
+				id: options.id
+			}).then((res) => {
 				this.carForm = res.data;
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
-				this.modelId=res.data.modelId;
+				this.modelId = res.data.modelId;
 				for (let key in res.data.proceduresAndSpareParts) {
 					if (res.data.proceduresAndSpareParts[key] == true) {
 						this.carForm.checkboxValue.push(key);
@@ -758,11 +760,11 @@
 			},
 			// 查看收车合同
 			handleCollection() {
-				
+
 			},
 			// 查看委托合同
 			handleLookEntrust() {
-				
+
 			},
 			// 点击OCR
 			handleOcr(index) {
@@ -791,10 +793,13 @@
 							})
 						})
 						// 识别身份证
-						_this.sellerForm.buyerIdCardUrl = [..._this.sellerForm.buyerIdCardUrl, _this[`fileList${index}`]];
+						_this.sellerForm.buyerIdCardUrl = [..._this.sellerForm.buyerIdCardUrl, _this[
+							`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
-							getIdCard({ IDCardUrl: str }).then((ress) => {
+							getIdCard({
+								IDCardUrl: str
+							}).then((ress) => {
 								let data = JSON.parse(ress.data);
 								if (data.words_result['公民身份号码']) {
 									_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
@@ -803,7 +808,7 @@
 								if (data.words_result['失效日期']) {
 									if (_this.date > data.words_result['失效日期'].words) {
 										showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-										  _this.handleCancel();
+											_this.handleCancel();
 											return;
 										})
 									}
@@ -838,12 +843,13 @@
 								if (data) {
 									for (let i = 0; i < data.length; i++) {
 										let item = _this[`fileList${index}`][fileListLen]
-										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
-											status: 'success',
-											message: '',
-											url: data[i].url,
-											id: data[i].id
-										}))
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(
+											item, {
+												status: 'success',
+												message: '',
+												url: data[i].url,
+												id: data[i].id
+											}))
 										fileListLen++;
 									}
 								} else {
@@ -858,7 +864,9 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({ id: event.file.id }).then((res) => {
+				deleteImage({
+					id: event.file.id
+				}).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
 				})
@@ -881,8 +889,8 @@
 					sellAmount: val
 				}
 				getAmount(data).then((res) => {
-					this.carForm.total = res.data.total;
-					this.carForm.profit = res.data.profit;
+					this.sellerForm.total = res.data.total;
+					this.sellerForm.profit = res.data.profit;
 					this.amountDetails = res.data;
 				})
 			},
@@ -937,7 +945,7 @@
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
 				}
-				
+
 				// 租金相关
 				let feesAndCommitments = {};
 				let rent = ['vehicleA', 'vehicleB', 'vehicleC', 'vehicleD'];
@@ -985,10 +993,12 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount:this.$amount.getDelcommafy(this.sellerForm.sellAmount),
+					sellAmount: this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
-					idCardIds: this.fileList4.map((item) => { return item.id }),
+					idCardIds: this.fileList4.map((item) => {
+						return item.id
+					}),
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
@@ -1007,23 +1017,23 @@
 						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
-						console.log((data.sellAmount/10000))
-						if (this.fairValue.value1 <= (data.sellAmount/10000) && data.sellAmount <= this.fairValue.value2) {
+						if ((this.fairValue.value1 * 1) <= (data.sellAmount / 10000) && (data.sellAmount /
+								10000) <= (this.fairValue.value2 * 1)) {
 							console.log(1111)
 							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
 						} else {
 							console.log(2222)
 							// 发起公允值审批流程
-							return
 							let procDefKey = "MGYZ";
+							res.data.fairValue = this.fairValue;
 							let variables = {
 								marketName: this.$store.state.user.tenantName,
 								merchantName: this.$store.state.user.deptName,
 								startUserId: this.$store.state.user.id,
 								formDataJson: {
 									formMain: {
-										merchantId: res.carInfoDetails.carId,
-										thirdId: res.carInfoDetails.carId,
+										merchantId: res.data.carInfoDetails.carId,
+										thirdId: res.data.carInfoDetails.carId,
 										// formDataJson: {
 										// 	carInfo: res.data.carInfo,
 										// 	carInfoDetails: res.data.carInfoDetails
@@ -1032,7 +1042,10 @@
 									}
 								}
 							}
-							let createData = { procDefKey, variables };
+							let createData = {
+								procDefKey,
+								variables
+							};
 							setCreate(createData).then((ress) => {
 								this.$modal.closeLoading()
 								this.$modal.msg("已提交审核");
@@ -1106,76 +1119,79 @@
 	.selling-car {
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
-		
+
 		.warp {
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			height: 100%;
 		}
-		
+
 		/* #ifdef MP-WEIXIN */
 		/deep/ .uni-card--border {
 			border-bottom: none;
 		}
-		
+
 		/deep/ .u-cell__body {
 			padding: 10px 0;
 		}
+
 		/* #endif */
-		
+
 		.uni-card--border {
 			border: none;
 		}
-		
+
 		.text {
 			font-size: 16px;
 			color: #000;
 			margin: 8px 0;
 		}
-		
+
 		.look-over {
 			color: #000;
 		}
-		
+
 		/deep/ .u-cell__body {
 			padding: 10px 0;
 		}
-		
+
 		.image {
 			width: 100%;
 		}
-		
+
 		/deep/ .image .u-upload__button {
 			display: none;
 		}
-		
+
 		.fenge {
 			height: 20px;
 			background-color: #fafafa;
 		}
-		
+
 		.form-item {
 			margin-top: 10px;
+
 			.uni-forms-item {
 				border-bottom: 1px solid #ddd;
+
 				uni-input {
 					display: inline;
 				}
 			}
 		}
-		
+
 		.footer {
 			width: 100%;
 			position: fixed;
 			bottom: 0;
 			background-color: #fff;
 			padding-bottom: 20px;
-			
+
 			.button {
 				width: 80%;
 				margin-top: 10px;
-				background-image: linear-gradient(to right, #fcbb2b,#ed6c21);
+				background-image: linear-gradient(to right, #fcbb2b, #ed6c21);
 				background-color: #fff;
 				color: #fff;
 			}

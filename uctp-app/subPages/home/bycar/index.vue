@@ -28,7 +28,7 @@
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;"></view>
 						<view class="text">车辆基础信息</view>
 					</view>
-					<u-form-item label="上传车辆图片" :required="true">
+					<u-form-item label="上传车辆图片">
 					</u-form-item>
 					<u-form-item borderBottom prop="carUrl">
 						<view class="image">
@@ -542,12 +542,12 @@
 						message: '请上传机动车登记证书',
 						trigger: ['blur', 'change']
 					},
-					carUrl: {
-						type: 'array',
-						required: true,
-						message: '请上传车辆图片',
-						trigger: ['blur', 'change']
-					},
+					// carUrl: {
+					// 	type: 'array',
+					// 	required: true,
+					// 	message: '请上传车辆图片',
+					// 	trigger: ['blur', 'change']
+					// },
 					vin: {
 						type: 'string',
 						required: true,
