@@ -1,5 +1,8 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareSell;
 import com.newtouch.uctp.module.business.dal.dataobject.VehicleProblem;
 import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
 import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareParts;
@@ -55,8 +58,10 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String insuranceEndData;
     @Schema(description = "其他")
     private String other;
-    @Schema(description = "车辆手续及备件")
+    @Schema(description = "收车车辆手续及备件")
     private ProceduresAndSpareParts proceduresAndSpareParts;
+    @Schema(description = "卖车车辆手续及备件")
+    private ProceduresAndSpareSell proceduresAndSpareSell;
     @Schema(description = "其他费用及约定")
     private FeesAndCommitments feesAndCommitments;
     @Schema(description = "车况相关")

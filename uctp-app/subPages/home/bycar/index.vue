@@ -167,7 +167,7 @@
 				<u-popup v-if="showModel" :show="showModel" :customStyle="{ 'width': '240px' }" mode="right"
 					@close="showModel = false">
 					<view>
-						<model-list :seriesList="seriesList" :title="'宝马'" @handleClose="handleClose" />
+						<model-list :seriesList="seriesList" :title="carForm.brand" @handleClose="handleClose" />
 					</view>
 				</u-popup>
 			</view>
@@ -1277,7 +1277,7 @@
 								startUserId: this.$store.state.user.id,
 								formDataJson: {
 									formMain: {
-										merchantId: res.data.carInfoDetails.carId,
+										merchantId: this.$store.state.user.deptId,
 										thirdId: res.data.carInfoDetails.carId,
 										// formDataJson: {
 										// 	carInfo: res.data.carInfo,

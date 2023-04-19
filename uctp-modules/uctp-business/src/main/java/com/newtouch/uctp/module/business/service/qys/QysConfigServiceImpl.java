@@ -8,12 +8,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
+import com.newtouch.uctp.framework.security.core.LoginUser;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
@@ -21,6 +25,7 @@ import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +39,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.QYS_CONFIG_NOT_EXISTS;
 import static com.newtouch.uctp.module.business.enums.QysConstants.SECRET;
 
@@ -155,7 +161,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 deptDO.setAuth(Integer.valueOf(status));
             }
         }
-
         qysCallbackMapper.insert(qysCallbackDO);
         if (ObjectUtil.isNotNull(deptDO)) {
             deptMapper.updateById(deptDO);
@@ -208,6 +213,19 @@ public class QysConfigServiceImpl implements QysConfigService {
         QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
         qiyuesuoClient.defaultSend(null);
         qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
+    }
+
+    @Override
+    public void send(Long carId) {
+        CarInfoDO carInfo = carInfoService.getCarInfo(carId);
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", loginUser.getDeptId());
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
+        QiyuesuoCommonResult<Contract> result = client.defaultSend(null);
+
     }
 
 

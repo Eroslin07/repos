@@ -98,6 +98,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         if (StrUtil.isNotBlank(registerNo)) {
             request.setRegisterNo(registerNo);
         }
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/verification");
         return this.saasCompanyAuthPageUrl(request);
     }
 

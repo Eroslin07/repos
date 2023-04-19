@@ -36,8 +36,8 @@ public class UctpQIyuesuoSaasTests {
     @Test
     void companyAuth() {
         String applicanInfo = "{\"name\":\"韩立\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("大米科技", applicanInfo);
-        System.out.println(result);
+        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("西瓜科技公司", applicanInfo);
+        System.out.println(result.getData().getPageUrl());
         Assert.equals(result.getCode(),"0");
     }
 
