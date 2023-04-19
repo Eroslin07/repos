@@ -2,11 +2,8 @@
 	<view class="progress">
 		<uni-card :is-shadow="false" is-full>
 			<u-steps current="1" direction="column" activeColor="#fa6401">
-				<u-steps-item title="发起提现申请">
+				<u-steps-item v-for="(item, index) in data.presentStatusRecords" :title="item.statusText" :desc="item.occurredTime">
 				</u-steps-item>
-				<u-steps-item title="银行处理中...">
-				</u-steps-item>
-				<u-steps-item title="到账成功"></u-steps-item>
 			</u-steps>
 		</uni-card>
 		<view style="padding: 20px;">
@@ -16,8 +13,8 @@
 					<view class="text1">到账银行卡</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">￥1,000.00元</view>
-					<view class="text2">招商银行 尾号 1167</view>
+					<view class="text2">{{ data.payAmount }}</view>
+					<view class="text2">{{ data.payChannelName }} 尾号{{ data.payeeBankAccount }}</view>
 				</view>
 			</view>
 		</view>
@@ -28,10 +25,11 @@
 	export default {
 		data() {
 			return {
-
+				data: null
 			}
 		},
 		onLoad(options) {
+			this.data = JSON.parse(decodeURIComponent(options.data))
 			uni.setNavigationBarTitle({
 				title: '保证金提现'
 			});
