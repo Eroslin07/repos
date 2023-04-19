@@ -40,10 +40,9 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    protected QiyuesuoCommonResult<Contract> doDraft(Contract contract){
+    protected QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract){
         ContractDraftRequest request = new ContractDraftRequest(contract);
         String response = this.client.service(request);
-        System.out.println(response);
         SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response, Contract.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
                 , sdkResponse.getMessage()
@@ -52,32 +51,37 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    protected QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doPrivilegeUrl(SaasPrivilegeUrlRequest request) throws Throwable {
-        return null;
+    protected QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doSaasPrivilegeUrl(SaasPrivilegeUrlRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
-    protected QiyuesuoCommonResult<SaaSUserAuthPageResult> doUserAuthPage(SaaSUserAuthPageRequest request) throws Throwable {
-        return null;
+    protected QiyuesuoCommonResult<SaaSUserAuthPageResult> doSaasUserAuthPage(SaaSUserAuthPageRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
-    protected QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) throws Throwable {
-        return null;
+    protected QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doSaasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> companyAuthPageUrl(String companyName, String legalPerson, String registerNo, StreamFile license, String applicantInfo) {
-        return null;
+    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName,String applicantInfo, String legalPerson, String registerNo, StreamFile license) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSUserAuthPageResult> userAuthPage(String contact, String contactType) {
-        return null;
+    public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName, String applicantInfo) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> privilegeUrl(Long companyId, String contact, String contactType) {
-        return null;
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact, String contactType) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact, String contactType) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 }

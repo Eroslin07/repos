@@ -117,9 +117,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
         infoDO.setInsurance(createReqVO.getInsurance());
         infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
-        infoDO.setSalesStatus(1);//收车中
-        infoDO.setStatus(11);//草稿
-        infoDO.setStatusThree(111);
+        infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
+        infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
+        infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据
@@ -332,7 +332,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     public Map getCarInfoByVIN(String vin) {
         Map map = new HashMap<>();
         //查询除已卖状态以外的车
-        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsSell(vin,431);
+        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsSell(vin,CarStatus.SOLD_C_A.value());
         //除已卖状态外 有且只有一条数据
         if(carInfoDOS.size()>0){
             for (CarInfoDO carInfoDO:carInfoDOS) {
@@ -351,6 +351,16 @@ public class CarInfoServiceImpl implements CarInfoService {
             map.put("3","无草稿数据");
         }
         return map;
+    }
+
+    @Override
+    public AppBpmCarInfoRespVO getCarInfoByID(Long id) {
+        CarInfoDO carInfo = this.getCarInfo(id);
+
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+
+       return this.buildBmpVO(carInfo, carInfoDetailsDO);
+
     }
 
     @Override
@@ -421,9 +431,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setSellAmount( reqVO.getSellAmount() );
         carInfo.setSellType( reqVO.getSellType() );
         //此时状态为 买车中草稿
-        carInfo.setSalesStatus(3);
-        carInfo.setStatus(31);
-        carInfo.setStatusThree(311);
+        carInfo.setSalesStatus(CarStatus.SELL.value());
+        carInfo.setStatus(CarStatus.SELL_A.value());
+        carInfo.setStatusThree(CarStatus.SELL_A_A.value());
         carInfoMapper.updateById(carInfo);
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(reqVO.getId());
         carInfoDetails.setBuyerTel( reqVO.getBuyerTel() );
@@ -644,9 +654,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setSellType(null);
         carInfo.setRemarks(null);
         //此时状态为 待售中-已检测
-        carInfo.setSalesStatus(2);
-        carInfo.setStatus(23);
-        carInfo.setSalesStatus(233);
+        carInfo.setSalesStatus(CarStatus.SALE.value());
+        carInfo.setStatus(CarStatus.SALE_A_C.value());
+        carInfo.setStatusThree(CarStatus.SALE_A_C_A.value());
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(id);
         carInfoDetails.setBuyerAdder(null);
         carInfoDetails.setBuyerIdCard(null);

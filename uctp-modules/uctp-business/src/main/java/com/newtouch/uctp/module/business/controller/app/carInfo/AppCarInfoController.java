@@ -162,6 +162,13 @@ public class AppCarInfoController {
         return success(carInfoService.getCarInfoByVIN(VIN));
     }
 
+    @GetMapping("/getCarInfoByID")
+    @Operation(summary = "根据ID获取回显车辆信息")
+    @Parameter(name = "ID", description = "编号", required = true, example = "1024")
+    public CommonResult<AppBpmCarInfoRespVO> getCarInfoByID(@RequestParam("ID") Long ID) {
+        return success(carInfoService.getCarInfoByID(ID));
+    }
+
 
     @DeleteMapping("/delCarInfoWithCollect")
     @Operation(summary = "收车删除车辆信息")

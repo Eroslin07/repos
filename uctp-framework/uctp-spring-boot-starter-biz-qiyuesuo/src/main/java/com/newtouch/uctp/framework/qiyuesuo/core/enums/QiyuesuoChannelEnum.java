@@ -13,7 +13,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum QiyuesuoChannelEnum {
-
+    //此模式需要拼接上
     DEFAULT("default", "默认契约锁模式"),
     SAAS("saas", "SAAS契约锁模式");
 

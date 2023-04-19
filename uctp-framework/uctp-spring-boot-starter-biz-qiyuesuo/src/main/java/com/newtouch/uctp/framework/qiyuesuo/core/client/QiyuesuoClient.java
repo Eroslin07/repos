@@ -18,10 +18,10 @@ public interface QiyuesuoClient {
     Long getId();
 
     /**
-     * 创建合同草稿
+     * 发起合同草稿
      * @param draftContract 契约锁接口接受的参数
      * @return
      */
-    QiyuesuoCommonResult<Contract> draft(Contract draftContract);
+    QiyuesuoCommonResult<Contract> defaultSend(Contract draftContract);
 
 }
