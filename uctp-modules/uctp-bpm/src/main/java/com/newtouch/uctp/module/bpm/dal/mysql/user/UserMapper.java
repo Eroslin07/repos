@@ -18,5 +18,7 @@ public interface UserMapper extends BaseMapperX<AdminUserDO> {
 
     void deleteUserExt(Long userId);
 
+    void deleteUser(Long userId);
+
 
 }
