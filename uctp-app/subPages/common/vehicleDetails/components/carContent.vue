@@ -1,6 +1,7 @@
 <template>
 	<view class=" info-box">
-		<view v-if="tabCar=='0'">
+		<!-- 车辆信息 -->
+		<view v-if="tabCar=='0'" class="car-info-box">
 			<view class="car-upload">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
@@ -100,6 +101,97 @@
 				</view>
 			</view>
 		</view>
+		<!-- 合同信息 -->
+		<view v-if="tabCar=='1'" class="car-contract">
+			<view class="driving-license car-registration">
+				<view class="">
+					<view class="driving-license__icon">
+
+					</view>
+					<text>有效合同</text>
+				</view>
+				<view class="download">
+					<text>批量下载</text>
+					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+				</view>
+			</view>
+			<view class="contrart-info">
+				<view class="flex contrart-info__row">
+					<text>XXX某收车委托合同</text>
+					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+				<view class="flex">
+					<text>XXX某收车合同</text>
+					<view class="flex">
+						<text>卖家信息（第三方收款）</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+				<view class="flex  contrart-info__row">
+					<text>XXX某卖委托合同</text>
+					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true"
+						color="#FA6400"></u-button>
+				</view>
+				<view class="flex">
+					<text>XXX某卖车合同</text>
+					<view class="flex">
+						<text>买家信息</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+			</view>
+			<view class="driving-license car-registration">
+				<view class="">
+					<view class="driving-license__icon">
+
+					</view>
+					<text>无效合同</text>
+				</view>
+				<view class="download">
+					<text>批量下载</text>
+					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+				</view>
+			</view>
+			<view class="contrart-info contrart-bottom">
+				<view class="flex contrart-info__row">
+					<view class="contart-info__">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某收车委托合同（已作废）</text>
+					</view>
+				</view>
+				<view class="flex">
+					<view class="">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某收车合同（已作废）</text>
+					</view>
+					<view class="flex">
+						<text>卖家信息（第三方收款）</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+				<view class="flex  contrart-info__row">
+					<view class="">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某卖委托合同（已作废）</text>
+					</view>
+				</view>
+				<view class="flex">
+					<view class="">
+						<text class="contrart-info__text">作废文件</text>
+						<text>XXX某卖车合同（已作废）</text>
+					</view>
+					<view class="flex">
+						<text>买家信息</text>
+						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					</view>
+				</view>
+			</view>
+			<view class="car-button">
+				<u-button text="签章" color="#FA6400"></u-button>
+			</view>
+		</view>
+
 	</view>
 </template>
 
@@ -128,8 +220,14 @@
 </script>
 
 <style lang="scss" scoped>
+	.flex {
+		display: flex;
+	}
+
 	.info-box {
-		padding: 24rpx 26rpx 160rpx;
+		.car-info-box {
+			padding: 24rpx 26rpx 160rpx;
+		}
 
 		.car-upload {
 			width: 698rpx;
@@ -275,6 +373,73 @@
 
 			.car-details .car-item>text:first-child {
 				width: 168rpx;
+			}
+		}
+
+		.car-contract {
+			padding-bottom: 160rpx;
+
+			.driving-license {
+				padding: 30rpx 36rpx 28rpx;
+				margin: 0;
+				justify-content: space-between;
+				border-bottom: 2rpx solid #F5F5F5;
+
+				>view {
+					display: flex;
+					align-items: center;
+				}
+
+				.download {
+					text {
+						color: #FA6400;
+					}
+
+				}
+			}
+
+			.contrart-info {
+				border-bottom: 20rpx solid #FAFAFA;
+				font-size: 24rpx;
+				>view {
+					color: #222222;
+					height: 128rpx;
+					margin-left: 32rpx;
+					padding-right: 38rpx;
+					border-bottom: 2rpx solid #F5F5F5;
+					flex-direction: column;
+					justify-content: center;
+
+					>view:nth-child(2) {
+						align-items: center;
+						color: #FA6400;
+					}
+				}
+				.contrart-info__row {
+					height: 78rpx;
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: center;
+				}
+				.contrart-info__text{
+					width: 106rpx;
+					height: 32rpx;
+					background: rgba(109,114,120,0.6);
+					border-radius: 4rpx;
+					line-height: 32rpx;
+					text-align: center;
+					color: #FFFFFF;
+					font-size: 20rpx;
+					margin-right: 16rpx;
+				}
+			}
+			.contrart-bottom{
+				border-bottom: 2rpx solid #F5F5F5;
+			}
+			.car-button{
+				width: 696rpx;
+				height: 80rpx;
+				margin: 36rpx 28rpx 0;
 			}
 		}
 
