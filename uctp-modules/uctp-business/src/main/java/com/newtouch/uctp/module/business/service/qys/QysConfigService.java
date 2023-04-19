@@ -1,10 +1,10 @@
-package com.newtouch.uctp.module.business.service.qysconfig;
+package com.newtouch.uctp.module.business.service.qys;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigCreateReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigUpdateReqVO;
-import com.newtouch.uctp.module.business.dal.dataobject.qysconfig.QysConfigDO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
+import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 
 import javax.validation.Valid;
 import java.util.Collection;

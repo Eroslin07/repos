@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.bpm.service.user.Ipml;
 
 
 import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private DeptMapper deptMapper;
 
 
     @Override
@@ -41,7 +44,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id) {
-        userMapper.deleteById(id);
+        AdminUserDO adminUserDO = userMapper.selectById(id);
+        deptMapper.deleteById(adminUserDO.getDeptId());
         userMapper.deleteUserExt(id);
+        userMapper.deleteById(id);
+
     }
 }

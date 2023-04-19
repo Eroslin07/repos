@@ -1,14 +1,14 @@
-package com.newtouch.uctp.module.business.controller.app.qiyuesuo;
+package com.newtouch.uctp.module.business.controller.app.qys;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigCreateReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigRespVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigUpdateReqVO;
-import com.newtouch.uctp.module.business.convert.qysconfig.QysConfigConvert;
-import com.newtouch.uctp.module.business.dal.dataobject.qysconfig.QysConfigDO;
-import com.newtouch.uctp.module.business.service.qysconfig.QysConfigService;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigRespVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
+import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;

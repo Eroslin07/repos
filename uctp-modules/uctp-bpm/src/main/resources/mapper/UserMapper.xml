@@ -15,5 +15,9 @@
         where USER_ID=#{userId};
     </delete>
 
+    <delete id="deleteUser">
+        delete from system_user
+        where id=#{id};
+    </delete>
 
 </mapper>

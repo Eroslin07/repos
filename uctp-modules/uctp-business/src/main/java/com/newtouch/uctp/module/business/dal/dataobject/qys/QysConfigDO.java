@@ -1,5 +1,6 @@
-package com.newtouch.uctp.module.business.dal.dataobject.qysconfig;
+package com.newtouch.uctp.module.business.dal.dataobject.qys;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
@@ -27,7 +28,7 @@ public class QysConfigDO extends TenantBaseDO {
     /**
      * id
      */
-    @TableId
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
      * 访问地址

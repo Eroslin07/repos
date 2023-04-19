@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
-import com.newtouch.uctp.module.business.convert.app.CarInfoConvert;
+import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;

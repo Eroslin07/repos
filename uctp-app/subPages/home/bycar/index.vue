@@ -1316,7 +1316,8 @@
 				setSellerInfo(data).then((res) => {
 					if (val == 'entrust') {
 						// 保存卖家信息并确认发起
-						if (this.fairValue.value1 <= data.vehicleReceiptAmount && data.vehicleReceiptAmount <= this.fairValue.value2) {
+						let amount = data.vehicleReceiptAmount / 10000;
+						if (this.fairValue.value1 <= amount && amount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
 							this.showOverlay = false;
 							this.$tab.navigateTo('/subPages/home/bycar/agreement');
@@ -1329,8 +1330,8 @@
 								startUserId: this.$store.state.user.id,
 								formDataJson: {
 									formMain: {
-										merchantId: res.carInfoDetails.carId,
-										thirdId: res.carInfoDetails.carId,
+										merchantId: res.data.carInfoDetails.carId,
+										thirdId: res.data.carInfoDetails.carId,
 										// formDataJson: {
 										// 	carInfo: res.data.carInfo,
 										// 	carInfoDetails: res.data.carInfoDetails
@@ -1346,6 +1347,8 @@
 								this.$modal.msg("已提交审核");
 								this.$tab.reLaunch('/pages/index');
 							}).catch((error) => {
+								this.$modal.closeLoading()
+								this.showOverlay = false;
 								this.$modal.msgError("发起流程失败");
 							})
 						}
@@ -1356,6 +1359,8 @@
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
+				}).catch((error) => {
+					this.showOverlay = false;
 				})
 			},
 			// 收车删除

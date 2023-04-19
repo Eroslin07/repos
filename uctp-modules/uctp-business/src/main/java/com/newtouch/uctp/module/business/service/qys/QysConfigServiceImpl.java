@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service.qysconfig;
+package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -7,12 +7,12 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigCreateReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.qiyuesuo.vo.QysConfigUpdateReqVO;
-import com.newtouch.uctp.module.business.convert.qysconfig.QysConfigConvert;
-import com.newtouch.uctp.module.business.dal.dataobject.qysconfig.QysConfigDO;
-import com.newtouch.uctp.module.business.dal.mysql.qysconfig.QysConfigMapper;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
+import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import lombok.extern.slf4j.Slf4j;
@@ -124,6 +124,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         //解密消息
         JSONObject jsonObject = this.decryptMessage(content);
         //TODO 处理业务
+
+
         return "success";
     }
 

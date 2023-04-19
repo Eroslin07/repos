@@ -46,11 +46,12 @@
         select
             <include refid="appPageColumn" />
         from uctp_car_info a
-        inner join uctp_car_info_details b on a.id = b.CAR_ID
-        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
-        left join infra_file d on c.ID = d.id
+        inner join uctp_car_info_details b on a.id = b.CAR_ID and b.DELETED = 0
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1' and c.DELETED = 0
+        left join infra_file d on c.ID = d.id and d.DELETED = 0
         <where>
-            a.BUSINESS_ID = #{pageVO.businessId}
+            a.DELETED = 0
+            and a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
@@ -73,11 +74,13 @@
         select
             <include refid="appPageColumn" />
         from uctp_car_info a
-        inner join uctp_car_info_details b on a.id = b.CAR_ID
-        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1'
-        left join infra_file d on c.ID = d.id
+        from uctp_car_info a
+        inner join uctp_car_info_details b on a.id = b.CAR_ID and b.DELETED = 0
+        left join uctp_business_file c on a.ID = c.MAIN_ID and c.FILE_TYPE='1-1' and c.DELETED = 0
+        left join infra_file d on c.ID = d.id and d.DELETED = 0
         <where>
-            a.BUSINESS_ID = #{pageVO.businessId}
+            a.DELETED = 0
+            and a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
