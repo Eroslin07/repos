@@ -240,6 +240,9 @@
 				if (item.status === 31) {
 					this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id + '&&text=草稿');
 					return;
+				}else if(item.status==11){
+					this.$tab.navigateTo('/subPages/home/bycar/index')
+					return;
 				}
 
 			}

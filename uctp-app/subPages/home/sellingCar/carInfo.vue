@@ -798,7 +798,7 @@
 				this.showOverlay = false;
 				this.$modal.closeLoading();
 				if(options.text=='草稿'){
-					this.$tab.navigateTo('/subPages/home/carStatus/carStatus')
+					this.$tab.switchTab('/pages/index')
 					return;
 				}
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
