@@ -283,7 +283,7 @@ const elementHover = (element) => {
                   <p>创建时间：${parseTime(processInstance.value.createTime)}`
     } else if (element.value.type === 'bpmn:UserTask') {
       // debugger
-      let task = taskList.value.find((m) => m.id === activity.taskId) // 找到活动对应的 taskId
+      let task = taskList.value.find((m) => m.id === activity?.taskId) // 找到活动对应的 taskId
       if (!task) {
         return
       }

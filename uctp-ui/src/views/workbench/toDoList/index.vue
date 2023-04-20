@@ -7,7 +7,7 @@
       @handle-update-list="handleUpdateList"
     />
     <!-- 列表 -->
-    <XTable @register="registerTable">
+    <XTable @register="registerTable" @current-change="currentChange">
       <!-- 操作：审批 -->
       <template #toolbar_buttons>
         <XButton
@@ -65,7 +65,7 @@ const handleCloseDrawer = () => {
 }
 // 审批
 const handleApproval = () => {
-  console.log('审批')
+  handleApplication(rowData.value)
 }
 
 // 流程跟踪
@@ -77,7 +77,10 @@ const handleApproval = () => {
 const handleExport = () => {
   console.log('导出')
 }
-
+const rowData = ref<any>({})
+const currentChange = (row) => {
+  rowData.value = row.row
+}
 // 点击申请单号
 const handleApplication = (row) => {
   const loadingInstance = ElLoading.service({ fullscreen: true })
@@ -87,6 +90,7 @@ const handleApplication = (row) => {
     taskId: row.taskId,
     businessKey: row.businessKey
   }
+
   ToDoList.getTaskFormInfoAPI(params)
     .then((response) => {
       completedVisible.value = false
@@ -113,7 +117,7 @@ const handleUpdateList = () => {
 // }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .application {
   color: #51b5e0;
   cursor: pointer;
