@@ -749,6 +749,7 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount) ;
+		
 				// 钥匙
 				if(this.carForm.vehicleKey){
 					this.isDisabledKey=false
@@ -756,14 +757,13 @@
 					this.isDisabledKey=true
 				}
 				// 其他
-				if(carForm.accidentVehicle){
+				if(this.carForm.accidentVehicle){
 					this.isDisabledAcc=false
 				}else{
 					this.isDisabledAcc=true
 				}
-				
 				let obj;
-				if(options.text=='草稿'){
+				if(options.status==31){
 					obj = res.data.proceduresAndSpareSell;
 				}else{
 					obj = res.data.proceduresAndSpareParts;
@@ -790,18 +790,17 @@
 					...res.data.vehicleProblem,
 					rent:'',
 				}
-				
 				this.showOverlay = false;
-				this.$modal.closeLoading();
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.showOverlay = false;
-				this.$modal.closeLoading();
 				if(options.text=='草稿'){
-					this.$tab.switchTab('/pages/index')
+					// this.$tab.switchTab('/pages/index')
 					return;
 				}
-				this.$tab.navigateTo('/subPages/home/sellingCar/index');
+				// this.$tab.navigateTo('/subPages/home/sellingCar/index');
+			}).finally(()=>{
+				this.$modal.closeLoading();
 			})
 		},
 		mounted() {

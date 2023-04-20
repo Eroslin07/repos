@@ -154,6 +154,7 @@
 				this.formData.status = this.childData.status
 				this.current = this.detailData.child.findIndex((val) => val.status == this.formData.status) + 1
 			}
+			uni.startPullDownRefresh();
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
@@ -192,6 +193,7 @@
 					this.loadStatus = 'nomore'
 				}).finally(() => {
 					this.$modal.closeLoading()
+					uni.stopPullDownRefresh()
 				})
 			},
 			getMore(params) {
@@ -238,7 +240,7 @@
 			handleCard(item) {
 				console.log(item, 2222)
 				if (item.status === 31) {
-					this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id + '&&text=草稿');
+					this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
 					return;
 				}else if(item.status==11){
 					this.$tab.navigateTo('/subPages/home/bycar/index')
