@@ -22,7 +22,7 @@ import * as ActivityApi from '@/api/bpm/activity'
 import * as TaskApi from '@/api/bpm/task'
 import { setConfAndFields2 } from '@/utils/formCreate'
 import type { ApiAttrs } from '@form-create/element-ui/types/config'
-import { baseInfoData } from '@/views/workbench/basInfoValue'
+import { baseInfoData, tabName } from '@/views/workbench/basInfoValue'
 import { onMounted, ref } from 'vue'
 import { useUserStore } from '@/store/modules/user'
 const message = useMessage() // 消息弹窗
@@ -51,6 +51,14 @@ onMounted(() => {
   console.log('流程图')
   getDetail()
 })
+watch(
+  () => tabName.value,
+  (newValue) => {
+    if (newValue == 'BaseFlowChart') {
+      getDetail()
+    }
+  }
+)
 const getDetail = () => {
   // 1. 获得流程实例相关
   processInstanceLoading.value = true
