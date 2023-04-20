@@ -127,11 +127,11 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/profit/withdrawal');
+				this.$tab.navigateTo('/subPages/home/account/profit/withdrawal?amount=' + this.profit);
 			},
 			// 点击冻结余额
 			handleFreeze() {
-				this.$tab.navigateTo('/subPages/home/account/profit/freeze?amount='+this.freezeProfit);
+				this.$tab.navigateTo('/subPages/home/account/profit/freeze?amount=' + this.freezeProfit);
 			},
 			// 点击待回填保证金
 			handleBackfilled() {
