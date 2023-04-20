@@ -5,8 +5,14 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,7 +21,10 @@ import java.util.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.flowable.engine.*;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.IdentityService;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.event.FlowableCancelledEvent;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
@@ -43,6 +52,7 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmProcessInstanceExtDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.task.BpmProcessInstanceExtMapper;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceStatusEnum;
@@ -109,8 +119,23 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     public IdentityService identityService;
     @Resource
     private RedisTemplate redisTemplate;
-    @Resource
-    private TaskService bpmEngTaskService;
+
+    private final static Configuration freemarkerTemplateCfg = new Configuration(Configuration.VERSION_2_3_22);
+    static {
+        StringTemplateLoader stringTemplateLoader = new StringTemplateLoader();
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.ZHSQ.name(), "${marketName!}${merchantName!}账号申请流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.SGYZ.name(), "${marketName!}${merchantName!}收车价格超公允值审批流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.SCKP.name(), "${marketName!}${merchantName!}收车合同${contractCode!}开票流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.SCGH.name(), "${marketName!}${merchantName!}收车合同${contractCode!}过户流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.SKZH.name(), "${marketName!}${merchantName!}收车合同${contractCode!}收车款支付失败流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.MGYZ.name(), "${marketName!}${merchantName!}卖车价格超公允值审批流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.MCKP.name(), "${marketName!}${merchantName!}卖车合同${contractCode!}开票流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.MCGH.name(), "${marketName!}${merchantName!}卖车合同${contractCode!}过户流程");
+        stringTemplateLoader.putTemplate(BpmDefTypeEnum.LRTX.name(), "${marketName!}${merchantName!}利润提现流程");
+        freemarkerTemplateCfg.setTemplateLoader(stringTemplateLoader);
+        freemarkerTemplateCfg.setClassicCompatible(true);
+        freemarkerTemplateCfg.setDefaultEncoding("UTF-8");
+    }
 
 
     @Override
@@ -212,7 +237,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
 
         // 2.自动生成表单编号、单据标题等
         String serialNo = this.getFormSerialNo(processDefinitionKey);
-        String title = serialNo;
+        String title = this.getFormTitle(processDefinitionKey, variables);
 
         // 3.保存流程表单提交数据
         HashMap<String, Object> formDataJsonVariable = (HashMap<String, Object>) variables.getOrDefault("formDataJson", new HashMap<String, Object>());
@@ -265,6 +290,19 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         String serialNoPrefix = busiTypeCode.concat(DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDateTime.now()));
         Long index = this.redisTemplate.opsForValue().increment(serialNoPrefix, 1L);
         return serialNoPrefix.concat(String.format("%05d", index.intValue()));
+    }
+
+    private String getFormTitle(String processDefinitionKey, Map<String, Object> variables) {
+        try {
+            Template template = freemarkerTemplateCfg.getTemplate(processDefinitionKey);
+            StringWriter writer = new StringWriter();
+            template.process(variables,writer);
+            return writer.toString();
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
