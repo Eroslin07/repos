@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.settlement.InvoiceMapper">
+    <resultMap id="invoiceRespVO" type="com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceRespVO">
+        <id property="id" column="ID"/>
+        <result property="type" column="INVOICE_TYPE"/>
+        <result property="typeName" column="TYPE_NAME"/>
+        <result property="merchant" column="BUSINESS"/>
+        <result property="number" column="CONTRACT_NO"/>
+        <result property="name" column="NAME"/>
+        <result property="amount" column="AMOUNT_MONEY"/>
+        <result property="tax" column="TAX"/>
+        <result property="status" column="STATUS"/>
+        <result property="statusName" column="STATUS_NAME"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="founder" column="CREATED_BY"/>
+        <result property="creationTime" column="CREATED_TIME"/>
+        <result property="updater" column="UPDATED_BY"/>
+        <result property="updateTime" column="UPDATED_TIME"/>
+        <result property="optimistic" column="REVISION"/>
+    </resultMap>
+
+    <sql id="InvoiceVo">
+        select ID,
+               INVOICE_TYPE,
+               BUSINESS,
+               CONTRACT_NO,
+               NAME,
+               AMOUNT_MONEY,
+               TAX,
+               STATUS,
+               TENANT_ID,
+               CREATED_BY,
+               CREATED_TIME,
+               UPDATED_BY,
+               UPDATED_TIME,
+               REVISION
+        from uctp_invoices_management
+    </sql>
+
+    <select id="getInvoice" resultMap="invoiceRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceReqVO">
+        <include refid="InvoiceVo"/>
+        <where>
+            <if test="invoiceReqVO.merchant != null and invoiceReqVO.merchant != ''">
+                AND BUSINESS =#{invoiceReqVO.merchant}
+            </if>
+            <if test="invoiceReqVO.type != null and invoiceReqVO.type != ''">
+                AND INVOICE_TYPE =#{invoiceReqVO.type}
+            </if>
+            <if test="invoiceReqVO.status != null and invoiceReqVO.status != ''">
+                AND STATUS =#{invoiceReqVO.status}
+            </if>
+        </where>
+
+    </select>
+
+       <select id="getInvoiceList" resultMap="invoiceRespVO"
+               parameterType="com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceReqVO">
+           select uc.ID,
+                  uc.INVOICE_TYPE,
+                  c.Invoice_type as TYPE_NAME,
+                  uc.BUSINESS,
+                  uc.CONTRACT_NO,
+                  uc.NAME,
+                  uc.AMOUNT_MONEY,
+                  uc.TAX,
+                  uc.STATUS,
+                  co.Invoice_status as STATUS_NAME,
+                  uc.TENANT_ID,
+                  uc.CREATED_BY,
+                  uc.CREATED_TIME,
+                  uc.UPDATED_BY,
+                  uc.UPDATED_TIME,
+                  uc.REVISION
+           from uctp_invoices_management uc
+           inner join uctp_conversion c on uc.INVOICE_TYPE = c.id
+           left join uctp_conversion co on uc.STATUS = co.id
+       </select>
+</mapper>

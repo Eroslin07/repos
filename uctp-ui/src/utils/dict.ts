@@ -125,5 +125,8 @@ export enum DICT_TYPE {
   PAY_REFUND_ORDER_STATUS = 'pay_refund_order_status', // 退款订单状态
   PAY_REFUND_ORDER_TYPE = 'pay_refund_order_type', // 退款订单类别
 
-  TENANT_PACKAGE_TYPE = 'tenant_package_type' //租户套餐类型
+  TENANT_PACKAGE_TYPE = 'tenant_package_type', //租户套餐类型
+
+  SETTLEMENT_INVOICE_STATUS = 'Invoice_status', //发票状态
+  SETTLEMENT_INVOICE_TYPE = 'Invoice_type' //发票类型
 }
