@@ -134,7 +134,7 @@ public class QysConfigController {
     @PostMapping("/send")
     @Operation(summary ="发起契约锁合同")
     @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
-    public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  String carId) {
+    public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId) {
         qysConfigService.send(carId);
         return success(true);
     }

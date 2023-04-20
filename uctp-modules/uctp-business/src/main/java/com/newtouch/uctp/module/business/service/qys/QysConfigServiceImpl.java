@@ -259,7 +259,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public void send(String carId) {
+    public void send(Long carId) {
         CarInfoDO carInfo = carInfoService.getCarInfo(Long.valueOf(carId));
         CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(Long.valueOf(carId));
 
@@ -332,7 +332,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         return ssoUrl;
     }
 
-    private Contract buildContract(CarInfoDO carInfo) {
     //委托合同
     private Contract buildContract(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
