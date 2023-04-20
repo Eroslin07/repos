@@ -6,8 +6,8 @@
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
 						<text>卖车中-合同已发起</text>
-						<text>检</text>
-						<text>户</text>
+						<text :class="{bcClor:isTest}">检</text>
+						<text :class="{bcClor:isTransfer}">户</text>
 					</view>
 					<view class="indicator-num">
 						<text class="indicator-num__text">{{ currentNum + 1 }}/{{ carsList.length }}</text>
@@ -69,13 +69,13 @@
 <script>
 	import caContent from './components/carContent.vue'
 	export default {
-		components:{
+		components: {
 			caContent
 		},
 		data() {
 			return {
 				currentNum: 0,
-				carUpload:true,
+				carUpload: true,
 				carsList: [
 					'https://cdn.uviewui.com/uview/swiper/swiper1.png',
 					'https://cdn.uviewui.com/uview/swiper/swiper2.png',
@@ -130,15 +130,26 @@
 						url: 'https://cdn.uviewui.com/uview/swiper/1.jpg',
 					}
 				],
-
+				// 是否检测
+				isTest: true,
+				// 是否过户
+				isTransfer: false,
+				
+				// 父组件传过来的值
+				fatherProps:null,
 			};
+		},
+		
+		onload(props){
+			console.log(props)
+			this.fatherProps=JSON.parse(props.item)
 		},
 		methods: {
 			changeTab(item) {
 				console.log(item)
 				this.tabCar = item.index
 			},
-			
+
 			// 删除图片
 			deletePic(event) {
 				this[`fileList${event.name}`].splice(event.index, 1)
@@ -205,6 +216,10 @@
 			text-align: center;
 			border-radius: 50%;
 			background: rgba(109, 114, 120, 0.6)
+		}
+
+		.bcClor {
+			background-color: #FA6400 !important;
 		}
 	}
 
@@ -279,7 +294,7 @@
 
 			&.car-money {
 				.car-item text {
-					border-radius: 4rpx;
+					// border-radius: 4rpx;
 					font-weight: 400;
 					color: #FFFFFF;
 					line-height: 44rpx;
@@ -325,7 +340,7 @@
 		}
 	}
 
-	
+
 
 	.info-list {
 		padding: 0 10px;
