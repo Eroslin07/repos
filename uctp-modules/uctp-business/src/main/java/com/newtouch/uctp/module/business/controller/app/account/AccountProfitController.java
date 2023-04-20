@@ -47,15 +47,20 @@ public class AccountProfitController {
 
     @PostMapping("/present")
     @Operation(summary = "利润提取")
-    public CommonResult<Long> profitPresent(@Valid @RequestBody ProfitPresentReqVO profitPresentReqVO) {
+    public CommonResult<String> profitPresent(@Valid @RequestBody ProfitPresentReqVO profitPresentReqVO) {
         String accountNo = profitPresentReqVO.getAccountNo();
         log.info("账户{}提出利润", accountNo);
 
         this.checkAccount(accountNo);
-        Long profitId = accountProfitService.profitPresent(accountNo, profitPresentReqVO.getMerchantBankId(),
+        Long profitId = accountProfitService.profitPresent(accountNo, Long.valueOf(profitPresentReqVO.getMerchantBankId()),
                 profitPresentReqVO.getAmount(), profitPresentReqVO.getInvoiceIds());
 
-        return success(profitId);
+        String profitIdStr = "";
+        if (profitId != null) {
+            profitIdStr = profitId.toString();
+        }
+
+        return success(profitIdStr);
     }
 
     @GetMapping("/list")
@@ -72,11 +77,15 @@ public class AccountProfitController {
 
     @GetMapping("/detail")
     @Operation(summary = "利润详情")
-    public CommonResult<ProfitDetailRespVO> profitDetail(@RequestParam String accountNo, @RequestParam Long profitId) {
+    public CommonResult<ProfitDetailRespVO> profitDetail(@RequestParam String accountNo, @RequestParam String profitId) {
         log.info("查询账户{}的{}利润详情", accountNo, profitId);
 
         this.checkAccount(accountNo);
-        ProfitDetailRespVO respVO = accountProfitService.profitDetail(accountNo, profitId);
+        Long id = null;
+        if (profitId != null) {
+            id = Long.valueOf(profitId);
+        }
+        ProfitDetailRespVO respVO = accountProfitService.profitDetail(accountNo, id);
         return success(respVO);
     }
 

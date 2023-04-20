@@ -19,13 +19,15 @@
 import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 import * as DefinitionApi from '@/api/bpm/definition'
 import * as ActivityApi from '@/api/bpm/activity'
+import * as TaskApi from '@/api/bpm/task'
 import { setConfAndFields2 } from '@/utils/formCreate'
 import type { ApiAttrs } from '@form-create/element-ui/types/config'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
 import { onMounted, ref } from 'vue'
+import { useUserStore } from '@/store/modules/user'
 const message = useMessage() // 消息弹窗
 const processInstance = ref<any>({}) // 流程实例
-
+const userId = useUserStore().getUser.id // 当前登录的编号
 const processInstanceLoading = ref(false)
 
 const id = baseInfoData.data.procInstId
@@ -91,6 +93,45 @@ const getDetail = () => {
     .finally(() => {
       processInstanceLoading.value = false
     })
+  // 2. 获得流程任务列表（审批记录）
+  TaskApi.getTaskListByProcessInstanceId(id)
+    .then((data) => {
+      // 审批记录
+      tasks.value = []
+      // 移除已取消的审批
+      data.forEach((task) => {
+        if (task.result !== 4) {
+          tasks.value.push(task)
+        }
+      })
+      // 排序，将未完成的排在前面，已完成的排在后面；
+      tasks.value.sort((a, b) => {
+        // 有已完成的情况，按照完成时间倒序
+        if (a.endTime && b.endTime) {
+          return b.endTime - a.endTime
+        } else if (a.endTime) {
+          return 1
+        } else if (b.endTime) {
+          return -1
+          // 都是未完成，按照创建时间倒序
+        } else {
+          return b.createTime - a.createTime
+        }
+      })
+
+      // 需要审核的记录
+      tasks.value.forEach((task) => {
+        // 1.1 只有待处理才需要
+        if (task.result !== 1) {
+          return
+        }
+        // 1.2 自己不是处理人
+        if (!task.assigneeUser || task.assigneeUser.id !== userId) {
+          return
+        }
+      })
+    })
+    .finally(() => {})
 }
 </script>
 <style lang="scss" scoped>

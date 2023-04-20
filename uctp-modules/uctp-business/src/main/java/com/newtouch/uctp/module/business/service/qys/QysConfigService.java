@@ -83,13 +83,13 @@ public interface QysConfigService {
      */
     String status(String signature, String timestamp, String content) throws Exception;
     /**
-     * 电子签回调接口->7）验证地址：若选择单点登录集成方案，用于单点登录集成的Ticket校验；
+     * 电子签回调接口->7）CAS验证地址：若选择单点登录集成方案，用于单点登录集成的Ticket校验；
      * @param signature 签名
      * @param timestamp 时间戳
      * @param content 内容
      * @return
      */
-    String verification(String signature, String timestamp, String content) throws Exception;
+    String verification(String ticket) throws Exception;
     /**
      * 电子签回调接口 ->8）平台登录地址：若选择单点登录集成方案，用于单点登录集成Ticket校验失败的重定向地址；
      * @param signature 签名
