@@ -5,13 +5,13 @@
     <XTable @register="registerTable">
       <!-- 操作：流程跟踪 -->
       <template #toolbar_buttons>
-        <XButton
+        <!-- <XButton
           type="primary"
           preIcon="ep:zoom-in"
           title="流程跟踪"
           v-hasPermi="['system:post:create']"
           @click="handleProcessTrace()"
-        />
+        /> -->
         <!-- 操作：导出 -->
         <XButton
           type="primary"
@@ -55,9 +55,9 @@ const handleCloseDrawer = () => {
 }
 
 // 流程跟踪
-const handleProcessTrace = () => {
-  console.log('流程跟踪')
-}
+// const handleProcessTrace = () => {
+//   console.log('流程跟踪')
+// }
 
 //导出
 const handleExport = () => {
