@@ -188,6 +188,13 @@ public class AppCarInfoController {
     }
 
 
+    @GetMapping("/getCardByID")
+    @Operation(summary = "车辆卡片信息")
+    @Parameter(name = "ID", description = "车辆id", required = true, example = "1024")
+    public CommonResult<AppCarInfoCardRespVO> getCardByID(@RequestParam("ID") Long ID) {
+        return success(carInfoService.getCardByID(ID));
+    }
+
 
 
     @PostMapping("/updateContractStatas")
