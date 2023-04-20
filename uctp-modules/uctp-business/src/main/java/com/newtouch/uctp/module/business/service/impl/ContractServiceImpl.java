@@ -5,6 +5,7 @@ import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.dal.mysql.InvoicesMapper;
 import com.newtouch.uctp.module.business.service.ContractService;
@@ -61,6 +62,10 @@ public class ContractServiceImpl implements ContractService {
         return contractMapper.getContractIds(contractID);
     }
 
+    @Override
+    public List<ContractDO> getContractListByCarId(Long id) {
+        return contractMapper.selectByCarID(id);
+    }
 
 
     /**

@@ -4,6 +4,7 @@ package com.newtouch.uctp.module.business.service;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarInvoiceVo;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 
 import java.util.List;
 
@@ -37,5 +38,7 @@ public interface ContractService {
      * @return 合同在业务上传表中的id集合
      */
     List<CarDCVo> getContractIds(String contractID);
+
+    List<ContractDO> getContractListByCarId(Long id);
 
 }

@@ -11,6 +11,7 @@ import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
@@ -64,6 +65,7 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Resource
     private ContractService contractService;
+
 
     @Resource
     private FileApi fileApi;
@@ -364,6 +366,15 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
+    public AppCarInfoCardRespVO getCardByID(Long id) {
+        CarInfoDO carInfo = this.getCarInfo(id);
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        List<ContractDO> contractDOS = contractService.getContractListByCarId(id);
+        AppCarInfoCardRespVO appCarInfoCardRespVO = this.buildCardVO(carInfo, carInfoDetailsDO,contractDOS);
+        return appCarInfoCardRespVO;
+    }
+
+    @Override
     public AppCarInfoAmountRespVO getCarInfoAmount(Long id,BigDecimal sellAmount) {
 //        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         //税配置100，服务费配置200，然后合计费用300；利润=卖车金额-收车金额-税-服务费
@@ -467,6 +478,54 @@ public class CarInfoServiceImpl implements CarInfoService {
         AppBpmCarInfoRespVO vo = new AppBpmCarInfoRespVO();
         vo.setCarInfo(carInfo);
         vo.setCarInfoDetails(carInfoDetails);
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
+        //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
+        fileList.forEach(file->{
+            switch (file.getFileType()){
+                case "1":
+                case "1-1":
+                    //1-1 表是车辆第一张图片
+                    vo.getFileA().add(new AppSimpleFileVO(file));
+                    break;
+                case "2":
+                    vo.getFileB().add(new AppSimpleFileVO(file));
+                    break;
+                case "3":
+                    vo.getFileC().add(new AppSimpleFileVO(file));
+                    break;
+                case "4":
+                    vo.getFileD().add(new AppSimpleFileVO(file));
+                    break;
+                case "5":
+                    vo.getFileE().add(new AppSimpleFileVO(file));
+                    break;
+                default:
+                    break;
+            }
+        });
+        return vo;
+    }
+
+    private AppCarInfoCardRespVO buildCardVO(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetails, List<ContractDO> contractList){
+        AppCarInfoCardRespVO vo = new AppCarInfoCardRespVO();
+        //车辆主表信息
+        vo.setCarInfo(carInfo);
+        //车辆明细表数据
+        vo.setCarInfoDetails(carInfoDetails);
+        //合同数据
+        List<APPContractCardVO> list = new ArrayList<>();
+        APPContractCardVO contractCardVO = new APPContractCardVO();
+        for (ContractDO contractDO:contractList) {//循环合同信息，查询中间表拿到文件url
+            List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getId());
+            FileRespDTO fileRespDTO = fileList.get(0);
+            contractCardVO.setContractDO(contractDO);
+            contractCardVO.setPath(fileRespDTO.getPath());
+            contractCardVO.setUrl(fileRespDTO.getUrl());
+            list.add(contractCardVO);
+        }
+        vo.setContractCardVOS(list);
+
+        //车辆图片相关数据
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
         //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
         fileList.forEach(file->{
