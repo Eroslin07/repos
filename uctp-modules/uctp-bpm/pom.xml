@@ -132,6 +132,13 @@
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
         </dependency>
+
+        <!-- freemarker模板引擎基础 begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <!-- freemarker模板引擎基础 end -->
     </dependencies>
 
     <build>

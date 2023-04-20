@@ -84,6 +84,7 @@
 		getHomePageList
 	} from '@/api/home.js'
 	import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
+    import { parseTime } from '../../../utils/ruoyi'
 
 	export default {
 		data() {
@@ -122,7 +123,7 @@
 				loadStatus: 'loadmore',
 				total: 0,
 				timer: {},
-				defaultUrl: '/static/images/title-car.png'
+				defaultUrl: '/static/images/carlistImg.png'
 			}
 		},
 		// components: {
@@ -178,9 +179,11 @@
 				this.$modal.loading("数据加载中...");
 				getHomePageList(params).then(res => {
 					this.tabList = res.data.list.map(item => {
+						console.log(item.createTime)
 						return {
 							eyeIsShow: false,
-							...item
+							...item,
+							createTime:parseTime(item.createTime)
 						}
 					})
 					this.total = res.data.total;
@@ -201,7 +204,8 @@
 					this.tabList = [...this.tabList, ...res.data.list].map(item => {
 						return {
 							eyeIsShow: false,
-							...item
+							...item,
+							createTime:parseTime(item.createTime)
 						}
 					})
 					this.total = res.data.total;
@@ -243,7 +247,7 @@
 					this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
 					return;
 				}else if(item.status==11){
-					this.$tab.navigateTo('/subPages/home/bycar/index')
+					this.$tab.navigateTo('/subPages/home/bycar/index?id='+item.id)
 					return;
 				}
 

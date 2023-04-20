@@ -3,7 +3,7 @@
 		<uni-card :is-shadow="false" is-full>
 			<view style="overflow: hidden;margin-bottom: 20px;text-align: center;">
 				<h3>入账金额</h3>
-				<h3 style="margin-top: 10px;">+10,000.00元</h3>
+				<h3 style="margin-top: 10px;">+{{ $amount.getComdify(data.amount || 0) }}元</h3>
 			</view>
 		</uni-card>
 		<view style="padding: 20px;">
@@ -16,10 +16,10 @@
 					<view class="text1">关联车辆明细</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">卖车利润</view>
-					<view class="text2">我的利润</view>
-					<view class="text2">2023-03-23 16:08:03</view>
-					<view class="text2">MC12323432123211</view>
+					<view class="text2">{{ data.tradeTypeText }}</view>
+					<view class="text2">{{ data.tradeToText }}</view>
+					<view class="text2">{{ data.tradeDate }}</view>
+					<view class="text2">{{ data.contractNo }}</view>
 					<view @click="handleClick" class="text2">显示车架号</view>
 				</view>
 			</view>
@@ -31,8 +31,12 @@
 	export default {
 		data() {
 			return {
-				type: null
+				type: null,
+				data: null
 			}
+		},
+		onLoad(options) {
+			this.data = JSON.parse(decodeURIComponent(options.data))
 		},
 		methods: {
 			handleClick() {

@@ -107,7 +107,7 @@ public class BpmTaskController {
     @GetMapping("/getTaskFormInfo")
     @Operation(summary = "根据任务ID获取流程表单信息", description = "在【流程详细】界面中，进行调用")
     @Parameter(name = "taskId", description = "任务ID", required = true)
-    public CommonResult<BpmTaskApproveFormRespVO> getTaskFormInfo(@RequestParam("taskId") String taskId, @RequestParam("businessKey") String businessKey) {
+    public CommonResult<BpmTaskApproveFormRespVO> getTaskFormInfo(@RequestParam(name ="taskId", required = false) String taskId, @RequestParam("businessKey") String businessKey) {
         BpmTaskApproveFormRespVO bpmTaskApproveFormRespVO = taskService.getTaskFormInfo(taskId, businessKey);
         return success(bpmTaskApproveFormRespVO);
     }
