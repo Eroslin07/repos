@@ -6,6 +6,8 @@
     <CollectCarPending v-if="status == 'SGYZ'" :type="'need'" />
     <!-- 反向二手车统一发票待办 -->
     <Reverse v-if="status == 'SCKP'" :type="'need'" />
+    <!-- 车辆是否已过户至平台 -->
+    <VehicleReceiptTransfer v-if="status == 'SCGH'" :type="'need'" />
     <!-- 支付失败待办 -->
     <Payment v-if="status == 'SCKZH'" :type="'need'" />
     <!-- 正向二手车统一发票和增值税发票待办 -->
@@ -24,7 +26,8 @@ import {
   Payment,
   ForwardDirection,
   SellCarPending,
-  Profit
+  Profit,
+  VehicleReceiptTransfer
 } from '@/views/workbench/components'
 import { defineProps } from 'vue'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
@@ -42,6 +45,9 @@ console.log(props, 'prop')
 
 <style lang="scss" scoped>
 .baseinfo-container {
-  // height: 400px;
+  height: 100%;
+  :deep(.el-card) {
+    height: 100%;
+  }
 }
 </style>

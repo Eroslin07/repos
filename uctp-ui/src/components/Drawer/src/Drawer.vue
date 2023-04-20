@@ -45,7 +45,7 @@
         </div>
 
         <div class="drawer_content">
-          <el-tabs v-model="activeName" @tab-change="tabChange">
+          <el-tabs v-model="activeName" @tab-change="tabChange" class="tabs">
             <el-tab-pane
               v-for="(item, index) in comps"
               :key="index"
@@ -197,10 +197,6 @@ const dravwerClose = () => {
       height: 100%;
     }
 
-    .scrollbar_init {
-      height: calc(100vh - 52px - 55px - 40px) !important;
-    }
-
     .el-card:not(:last-child) {
       margin-bottom: 15px;
     }
@@ -227,5 +223,20 @@ const dravwerClose = () => {
 
 #drawerSelf .el-drawer .el-drawer__header {
   margin-bottom: 0 !important;
+}
+.drawer_content {
+  height: calc(100% - 40px);
+  .tabs {
+    height: 100%;
+  }
+  :deep(.el-tabs__content) {
+    height: calc(100% - 40px);
+    .el-tab-pane {
+      height: 100%;
+    }
+    .el-scrollbar__view {
+      height: calc(100% - 40px) !important;
+    }
+  }
 }
 </style>

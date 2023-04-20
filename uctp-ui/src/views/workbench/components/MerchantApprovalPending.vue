@@ -24,41 +24,65 @@
           </div>
         </div>
         <!-- <el-card class="content-box"> -->
-        <div>商户信息</div>
-        <el-row :gutter="20">
-          <el-col :span="6">手机号： {{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
-          <el-col :span="6">姓名： {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
-          <el-col :span="6">身份证号： {{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
-          <el-col :span="6"
-            >市场所在地： {{ mainValue.formDataJson.marketLocationValue || '暂无数据' }}</el-col
-          >
-        </el-row>
-        <div>对公银行账号：{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
-        <div>
-          <div>身份证图片</div>
-          <el-image
-            v-for="(img, index) in mainValue.formDataJson.idCardUrl"
-            :key="img.id"
-            style="width: 200px; height: 100px; margin-right: 10px"
-            :src="img.url"
-            :zoom-rate="1.2"
-            :preview-src-list="idcardUrlArr"
-            fit="cover"
-            :initial-index="index"
-          />
-        </div>
-        <div>
-          <div>营业执照图片</div>
-          <el-image
-            v-for="item in mainValue.formDataJson.businessLicense"
-            :key="item.id"
-            style="width: 200px; height: 100px"
-            :src="item.url"
-            :zoom-rate="1.2"
-            :preview-src-list="busUrlArr"
-            fit="cover"
-            :initial-index="0"
-          />
+        <div class="content-box">
+          <div>商户信息</div>
+          <el-row>
+            <el-col :span="6">姓名： {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
+            <el-col :span="6">手机号： {{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
+            <el-col :span="6">身份证号： {{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
+          </el-row>
+          <div>
+            <el-image
+              v-for="(img, index) in mainValue.formDataJson.idCardUrl"
+              :key="img.id"
+              style="width: 200px; height: 100px; margin-right: 10px"
+              :src="img.url"
+              :zoom-rate="1.2"
+              :preview-src-list="idcardUrlArr"
+              fit="cover"
+              :initial-index="index"
+            />
+          </div>
+          <el-row>
+            <el-col :span="6"
+              >营业执照号： {{ mainValue.formDataJson.taxNum || '暂无数据' }}</el-col
+            >
+            <el-col :span="6"
+              >公司名称： {{ mainValue.formDataJson.businessName || '暂无数据' }}</el-col
+            >
+            <el-col :span="6"
+              >法定代表人： {{ mainValue.formDataJson.legal_representative || '暂无数据' }}</el-col
+            >
+            <el-col :span="6"
+              >市场所在地： {{ mainValue.formDataJson.marketLocationValue || '暂无数据' }}</el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <div>开户行：{{ mainValue.formDataJson.bankName || '暂无数据' }}</div>
+            </el-col>
+            <el-col :span="6">
+              <div>对公银行账号：{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
+            </el-col>
+            <el-col :span="6">
+              <div>保证金充值卡号：{{ mainValue.formDataJson.bondBankAcconut || '暂无数据' }}</div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>联系地址： {{ mainValue.formDataJson.address || '暂无数据' }}</el-col>
+          </el-row>
+          <div>
+            <el-image
+              v-for="item in mainValue.formDataJson.businessLicense"
+              :key="item.id"
+              style="width: 200px; height: 100px"
+              :src="item.url"
+              :zoom-rate="1.2"
+              :preview-src-list="busUrlArr"
+              fit="cover"
+              :initial-index="0"
+            />
+          </div>
         </div>
         <!-- </el-card> -->
       </el-main>
