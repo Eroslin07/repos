@@ -53,7 +53,7 @@
 			</view>
 			<view v-else class="empty-page">
 				<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
-				<text class="empty-text">暂无数据</text>
+				<text class="empty-text" v-if="status">暂无数据</text>
 			</view>
 		</view>
 	</view>
@@ -69,7 +69,8 @@
 				available: 0,
 				// 冻结余额
 				blockedBalances: 0,
-				indexList: []
+				indexList: [],
+				status: false
 			}
 		},
 		onBackPress(options) {
@@ -96,8 +97,10 @@
 					this.available = this.$amount.getComdify(res.data.availableCash);
 					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash);
 					this.indexList = res.data.cashDetails;
+					this.status = true;
 					this.$modal.closeLoading();
 				}).catch((error) => {
+					this.status = true;
 					this.$modal.closeLoading();
 				})
 			},
@@ -111,7 +114,7 @@
 			},
 			// 点击冻结余额
 			handleFreeze() {
-				this.$tab.navigateTo('/subPages/home/account/bond/freeze');
+				this.$tab.navigateTo('/subPages/home/account/bond/freeze?amount=' + this.blockedBalances);
 			},
 			// 点击全部
 			handleWhole() {

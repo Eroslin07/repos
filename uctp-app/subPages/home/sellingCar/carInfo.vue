@@ -720,6 +720,9 @@
 
 				// 删除模态框
 				deleteModal: false,
+				
+				// 草稿状态
+				draftStatus:0,
 			}
 		},
 		onBackPress(options) {
@@ -734,6 +737,8 @@
 		},
 		onLoad(options) {
 			console.log(options,'options')
+			this.draftStatus=options.status-0;
+			console.log(this.draftStatus)
 			this.carId = options.id;
 			this.showOverlay = true;
 			this.$modal.loading("数据加载中，请耐心等待...")
@@ -749,6 +754,7 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount) ;
+		
 				// 钥匙
 				if(this.carForm.vehicleKey){
 					this.isDisabledKey=false
@@ -756,14 +762,13 @@
 					this.isDisabledKey=true
 				}
 				// 其他
-				if(carForm.accidentVehicle){
+				if(this.carForm.accidentVehicle){
 					this.isDisabledAcc=false
 				}else{
 					this.isDisabledAcc=true
 				}
-				
 				let obj;
-				if(options.text=='草稿'){
+				if(this.draftStatus==31){
 					obj = res.data.proceduresAndSpareSell;
 				}else{
 					obj = res.data.proceduresAndSpareParts;
@@ -790,18 +795,17 @@
 					...res.data.vehicleProblem,
 					rent:'',
 				}
-				
 				this.showOverlay = false;
-				this.$modal.closeLoading();
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.showOverlay = false;
-				this.$modal.closeLoading();
-				if(options.text=='草稿'){
+				if(this.draftStatus==31){
 					this.$tab.switchTab('/pages/index')
 					return;
 				}
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
+			}).finally(()=>{
+				this.$modal.closeLoading();
 			})
 		},
 		mounted() {
@@ -1027,6 +1031,10 @@
 			},
 			// 放弃编辑
 			handleGive() {
+				if(this.draftStatus==31){
+					this.$tab.switchTab('/pages/index')
+					return;
+				}
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
 			// 保存车辆信息草稿

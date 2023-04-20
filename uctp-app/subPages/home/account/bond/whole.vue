@@ -32,7 +32,7 @@
 					</view>
 					<view v-else  class="empty-page">
 						<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
-						<text class="empty-text">暂无数据</text>
+						<text class="empty-text" v-if="status2">暂无数据</text>
 					</view>
 				</view>
 			</view>
@@ -75,7 +75,8 @@
 						pageNo: 1
 					}
 				},
-				pageSize: 10
+				pageSize: 10,
+				status2: false
 			}
 		},
 		mounted() {
@@ -83,6 +84,7 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
+			this.status2 = false;
 			if (this.tabCur == 0) {
 				// 全部
 				this.getListRefresh(1);
@@ -106,6 +108,7 @@
 			this.status = 'loading';
 			this.timer = setTimeout(() => {
 				this.tab[this.tabCur].pageNo += 1;
+				this.status2 = false;
 				if (this.tabCur == 0) {
 					// 全部
 					this.getMore(1);
@@ -121,6 +124,7 @@
 		methods: {
 			handleChange(val) {
 				this.tabCur = val.index;
+				this.status2 = false;
 				if (this.tabCur == 0) {
 					// 全部
 					this.getList(1);
@@ -152,9 +156,11 @@
 					} else {
 						this.status = 'nomore'
 					}
+					this.status2 = true;
 					this.$modal.closeLoading();
 				}).catch((error) => {
 					this.status = 'nomore'
+					this.status2 = true;
 					this.$modal.closeLoading();
 				})
 			},
@@ -173,6 +179,7 @@
 					} else {
 						this.status = 'nomore'
 					}
+					this.status2 = true;
 				})
 			},
 			getListRefresh(i) {
@@ -192,9 +199,11 @@
 						this.status = 'nomore'
 					}
 					this.$modal.closeLoading();
+					this.status2 = true;
 					uni.stopPullDownRefresh();
 				}).catch((error) => {
 					this.status = 'nomore'
+					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
 				})
