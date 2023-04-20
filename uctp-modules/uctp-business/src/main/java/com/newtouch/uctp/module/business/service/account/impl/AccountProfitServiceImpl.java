@@ -415,6 +415,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             List<ProfitRespVO> profitVOList = new ArrayList<>();
             for (MerchantProfitDO pdo : profitDOList) {
                 ProfitRespVO pvo = ProfitRespVO.builder()
+                        .id(pdo.getId().toString())
                         .tradeDate(DateUtil.format(pdo.getTradeTime(), NORM_DATE_PATTERN))
                         .tradeType(pdo.getTradeType())
                         .tradeTypeText(pdo.getTradeTypeText())
