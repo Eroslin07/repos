@@ -5,10 +5,12 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateRe
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import liquibase.pro.packaged.T;
 
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 契约锁 Service 接口
@@ -89,7 +91,7 @@ public interface QysConfigService {
      * @param content 内容
      * @return
      */
-    String verification(String ticket) throws Exception;
+    Map<String, Object> verification(String ticket) throws Exception;
     /**
      * 电子签回调接口 ->8）平台登录地址：若选择单点登录集成方案，用于单点登录集成Ticket校验失败的重定向地址；
      * @param signature 签名
@@ -105,5 +107,14 @@ public interface QysConfigService {
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    void send(String  carId);
+    void send(Long carId);
+
+    /**
+     * 获取到契约锁单点登录地址
+     * @param pageType 车辆Id
+     * @param contractId 合同Id
+     * @return
+     */
+    String getSsoUrl(String pageType,Long contractId);
+
 }

@@ -70,6 +70,7 @@
 				// 冻结余额
 				blockedBalances: 0,
 				indexList: [],
+				revision: 0,
 				status: false
 			}
 		},
@@ -97,6 +98,7 @@
 					this.available = this.$amount.getComdify(res.data.availableCash);
 					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash);
 					this.indexList = res.data.cashDetails;
+					this.revision = res.data.revision;
 					this.status = true;
 					this.$modal.closeLoading();
 				}).catch((error) => {
@@ -106,11 +108,11 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available);
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available + '&revision=' + this.revision);
 			},
 			// 充值
 			handleRecharge() {
-				this.$tab.navigateTo('/subPages/home/account/bond/recharge');
+				this.$tab.navigateTo('/subPages/home/account/bond/recharge?revision=' + this.revision);
 			},
 			// 点击冻结余额
 			handleFreeze() {

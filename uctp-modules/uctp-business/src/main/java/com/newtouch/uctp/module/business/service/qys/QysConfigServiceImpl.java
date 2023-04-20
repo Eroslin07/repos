@@ -19,22 +19,28 @@ import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelPropert
 import com.newtouch.uctp.framework.security.core.LoginUser;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
+import com.newtouch.uctp.module.business.controller.app.qys.dto.CompanyAuthDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.business.dal.dataobject.users.UsersDO;
 import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
+import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
+import com.newtouch.uctp.module.business.enums.QysCallBackType;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
+import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
 import com.newtouch.uctp.module.business.util.UppercaseUtil;
 import com.qiyuesuo.sdk.v2.bean.*;
@@ -47,9 +53,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
@@ -74,9 +78,15 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Resource
     private QysCallbackMapper qysCallbackMapper;
     @Resource
+    private QysCallbackService qysCallbackService;
+    @Resource
     private DeptMapper deptMapper;
     @Resource
     private RedisTemplate<String,String> redisTemplate;
+    @Resource
+    private UserMapper userMapper;
+    @Resource
+    private ContractService contractService;
 
     @Resource
     private CarInfoDetailsService carInfoDetailsService;
@@ -154,35 +164,40 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public String certification(String signature, String timestamp, String content) throws Exception {
-        log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
-        //验证签名
-        if (!this.verificationSignature(signature,timestamp)) {
-            return "fail";
-        }
-        //解密消息
-        String json = this.decryptMessage(content);
-        JSONObject jsonObject = JSON.parseObject(json);
-        String companyName = jsonObject.getString("companyName");
-        String status = jsonObject.getString("status");
-        QysCallbackDO qysCallbackDO = new QysCallbackDO();
-        qysCallbackDO.setContent(json);
-        //目前根据saas文档来的
-        qysCallbackDO.setType(1);
-        //查询企业,后面确认下工商注册号是不是我们的一样
-        List<DeptDO> deptDOS = deptMapper.selectByName(companyName);
-        DeptDO deptDO = null;
-        if (CollUtil.isNotEmpty(deptDOS)) {
-            log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{}",companyName);
-            deptDO = deptDOS.get(0);
-            if (ObjectUtil.isNotNull(deptDO)) {
-                qysCallbackDO.setMainId(deptDO.getId());
-                deptDO.setAuth(Integer.valueOf(status));
+    public String certification(String signature, String timestamp, String content){
+        try {
+            log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+            //验证签名
+            if (!this.verificationSignature(signature,timestamp)) {
+                return "fail";
             }
-        }
-        qysCallbackMapper.insert(qysCallbackDO);
-        if (ObjectUtil.isNotNull(deptDO)) {
-            deptMapper.updateById(deptDO);
+            //解密消息
+            String json = this.decryptMessage(content);
+            JSONObject jsonObject = JSON.parseObject(json);
+            String companyName = jsonObject.getString("companyName");
+            String status = jsonObject.getString("status");
+            QysCallbackDO qysCallbackDO = new QysCallbackDO();
+            qysCallbackDO.setContent(json);
+            //目前根据saas文档来的
+            qysCallbackDO.setType(QysCallBackType.COMPANY_AUTH.value());
+            //查询企业,后面确认下工商注册号是不是我们的一样
+            List<DeptDO> deptDOS = deptMapper.selectByName(companyName);
+            DeptDO deptDO = null;
+            if (CollUtil.isNotEmpty(deptDOS)) {
+                log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{}",companyName);
+                deptDO = deptDOS.get(0);
+                if (ObjectUtil.isNotNull(deptDO)) {
+                    qysCallbackDO.setMainId(deptDO.getId());
+                    deptDO.setAuth(Integer.valueOf(status));
+                }
+            }
+            qysCallbackMapper.insert(qysCallbackDO);
+            if (ObjectUtil.isNotNull(deptDO)) {
+                deptMapper.updateById(deptDO);
+            }
+            return "success";
+        }catch (Exception e){
+            log.error("[certification]电子签回调出错", e);
         }
         return "success";
     }
@@ -201,7 +216,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public String verification(String ticket) throws Exception {
+    public Map<String, Object> verification(String ticket) throws Exception {
         log.info("[verification]电子签CAS校验：ticket【{}】",ticket);
         //拿到 aes 密钥
 //        redisTemplate.opsForValue().set("ticket:"+ticket,"密钥");
@@ -211,8 +226,15 @@ public class QysConfigServiceImpl implements QysConfigService {
         //解密 获取到userId
         String userId = aes.decryptStr(ticket, CharsetUtil.CHARSET_UTF_8);
         //查询到用户数据并返回
-
-        return "success";
+        AdminUserDO adminUser = userMapper.selectById(userId);
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("contract", adminUser.getMobile());
+        userMap.put("name", adminUser.getNickname());
+        Map<String, Object> retMap = new HashMap<>();
+        retMap.put("code", 0);
+        retMap.put("message", "SUCCESS");
+        retMap.put("result", userMap);
+        return retMap;
     }
 
     @Override
@@ -278,6 +300,39 @@ public class QysConfigServiceImpl implements QysConfigService {
         //保存在那里需要确认
     }
 
+    @Override
+    public String getSsoUrl(String pageType,Long contractId) {
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        Long loginUserId = loginUser.getId();
+        //加密
+        // 随机生成密钥
+        byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
+        // 构建
+        AES aes = SecureUtil.aes(key);
+        // 加密为16进制表示
+        String ticket = aes.encryptHex(loginUserId.toString());
+        String ssoUrl = "https://cloudapi.qiyuesuo.cn/saas/ssogateway?ticket=%s&pageType=%s";
+        if ("CONTRACT_DETAIL_PAGE".equals(pageType)) {
+            //合同签署页面
+            List<QysCallbackDO> callbackDOS = qysCallbackService.getByMainIdAndType(loginUser.getDeptId(),QysCallBackType.COMPANY_AUTH.value());
+             ContractDO contract =contractService.getById(contractId);
+            if (CollUtil.isNotEmpty(callbackDOS)) {
+                QysCallbackDO callbackDO = callbackDOS.get(0);
+                CompanyAuthDTO companyAuthDTO = JSON.parseObject(callbackDO.getContent(), CompanyAuthDTO.class);
+                String companyId = companyAuthDTO.getCompanyId();
+                String qysContractId = contract.getContractId().toString();
+                //TODO 这里换成系统的页面然后配置白名单
+                String signReturnUrl = "www.baidu.com";
+                ssoUrl += "&companyId=%s&contractId&signReturnUrl=%s";
+                ssoUrl = String.format(ssoUrl, ticket, pageType,companyId,qysContractId,signReturnUrl);
+            }
+        }else {
+            ssoUrl = String.format(ssoUrl, ticket, pageType);
+        }
+        return ssoUrl;
+    }
+
+    private Contract buildContract(CarInfoDO carInfo) {
     //委托合同
     private Contract buildContract(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
@@ -402,6 +457,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         draftContract.setSend(true); //发起合同
         return draftContract;
     }
+
 
     private Boolean verificationSignature(String signature, String timestamp){
         String md5 = MD5.toMD5(timestamp + SECRET);

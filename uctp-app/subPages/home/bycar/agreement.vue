@@ -34,7 +34,11 @@
 			},
 			// 合同签章
 			handleAffirm() {
-				getQiyuesuo().then((res) => {
+				const data={
+					carId:'1648668268713422850',
+					type:'2'
+				}
+				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
 				})
 			},

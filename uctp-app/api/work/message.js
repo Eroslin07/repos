@@ -1,13 +1,13 @@
 import request from '@/utils/request'
 
 // 获取消息列表
-export const getNoticesApi = () => {
+export const getNoticesApi = (id) => {
 	return request({
-		url: '/uctp/car-notice/getNotices',
+		url: '/uctp/car-notice/getNotices?businessID='+id,
 		method: 'GET',
-		header: {
-			'tenant-id': '1'
-		}
+		// header: {
+		// 	'tenant-id': '1'
+		// }
 	})
 }
 

@@ -165,8 +165,8 @@
 							iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
-						<view style="margin-left: 15px;color: #e26e1f;" @click="handleDetail">
-							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。明细请查看 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;">
+							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text  @click="handleDetail">明细请查看 ></text></view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group v-model="sellerForm.sellType" placement="row">
@@ -381,16 +381,25 @@
 		</uni-card>
 		<!-- 费用明细 -->
 		<u-modal :show="showDetail" @confirm="showDetail = false">
-			<view>
-				<view>收车金额：{{ amountDetails.vehicleReceiptAmount }}元</view>
-				<view>卖车金额：{{ amountDetails.sellAmount }}元</view>
-				<view>过户服务费：{{ amountDetails.transferSell }}元</view>
-				<view>运营服务费（卖家）：{{ amountDetails.operation }}元</view>
-				<view>过户服务费（买家）：{{ amountDetails.transferBuy }}元</view>
-				<view>增值税费用：{{ amountDetails.vat }}元</view>
-				<view>杂税费用：{{ amountDetails.tax }}元</view>
-				<view>合计费用：{{ amountDetails.total }}元</view>
-				<view>利润：{{ amountDetails.profit }}元</view>
+			<view v-if="!isChildAccount">
+				<view>收车金额：{{ amountDetails.vehicleReceiptAmount | filterMoney(that) }}元</view>
+				<view>卖车金额：{{ amountDetails.sellAmount | filterMoney(that) }}元</view>
+				<!-- <view>过户服务费：{{ amountDetails.transferSell | filterMoney(that) }}元</view> -->
+				<view>运营服务费：{{ amountDetails.operation | filterMoney(that) }}元</view>
+				<!-- <view>过户服务费（买家）：{{ amountDetails.transferBuy | filterMoney(that)}}元</view> -->
+				<view>增值税费用：{{ amountDetails.vat | filterMoney(that) }}元</view>
+				<view>杂税费用：{{ amountDetails.tax | filterMoney(that) }}元</view>
+				<view>合计费用：{{ amountDetails.total | filterMoney(that) }}元</view>
+				<view>利润：{{ amountDetails.profit | filterMoney(that) }}元</view>
+			</view>
+			<!-- 子账户 -->
+			<view v-else>
+				<view>运营服务费：****元</view>
+				<view>过户服务费：****元</view>
+				<view>增值税费用：****元</view>
+				<view>杂税费用：****元</view>
+				<view>合计费用：****元</view>
+				<view>利润：****元</view>
 			</view>
 		</u-modal>
 		<view class="footer">
@@ -448,6 +457,7 @@
 	export default {
 		data() {
 			return {
+				that:this,
 				otherValue: '',
 				showOverlay: false,
 				carId: null,
@@ -666,7 +676,7 @@
 						trigger: ['blur', 'change']
 					},
 					sellAmount: {
-						type: 'number',
+						type: 'string',
 						required: true,
 						message: '请填写卖车金额',
 						trigger: ['blur', 'change']
@@ -731,6 +741,9 @@
 
 				// 草稿状态
 				draftStatus: 0,
+				
+				// 是否是子账户
+				isChildAccount:false
 			}
 		},
 		onBackPress(options) {
@@ -761,14 +774,12 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
-
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
 				} else {
 					obj = res.data.proceduresAndSpareParts;
 				}
-
 				for (let key in obj) {
 					if (obj[key] === true) {
 						this.carForm.checkboxValue.push(key);
@@ -798,6 +809,7 @@
 						this.isDisabledKey = true
 					})
 				}
+				
 				// 其他
 				if (obj.accidentVehicle) {
 					this.isDisabledAcc = false
@@ -825,6 +837,12 @@
 		mounted() {
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
 		},
+		filters:{
+			filterMoney(val,that){
+				console.log(this,val,'999')
+				return that.$amount.getComdify( val - 0 )
+			}
+		},
 		methods: {
 			// 钥匙及其他输入框是否禁用
 			changeValue(value) {
@@ -836,6 +854,7 @@
 				} else {
 					this.$nextTick(() => {
 						this.isDisabledKey = true
+						// this.carForm.key=''
 					})
 				}
 				if (value.indexOf('accidentVehicle') > 0) {
@@ -845,6 +864,7 @@
 				} else {
 					this.$nextTick(() => {
 						this.isDisabledAcc = true
+						// this.carForm.other=''
 					})
 
 				}
@@ -991,6 +1011,9 @@
 			},
 			// 点击费用明细
 			handleDetail() {
+				if(!this.sellerForm.sellAmount){
+					return this.$modal.msg('请输入卖车金额！')
+				}
 				this.showDetail = true;
 			},
 			// 卖车金额失焦获取公允价值
@@ -1055,6 +1078,7 @@
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
+				if(!this.carForm.checkboxValue.length) return this.$modal.msgError('车辆手续及备件不能为空！')
 				this.showOverlay = true;
 				// 车辆手续及备件
 				let proceduresAndSpareParts = {};

@@ -40,11 +40,13 @@
 		data() {
 			return {
 				amount: '',
-				allAmount: null
+				allAmount: null,
+				revision: 0
 			}
 		},
 		onLoad(options) {
 			this.allAmount = options.amount;
+			this.revision = options.revision;
 			uni.setNavigationBarTitle({
 				title: '保证金提现'
 			});
@@ -59,10 +61,12 @@
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
 					tranAmount: this.amount,
-					revision: 3
+					revision: this.revision
 				}
 				getWithdraw(data).then((res) => {
-					this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data)));
+					this.$modal.msg("提现成功");
+					this.$tab.navigateTo('/subPages/home/account/bond/bond');
+					// this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
 				})
 			},
 			// 点击全部提现

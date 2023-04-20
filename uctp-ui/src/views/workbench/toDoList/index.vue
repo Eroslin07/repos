@@ -48,6 +48,7 @@ import * as ToDoList from '@/api/workbench/toDoList'
 // import * as RoleApi from '@/api/system/role'
 import { baseInfoData, completedVisible } from '../basInfoValue'
 // 列表相关的变量
+const message = useMessage()
 const [registerTable, { reload }] = useXTable({
   allSchemas: allSchemas,
   getListApi: ToDoList.getToDoList
@@ -65,6 +66,9 @@ const handleCloseDrawer = () => {
 }
 // 审批
 const handleApproval = () => {
+  if (!Object.keys(rowData.value).length) {
+    return message.error('请先选中数据！')
+  }
   handleApplication(rowData.value)
 }
 
