@@ -1194,7 +1194,7 @@
 						this.$modal.closeLoading()
 						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
-						// this.$tab.reLaunch('/pages/index');
+						this.$tab.reLaunch('/pages/index');
 					}
 				})
 			},
