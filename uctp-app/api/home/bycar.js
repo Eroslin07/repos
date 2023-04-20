@@ -28,10 +28,11 @@ export function setSellerInfo(data) {
 }
 
 // 合同签章
-export function getQiyuesuo() {
+export function getQiyuesuo(params) {
 	return request({
-		url: '/uctp/car-info/qiyuesuo',
-		'method': 'GET'
+		url: '/uctp/qys/send',
+		'method': 'POST',
+		params
 	})
 }
 
