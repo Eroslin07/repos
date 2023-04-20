@@ -32,8 +32,12 @@
             }}</div
           >
           <div class="btns" id="btns">
-            <el-button plain type="primary" @click="submitBtn('同意')">同意</el-button>
-            <el-button plain type="success" @click="submitBtn('不同意')">不同意</el-button>
+            <el-button plain type="primary" @click="submitBtn('同意')" v-if="!completedVisible"
+              >同意</el-button
+            >
+            <el-button plain type="success" @click="submitBtn('不同意')" v-if="!completedVisible"
+              >不同意</el-button
+            >
             <!-- <el-button plain type="danger">作废</el-button> -->
             <el-button plain type="info" @click="dravwerClose">关闭</el-button>
           </div>
@@ -89,7 +93,8 @@ import BaseInfo from '@/views/ApprovalProcess/BaseInfo.vue'
 import BaseHistory from '@/views/ApprovalProcess/BaseHistory.vue'
 import BaseFlowChart from '@/views/ApprovalProcess/BaseFlowChart.vue'
 import { ref, shallowRef } from 'vue'
-import { baseInfoData } from '@/views/workbench/basInfoValue'
+import { baseInfoData, completedVisible } from '@/views/workbench/basInfoValue'
+console.log(completedVisible, 'drawer')
 
 const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])

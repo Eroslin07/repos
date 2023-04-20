@@ -46,7 +46,7 @@ import { allSchemas } from './toDoList.data'
 import { Drawer } from '@/components/Drawer'
 import * as ToDoList from '@/api/workbench/toDoList'
 // import * as RoleApi from '@/api/system/role'
-import { baseInfoData } from '../basInfoValue'
+import { baseInfoData, completedVisible } from '../basInfoValue'
 // 列表相关的变量
 const [registerTable, { reload }] = useXTable({
   allSchemas: allSchemas,
@@ -89,6 +89,7 @@ const handleApplication = (row) => {
   }
   ToDoList.getTaskFormInfoAPI(params)
     .then((response) => {
+      completedVisible.value = false
       baseInfoData.data = { ...response }
       loadingInstance.close()
       console.log(baseInfoData.data)

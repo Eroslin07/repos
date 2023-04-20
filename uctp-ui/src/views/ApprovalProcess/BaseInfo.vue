@@ -1,5 +1,5 @@
 <template>
-  <div class="baseinfo-container" v-loading="infoLoading">
+  <div class="baseinfo-container">
     <!-- 商户主账号审批待办 -->
     <MerchantApprovalPending v-if="status == 'ZHSQ'" :type="'need'" />
     <!-- 收车价格超公允值待办 -->
@@ -27,7 +27,7 @@ import {
   Profit
 } from '@/views/workbench/components'
 import { defineProps } from 'vue'
-import { baseInfoData, infoLoading } from '@/views/workbench/basInfoValue'
+import { baseInfoData } from '@/views/workbench/basInfoValue'
 console.log(baseInfoData.data, 'baseInfoData')
 
 const props = defineProps({
