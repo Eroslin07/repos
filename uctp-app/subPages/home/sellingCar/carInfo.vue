@@ -720,6 +720,9 @@
 
 				// 删除模态框
 				deleteModal: false,
+				
+				// 草稿状态
+				draftStatus:0,
 			}
 		},
 		onBackPress(options) {
@@ -734,6 +737,8 @@
 		},
 		onLoad(options) {
 			console.log(options,'options')
+			this.draftStatus=options.status-0;
+			console.log(this.draftStatus)
 			this.carId = options.id;
 			this.showOverlay = true;
 			this.$modal.loading("数据加载中，请耐心等待...")
@@ -763,7 +768,7 @@
 					this.isDisabledAcc=true
 				}
 				let obj;
-				if(options.status==31){
+				if(this.draftStatus==31){
 					obj = res.data.proceduresAndSpareSell;
 				}else{
 					obj = res.data.proceduresAndSpareParts;
@@ -794,11 +799,11 @@
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
 				this.showOverlay = false;
-				if(options.text=='草稿'){
-					// this.$tab.switchTab('/pages/index')
+				if(this.draftStatus==31){
+					this.$tab.switchTab('/pages/index')
 					return;
 				}
-				// this.$tab.navigateTo('/subPages/home/sellingCar/index');
+				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			}).finally(()=>{
 				this.$modal.closeLoading();
 			})
@@ -1026,6 +1031,10 @@
 			},
 			// 放弃编辑
 			handleGive() {
+				if(this.draftStatus==31){
+					this.$tab.switchTab('/pages/index')
+					return;
+				}
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
 			// 保存车辆信息草稿
