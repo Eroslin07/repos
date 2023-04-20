@@ -51,9 +51,9 @@
 							<text v-if="tab.eyeIsShow"
 								style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
 							<text v-else style="padding-right:3px;">***元</text>
-							<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
-								@click="tab.eyeIsShow=!tab.eyeIsShow"></text>
-							<text v-else class="iconfont icon-close-eye" @click="tab.eyeIsShow=!tab.eyeIsShow"></text>
+							<text style="padding:2px 5px;" v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
+								@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
+							<text v-else style="padding:2px 5px;" class="iconfont icon-close-eye" @click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
 						</view>
 						<view class="fs12" style="color: #f60;">卖车价：
 							<text v-if="!tab.eyeIsShow && tab.vehicleReceiptAmount">***元</text>
@@ -83,7 +83,7 @@
 	import {
 		getHomePageList
 	} from '@/api/home.js'
-	import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
+	// import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
     import { parseTime } from '../../../utils/ruoyi'
 
 	export default {
@@ -159,7 +159,6 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
-
 			console.log('下拉刷新')
 			this.getList(this.formData)
 		},
@@ -249,6 +248,8 @@
 				}else if(item.status==11){
 					this.$tab.navigateTo('/subPages/home/bycar/index?id='+item.id)
 					return;
+				}else{
+					this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?item='+JSON.stringify(item))
 				}
 
 			}

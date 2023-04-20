@@ -16,7 +16,8 @@
 					<view v-else class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
 						<text>您已经上传检测报告!</text>
-						<u-icon name="trash" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
+						<u-icon @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
+						</u-icon>
 					</view>
 				</view>
 			</view>
@@ -118,8 +119,8 @@
 			<view class="contrart-info">
 				<view class="flex contrart-info__row">
 					<text>XXX某收车委托合同</text>
-					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true"
-						color="#FA6400"></u-button>
+					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
+					</u-button>
 				</view>
 				<view class="flex">
 					<text>XXX某收车合同</text>
@@ -130,8 +131,8 @@
 				</view>
 				<view class="flex  contrart-info__row">
 					<text>XXX某卖委托合同</text>
-					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true"
-						color="#FA6400"></u-button>
+					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
+					</u-button>
 				</view>
 				<view class="flex">
 					<text>XXX某卖车合同</text>
@@ -188,7 +189,7 @@
 				</view>
 			</view>
 			<view class="car-button">
-				<u-button text="签章" color="#FA6400"></u-button>
+				<u-button text="签章" color="#FA6400" @click="handleSignature"></u-button>
 			</view>
 		</view>
 		<view class="car-fund" v-if="tabCar=='2'">
@@ -283,16 +284,16 @@
 				<text>二手车销售统一发票(反向)</text>
 				<view class="flex">
 					<text>待开票</text>
-					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true"
-						color="#FA6400"></u-button>
+					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
+					</u-button>
 				</view>
 			</view>
 			<view class="flex">
 				<text>二手车销售统一发票(正向)</text>
 				<view class="flex">
 					<text>待开票</text>
-					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true"
-						color="#FA6400"></u-button>
+					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
+					</u-button>
 				</view>
 			</view>
 			<view class="flex">
@@ -309,6 +310,9 @@
 </template>
 
 <script>
+	import {
+		showConfirm
+	} from '@/utils/common'
 	export default {
 		data() {
 			return {
@@ -318,17 +322,54 @@
 		},
 		props: ['tabCar'],
 		methods: {
+			// 上传检测报告
 			photograph() {
 				let _this = this;
 				uni.showActionSheet({
 					// title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
+						console.log(res.tapIndex, 'res.tapIndex')
 						_this.chooseImages(res.tapIndex);
 					}
 				})
 			},
-			chooseImages() {},
+			chooseImages(tapIndex) {
+				let _this = this;
+				uni.chooseImage({
+					count: 1,
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
+					success: function(res) {
+						console.log(JSON.stringify(res.tempFilePaths));
+						uni.showModal({
+							title: '提示',
+							content: '您的车辆检测报告已经上传完成。',
+							showCancel: false, 
+							confirmText: '知道了',
+							confirmColor: '#f60',
+							success: function(res) {
+								if(res.confirm){
+									
+								}
+							}
+						})
+					}
+				})
+			},
+			// 删除检测报告
+			handleDelete() {
+				showConfirm('删除检测报告后，您的车辆将无法发起卖车业务，若需要继续卖车请重新上传新的检测报告').then(res => {
+					console.log(res, 'res')
+					if (res.confirm) {
+
+					}
+				})
+			},
+			// 签章
+			handleSignature() {
+				this.$tab.navigateTo('/subPages/home/sellingCar/agreement')
+			}
 		}
 	}
 </script>
@@ -589,60 +630,72 @@
 						align-items: center;
 					}
 				}
-				.car-fund-info-content{
+
+				.car-fund-info-content {
 					height: calc(100% - 78rpx);
 					flex-direction: column;
 					justify-content: space-evenly;
 					padding: 0 30rpx;
-					>view{
+
+					>view {
 						height: calc(100% / 4);
 						align-items: center;
 						border-bottom: 2rpx solid #F5F5F5;
 						position: relative;
-						>view{
+
+						>view {
 							width: 50%;
 							align-items: center;
 							flex-direction: column;
-							>text{
+
+							>text {
 								text-align: center;
-								&:first-child{
+
+								&:first-child {
 									font-size: 28rpx;
 									font-weight: 400;
 									color: #999999;
 									line-height: 40rpx;
 								}
-								&:nth-child(2){
+
+								&:nth-child(2) {
 									font-size: 32rpx;
 									font-weight: 500;
 									color: #333333;
 									line-height: 44rpx;
 								}
 							}
-							>view{
+
+							>view {
 								font-size: 24rpx;
 								align-items: center;
 								color: #FA6400;
 							}
 						}
-						&:last-child{
+
+						&:last-child {
 							border: none;
 						}
 					}
 				}
 			}
 		}
-		.car-invoice{
+
+		.car-invoice {
 			padding: 0 0 160rpx 36rpx;
-			>view{
+
+			>view {
 				border-bottom: 2rpx solid #F5F5F5;
 				height: 160rpx;
 				padding-right: 32rpx;
 				flex-direction: column;
 				justify-content: space-evenly;
 				color: #222222;
-				>view{
+
+				>view {
 					justify-content: space-between;
-					>text{
+
+					>text {
 						width: 106rpx;
 						height: 32rpx;
 						background: #FA6400;
