@@ -88,6 +88,15 @@ export function getCarInfo(data) {
 	})
 }
 
+// 根据id获取回显车辆信息
+export function getCarInfoDetail(data) {
+	return request({
+		url: '/uctp/car-info/getCarInfoByID',
+		'method': 'GET',
+		params: data
+	})
+}
+
 // 收车删除
 export function delCarInfoWithCollect(data) {
 	return request({
