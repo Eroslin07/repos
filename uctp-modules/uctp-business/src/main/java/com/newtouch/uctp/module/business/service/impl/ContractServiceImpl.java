@@ -67,6 +67,11 @@ public class ContractServiceImpl implements ContractService {
         return contractMapper.selectByCarID(id);
     }
 
+    @Override
+    public ContractDO getById(Long id) {
+        return contractMapper.selectById(id);
+    }
+
 
     /**
      * 将合同的url放到实体中

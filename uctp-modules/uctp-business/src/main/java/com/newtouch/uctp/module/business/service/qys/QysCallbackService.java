@@ -63,5 +63,13 @@ public interface QysCallbackService {
      */
     PageResult<QysCallbackDO> getQysCallbackPage(QysCallbackPageReqVO pageReqVO);
 
+    /**
+     * 获取到json对象
+     *
+     * @param mainId 业务id
+     * @param type 类型
+     * @return
+     */
+    public List<QysCallbackDO> getByMainIdAndType(Long mainId, Integer type);
 
 }
