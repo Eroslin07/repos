@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfitRespVO {
+    @Schema(description = "利润id")
+    private String id;
     @Schema(description = "交易类型")
     private String tradeType;
     @Schema(description = "交易类型中文名称")
