@@ -76,5 +76,34 @@ public class QysCallbackServiceImpl implements QysCallbackService {
         return qysCallbackMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<QysCallbackDO> getByMainIdAndType(Long mainId, Integer type) {
+        return qysCallbackMapper.getByMainIdAndType(mainId,type);
+//        QysCallbackDO qysCallback = qysCallbackDOS.get(0);
+//        QysCallBackType callBackType = QysCallBackType.toType(qysCallback.getType());
+//        switch (callBackType){
+//            case COMPANY_AUTH:
+//                return JSON.parseObject(qysCallback.getContent(), CompanyAuthDTO.class);
+//            case AUTH_RETURN:
+//                //TODO 后面的对象后面有空在加
+//                return null;
+//            case PRIVATIZED:
+//                return null;
+//            case CONTRACT_STATUS:
+//                return null;
+//            case SIGNATURE:
+//                return null;
+//            case PERSONAL_AUTH:
+//                return null;
+//            case PERSONAL_SIGNATURE_AUTH:
+//                return null;
+//            default:
+//                return null;
+//
+//        }
+
+    }
+
+
 
 }

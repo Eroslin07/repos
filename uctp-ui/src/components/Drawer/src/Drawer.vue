@@ -25,11 +25,7 @@
               width: 100%;
               color: #000000;
             "
-            >{{
-              (baseInfoData.data?.variables?.marketName || '') +
-              (baseInfoData.data?.variables?.merchantName || '') +
-              '账号申请流程'
-            }}</div
+            >{{ baseInfoData.data?.title }}</div
           >
           <div class="btns" id="btns">
             <el-button plain type="primary" @click="submitBtn('同意')" v-if="!completedVisible"
@@ -93,7 +89,7 @@ import BaseInfo from '@/views/ApprovalProcess/BaseInfo.vue'
 import BaseHistory from '@/views/ApprovalProcess/BaseHistory.vue'
 import BaseFlowChart from '@/views/ApprovalProcess/BaseFlowChart.vue'
 import { ref, shallowRef } from 'vue'
-import { baseInfoData, completedVisible } from '@/views/workbench/basInfoValue'
+import { baseInfoData, completedVisible, tabName } from '@/views/workbench/basInfoValue'
 console.log(completedVisible, 'drawer')
 
 const message = useMessage()
@@ -139,7 +135,7 @@ const drawerVisible = computed(() => {
   return props.visible
 })
 function tabChange(name) {
-  console.log(name)
+  tabName.value = name
 }
 // 提交
 const submitBtn = (text) => {

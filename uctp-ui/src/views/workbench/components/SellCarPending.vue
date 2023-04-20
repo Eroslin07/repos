@@ -294,7 +294,20 @@
                 <el-form-item label="身份证">
                   <div style="display: flex; flex-direction: column">
                     <div>
-                      <span class="identify" v-if="identifyShow"> 5*****************1</span>
+                      <span class="identify" v-if="identifyShow">
+                        {{
+                          baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
+                            0,
+                            1
+                          )
+                        }}*****************{{
+                          baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
+                            baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                              .carInfoDetails.sellerIdCard.length - 1,
+                            1
+                          )
+                        }}</span
+                      >
                       <span class="identify" v-else>{{
                         baseInfoData.data.variables.formDataJson.formMain.formDataJson
                           .carInfoDetails.sellerIdCard

@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<!-- 自定义导航栏 -->
-		<u-navbar title="二手车交易平台">
+		<u-navbar title="车友通">
 			<view class="u-nav-slot" slot="left">
 				<image style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png" class="form-image">
 				</image>
