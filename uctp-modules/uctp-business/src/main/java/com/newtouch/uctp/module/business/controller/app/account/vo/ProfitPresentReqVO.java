@@ -15,7 +15,7 @@ public class ProfitPresentReqVO {
     private String accountNo;
     @Schema(description = "商户银行卡ID")
     @NotNull(message = "商户银行卡ID不能为空")
-    private Long merchantBankId;
+    private String merchantBankId;
     @Schema(description = "提现金额（单位为：分）")
     @NotNull(message = "提现金额不能为空")
     @Min(value = 1, message = "提现金额必须大于0")
