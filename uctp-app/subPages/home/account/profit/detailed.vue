@@ -3,20 +3,15 @@
 		<uni-card :is-shadow="false" is-full>
 			<view style="overflow: hidden;margin-bottom: 20px;text-align: center;">
 				<h3>实扣金额</h3>
-				<h3 style="margin-top: 10px;">-10,000元</h3>
+				<h3 style="margin-top: 10px;">-{{ $amount.getComdify(data.amount || 0) }}元</h3>
 			</view>
 		</uni-card>
 		<view style="overflow: hidden;padding: 20px;border-bottom: 1px solid #f5f5f5;">
 			<view style="float: left;margin-right: 10px;color: #999;">当前状态</view>
 			<view style="float: left;">
-				<u-steps current="5" direction="column" activeColor="#fa6401">
-					<u-steps-item title="发起提现申请" desc="2023-03-23 16:08:03">
+				<u-steps :current="data.presentStatusRecords.length" direction="column" activeColor="#fa6401">
+					<u-steps-item v-for="(item, index) in data.presentStatusRecords" :title="item.statusText" :desc="item.occurredTime">
 					</u-steps-item>
-					<u-steps-item title="市场方审批" desc="2023-03-23 16:08:03">
-					</u-steps-item>
-					<u-steps-item title="银行处理" desc=" ">
-					</u-steps-item>
-					<u-steps-item title="到账成功" desc="2023-03-23 16:08:03"></u-steps-item>
 				</u-steps>
 			</view>
 		</view>
@@ -30,9 +25,9 @@
 				</view>
 				<view style="float: right;">
 					<view class="text2">兴业银行</view>
-					<view class="text2">2023-03-23 16:08:03</view>
-					<view class="text2">2023-03-24 17:00:00</view>
-					<view class="text2">MC12323432123211</view>
+					<view class="text2">{{ data.presentStatusRecords[0].occurredTime }}</view>
+					<view class="text2">{{ data.presentStatusRecords[data.presentStatusRecords.length - 1].occurredTime }}</view>
+					<view class="text2">{{ data.contractNo }}</view>
 				</view>
 			</view>
 		</view>
@@ -46,11 +41,14 @@
 	export default {
 		data() {
 			return {
-				type: null,
+				data: null,
 				urls1: [{
 					src2: 'https://cdn.uviewui.com/uview/album/1.jpg',
 				}]
 			}
+		},
+		onLoad(options) {
+			this.data = JSON.parse(decodeURIComponent(options.data))
 		},
 		methods: {
 

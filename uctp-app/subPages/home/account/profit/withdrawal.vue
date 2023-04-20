@@ -9,6 +9,8 @@
 				<view>提现金额</view>
 				<u-input
 					border="none"
+					v-model="amount"
+					type="number"
 					clearable
 					:customStyle="{'height': '50px'}"
 					fontSize="24px"
@@ -20,11 +22,11 @@
 						type="tips"
 					></u--text>
 					<template slot="suffix">
-						<view style="color: #fa6401;">全部提现</view>
+						<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
 					</template>
 				</u-input>
 			</view>
-			<view>可用利润余额13,000.00元。</view>
+			<view>可用利润余额{{ $amount.getComdify(allAmount) }}元。</view>
 			<view style="margin-top: 10px;">上传利润发票</view>
 			<view style="margin-top: 10px;">
 				<u-upload
@@ -44,16 +46,24 @@
 </template>
 
 <script>
+	import config from '@/config'
+	import { deleteImage } from '@/api/register'
+	import { getPresent } from '@/api/account/profit.js'
 	export default {
 		data() {
 			return {
-				fileList1: []
+				fileList1: [],
+				amount: '',
+				allAmount: 13000
 			}
 		},
 		methods: {
 			// 删除图片
 			deletePic(event) {
-				this[`fileList${event.name}`].splice(event.index, 1)
+				deleteImage({ id: event.file.id }).then((res) => {
+					this.$modal.msg("删除成功");
+					this[`fileList${event.name}`].splice(event.index, 1);
+				})
 			},
 			// 新增图片
 			async afterRead(event) {
@@ -73,7 +83,8 @@
 					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
 						status: 'success',
 						message: '',
-						url: result
+						url: result[0].url,
+						id: result[0].id
 					}))
 					fileListLen++
 				}
@@ -81,15 +92,13 @@
 			uploadFilePromise(url) {
 				return new Promise((resolve, reject) => {
 					let a = uni.uploadFile({
-						url: 'http://192.168.2.21:7001/upload', // 仅为示例，非真实的接口地址
+						url: config.uploadUrl, // 仅为示例，非真实的接口地址
 						filePath: url,
 						name: 'file',
-						formData: {
-							user: 'test'
-						},
 						success: (res) => {
 							setTimeout(() => {
-								resolve(res.data.data)
+								let data = JSON.parse(res.data).data
+								resolve(data)
 							}, 1000)
 						}
 					});
@@ -97,7 +106,23 @@
 			},
 			// 提交申请
 			handleSubmit() {
-				this.$tab.navigateTo('/subPages/home/account/profit/progress');
+				if (this.amount == "" || this.amount) {
+					this.$modal.msg("请输入需要提现的金额");
+					return
+				}
+				let data = {
+					accountNo: this.$store.state.user.accountNo,
+					merchantBankId: '',
+					tranAmount: this.amount,
+					invoiceIds: this.fileList1.map((item) => { return item.id })
+				}
+				getPresent(data).then((res) => {
+					this.$tab.navigateTo('/subPages/home/account/profit/progress');
+				})
+			},
+			// 点击全部提现
+			handleQuanbu() {
+				this.amount = this.allAmount
 			}
 		}
 	}
