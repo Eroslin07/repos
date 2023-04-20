@@ -2,7 +2,7 @@
 	<view class="car-info">
 		<uni-card :is-shadow="false" is-full spacing="0" style="height:100%">
 			<view class="banner">
-				<image class="image" src="@/static/images/car.jpg" :webp="true" mode="widthFix">
+				<image class="image" src="" :webp="true" mode="widthFix">
 				</image>
 
 			</view>
