@@ -159,7 +159,7 @@
 	.empty-page {
 		width: 100%;
 		margin-top: 50%;
-		transform: translate(0%, -50%);
+		transform: translate(0%, -70%);
 		text-align: center;
 	
 		.empty-img {
