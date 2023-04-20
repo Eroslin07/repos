@@ -18,19 +18,25 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.newtouch.uctp.framework.security.core.LoginUser;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
+import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.dal.dataobject.users.UsersDO;
+import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
+import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
+import com.newtouch.uctp.module.business.util.UppercaseUtil;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
@@ -46,8 +52,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.QYS_CONFIG_NOT_EXISTS;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 import static com.newtouch.uctp.module.business.enums.QysConstants.SECRET;
 
 /**
@@ -72,6 +77,11 @@ public class QysConfigServiceImpl implements QysConfigService {
     private DeptMapper deptMapper;
     @Resource
     private RedisTemplate<String,String> redisTemplate;
+
+    @Resource
+    private CarInfoDetailsService carInfoDetailsService;
+    @Resource
+    private UsersMapper usersMapper;
 
     @PostConstruct
     @Override
@@ -227,16 +237,40 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public void send(Long carId) {
-        CarInfoDO carInfo = carInfoService.getCarInfo(carId);
+    public void send(String carId) {
+        CarInfoDO carInfo = carInfoService.getCarInfo(Long.valueOf(carId));
+        CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(Long.valueOf(carId));
+
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
+        if (ObjectUtil.isNull(carInfoDetailsDO)) {
+            throw exception(CAR_INFO_DETAILS_NOT_EXISTS);
+        }
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", loginUser.getDeptId());
+        UsersDO usersDO = usersMapper.selectById(loginUser.getId());
+        if (ObjectUtil.isNull(usersDO)) {
+            throw exception(USERS_INFO_ERROR);
+        }
+        DeptDO userDept=deptMapper.selectById(usersDO.getDeptId());
+        if (ObjectUtil.isNull(userDept)) {
+            throw exception(DEPT_INFO_ERROR);
+        }
+        DeptDO pDept=deptMapper.selectOne("id",userDept.getParentId());
+        DeptDO platformDept=deptMapper.selectOne("parent_id",pDept.getParentId(),"attr",1);
+        if (ObjectUtil.isNull(platformDept)) {
+            throw exception(DEPT_INFO_ERROR);
+        }
+        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
-        Contract contract = this.buildContract(carInfo);
-        QiyuesuoCommonResult<Contract> result = client.defaultSend(null);
+        Contract contract = new Contract();
+       contract = this.buildContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+
+       /* if("3".equals(type)||"4".equals(type)){
+            contract = this.buildContract2(carInfo,carInfoDetailsDO,userDept,platformDept,type);
+        }*/
+        //Contract contract = this.buildContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+        QiyuesuoCommonResult<Contract> result = client.defaultSend(contract);
         if (!result.getCode().equals(0)) {
             throw new ServiceException(result.getCode(), result.getApiMsg());
         }
@@ -244,7 +278,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         //保存在那里需要确认
     }
 
-    private Contract buildContract(CarInfoDO carInfo) {
+    //委托合同
+    private Contract buildContract(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
         draftContract.setSubject("三方-二手车");
         // 设置合同接收方
@@ -268,13 +303,105 @@ public class QysConfigServiceImpl implements QysConfigService {
         draftContract.addSignatory(initiator2);
 
         //模板参数
-        draftContract.addTemplateParam(new TemplateParam("甲方",""));
+        draftContract.addTemplateParam(new TemplateParam("受托人", platformDept.getName()));
+        draftContract.addTemplateParam(new TemplateParam("甲方营业执照号",platformDept.getTax_num()));
+        draftContract.addTemplateParam(new TemplateParam("甲方法定代表人",platformDept.getLegal_representative()));
+        draftContract.addTemplateParam(new TemplateParam("甲方联系电话",platformDept.getPhone()));
+        draftContract.addTemplateParam(new TemplateParam("甲方联系地址",platformDept.getAddress()));
 
+        draftContract.addTemplateParam(new TemplateParam("委托人",userDept.getName()));
+        draftContract.addTemplateParam(new TemplateParam("乙方营业执照号",userDept.getTax_num()));
+        draftContract.addTemplateParam(new TemplateParam("乙方法定代表人",userDept.getLegal_representative()));
+        draftContract.addTemplateParam(new TemplateParam("乙方联系电话",userDept.getPhone()));
+        draftContract.addTemplateParam(new TemplateParam("乙方联系地址",userDept.getAddress()));
+        draftContract.addTemplateParam(new TemplateParam("车辆牌号",carInfo.getPlateNum()));
+        draftContract.addTemplateParam(new TemplateParam("车辆类型",carInfo.getCarType()));
+        draftContract.addTemplateParam(new TemplateParam("厂牌、型号",carInfo.getModel()));
+        draftContract.addTemplateParam(new TemplateParam("颜色",carInfoDetailsDO.getColour()));
+        draftContract.addTemplateParam(new TemplateParam("初次登记日期",carInfoDetailsDO.getFirstRegistDate()));
+        draftContract.addTemplateParam(new TemplateParam("登记证号",carInfoDetailsDO.getCertificateNo()));
+        draftContract.addTemplateParam(new TemplateParam("发动机号码",carInfo.getEngineNum()));
+        draftContract.addTemplateParam(new TemplateParam("车架号码",carInfo.getVin()));
+        draftContract.addTemplateParam(new TemplateParam("行驶里程",carInfoDetailsDO.getMileage().toString()));
+        draftContract.addTemplateParam(new TemplateParam("使用年限",carInfo.getScrapDate().toString()));
+        draftContract.addTemplateParam(new TemplateParam("年检签证有效期",carInfo.getAnnualInspectionDate().toString()));
+        draftContract.addTemplateParam(new TemplateParam("保险险种",carInfo.getInsurance()));
+        draftContract.addTemplateParam(new TemplateParam("保险有效期",carInfo.getInsuranceEndData()));
+        draftContract.addTemplateParam(new TemplateParam("收车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+        draftContract.addTemplateParam(new TemplateParam("收车金额小写",carInfo.getVehicleReceiptAmount().toString()));
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
         draftContract.setSend(true); //发起合同
         return draftContract;
     }
 
+    //收车卖车合同
+    private Contract buildContract2(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept,String type) {
+        Contract draftContract = new Contract();
+        draftContract.setSubject("三方-二手车");
+        // 设置合同接收方
+        // 甲方个人签署方
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("PERSONAL");
+        persoanlSignatory.setTenantName("罗聪");
+        persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+        draftContract.addSignatory(persoanlSignatory);
+        // 乙方平台
+        Signatory platformSignatory = new Signatory();
+        platformSignatory.setTenantType("COMPANY");
+        platformSignatory.setTenantName("成都新致云服测试公司");
+        platformSignatory.setReceiver(new User( "13708206115", "MOBILE"));
+        draftContract.addSignatory(platformSignatory);
+        //丙方
+        Signatory initiator2 = new Signatory();
+        initiator2.setTenantType("COMPANY");
+        initiator2.setTenantName("平头哥二手车");
+        initiator2.setReceiver(new User("17311271898", "MOBILE"));
+        draftContract.addSignatory(initiator2);
+
+        //模板参数
+        //卖车
+        if ("3".equals(type)) {
+            draftContract.addTemplateParam(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
+            draftContract.addTemplateParam(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));
+            draftContract.addTemplateParam(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getBuyerName()));
+            draftContract.addTemplateParam(new TemplateParam("甲方联系电话", carInfoDetailsDO.getBuyerTel()));
+            draftContract.addTemplateParam(new TemplateParam("甲方联系地址", carInfoDetailsDO.getBuyerAdder()));
+        }
+        //收车
+        if ("4".equals("type")) {
+            draftContract.addTemplateParam(new TemplateParam("卖方受托人", carInfoDetailsDO.getSellerName()));
+            draftContract.addTemplateParam(new TemplateParam("甲方身份证号", carInfoDetailsDO.getSellerIdCard()));
+            draftContract.addTemplateParam(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getSellerName()));
+            draftContract.addTemplateParam(new TemplateParam("甲方联系电话", carInfoDetailsDO.getSellerTel()));
+            draftContract.addTemplateParam(new TemplateParam("甲方联系地址", carInfoDetailsDO.getSellerAdder()));
+        }
+        draftContract.addTemplateParam(new TemplateParam("平台受托人", platformDept.getName()));
+        draftContract.addTemplateParam(new TemplateParam("乙方营业执照号",platformDept.getTax_num()));
+        draftContract.addTemplateParam(new TemplateParam("乙方法定代表人",platformDept.getLegal_representative()));
+        draftContract.addTemplateParam(new TemplateParam("乙方联系电话",platformDept.getPhone()));
+        draftContract.addTemplateParam(new TemplateParam("乙方联系地址",platformDept.getAddress()));
+
+        draftContract.addTemplateParam(new TemplateParam("车商公司名称",userDept.getName()));
+        draftContract.addTemplateParam(new TemplateParam("丙方营业执照号",userDept.getTax_num()));
+        draftContract.addTemplateParam(new TemplateParam("丙方法定代表人",userDept.getLegal_representative()));
+        draftContract.addTemplateParam(new TemplateParam("丙方联系电话",userDept.getPhone()));
+        draftContract.addTemplateParam(new TemplateParam("丙方联系地址",userDept.getAddress()));
+
+
+        draftContract.addTemplateParam(new TemplateParam("首次登记日期",carInfoDetailsDO.getFirstRegistDate()));
+        draftContract.addTemplateParam(new TemplateParam("发动机号码",carInfo.getEngineNum()));
+        draftContract.addTemplateParam(new TemplateParam("车架号码",carInfo.getVin()));
+        draftContract.addTemplateParam(new TemplateParam("行驶里程",carInfoDetailsDO.getMileage().toString()));
+        if (carInfo.getOther()!=null) {
+            draftContract.addTemplateParam(new TemplateParam("其他约定", carInfo.getOther()));
+        }else
+        {
+            draftContract.addTemplateParam(new TemplateParam("其他约定", "无"));
+        }
+        draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        draftContract.setSend(true); //发起合同
+        return draftContract;
+    }
 
     private Boolean verificationSignature(String signature, String timestamp){
         String md5 = MD5.toMD5(timestamp + SECRET);
