@@ -352,20 +352,11 @@
 
 <script>
 	import config from '@/config'
-	import {
-		getAccessToken
-	} from '@/utils/auth'
-	import {
-		urlTobase64
-	} from '@/utils/ruoyi.js'
+	import { getAccessToken } from '@/utils/auth'
+	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import modelList from '@/subPages/home/bycar/modelList.vue'
-	import {
-		getIdCard,
-		deleteImage
-	} from '@/api/register'
-	import {
-		setCreate
-	} from '@/api/home'
+	import { getIdCard, deleteImage } from '@/api/register'
+	import { setCreate } from '@/api/home'
 	import {
 		getVehicleLicense,
 		setCarInfo,
