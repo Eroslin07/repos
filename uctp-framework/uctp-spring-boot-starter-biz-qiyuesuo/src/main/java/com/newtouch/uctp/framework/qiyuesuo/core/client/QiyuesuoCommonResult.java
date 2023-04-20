@@ -46,7 +46,7 @@ public class QiyuesuoCommonResult<T> extends CommonResult<T> {
 //            }
 //            result.setCode(errorCode.getCode()).setMsg(errorCode.getMsg());
 //        }
-        result.setCode(55).setMsg(apiMsg);
+        result.setCode(Integer.valueOf(apiCode)).setMsg(apiMsg);
         return result;
     }
 

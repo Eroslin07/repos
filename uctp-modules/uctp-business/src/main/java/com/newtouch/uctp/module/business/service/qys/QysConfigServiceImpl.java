@@ -9,6 +9,7 @@ import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
@@ -30,7 +31,7 @@ import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
-import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import lombok.extern.slf4j.Slf4j;
@@ -234,8 +235,44 @@ public class QysConfigServiceImpl implements QysConfigService {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", loginUser.getDeptId());
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
+        Contract contract = this.buildContract(carInfo);
         QiyuesuoCommonResult<Contract> result = client.defaultSend(null);
+        if (!result.getCode().equals(0)) {
+            throw new ServiceException(result.getCode(), result.getApiMsg());
+        }
+        Long contractId = result.getData().getId();
+        //保存在那里需要确认
+    }
 
+    private Contract buildContract(CarInfoDO carInfo) {
+        Contract draftContract = new Contract();
+        draftContract.setSubject("三方-二手车");
+        // 设置合同接收方
+        // 甲方个人签署方
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("PERSONAL");
+        persoanlSignatory.setTenantName("罗聪");
+        persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+        draftContract.addSignatory(persoanlSignatory);
+        // 乙方平台
+        Signatory platformSignatory = new Signatory();
+        platformSignatory.setTenantType("COMPANY");
+        platformSignatory.setTenantName("成都新致云服测试公司");
+        platformSignatory.setReceiver(new User( "13708206115", "MOBILE"));
+        draftContract.addSignatory(platformSignatory);
+        //丙方
+        Signatory initiator2 = new Signatory();
+        initiator2.setTenantType("COMPANY");
+        initiator2.setTenantName("平头哥二手车");
+        initiator2.setReceiver(new User("17311271898", "MOBILE"));
+        draftContract.addSignatory(initiator2);
+
+        //模板参数
+        draftContract.addTemplateParam(new TemplateParam("甲方",""));
+
+        draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        draftContract.setSend(true); //发起合同
+        return draftContract;
     }
 
 
