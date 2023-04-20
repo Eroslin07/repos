@@ -131,7 +131,7 @@ public class AppCarInfoController {
     @PostMapping("/save/sell")
     @Operation(summary = "保存APP卖车填写数据")
     public CommonResult<AppBpmCarInfoRespVO> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
-        carInfoService.saveSellCarInfo(reqVO);
+//        carInfoService.saveSellCarInfo(reqVO);
         return success(carInfoService.saveSellCarInfo(reqVO));
     }
 

@@ -7,9 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -56,5 +54,9 @@ public class AppSellCarInfoReqVO {
     @Schema(description = "车辆手续及备件(卖车)")
 //    @NotNull(message = "车辆手续及备件不能为空")
     private ProceduresAndSpareSell proceduresAndSpareSell;
-
+    /**
+     * 其他
+     */
+    @Schema(description = "车辆手续及备件(卖车)")
+    private String other;
 }

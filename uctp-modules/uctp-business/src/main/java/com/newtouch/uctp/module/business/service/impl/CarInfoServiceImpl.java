@@ -430,6 +430,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setRemarks( reqVO.getRemarks() );
         carInfo.setSellAmount( reqVO.getSellAmount() );
         carInfo.setSellType( reqVO.getSellType() );
+        carInfo.setOther(reqVO.getOther());
         //此时状态为 买车中草稿
         carInfo.setSalesStatus(CarStatus.SELL.value());
         carInfo.setStatus(CarStatus.SELL_A.value());

@@ -97,11 +97,9 @@ public class QysConfigController {
         return qysConfigService.status(signature, timestamp, content);
     }
     @PostMapping("/callback/verification")
-    @Schema(description = "saas模式契约锁回调-验证地址")
-    public String callbackVerification(@RequestParam String signature,
-                           @RequestParam String timestamp,
-                           @RequestParam String content) throws Exception {
-        return qysConfigService.verification(signature, timestamp, content);
+    @Schema(description = "saas模式契约锁回调-CAS验证地址")
+    public String callbackVerification(@RequestParam String ticket) throws Exception {
+        return qysConfigService.verification(ticket);
     }
     @PostMapping("/callback/login")
     @Schema(description = "saas模式契约锁回调-登录")
