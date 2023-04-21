@@ -3,7 +3,7 @@
 		<uni-card :is-shadow="false" is-full>
 			<view style="overflow: hidden;margin-bottom: 20px;text-align: center;">
 				<view class="text" style="font-size: 16px;">预扣金额</view>
-				<view class="text" style="margin-top: 10px;">-{{ $amount.getComdify(data.payAmount || 0) }}<text style="font-size: 14px;">元</text></view>
+				<view class="text" style="margin-top: 10px;">-{{ $amount.getComdify(data.payAmount / 100 || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 		</uni-card>
 		<view style="padding: 20px;">
