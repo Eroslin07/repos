@@ -2,8 +2,8 @@
 	<view class="info">
 		<uni-card :is-shadow="false" is-full>
 			<view style="overflow: hidden;margin-bottom: 20px;text-align: center;">
-				<h3>预扣金额</h3>
-				<h3 style="margin-top: 10px;">-10,000元</h3>
+				<view class="text" style="font-size: 16px;">预扣金额</view>
+				<view class="text" style="margin-top: 10px;">-10,000<text style="font-size: 14px;">元</text></view>
 			</view>
 		</uni-card>
 		<view style="overflow: hidden;padding: 20px;border-bottom: 1px solid #f5f5f5;">
@@ -58,14 +58,22 @@
 </script>
 
 <style lang="scss" scoped>
+	.text {
+		text-align: center;
+		font-size: 20px;
+		font-weight: bold;
+	}
+	
 	.text1 {
 		text-align: left;
 		color: #999;
-		margin-bottom: 10px;
+		height: 25px;
+		line-height: 25px;
 	}
 
 	.text2 {
 		text-align: right;
-		margin-bottom: 10px;
+		height: 25px;
+		line-height: 25px;
 	}
 </style>
