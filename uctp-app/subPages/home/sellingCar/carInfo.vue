@@ -1199,6 +1199,9 @@
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
+				}).catch((error) => {
+					this.showOverlay = false;
+					this.$modal.closeLoading()
 				})
 			},
 			// 查询公允价值

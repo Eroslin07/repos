@@ -1187,6 +1187,9 @@
 						this.$modal.msg("保存草稿成功");
 						this.$tab.reLaunch('/pages/index');
 					}
+				}).catch((error) => {
+					this.$modal.closeLoading()
+					this.showOverlay = false;
 				})
 			},
 			// 查询公允价值
@@ -1315,6 +1318,7 @@
 					}
 				}).catch((error) => {
 					this.showOverlay = false;
+					this.$modal.closeLoading()
 				})
 			},
 			// 收车删除
