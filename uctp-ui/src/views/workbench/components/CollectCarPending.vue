@@ -28,7 +28,7 @@
         </div>
         <!-- <el-card class="content-box"> -->
         <div class="content-box">
-          <h3 style="font-weight: bold; color: #333333">车辆基础信息</h3>
+          <h3 style="font-weight: bold; color: #333333; line-height: 36px">车辆基础信息</h3>
           <div>
             <el-row>
               <el-col :span="2" class="bg-yell">行驶证：</el-col>
@@ -235,7 +235,7 @@
               </el-col>
             </el-row>
           </div>
-          <h3 style="font-weight: bold; color: #333333">交易信息</h3>
+          <h3 style="font-weight: bold; color: #333333; line-height: 36px">交易信息</h3>
           <div>
             <el-row>
               <el-col :span="2" class="bg-yell">收车金额：</el-col>
