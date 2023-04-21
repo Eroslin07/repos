@@ -243,18 +243,17 @@
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px; flex:1">
-								<u--input v-model="carForm.key" :disabled="isDisabledKey"
+								<u-input v-model="carForm.key" :disabled="isDisabledKey"
 									v-if="item.name == 'vehicleKey'" disabledColor="#ffffff" placeholder="请输入"
-									border="none"></u--input>
+									border="none">
+									<template slot="suffix">
+										<view>组</view>
+									</template>
+								</u-input>
 								<u--input type="text" showWordLimit v-model="carForm.other" :disabled="isDisabledAcc"
 									maxlength="10" v-if="item.name == 'accidentVehicle'" disabledColor="#ffffff"
 									border="none" placeholder="请输入"></u--input>
-
-								<!-- 	<u--textarea v-if="item.name == 'accidentVehicle'" disabledColor="#ffffff"
-									v-model="carForm.other" height="24" :count="true" maxlength="10"
-									confirmType="done"  border="none" placeholder="请输入"></u--textarea> -->
 							</view>
-							<u--text slot="right" v-if="item.name == 'vehicleKey'" text="组">
 							</u--text>
 						</u-form-item>
 					</u-checkbox-group>

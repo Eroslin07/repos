@@ -312,14 +312,16 @@
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404" @change="handelKey">
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
-							<view style="margin-left: 10px;">
-								<u--input v-model="carForm.key" :disabled="disabledKey" v-if="item.name == 'vehicleKey'"
-									disabledColor="#ffffff" placeholder="请输入" border="none"></u--input>
+							<view style="margin-left: 10px;width: 100%" v-if="item.name == 'vehicleKey'">
+								<u-input v-model="carForm.key" :disabled="disabledKey"
+									disabledColor="#ffffff" placeholder="请输入" border="none">
+									<template slot="suffix">
+										<view>组</view>
+									</template>
+								</u-input>
 							</view>
 							<u--textarea v-model="carForm.other" :disabled="disabledOther" v-if="item.name == 'accidentVehicle'" border="none"
 								disabledColor="#ffffff" placeholder="请输入内容" maxlength="10" :count="true" confirmType="done" :autoHeight="true"></u--textarea>
-							<u--text slot="right" v-if="item.name == 'vehicleKey'" text="组">
-							</u--text>
 						</u-form-item>
 					</u-checkbox-group>
 				</u--form>
@@ -1367,6 +1369,10 @@
 	/* #ifdef MP-WEIXIN */
 	/deep/ .uni-card--border {
 		border-bottom: none;
+	}
+	
+	/deep/ .u-form-item__body__right__content__slot.data-v-067e4733{
+		flex-direction: row;
 	}
 
 	/* #endif */
