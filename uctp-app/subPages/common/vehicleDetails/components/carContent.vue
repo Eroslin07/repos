@@ -119,8 +119,7 @@
 			<view class="contrart-info">
 				<view class="flex contrart-info__row">
 					<text>XXX某收车委托合同</text>
-					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
-					</u-button>
+					<text class="button">作废</text>
 				</view>
 				<view class="flex">
 					<text>XXX某收车合同</text>
@@ -131,8 +130,7 @@
 				</view>
 				<view class="flex  contrart-info__row">
 					<text>XXX某卖委托合同</text>
-					<u-button text="作废" style="width: 82rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
-					</u-button>
+					<text class="button">作废</text>
 				</view>
 				<view class="flex">
 					<text>XXX某卖车合同</text>
@@ -214,13 +212,26 @@
 			<view class="car-fund-info">
 				<view class="car-fund-info-title">
 					<view class="">
-						<u-icon name="rmb-circle-fill" style="width: 30rpx;height: 30rpx;margin-right: 10rpx;"
-							color="#FA6400"></u-icon>
-						<text class="car-upload-title__title">资金</text>
+						<view class="">
+							<u-icon name="rmb-circle-fill" style="width: 30rpx;height: 30rpx;margin-right: 10rpx;"
+								color="#FA6400"></u-icon>
+							<text class="car-upload-title__title">资金</text>
+						</view>
+						<view class="eye-show">
+							<text v-if="eyeIsShow" class="iconfont icon-open-eye" @click="eyeIsShow=!eyeIsShow"></text>
+							<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+						</view>
 					</view>
-					<view class="">
-						<text v-if="eyeIsShow" class="iconfont icon-open-eye" @click="eyeIsShow=!eyeIsShow"></text>
-						<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+					<image style="width: 206rpx;height: 212rpx;" src="../../../../static/images/home/car-money.svg"
+						mode=""></image>
+					<view class="flex car-profit">
+						<text>
+							实际利润
+						</text>
+						<view class="">
+							<text>{{eyeIsShow?'234':'****'}}</text>
+							<text>元</text>
+						</view>
 					</view>
 				</view>
 				<view class="car-fund-info-content flex">
@@ -256,23 +267,12 @@
 					</view>
 					<view class="flex">
 						<view class="flex">
-							<text>利润</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
-						</view>
-						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
-						<view class="flex">
-							<text>待回填保证金</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
-						</view>
-					</view>
-					<view class="flex">
-						<view class="flex">
 							<text>本次回填保证金</text>
 							<text>{{eyeIsShow?'234':'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
-							<text>实际到账利润</text>
+							<text>本次待回填差额</text>
 							<text>{{eyeIsShow?'234':'****'}}元</text>
 						</view>
 					</view>
@@ -284,24 +284,21 @@
 				<text>二手车销售统一发票(反向)</text>
 				<view class="flex">
 					<text>待开票</text>
-					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
-					</u-button>
+					<text class="button">开票信息</text>
 				</view>
 			</view>
 			<view class="flex">
 				<text>二手车销售统一发票(正向)</text>
 				<view class="flex">
 					<text>待开票</text>
-					<u-button text="开票信息" style="width: 132rpx;height: 46rpx;margin: 0;" :plain="true" color="#FA6400">
-					</u-button>
+					<text class="button">开票信息</text>
 				</view>
 			</view>
 			<view class="flex">
 				<text>增值税发票</text>
 				<view class="flex">
 					<text>待开票</text>
-					<u-button text="下载PDF文件" style="width: 188rpx;height: 46rpx;margin: 0;" :plain="true"
-						color="#FA6400"></u-button>
+					<text class="button">下载PDF文件</text>
 				</view>
 			</view>
 		</view>
@@ -345,12 +342,12 @@
 						uni.showModal({
 							title: '提示',
 							content: '您的车辆检测报告已经上传完成。',
-							showCancel: false, 
+							showCancel: false,
 							confirmText: '知道了',
 							confirmColor: '#f60',
 							success: function(res) {
-								if(res.confirm){
-									
+								if (res.confirm) {
+
 								}
 							}
 						})
@@ -384,6 +381,17 @@
 		.car-info-box,
 		.car-fund {
 			padding: 24rpx 26rpx 160rpx;
+		}
+
+		.button {
+			width: 82rpx;
+			height: 46rpx;
+			font-size: 24rpx;
+			line-height: 46rpx;
+			color: #FA6400;
+			border-radius: 8rpx;
+			text-align: center;
+			border: 2rpx solid #FA6400;
 		}
 
 		.car-upload {
@@ -612,22 +620,62 @@
 				height: 810rpx;
 				background: rgba(249, 249, 249, 0.02);
 				border-radius: 8rpx;
-				border: 2rpx solid #EDF3F6;
+				border: 2rpx solid rgba(250, 100, 0, 0.05);
 
 				.car-fund-info-title {
+					overflow: hidden;
 					display: flex;
-					justify-content: space-between;
+					flex-direction: column;
+					background: linear-gradient(360deg, rgba(216, 216, 216, 0) 0%, rgba(250, 100, 0, 0.05) 100%);
 					align-items: center;
-					width: 698rpx;
-					height: 78rpx;
-					padding: 0 34rpx 0 22rpx;
-					background: #F9F9F9;
-					border-radius: 8rpx;
-					color: #FA6400;
+					position: relative;
 
-					>view {
+					>view:first-child {
+						padding: 0 34rpx 0 22rpx;
+						border-radius: 8rpx;
+						color: #FA6400;
 						display: flex;
+						justify-content: space-between;
 						align-items: center;
+						width: 698rpx;
+						height: 104rpx;
+
+						>view {
+							display: flex;
+							align-items: center;
+						}
+					}
+
+					.eye-show {
+						position: relative;
+						z-index: 10;
+					}
+
+					>image {
+						position: absolute;
+						right: -26rpx;
+						top: -48rpx;
+					}
+
+					.car-profit {
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+						color: #333333;
+						text:first-child {
+							font-size: 32rpx;
+						}
+
+						view text {
+							font-size: 32rpx;
+
+							&:first-child {
+								font-size: 48rpx;
+								color: #FA6400;
+								font-weight: 600;
+							}
+						}
+
 					}
 				}
 
@@ -636,12 +684,14 @@
 					flex-direction: column;
 					justify-content: space-evenly;
 					padding: 0 30rpx;
+					color: #333333;
 
 					>view {
 						height: calc(100% / 4);
 						align-items: center;
 						border-bottom: 2rpx solid #F5F5F5;
 						position: relative;
+
 
 						>view {
 							width: 50%;
@@ -654,14 +704,12 @@
 								&:first-child {
 									font-size: 28rpx;
 									font-weight: 400;
-									color: #999999;
 									line-height: 40rpx;
 								}
 
 								&:nth-child(2) {
 									font-size: 32rpx;
 									font-weight: 500;
-									color: #333333;
 									line-height: 44rpx;
 								}
 							}
@@ -704,6 +752,22 @@
 						text-align: center;
 						color: #FFFFFF;
 					}
+
+					.button {
+						width: 132rpx;
+						height: 46rpx;
+						font-size: 24rpx;
+						line-height: 46rpx;
+						color: #FA6400;
+						border-radius: 8rpx;
+						background: none;
+						text-align: center;
+						border: 2rpx solid #FA6400;
+					}
+				}
+
+				&:last-child>view .button {
+					width: 188rpx;
 				}
 			}
 		}
