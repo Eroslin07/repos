@@ -39,7 +39,8 @@
 				content: '您的手机号尚未在平台注册，是否要注册?',
 				value: [],
 				show: true,
-				appId: 'wx52552be23725ae44',
+				// 小程序ID
+				appId: 'wx9decec45b7374b90',
 				wxcode: '',
 				sessionKey: null,
 				phone: null
@@ -56,7 +57,7 @@
 			})
 			const params = {
 				appId: _this.appId,
-				secret: '2cb430095c143228a44488a87350f974',
+				secret: '2cb430095c143228a44488a87350f974', // 小程序秘钥
 				grant_type: 'client_credential',
 				js_code: _this.wxcode
 			}
@@ -124,6 +125,8 @@
 						return
 					}
 					_this.phone = res[1].data.phone_info.phoneNumber;
+					console.log(_this.phone)
+					return
 					_this.$store.dispatch('GetPhone', _this.phone);
 					_this.phoneLogin();
 				})
@@ -169,8 +172,8 @@
 		
 		.bank-logo {
 			margin-top: 5px;
-			width: 100px;
-			height: 50px;
+			width: 95px;
+			height: 25px;
 			background: url('/static/images/home/bankLogo.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;

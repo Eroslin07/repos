@@ -20,7 +20,7 @@
 											<view class="title" style="text-align: right;">
 												<text v-if="item.profitLossTypeText == '收入'">+</text>
 												<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
-												{{ $amount.getComdify(item.amount || 0) }} >
+												{{ $amount.getComdify(item.amount / 100 || 0) }} >
 											</view>
 										</u-col>
 									</u-row>
@@ -216,7 +216,7 @@
 					if (val == '利润提现中') {
 						// 利润提现中
 						this.$tab.navigateTo('/subPages/home/account/profit/progressDetile?data='+encodeURIComponent(JSON.stringify(res.data)));
-					} else if (val == '利润提现') {
+					} else if (val == '10101002') {
 						// 利润提现
 						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
 					} else if (val == '10101001') {

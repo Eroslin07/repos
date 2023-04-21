@@ -9,9 +9,9 @@
 					<view style="float: left;"><u--text :suffixIcon="eyeShow == true ? 'eye-off' : 'eye'" iconStyle="font-size: 18px;margin-left: 5px;" text="可用余额" @click="handleEye"></u--text></view>
 					<view style="float: right;" @click="handleCircle"><u--text suffixIcon="error-circle" iconStyle="font-size: 18px"></u--text></view>
 				</view>
-				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit) }}<text style="font-size: 12px;">元</text></view>
-				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 ' + $amount.getComdify(freezeProfit) + ' 元'"></u--text></view>
-				<view style="margin-bottom: 16px;" @click="handleBackfilled"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'待回填保证金' + $amount.getComdify(cashBack) + '元'"></u--text></view>
+				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit / 100) }}<text style="font-size: 12px;">元</text></view>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 ' + $amount.getComdify(freezeProfit / 100) + ' 元'"></u--text></view>
+				<view style="margin-bottom: 16px;"><u--text iconStyle="font-size: 18px" :text="'待回填保证金' + $amount.getComdify(cashBack / 100) + '元'"></u--text></view>
 				<button class="button" @click="handleWithdrawal" style="background-color: #fa6401;color: #fff;">提现</button>
 			</view>
 		</view>
@@ -40,7 +40,7 @@
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeText == '收入'">+</text>
 										<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
-										{{ $amount.getComdify(item.amount || 0) }} >
+										{{ $amount.getComdify(item.amount / 100 || 0) }} >
 									</view>
 								</u-col>
 							</u-row>
@@ -147,7 +147,7 @@
 					if (val == '利润提现中') {
 						// 利润提现中
 						this.$tab.navigateTo('/subPages/home/account/profit/progressDetile?data='+encodeURIComponent(JSON.stringify(res.data)));
-					} else if (val == '利润提现') {
+					} else if (val == '10101002') {
 						// 利润提现
 						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
 					} else if (val == '10101001') {
@@ -178,7 +178,10 @@
 		
 		.cost_image {
 			width: 100%;
-			height: 180px;
+			height: 360rpx;
+			// #ifdef MP-WEIXIN
+			height: 450rpx;
+			// #endif
 			background-image: url('../../../../static/images/cost/cost.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;
@@ -187,6 +190,9 @@
 		.statistics {
 			position: absolute;
 			top: 30px;
+			// #ifdef MP-WEIXIN
+			top: 75px;
+			// #endif
 			background-color: #fff;
 			margin: 15px;
 			padding: 10px;
@@ -208,12 +214,21 @@
 			}
 		}
 		
+		// #ifdef MP-WEIXIN
+		/deep/ .u-list {
+			height: auto !important;
+		}
+		// #endif
+		
 		.empty-page {
 			width: 100%;
 			position: absolute;
 			left: 50%;
 			top: 45%;
 			transform: translate(-50%, 50%);
+			// #ifdef MP-WEIXIN
+			transform: translate(-50%, 50%);
+			// #endif
 			text-align: center;
 		
 			.empty-img {

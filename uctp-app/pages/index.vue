@@ -117,11 +117,16 @@
 			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
 			/* #endif */
+			uni.startPullDownRefresh();
 		},
-
+		// 下拉刷新
+		onPullDownRefresh() {
+			this.getAcount();
+		},
 		methods: {
 			//获取统计数据
 			getAcount() {
+				this.$modal.loading("数据加载中...");
 				getHomeCount().then(res => {
 					this.gatherData = res.data
 					res.data.forEach(item => {
@@ -149,6 +154,9 @@
 							}]
 						})
 					}
+				}).finally(()=>{
+					this.$modal.closeLoading()
+					uni.stopPullDownRefresh()
 				})
 			},
 

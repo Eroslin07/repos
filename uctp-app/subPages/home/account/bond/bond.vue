@@ -43,7 +43,7 @@
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeName == '收入'">+</text>
 										<text v-if="item.profitLossTypeName == '支出'">-</text>
-										{{ $amount.getComdify(item.payAmount || 0) }} >
+										{{ $amount.getComdify(item.payAmount / 100 || 0) }} >
 									</view>
 								</u-col>
 							</u-row>
@@ -95,8 +95,8 @@
 			// 查询我的保证金
 			getBondDetail() {
 				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
-					this.available = this.$amount.getComdify(res.data.availableCash);
-					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash);
+					this.available = this.$amount.getComdify(res.data.availableCash / 100);
+					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash / 100);
 					this.indexList = res.data.cashDetails;
 					this.revision = res.data.revision;
 					this.status = true;
@@ -160,7 +160,10 @@
 		
 		.cost_image {
 			width: 100%;
-			height: 180px;
+			height: 360rpx;
+			// #ifdef MP-WEIXIN
+			height: 450rpx;
+			// #endif
 			background-image: url('../../../../static/images/cost/cost.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;
@@ -169,6 +172,9 @@
 		.statistics {
 			position: absolute;
 			top: 30px;
+			// #ifdef MP-WEIXIN
+			top: 75px;
+			// #endif
 			background-color: #fff;
 			margin: 15px;
 			padding: 10px;
@@ -190,12 +196,21 @@
 			}
 		}
 		
+		// #ifdef MP-WEIXIN
+		/deep/ .u-list {
+			height: auto !important;
+		}
+		// #endif
+		
 		.empty-page {
 			width: 100%;
 			position: absolute;
 			left: 50%;
 			top: 45%;
 			transform: translate(-50%, -50%);
+			// #ifdef MP-WEIXIN
+			transform: translate(-50%, 50%);
+			// #endif
 			text-align: center;
 		
 			.empty-img {

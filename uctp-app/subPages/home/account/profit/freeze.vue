@@ -3,7 +3,7 @@
 		<uni-card>
 			<view style="padding: 10px 0;">
 				<view class="text" style="font-size: 16px;">利润冻结总额</view>
-				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(amount || 0) }}<text style="font-size: 14px;">元</text></view>
+				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(amount / 100 || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 		</uni-card>
 		
@@ -23,8 +23,8 @@
 								<u-col span="4">
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeText == '收入'">+</text>
-										<text v-if="item.profitLossTypeText == '支出'">-</text>
-										{{ $amount.getComdify(item.amount || 0) }} >
+										<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
+										{{ $amount.getComdify(item.amount / 100 || 0) }} >
 									</view>
 								</u-col>
 							</u-row>
@@ -135,9 +135,9 @@
 			},
 			handleClick(val, data) {
 				getDetail({ accountNo: this.accountNo, profitId: data.id }).then((res) => {
-					if (val == '利润提现中') {
-						// 利润提现中
-						this.$tab.navigateTo('/subPages/home/account/profit/progressDetile?data='+encodeURIComponent(JSON.stringify(res.data)));
+					if (val == '10101002') {
+						// 利润提现
+						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
 					}
 				})
 			}

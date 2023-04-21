@@ -481,6 +481,7 @@ console.log(setDialogTile, props)
     background: #f5f5f5;
     display: flex;
     text-align: right;
+    padding-right: 5px;
     justify-content: flex-end;
   }
 }

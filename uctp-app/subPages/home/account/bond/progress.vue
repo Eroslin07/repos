@@ -13,7 +13,7 @@
 					<view class="text1">到账银行卡</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">{{ data.payAmount }}</view>
+					<view class="text2">{{ $amount.getComdify(data.payAmount / 100) }}</view>
 					<view class="text2">{{ data.payChannelName }} 尾号{{ data.payeeBankAccount }}</view>
 				</view>
 			</view>
@@ -56,12 +56,14 @@
 		.text1 {
 			text-align: left;
 			color: #999;
-			margin-bottom: 10px;
+			height: 25px;
+			line-height: 25px;
 		}
 		
 		.text2 {
 			text-align: right;
-			margin-bottom: 10px;
+			height: 25px;
+			line-height: 25px;
 		}
 	}
 </style>

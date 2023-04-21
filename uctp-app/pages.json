@@ -17,8 +17,8 @@
 			"path": "pages/index",
 			"style": {
 				"navigationBarTitleText": "首页",
-				"navigationStyle": "custom"
-				// "enablePullDownRefresh": true
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "pages/cost/index",

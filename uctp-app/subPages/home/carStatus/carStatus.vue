@@ -48,7 +48,7 @@
 					<uni-col :span="15">
 						<h3 style="color:#000">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
 						<view class="fs12">VIN：{{tab.vin || '暂无'}}</view>
-						<view class="fs12">{{tab.model || '暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
+						<view class="fs12">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
 						<view class="fs12" style="color: #000;">收车价：
 							<text v-if="tab.eyeIsShow"
 								style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>

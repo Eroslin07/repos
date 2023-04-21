@@ -66,7 +66,6 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Resource
     private ContractService contractService;
 
-
     @Resource
     private FileApi fileApi;
 
@@ -385,9 +384,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
         carInfo.setSellAmount(sellAmount);
         //卖车金额 >= 收车金额
-        if (sellAmount.compareTo(carInfo.getVehicleReceiptAmount()) == -1) {
-            throw exception(CAR_INFO_SELL_AMOUNT_ERROR);
-        }
+//        if (sellAmount.compareTo(carInfo.getVehicleReceiptAmount()) == -1) {
+//            throw exception(CAR_INFO_SELL_AMOUNT_ERROR);
+//        }
         //获取默认字典表配置的车辆金额费用配置项
         CommonResult<List<DictDataRespDTO>> dictDataRes = dictDataApi.getDictDataList(DictTypeConstants.CAR_EXPENSE_CONFIG_DEFAULT, null);
         if (!dictDataRes.getCode().equals(0)) {

@@ -1,11 +1,9 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareSell;
-import com.newtouch.uctp.module.business.dal.dataobject.VehicleProblem;
 import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
 import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareParts;
+import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareSell;
+import com.newtouch.uctp.module.business.dal.dataobject.VehicleProblem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -78,4 +76,12 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String brandType;
     @Schema(description = "车型id")
     private String modelId;
+    @Schema(description = "买家电话")
+    private String buyerTel;
+    @Schema(description = "买家身份证")
+    private String buyerIdCard;
+    @Schema(description = "买家姓名")
+    private String buyerName;
+    @Schema(description = "买家地址")
+    private String buyerAdder;
 }

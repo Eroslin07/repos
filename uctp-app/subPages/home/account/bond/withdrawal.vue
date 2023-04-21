@@ -60,7 +60,7 @@
 				}
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
-					tranAmount: this.amount,
+					tranAmount: Number(this.amount * 100),
 					revision: this.revision
 				}
 				getWithdraw(data).then((res) => {
