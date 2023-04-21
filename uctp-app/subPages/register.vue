@@ -146,7 +146,6 @@
 
 <script>
 	import config from '@/config'
-	import { rsaEncrypt } from '@/utils/rsa.js'
 	import { urlTobase64 } from '@/utils/ruoyi.js'
 	import { showConfirm } from '@/utils/common'
 	import {
@@ -558,8 +557,6 @@
 						legal_representative: this.registerForm.legal_representative,
 						bankName: this.registerForm.bankName,
 						bondBankAccount: this.registerForm.bondBankAccount,
-						// password: rsaEncrypt(this.registerForm.password),
-						// confirmPassword: rsaEncrypt(this.registerForm.confirmPassword)
 					}
 					this.$modal.loading("提交中，请耐心等待...")
 					this.showOverlay = true;
@@ -684,6 +681,7 @@
 		bottom: 0;
 		background-color: #fff;
 		padding-bottom: 10px;
+		z-index: 999;
 		
 		.button {
 			width: 80%;

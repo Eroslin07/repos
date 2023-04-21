@@ -25,15 +25,15 @@
               width: 100%;
               color: #000000;
             "
-            >{{
-              (baseInfoData.data?.variables?.marketName || '') +
-              (baseInfoData.data?.variables?.merchantName || '') +
-              '账号申请流程'
-            }}</div
+            >{{ baseInfoData.data?.title }}</div
           >
           <div class="btns" id="btns">
-            <el-button plain type="primary" @click="submitBtn('同意')">同意</el-button>
-            <el-button plain type="success" @click="submitBtn('不同意')">不同意</el-button>
+            <el-button plain type="primary" @click="submitBtn('同意')" v-if="!completedVisible"
+              >同意</el-button
+            >
+            <el-button plain type="success" @click="submitBtn('不同意')" v-if="!completedVisible"
+              >不同意</el-button
+            >
             <!-- <el-button plain type="danger">作废</el-button> -->
             <el-button plain type="info" @click="dravwerClose">关闭</el-button>
           </div>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="drawer_content">
-          <el-tabs v-model="activeName" @tab-change="tabChange">
+          <el-tabs v-model="activeName" @tab-change="tabChange" class="tabs">
             <el-tab-pane
               v-for="(item, index) in comps"
               :key="index"
@@ -89,7 +89,8 @@ import BaseInfo from '@/views/ApprovalProcess/BaseInfo.vue'
 import BaseHistory from '@/views/ApprovalProcess/BaseHistory.vue'
 import BaseFlowChart from '@/views/ApprovalProcess/BaseFlowChart.vue'
 import { ref, shallowRef } from 'vue'
-import { baseInfoData } from '@/views/workbench/basInfoValue'
+import { baseInfoData, completedVisible, tabName } from '@/views/workbench/basInfoValue'
+console.log(completedVisible, 'drawer')
 
 const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])
@@ -134,7 +135,7 @@ const drawerVisible = computed(() => {
   return props.visible
 })
 function tabChange(name) {
-  console.log(name)
+  tabName.value = name
 }
 // 提交
 const submitBtn = (text) => {
@@ -192,10 +193,6 @@ const dravwerClose = () => {
       height: 100%;
     }
 
-    .scrollbar_init {
-      height: calc(100vh - 52px - 55px - 40px) !important;
-    }
-
     .el-card:not(:last-child) {
       margin-bottom: 15px;
     }
@@ -222,5 +219,20 @@ const dravwerClose = () => {
 
 #drawerSelf .el-drawer .el-drawer__header {
   margin-bottom: 0 !important;
+}
+.drawer_content {
+  height: calc(100% - 40px);
+  .tabs {
+    height: 100%;
+  }
+  :deep(.el-tabs__content) {
+    height: calc(100% - 40px);
+    .el-tab-pane {
+      height: 100%;
+    }
+    .el-scrollbar__view {
+      height: calc(100% - 40px) !important;
+    }
+  }
 }
 </style>

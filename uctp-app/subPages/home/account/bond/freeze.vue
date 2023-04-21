@@ -3,11 +3,11 @@
 		<uni-card>
 			<view style="padding: 10px 0;border-bottom: 1px solid #f5f5f5;">
 				<view class="text" style="font-size: 16px;">保证金冻结总额</view>
-				<view class="text" style="margin-top: 10px;">100,500<text style="font-size: 14px;">元</text></view>
+				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(amount || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 			<view style="padding: 10px 0;color: #333333;">
 				<view>保证金提现中：1,000.00元</view>
-				<view>保证金预扣：200,000元</view>
+				<view>保证金预扣：{{ $amount.getComdify(amount || 0) }}元</view>
 			</view>
 		</uni-card>
 		
@@ -15,7 +15,7 @@
 			<view style="padding: 10px 0;border-bottom: 1px solid #f5f5f5;">
 				<view style="font-size: 16px;color: #333333;">保证金冻结明细</view>
 			</view>
-			<view style="padding: 10px;">
+			<view style="padding: 10px;" v-if="indexList.length != 0">
 				<u-list style="height: 100%;">
 					<u-list-item v-for="(item, index) in indexList" :key="index">
 						<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
@@ -35,9 +35,13 @@
 						</view>
 					</u-list-item>
 				</u-list>
+				<u-loadmore :status="status" loadingText="努力加载中..." />
+			</view>
+			<view v-else class="empty-page">
+				<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
+				<text class="empty-text" v-if="status2">暂无数据</text>
 			</view>
 		</uni-card>
-		<u-loadmore :status="status" loadingText="努力加载中..." />
 	</view>
 </template>
 
@@ -46,15 +50,21 @@
 	export default {
 		data() {
 			return {
+				amount: 0,
 				indexList: [],
 				status: 'loadmore',
 				timer: null,
 				total: 0,
 				pageNo: 1,
-				pageSize: 10
+				pageSize: 10,
+				status2: false
 			}
 		},
+		onLoad(options) {
+			this.amount = options.amount;
+		},
 		mounted() {
+			this.status2 = false;
 			this.getList();
 		},
 		// 下拉刷新
@@ -72,6 +82,7 @@
 			}
 			this.status = 'loading';
 			this.timer = setTimeout(() => {
+				this.status2 = false;
 				this.pageNo += 1
 				this.getMore();
 			}, 1000)
@@ -94,10 +105,12 @@
 					} else {
 						this.status = 'nomore'
 					}
+					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
 				}).catch((error) => {
 					this.status = 'nomore'
+					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
 				})
@@ -117,6 +130,7 @@
 					} else {
 						this.status = 'nomore'
 					}
+					this.status2 = true;
 				})
 			},
 			handleClick(val, data) {
@@ -126,6 +140,9 @@
 				} else if (val == '保证金预扣') {
 					// 保证金预扣
 					this.$tab.navigateTo('/subPages/home/account/bond/withhold?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金提现中') {
+					// 保证金预扣
+					this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(data)));
 				}
 			}
 		}
@@ -137,5 +154,16 @@
 		text-align: center;
 		font-size: 20px;
 		font-weight: bold;
+	}
+	
+	.empty-page {
+		width: 100%;
+		margin-top: 50%;
+		transform: translate(0%, -70%);
+		text-align: center;
+	
+		.empty-img {
+			width: 30%;
+		}
 	}
 </style>

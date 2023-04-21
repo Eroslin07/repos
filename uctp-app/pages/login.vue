@@ -1,5 +1,7 @@
 <template>
 	<view class="normal-login-container">
+		<!-- 解决窗体沉浸 -->
+		<view :style="{height: `${navHeight}px`}"></view>
 		<!-- 自定义导航栏 -->
 		<u-navbar title=" ">
 			<view class="u-nav-slot" slot="left">
@@ -59,12 +61,10 @@
 </template>
 
 <script>
-	import {
-		rsaEncrypt
-	} from '@/utils/rsa.js'
 	export default {
 		data() {
 			return {
+				navHeight:0,
 				captchaEnabled: false,
 				globalConfig: getApp().globalData.config,
 				changing: true,
@@ -80,6 +80,11 @@
 				value: [''],
 				wxcode: ''
 			}
+		},
+		onLoad(){
+			/* #ifdef MP-WEIXIN */
+			this.getnavigateBarHeight();
+			/* #endif */
 		},
 		methods: {
 			// 隐私协议
@@ -126,9 +131,6 @@
 					this.$modal.msgError("请阅读并勾选用户协议")
 					return
 				}
-				
-				//密码加密
-				let encryptMsg = rsaEncrypt(this.loginForm.password)
 				// this.$tab.reLaunch('/pages/index');
 
 				// //关闭定时器
@@ -156,12 +158,31 @@
 				this.$store.dispatch('GetInfo').then(res => {
 					this.$tab.reLaunch('/pages/index')
 				})
+			},
+			
+			// 获取顶部导航栏的高度
+			getnavigateBarHeight() {
+				let menuButtonObject = uni.getMenuButtonBoundingClientRect();
+				uni.getSystemInfo({
+					success: res => {
+						let statusBarHeight = res.statusBarHeight;
+						let navigateBarHeight = menuButtonObject.height+(menuButtonObject.top-statusBarHeight)*2;
+						this.navHeight=navigateBarHeight+statusBarHeight
+					},
+					fail(err) {
+						console.log(err);
+					}
+				})
 			}
 		}
 	}
 </script>
 
 <style lang="scss">
+	.status_bar {
+	      height: var(--status-bar-height);
+	      width: 100%;
+	}
 	page {
 		background-color: #ffffff;
 	}
@@ -171,8 +192,8 @@
 		
 		.bank-logo {
 			margin-top: 5px;
-			width: 100px;
-			height: 50px;
+			width: 95px;
+			height: 25px;
 			background: url('/static/images/home/bankLogo.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;
@@ -277,4 +298,11 @@
 			}
 		}
 	}
+	
+	/* #ifdef MP-WEIXIN */
+	/deep/ .u-navbar__content.data-v-95dec1ae {
+		align-items: center;
+	}
+	
+	/* #endif */
 </style>

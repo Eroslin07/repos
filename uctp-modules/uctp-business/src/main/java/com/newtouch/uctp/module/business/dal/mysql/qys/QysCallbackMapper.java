@@ -7,6 +7,8 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackPageRe
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 契约锁回调日志 Mapper
  *
@@ -25,5 +27,15 @@ public interface QysCallbackMapper extends BaseMapperX<QysCallbackDO> {
                 .orderByDesc(QysCallbackDO::getId));
     }
 
-
+    /**
+     * 获取 业务关联的回调数据，根据时间倒叙
+     * @param mainId 业务Id
+     * @return
+     */
+    default List<QysCallbackDO> getByMainIdAndType(Long mainId, Integer type){
+        return selectList(new LambdaQueryWrapperX<QysCallbackDO>()
+                .eq(QysCallbackDO::getMainId,mainId)
+                .eq(QysCallbackDO::getType,type)
+                .orderByDesc(QysCallbackDO::getCreateTime));
+    }
 }

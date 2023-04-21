@@ -136,6 +136,13 @@
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-excel</artifactId>
         </dependency>
+
+        <!-- freemarker模板引擎基础 begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <!-- freemarker模板引擎基础 end -->
     </dependencies>
 
     <build>

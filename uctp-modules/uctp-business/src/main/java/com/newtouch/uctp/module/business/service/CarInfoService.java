@@ -124,6 +124,21 @@ public interface CarInfoService {
     Map getCarInfoByVIN(String vin);
 
     /**
+     * 根据车辆id回显车辆信息
+     * @param id
+     * @return
+     */
+    AppBpmCarInfoRespVO getCarInfoByID(Long id);
+
+
+    /**
+     * 根据车辆id查询卡片信息
+     * @param id
+     * @return
+     */
+    AppCarInfoCardRespVO getCardByID(Long id);
+
+    /**
      * 获取卖车详情的明细费用
      * @param id 车辆id
      * @return

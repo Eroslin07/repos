@@ -15,50 +15,82 @@
         '账号申请流程'
       }}</el-header> -->
       <el-main>
-        <div style="overflow: hidden; margin-bottom: 10px">
-          <div style="float: left; font-size: 16px">单号：{{ baseInfoData.data.serialNo }}</div>
-          <div class="btn">
-            <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
-            <!-- <el-button type="primary" v-if="type == 'need'" @submit="submitBtn">提交</el-button>
-            <el-button v-if="type == 'need'" @click="terminationBtn">终止</el-button> -->
+        <div>
+          <div style="font-size: 16px" class="title">
+            <span>单号：{{ baseInfoData.data.serialNo }}</span>
+            <span>商户经办人：{{ mainValue.formDataJson.name }}</span>
+            <span>商户电话：{{ mainValue.formDataJson.phone }}</span>
           </div>
+          <!-- <div class="btn"> -->
+          <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
+          <!-- <el-button type="primary" v-if="type == 'need'" @submit="submitBtn">提交</el-button>
+            <el-button v-if="type == 'need'" @click="terminationBtn">终止</el-button> -->
+          <!-- </div> -->
         </div>
         <!-- <el-card class="content-box"> -->
-        <div>商户信息</div>
-        <el-row :gutter="20">
-          <el-col :span="6">手机号： {{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
-          <el-col :span="6">姓名： {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
-          <el-col :span="6">身份证号： {{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
-          <el-col :span="6"
-            >市场所在地： {{ mainValue.formDataJson.marketLocationValue || '暂无数据' }}</el-col
-          >
-        </el-row>
-        <div>对公银行账号：{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
-        <div>
-          <div>身份证图片</div>
-          <el-image
-            v-for="(img, index) in mainValue.formDataJson.idCardUrl"
-            :key="img.id"
-            style="width: 200px; height: 100px; margin-right: 10px"
-            :src="img.url"
-            :zoom-rate="1.2"
-            :preview-src-list="idcardUrlArr"
-            fit="cover"
-            :initial-index="index"
-          />
-        </div>
-        <div>
-          <div>营业执照图片</div>
-          <el-image
-            v-for="item in mainValue.formDataJson.businessLicense"
-            :key="item.id"
-            style="width: 200px; height: 100px"
-            :src="item.url"
-            :zoom-rate="1.2"
-            :preview-src-list="busUrlArr"
-            fit="cover"
-            :initial-index="0"
-          />
+        <div class="content-box">
+          <el-row>
+            <el-col :span="2" class="bg-yell">姓名：</el-col>
+            <el-col :span="4"> {{ mainValue.formDataJson.name || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">手机号：</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.phone || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">身份证号： </el-col>
+            <el-col :span="10">{{ mainValue.formDataJson.idCard || '暂无数据' }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">营业执照号： </el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.taxNum || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">公司名称： </el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.businessName || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">法定代表人： </el-col>
+            <el-col :span="4">{{
+              mainValue.formDataJson.legal_representative || '暂无数据'
+            }}</el-col>
+            <el-col :span="2" class="bg-yell">市场所在地： </el-col>
+            <el-col :span="4">{{
+              mainValue.formDataJson.marketLocationValue || '暂无数据'
+            }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">开户行：</el-col>
+            <el-col :span="4">
+              <div>{{ mainValue.formDataJson.bankName || '暂无数据' }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">对公银行账号：</el-col>
+            <el-col :span="4">
+              <div>{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">保证金充值卡号：</el-col>
+            <el-col :span="10">
+              <div>{{ mainValue.formDataJson.bondBankAcconut || '暂无数据' }}</div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">联系地址： </el-col>
+            <el-col :span="22">{{ mainValue.formDataJson.address || '暂无数据' }}</el-col>
+          </el-row>
+          <div class="image">
+            <el-image
+              v-for="(img, index) in mainValue.formDataJson.idCardUrl"
+              :key="img.id"
+              style="width: 200px; height: 100px; margin-right: 10px"
+              :src="img.url"
+              :zoom-rate="1.2"
+              :preview-src-list="idcardUrlArr"
+              fit="cover"
+              :initial-index="index"
+            />
+            <el-image
+              v-for="item in mainValue.formDataJson.businessLicense"
+              :key="item.id"
+              style="width: 200px; height: 100px"
+              :src="item.url"
+              :zoom-rate="1.2"
+              :preview-src-list="busUrlArr"
+              fit="cover"
+              :initial-index="0"
+            />
+          </div>
         </div>
         <!-- </el-card> -->
       </el-main>
@@ -137,6 +169,14 @@ console.log(setDialogTile)
 // }
 </script>
 <style lang="scss" scoped>
+.title {
+  > span {
+    margin-right: 20px;
+    font-weight: 600;
+    color: #333333;
+  }
+  margin-bottom: 16px;
+}
 .header {
   font-size: 24px;
   font-weight: bold;
@@ -146,6 +186,37 @@ console.log(setDialogTile)
   text-align: right;
 }
 .content-box {
-  line-height: 36px;
+  color: #606266;
+  .bg-yell {
+    background: #f5f5f5;
+    display: flex;
+    text-align: right;
+    justify-content: flex-end;
+  }
+}
+:deep(.el-main) {
+  padding: 0;
+}
+:deep(.el-col) {
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  height: 40px;
+  align-items: center;
+}
+.content-box .el-row:first-child {
+  border-top: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(1) {
+  border-left: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(even) {
+  padding-left: 15px;
+}
+.image {
+  padding: 16px 0 20px 18px;
+  border-left: 1px solid #eaeaea;
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
 }
 </style>

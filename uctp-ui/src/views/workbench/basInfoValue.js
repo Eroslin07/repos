@@ -4,4 +4,6 @@ import { reactive, ref } from 'vue'
 export let baseInfoData = reactive({ data: {} });
 
 // 加载图标
-export let infoLoading = ref(false)
+export let completedVisible = ref(false)
+
+export let tabName = ref('BaseInfo')

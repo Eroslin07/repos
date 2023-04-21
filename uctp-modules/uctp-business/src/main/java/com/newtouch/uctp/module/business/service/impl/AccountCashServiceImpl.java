@@ -72,7 +72,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         }
 
         List<Long> withdrawIds = new ArrayList<>();
-        List<String> tranRecordNos = new ArrayList<>();
+        //List<String> tranRecordNos = new ArrayList<>();
         for (MerchantCashDO merchantCashDO : list) {
             if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType())) {
                 //保证金提取明细ID，后续填充保证金提取流程明细
@@ -80,7 +80,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
                 if (StringUtils.isNotEmpty(merchantCashDO.getTranRecordNo())) {
                     //保证金交易流水，后续查询银行交易信息
-                    tranRecordNos.add(merchantCashDO.getTranRecordNo());
+                    //tranRecordNos.add(merchantCashDO.getTranRecordNo());
                 }
             }
         }
@@ -109,6 +109,7 @@ public class AccountCashServiceImpl implements AccountCashService {
             CashDetailRespVO build = CashDetailRespVO.build(merchantCashDO);
             build.setPresentStatusRecords(statusRecordMap.get(merchantCashDO.getId()));
             //build.setPayeeBankAccount(transactionRecordMap.get(merchantCashDO.getTranRecordNo()));
+            //TODO:查询提现银行卡号
             build.setPayeeBankAccount("3141592654");
             voList.add(build);
         }
@@ -142,7 +143,6 @@ public class AccountCashServiceImpl implements AccountCashService {
         //新增保证金变动记录
         String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
         merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_RECHARGE, tradeRecordNo, null);
-
         return this.detail(accountNo);
     }
 
@@ -168,6 +168,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
         MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_WITHDRAW, tradeRecordNo, null);
 
+        //todo：新增提现流程 发起提现申请 -> 银行处理中 -> 到账成功 后续根据实际情况添加，如若实时到账不用添加
         PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_APPLY);
         merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
         PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
@@ -188,7 +189,6 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         //新增保证金变动记录
         merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_PREEMPTION, null, transactionRecordReqVO.getContractNo());
-        //todo:保证金预占是否需要银行介入？
         return count > 0;
     }
 
@@ -215,6 +215,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public Integer difference(TransactionRecordReqVO transactionRecordReqVO) {
+        //待回填保证金 = 保证金 - 冻结 - 可用；
         int amount = 0;
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
         if (merchantAccountDO != null && merchantAccountDO.getCash() != null) {

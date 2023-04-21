@@ -88,5 +88,8 @@ public class DeptDO extends TenantBaseDO {
      * 联系地址
      */
     private String address;
-
+    /**
+     * 是否经过契约锁认证(0-认证中，1-认证成功，2-认证失败,3-未认证)
+     */
+    private Integer auth;
 }

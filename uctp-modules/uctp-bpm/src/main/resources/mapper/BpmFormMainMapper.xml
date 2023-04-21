@@ -16,6 +16,20 @@
         <result property="assigneeUserName" column="assignee_user_name"/>
     </resultMap>
 
+    <resultMap id="bpmTaskDoneRespVO" type="com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskDoneRespVO">
+        <result property="businessKey" column="business_key" javaType="String"/>
+        <result property="procInstId" column="proc_inst_id"/>
+        <result property="procDefId" column="proc_def_id"/>
+        <result property="serialNo" column="serial_no"/>
+        <result property="title" column="title"/>
+        <result property="merchantName" column="merchant_name"/>
+        <result property="startUserName" column="start_user_name"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="arrivalTime" column="arrival_time"/>
+        <result property="assigneeUserId" column="assignee_user_id"/>
+        <result property="assigneeUserName" column="assignee_user_name"/>
+    </resultMap>
+
     <select id="getBpmTaskTodo" resultMap="bpmTaskTodoRespVO" parameterType="com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskTodoReqVO">
         select task.ID_ as task_id,fm.id as business_key,fm.proc_inst_id,fm.proc_def_id,
                fm.serial_no,fm.title,d.name as merchant_name,cu.nickname as start_user_name,fm.submit_time,
@@ -42,5 +56,41 @@
             and fm.serial_no like concat('%', #{todoReqVO.serialNo}, '%')
         </if>
          ORDER BY task.CREATE_TIME_ desc
+    </select>
+
+    <select id="getBpmTaskDone" resultMap="bpmTaskDoneRespVO" parameterType="com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskDoneReqVO">
+        select fm.id as business_key,
+               fm.proc_inst_id,
+               fm.proc_def_id,
+               fm.serial_no,
+               fm.title,
+               d.name as merchant_name,
+               cu.nickname as start_user_name,
+               fm.submit_time,
+               res.end_time_ as arrival_time,
+               res.assignee_ as assignee_user_id,
+               u.nickname as assignee_user_name
+        from bpm_form_main fm
+                 inner join act_hi_taskinst res on fm.proc_inst_id = res.proc_inst_id_
+                 left join system_dept d on fm.merchant_id = d.id
+                 left join system_users u on res.assignee_ = u.id
+                 left join system_users cu on fm.start_user_id = cu.id
+        where res.assignee_ = #{loginUserId} and res.end_time_ is not null
+        <if test="doneReqVO.startUserName != null and doneReqVO.startUserName != ''">
+            and cu.nickname like concat('%', #{doneReqVO.startUserName}, '%')
+        </if>
+        <if test="doneReqVO.applyDate != null">
+            and DATE_FORMAT(fm.submit_time, '%Y-%m-%d') = DATE_FORMAT(#{doneReqVO.applyDate}, '%Y-%m-%d')
+        </if>
+        <if test="doneReqVO.title != null and doneReqVO.title != ''">
+            and fm.title like concat('%', #{doneReqVO.title}, '%')
+        </if>
+        <if test="doneReqVO.merchantName != null and doneReqVO.merchantName != ''">
+            and d.name like concat('%', #{doneReqVO.merchantName}, '%')
+        </if>
+        <if test="doneReqVO.serialNo != null and doneReqVO.serialNo != ''">
+            and fm.serial_no like concat('%', #{doneReqVO.serialNo}, '%')
+        </if>
+        order by res.end_time_ desc
     </select>
 </mapper>

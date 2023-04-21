@@ -23,7 +23,7 @@ public class CommonResult<T> implements Serializable {
      *
      * @see ErrorCode#getCode()
      */
-    private Integer code;
+    private Integer code = 0;
     /**
      * 返回数据
      */

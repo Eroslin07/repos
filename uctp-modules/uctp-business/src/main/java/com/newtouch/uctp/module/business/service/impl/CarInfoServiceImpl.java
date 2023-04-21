@@ -11,6 +11,7 @@ import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
@@ -117,9 +118,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
         infoDO.setInsurance(createReqVO.getInsurance());
         infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
-        infoDO.setSalesStatus(1);//收车中
-        infoDO.setStatus(11);//草稿
-        infoDO.setStatusThree(111);
+        infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
+        infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
+        infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
         carInfoMapper.insert(infoDO);
 
         //车辆明细数据
@@ -332,7 +333,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     public Map getCarInfoByVIN(String vin) {
         Map map = new HashMap<>();
         //查询除已卖状态以外的车
-        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsSell(vin,431);
+        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsSell(vin,CarStatus.SOLD_C_A.value());
         //除已卖状态外 有且只有一条数据
         if(carInfoDOS.size()>0){
             for (CarInfoDO carInfoDO:carInfoDOS) {
@@ -354,6 +355,25 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
+    public AppBpmCarInfoRespVO getCarInfoByID(Long id) {
+        CarInfoDO carInfo = this.getCarInfo(id);
+
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+
+       return this.buildBmpVO(carInfo, carInfoDetailsDO);
+
+    }
+
+    @Override
+    public AppCarInfoCardRespVO getCardByID(Long id) {
+        CarInfoDO carInfo = this.getCarInfo(id);
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        List<ContractDO> contractDOS = contractService.getContractListByCarId(id);
+        AppCarInfoCardRespVO appCarInfoCardRespVO = this.buildCardVO(carInfo, carInfoDetailsDO,contractDOS);
+        return appCarInfoCardRespVO;
+    }
+
+    @Override
     public AppCarInfoAmountRespVO getCarInfoAmount(Long id,BigDecimal sellAmount) {
 //        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         //税配置100，服务费配置200，然后合计费用300；利润=卖车金额-收车金额-税-服务费
@@ -364,9 +384,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
         carInfo.setSellAmount(sellAmount);
         //卖车金额 >= 收车金额
-        if (sellAmount.compareTo(carInfo.getVehicleReceiptAmount()) == -1) {
-            throw exception(CAR_INFO_SELL_AMOUNT_ERROR);
-        }
+//        if (sellAmount.compareTo(carInfo.getVehicleReceiptAmount()) == -1) {
+//            throw exception(CAR_INFO_SELL_AMOUNT_ERROR);
+//        }
         //获取默认字典表配置的车辆金额费用配置项
         CommonResult<List<DictDataRespDTO>> dictDataRes = dictDataApi.getDictDataList(DictTypeConstants.CAR_EXPENSE_CONFIG_DEFAULT, null);
         if (!dictDataRes.getCode().equals(0)) {
@@ -420,10 +440,11 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setRemarks( reqVO.getRemarks() );
         carInfo.setSellAmount( reqVO.getSellAmount() );
         carInfo.setSellType( reqVO.getSellType() );
+        carInfo.setOther(reqVO.getOther());
         //此时状态为 买车中草稿
-        carInfo.setSalesStatus(3);
-        carInfo.setStatus(31);
-        carInfo.setStatusThree(311);
+        carInfo.setSalesStatus(CarStatus.SELL.value());
+        carInfo.setStatus(CarStatus.SELL_A.value());
+        carInfo.setStatusThree(CarStatus.SELL_A_A.value());
         carInfoMapper.updateById(carInfo);
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(reqVO.getId());
         carInfoDetails.setBuyerTel( reqVO.getBuyerTel() );
@@ -432,6 +453,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfoDetails.setBuyerAdder( reqVO.getBuyerAdder() );
         carInfoDetails.setTransManageName( reqVO.getTransManageName() );
         carInfoDetails.setFeesAndCommitments( reqVO.getFeesAndCommitments() );
+        carInfoDetails.setProceduresAndSpareSell(reqVO.getProceduresAndSpareSell());
         carInfoDetails.setVehicleProblem(reqVO.getVehicleProblem());
         carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
         //保存卖车上传的身份证正反面图片
@@ -455,6 +477,54 @@ public class CarInfoServiceImpl implements CarInfoService {
         AppBpmCarInfoRespVO vo = new AppBpmCarInfoRespVO();
         vo.setCarInfo(carInfo);
         vo.setCarInfoDetails(carInfoDetails);
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
+        //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
+        fileList.forEach(file->{
+            switch (file.getFileType()){
+                case "1":
+                case "1-1":
+                    //1-1 表是车辆第一张图片
+                    vo.getFileA().add(new AppSimpleFileVO(file));
+                    break;
+                case "2":
+                    vo.getFileB().add(new AppSimpleFileVO(file));
+                    break;
+                case "3":
+                    vo.getFileC().add(new AppSimpleFileVO(file));
+                    break;
+                case "4":
+                    vo.getFileD().add(new AppSimpleFileVO(file));
+                    break;
+                case "5":
+                    vo.getFileE().add(new AppSimpleFileVO(file));
+                    break;
+                default:
+                    break;
+            }
+        });
+        return vo;
+    }
+
+    private AppCarInfoCardRespVO buildCardVO(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetails, List<ContractDO> contractList){
+        AppCarInfoCardRespVO vo = new AppCarInfoCardRespVO();
+        //车辆主表信息
+        vo.setCarInfo(carInfo);
+        //车辆明细表数据
+        vo.setCarInfoDetails(carInfoDetails);
+        //合同数据
+        List<APPContractCardVO> list = new ArrayList<>();
+        APPContractCardVO contractCardVO = new APPContractCardVO();
+        for (ContractDO contractDO:contractList) {//循环合同信息，查询中间表拿到文件url
+            List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getId());
+            FileRespDTO fileRespDTO = fileList.get(0);
+            contractCardVO.setContractDO(contractDO);
+            contractCardVO.setPath(fileRespDTO.getPath());
+            contractCardVO.setUrl(fileRespDTO.getUrl());
+            list.add(contractCardVO);
+        }
+        vo.setContractCardVOS(list);
+
+        //车辆图片相关数据
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
         //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
         fileList.forEach(file->{
@@ -644,9 +714,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setSellType(null);
         carInfo.setRemarks(null);
         //此时状态为 待售中-已检测
-        carInfo.setSalesStatus(2);
-        carInfo.setStatus(23);
-        carInfo.setSalesStatus(233);
+        carInfo.setSalesStatus(CarStatus.SALE.value());
+        carInfo.setStatus(CarStatus.SALE_A_C.value());
+        carInfo.setStatusThree(CarStatus.SALE_A_C_A.value());
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(id);
         carInfoDetails.setBuyerAdder(null);
         carInfoDetails.setBuyerIdCard(null);

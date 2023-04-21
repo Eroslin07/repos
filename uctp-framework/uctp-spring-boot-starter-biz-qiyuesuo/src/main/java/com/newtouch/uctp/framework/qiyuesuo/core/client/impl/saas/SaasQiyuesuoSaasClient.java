@@ -20,6 +20,9 @@ import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SdkResponse;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     /**
      * 契约锁SaaS模式客户端
@@ -98,6 +101,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         if (StrUtil.isNotBlank(registerNo)) {
             request.setRegisterNo(registerNo);
         }
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/verification");
         return this.saasCompanyAuthPageUrl(request);
     }
 
@@ -117,13 +121,25 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact, String contactType) {
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact) {
+        return this.saasUserAuthPage(contact, "MOBILE");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact) {
         Assert.notNull(companyId, "companyId 不能为空");
         Assert.notBlank(contact, "contact 不能为空");
-        Assert.notBlank(contactType, "contactType 不能为空");
-        SaasPrivilegeUrlRequest  request = new SaasPrivilegeUrlRequest ();
-        User user = new User(contact, contactType);
+        SaasPrivilegeUrlRequest request = new SaasPrivilegeUrlRequest();
+        User user = new User(contact, "MOBILE");
         request.setUser(user);
+        request.setCompanyId(companyId);
+        request.setCreateToken(true);
+        request.setCallbackUrl("");
+        //TODO 成功后的地址需要商量
+        request.setSuccessUrl("www.baidu.com");
+        //目前只授权印章
+        List<String> privilegeModules = Arrays.asList("SEAL");
+        request.setPrivilegeModules(privilegeModules);
         return this.saasPrivilegeUrl(request);
     }
 }

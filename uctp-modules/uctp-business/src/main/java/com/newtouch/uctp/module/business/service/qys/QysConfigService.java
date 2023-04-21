@@ -9,6 +9,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 契约锁 Service 接口
@@ -83,13 +84,11 @@ public interface QysConfigService {
      */
     String status(String signature, String timestamp, String content) throws Exception;
     /**
-     * 电子签回调接口->7）验证地址：若选择单点登录集成方案，用于单点登录集成的Ticket校验；
-     * @param signature 签名
-     * @param timestamp 时间戳
-     * @param content 内容
+     * 电子签回调接口->7）CAS验证地址：若选择单点登录集成方案，用于单点登录集成的Ticket校验；
+     * @param ticket 加密内容
      * @return
      */
-    String verification(String signature, String timestamp, String content) throws Exception;
+    Map<String, Object> verification(String ticket) throws Exception;
     /**
      * 电子签回调接口 ->8）平台登录地址：若选择单点登录集成方案，用于单点登录集成Ticket校验失败的重定向地址；
      * @param signature 签名
@@ -100,5 +99,19 @@ public interface QysConfigService {
     String login(String signature, String timestamp, String content) throws Exception;
 
     void test();
+
+    /**
+     * 发送契约锁合同
+     * @param carId 车辆Id
+     */
+    void send(Long carId);
+
+    /**
+     * 获取到契约锁单点登录地址
+     * @param pageType 车辆Id
+     * @param contractId 合同Id
+     * @return
+     */
+    String getSsoUrl(String pageType,Long contractId);
 
 }

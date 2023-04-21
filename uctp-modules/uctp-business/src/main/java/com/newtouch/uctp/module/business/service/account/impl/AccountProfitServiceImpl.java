@@ -82,6 +82,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                                            List<CostDTO> costs,
                                            List<TaxDTO> taxes) {
         log.info("调用利润划入接口，accountNo:{},contractNo:{},vehicleReceiptAmount:{},carSalesAmount:{}",accountNo,contractNo,vehicleReceiptAmount,carSalesAmount);
+
+        // 参数校验
+        this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
         // 锁定当前合同，防止同一合同多次划入利润
         RLock lock = redissonClient.getLock(LOCK_PREFIX + contractNo);
         try {
@@ -91,9 +94,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 // 锁定失败，则表示重复划入
                 throw exception(ACC_PRESENT_PROFIT_RECORDED_REPEAT);
             }
-
-            // 参数校验
-            this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
 
             // 先查询当前合同在数据库中是否已存在利润数据，存在则表示是重复划入
             Long existsCurrentContractNo = this.merchantProfitMapper.selectCount(MerchantProfitDO::getContractNo, contractNo);
@@ -415,6 +415,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             List<ProfitRespVO> profitVOList = new ArrayList<>();
             for (MerchantProfitDO pdo : profitDOList) {
                 ProfitRespVO pvo = ProfitRespVO.builder()
+                        .id(pdo.getId().toString())
                         .tradeDate(DateUtil.format(pdo.getTradeTime(), NORM_DATE_PATTERN))
                         .tradeType(pdo.getTradeType())
                         .tradeTypeText(pdo.getTradeTypeText())

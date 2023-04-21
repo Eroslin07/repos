@@ -65,7 +65,6 @@
 					enableScroll: false,
 					legend: {
 						float: "left",
-						// lineHeight: 20,
 					},
 					extra: {
 						pie: {
@@ -88,9 +87,7 @@
 		methods: {
 			// 图表数据
 			getServerData() {
-				//模拟从服务器获取数据时的延时
 				setTimeout(() => {
-					//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
 					let res = {
 						series: [{
 							data: [{
@@ -129,6 +126,9 @@
 		.notice {
 			position: absolute;
 			top: 44px;
+			// #ifdef MP-WEIXIN
+			top: 88px;
+			// #endif
 		}
 		
 		.statistics {
@@ -139,6 +139,9 @@
 			left: 50%;
 			top: 60%;
 			transform: translate(-50%, -100%);
+			// #ifdef MP-WEIXIN
+			transform: translate(-50%, -60%);
+			// #endif
 		}
 		
 		.charts-box {

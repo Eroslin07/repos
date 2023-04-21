@@ -169,8 +169,8 @@
 		
 		.bank-logo {
 			margin-top: 5px;
-			width: 100px;
-			height: 50px;
+			width: 95px;
+			height: 25px;
 			background: url('/static/images/home/bankLogo.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;

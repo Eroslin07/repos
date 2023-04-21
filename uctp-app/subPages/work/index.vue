@@ -30,6 +30,7 @@
 	export default {
 		data() {
 			return {
+				businessId:this.$store.state.user.deptId,
 				// 列表
 				listData: [],
 				imageArr: [{
@@ -103,7 +104,7 @@
 						backgroundColor: '#f56c6c'
 					}
 				}]
-				getNoticesApi().then(res => {
+				getNoticesApi(this.businessId).then(res => {
 					if (res.data.length) {
 						this.listData = res.data.map(item => {
 							this.$set(item, 'options', options);

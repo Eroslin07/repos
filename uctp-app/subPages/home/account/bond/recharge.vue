@@ -44,16 +44,29 @@
 		data() {
 			return {
 				amount: '',
-				show: false
+				show: false,
+				revision: 0
 			}
+		},
+		onLoad(options) {
+			this.revision = options.revision;
 		},
 		methods: {
 			// 确定
 			handleDefine() {
-				if (this.amount == '' || this.amount) {
+				if (this.amount == '' || !this.amount) {
 					this.$modal.msg("请输入需要充值的金额");
 				} else {
-					this.show = true;
+					let data = {
+						accountNo: this.$store.state.user.accountNo,
+						tranAmount: Number(this.amount),
+						revision: this.revision
+					}
+					getRecharge(data).then((res) => {
+						this.$modal.msg("充值成功");
+						this.$tab.navigateTo('/subPages/home/account/bond/bond');
+					})
+					// this.show = true;
 				}
 			},
 			// 关闭弹框
@@ -65,8 +78,8 @@
 				this.$modal.msg("微信支付");
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
-					tranAmount: this.amount,
-					revision: 3
+					tranAmount: Number(this.amount),
+					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
 					this.$tab.navigateTo('/subPages/home/account/bond/progress');
@@ -77,8 +90,8 @@
 				this.$modal.msg("云闪付");
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
-					tranAmount: this.amount,
-					revision: 3
+					tranAmount: Number(this.amount),
+					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
 					this.$tab.navigateTo('/subPages/home/account/bond/progress');

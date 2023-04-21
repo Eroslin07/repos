@@ -28,10 +28,11 @@ export function setSellerInfo(data) {
 }
 
 // 合同签章
-export function getQiyuesuo() {
+export function getQiyuesuo(params) {
 	return request({
-		url: '/uctp/car-info/qiyuesuo',
-		'method': 'GET'
+		url: '/uctp/qys/send',
+		'method': 'POST',
+		params
 	})
 }
 
@@ -83,6 +84,15 @@ export function getCarModelList(data) {
 export function getCarInfo(data) {
 	return request({
 		url: '/uctp/car-info/getCarInfoByVIN',
+		'method': 'GET',
+		params: data
+	})
+}
+
+// 根据id获取回显车辆信息
+export function getCarInfoDetail(data) {
+	return request({
+		url: '/uctp/car-info/getCarInfoByID',
 		'method': 'GET',
 		params: data
 	})

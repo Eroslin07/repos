@@ -11,14 +11,14 @@
             ,PHONE
             ,BUSINESS_ID as businessId
             ,TENANT_ID as tenantId
-            ,CREATEOR as creator
+            ,CREATOR as creator
             ,CREATE_TIME as createTime
             ,UPDATER as updater
             ,UPDATE_TIME as updateTime
             ,status
             ,url
         from uctp_notice
-        where BUSINESS_ID=#{businessID} and PUSH_STATUS='0' and status in ('1','0') order by CREATE_TIME DESC
+        where BUSINESS_ID=#{businessID} and type='0' and status in ('1','0') order by CREATE_TIME DESC
     </select>
 
     <select id="getUnreadNoticeCount"  resultType="int">

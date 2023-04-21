@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="130px" height="130px" viewBox="0 0 130 130" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>钱币</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="85.421235%" y1="18.4753243%" x2="17.6009634%" y2="80.7730373%" id="linearGradient-1">
+            <stop stop-color="#FA6400" stop-opacity="0.1" offset="0%"></stop>
+            <stop stop-color="#FA6400" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="钱币" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g fill-rule="nonzero">
+            <rect id="矩形" fill="#000000" opacity="0" x="0" y="0" width="130" height="130"></rect>
+            <path d="M64.9238281,17.5830078 C38.7080078,17.5830078 17.46875,38.8349609 17.46875,65.0380859 C17.46875,91.2412109 38.7207031,112.505859 64.9238281,112.505859 C91.1269531,112.505859 112.378906,91.2539062 112.378906,65.0507812 C112.378906,38.8476563 91.1396484,17.5830078 64.9238281,17.5830078 Z M85.1347656,66.4853516 L66.3710938,85.2490234 C65.5712891,86.0488281 64.2890625,86.0488281 63.4892578,85.2490234 L44.7128906,66.4853516 C43.9130859,65.6855469 43.9130859,64.4033203 44.7128906,63.6035156 L63.4765625,44.8398438 C64.2763672,44.0400391 65.5585938,44.0400391 66.3583984,44.8398438 L85.1347656,63.6035156 C85.9345703,64.4033203 85.9345703,65.6855469 85.1347656,66.4853516 Z" id="形状" fill="url(#linearGradient-1)"></path>
+        </g>
+    </g>
+</svg>

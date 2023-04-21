@@ -53,7 +53,7 @@
 			</view>
 			<view v-else class="empty-page">
 				<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
-				<text class="empty-text">暂无数据</text>
+				<text class="empty-text" v-if="status">暂无数据</text>
 			</view>
 		</view>
 	</view>
@@ -69,7 +69,9 @@
 				available: 0,
 				// 冻结余额
 				blockedBalances: 0,
-				indexList: []
+				indexList: [],
+				revision: 0,
+				status: false
 			}
 		},
 		onBackPress(options) {
@@ -96,22 +98,25 @@
 					this.available = this.$amount.getComdify(res.data.availableCash);
 					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash);
 					this.indexList = res.data.cashDetails;
+					this.revision = res.data.revision;
+					this.status = true;
 					this.$modal.closeLoading();
 				}).catch((error) => {
+					this.status = true;
 					this.$modal.closeLoading();
 				})
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available);
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available + '&revision=' + this.revision);
 			},
 			// 充值
 			handleRecharge() {
-				this.$tab.navigateTo('/subPages/home/account/bond/recharge');
+				this.$tab.navigateTo('/subPages/home/account/bond/recharge?revision=' + this.revision);
 			},
 			// 点击冻结余额
 			handleFreeze() {
-				this.$tab.navigateTo('/subPages/home/account/bond/freeze');
+				this.$tab.navigateTo('/subPages/home/account/bond/freeze?amount=' + this.blockedBalances);
 			},
 			// 点击全部
 			handleWhole() {
@@ -155,7 +160,10 @@
 		
 		.cost_image {
 			width: 100%;
-			height: 180px;
+			height: 360rpx;
+			// #ifdef MP-WEIXIN
+			height: 450rpx;
+			// #endif
 			background-image: url('../../../../static/images/cost/cost.png');
 			background-repeat: no-repeat;
 			background-size: 100% 100%;
@@ -164,6 +172,9 @@
 		.statistics {
 			position: absolute;
 			top: 30px;
+			// #ifdef MP-WEIXIN
+			top: 75px;
+			// #endif
 			background-color: #fff;
 			margin: 15px;
 			padding: 10px;
@@ -185,12 +196,21 @@
 			}
 		}
 		
+		// #ifdef MP-WEIXIN
+		/deep/ .u-list {
+			height: auto !important;
+		}
+		// #endif
+		
 		.empty-page {
 			width: 100%;
 			position: absolute;
 			left: 50%;
 			top: 45%;
 			transform: translate(-50%, -50%);
+			// #ifdef MP-WEIXIN
+			transform: translate(-50%, 50%);
+			// #endif
 			text-align: center;
 		
 			.empty-img {

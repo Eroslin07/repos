@@ -9,9 +9,6 @@
 							</zb-dropdown-item>
 						</zb-dropdown-menu>
 					</view>
-					<!-- <view>
-						<text @click="analiesBtn">分析</text>
-					</view> -->
 				</view>
 
 				<view class="charts-box">
@@ -61,8 +58,6 @@
 </template>
 
 <script>
-	import DropdownMenu from '../../subPages/home/carStatus/JP-dropdown-menu/JP-dropdown-menu.vue';
-	import DropdownItem from '../../subPages/home/carStatus/JP-dropdown-menu/JP-dropdown-item.vue';
 	export default {
 		data() {
 			return {
@@ -190,9 +185,7 @@
 
 			// 图表数据
 			getServerData() {
-				//模拟从服务器获取数据时的延时
 				setTimeout(() => {
-					//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
 					let res = {
 						categories: ["1月", "2月", "3月"],
 						series: [{
@@ -231,7 +224,6 @@
 	.cost-content {
 		border: 1px solid #ccc;
 		border-radius: 3px;
-		// padding: 10px;
 		font-size: 14px;
 		margin: 15px auto 10px;
 
@@ -248,6 +240,66 @@
 			margin-left: 5px;
 		}
 	}
+
+	/* #ifdef MP-WEIXIN */
+	/deep/ .zb-dropdown-menu__bar.data-v-9684d88c {
+		box-shadow: none;
+	}
+	/deep/ .zb-dropdown-menu__title.data-v-9684d88c {
+		padding: 0 15px 0 0;
+	}
+	/deep/ .zb-dropdown-menu__title.data-v-9684d88c::after {
+		border-width: 5px;
+		border-bottom-color: #8d8d8d;
+		border-left-color: #8d8d8d;
+		margin-top: -8px;
+		right: -10px;
+		opacity: 0.9
+	}
+	/deep/ .zb-dropdown-menu__title--active.data-v-9684d88c::after{
+		margin-top: -3px;
+		border-bottom-color:#ee0a24;
+		border-left-color:#ee0a24;
+	}
+	/deep/ .zb-dropdown-item--down.data-v-0253f23a {
+		z-index:9999 !important;
+	}
+	
+	/deep/ .zb-dropdown-item__content.data-v-0253f23a{
+		z-index:999999 !important;
+	}
+
+	/* #endif */
+	
+	/* #ifdef H5 */
+		/deep/ .zb-dropdown-menu__bar[data-v-9684d88c] {
+			box-shadow: none;
+		}
+		/deep/ .zb-dropdown-menu__title[data-v-9684d88c] {
+			padding: 0 15px 0 0;
+		}
+		/deep/ .zb-dropdown-menu__title::after {
+			border-width: 5px;
+			border-bottom-color: #8d8d8d;
+			border-left-color: #8d8d8d;
+			margin-top: -8px;
+			right: -10px;
+			opacity: 0.9
+		}
+		/deep/ .zb-dropdown-menu__title--active[data-v-9684d88c]::after{
+			margin-top: -3px;
+			border-bottom-color:#ee0a24;
+			border-left-color:#ee0a24;
+		}
+		/deep/ .zb-dropdown-item--down[data-v-0253f23a]{
+			z-index:9999 !important;
+		}
+		
+		/deep/ .zb-dropdown-item__content[data-v-0253f23a]{
+			z-index:999999 !important;
+		}
+	/* #endif */
+	
 
 	.fs14 {
 		font-size: 14px;
@@ -295,22 +347,5 @@
 
 	.mb5 {
 		margin-bottom: 5px;
-	}
-
-	/deep/ .zb-dropdown-menu__bar {
-		box-shadow: none;
-	}
-
-	/deep/.zb-dropdown-menu__title::after {
-		border-width: 5px;
-		border-bottom-color: #aaa;
-		border-left-color: #aaa;
-		margin-top: -8px;
-		right: -10px;
-		opacity: 0.9
-	}
-
-	/deep/.zb-dropdown-menu__title--down::after {
-		margin-top: -3px;
 	}
 </style>

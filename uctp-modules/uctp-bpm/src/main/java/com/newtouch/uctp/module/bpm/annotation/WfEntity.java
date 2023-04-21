@@ -3,7 +3,7 @@ package com.newtouch.uctp.module.bpm.annotation;
 import java.lang.annotation.*;
 
 /**
- * @author helong
+ * @author he long
  * @date 2023/4/8 16:49
  */
 @Target({ElementType.TYPE})

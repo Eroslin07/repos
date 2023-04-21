@@ -151,6 +151,7 @@ uctp:
       - /app-api/uctp/qys/callback/certification
     ignore-tables:
       - infra_file
+      - uctp_qys_callback
   sms-code: # 短信验证码相关的配置项
     expire-times: 10m
     send-frequency: 1m

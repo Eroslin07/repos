@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="15px" viewBox="0 0 18 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>银行卡</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="详情页-资金信息" transform="translate(-24.000000, -548.000000)" fill-rule="nonzero">
+            <g id="编组-8备份-2" transform="translate(13.000000, 534.000000)">
+                <g id="li备份-7" transform="translate(11.000000, 11.000000)">
+                    <g id="银行卡" transform="translate(0.000000, 1.000000)">
+                        <rect id="矩形" fill="#000000" opacity="0" x="0" y="0" width="18" height="18"></rect>
+                        <path d="M17.44,5.27999999 L17.44,4.08000001 C17.44,3.20000001 16.72,2.47999999 15.84,2.47999999 L2.16,2.47999999 C1.28,2.47999999 0.560000004,3.19999999 0.560000004,4.08000001 L0.560000004,5.27999999 L17.44,5.27999999 Z M0.560000004,7.28 L0.560000004,14.72 C0.560000004,15.6 1.28,16.32 2.16,16.32 L15.88,16.32 C16.76,16.32 17.48,15.6 17.48,14.72 L17.48,7.28 L0.560000004,7.28 Z M5.96,13.12 L2,13.12 L2,12.32 L5.96,12.32 L5.96,13.12 Z M9.23999999,10.6 L2,10.6 L2,9.8 L9.23999999,9.8 L9.23999999,10.6 Z" id="形状" fill="#FA6400"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

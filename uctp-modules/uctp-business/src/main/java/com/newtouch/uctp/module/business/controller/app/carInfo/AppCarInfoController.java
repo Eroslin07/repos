@@ -131,7 +131,7 @@ public class AppCarInfoController {
     @PostMapping("/save/sell")
     @Operation(summary = "保存APP卖车填写数据")
     public CommonResult<AppBpmCarInfoRespVO> saveSellCarInfo(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
-        carInfoService.saveSellCarInfo(reqVO);
+//        carInfoService.saveSellCarInfo(reqVO);
         return success(carInfoService.saveSellCarInfo(reqVO));
     }
 
@@ -162,6 +162,13 @@ public class AppCarInfoController {
         return success(carInfoService.getCarInfoByVIN(VIN));
     }
 
+    @GetMapping("/getCarInfoByID")
+    @Operation(summary = "根据ID获取回显车辆信息")
+    @Parameter(name = "ID", description = "编号", required = true, example = "1024")
+    public CommonResult<AppBpmCarInfoRespVO> getCarInfoByID(@RequestParam("ID") Long ID) {
+        return success(carInfoService.getCarInfoByID(ID));
+    }
+
 
     @DeleteMapping("/delCarInfoWithCollect")
     @Operation(summary = "收车删除车辆信息")
@@ -180,6 +187,13 @@ public class AppCarInfoController {
             return success(pageResult);
     }
 
+
+    @GetMapping("/getCardByID")
+    @Operation(summary = "车辆卡片信息")
+    @Parameter(name = "ID", description = "车辆id", required = true, example = "1024")
+    public CommonResult<AppCarInfoCardRespVO> getCardByID(@RequestParam("ID") Long ID) {
+        return success(carInfoService.getCardByID(ID));
+    }
 
 
 

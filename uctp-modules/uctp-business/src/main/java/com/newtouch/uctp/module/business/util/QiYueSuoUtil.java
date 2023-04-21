@@ -31,7 +31,6 @@ public class QiYueSuoUtil {
     private SdkClient client = null;
 
     private QiYueSuoUtil() {
-
     }
 
     public QiYueSuoUtil(String url, String accessKey, String accessSecret) {

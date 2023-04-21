@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
+import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskDoneReqVO;
+import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskDoneRespVO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskTodoReqVO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskTodoRespVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
@@ -36,4 +38,6 @@ public interface BpmFormMainMapper extends BaseMapperX<BpmFormMainDO> {
 
 
     Page<BpmTaskTodoRespVO> getBpmTaskTodo(Page<BpmTaskTodoRespVO> page, @Param("todoReqVO") BpmTaskTodoReqVO todoReqVO, @Param("loginUserId")Long loginUserId);
+
+    Page<BpmTaskDoneRespVO> getBpmTaskDone(Page<BpmTaskDoneRespVO> page, @Param("doneReqVO") BpmTaskDoneReqVO doneReqVO, @Param("loginUserId")Long loginUserId);
 }
