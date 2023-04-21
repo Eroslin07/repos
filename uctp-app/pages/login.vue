@@ -59,9 +59,6 @@
 </template>
 
 <script>
-	import {
-		rsaEncrypt
-	} from '@/utils/rsa.js'
 	export default {
 		data() {
 			return {
@@ -126,9 +123,6 @@
 					this.$modal.msgError("请阅读并勾选用户协议")
 					return
 				}
-				
-				//密码加密
-				let encryptMsg = rsaEncrypt(this.loginForm.password)
 				// this.$tab.reLaunch('/pages/index');
 
 				// //关闭定时器
