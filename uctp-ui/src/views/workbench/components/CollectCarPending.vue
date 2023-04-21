@@ -540,11 +540,11 @@ console.log(setDialogTile, props)
   text-align: right;
 }
 .content-box {
-  line-height: 36px;
   color: #606266;
   .bg-yell {
     background: #f5f5f5;
     display: flex;
+    text-align: right;
     justify-content: flex-end;
   }
 }
@@ -557,9 +557,6 @@ console.log(setDialogTile, props)
   display: flex;
   height: 40px;
   align-items: center;
-}
-.content-box {
-  line-height: 36px;
 }
 .content-box .el-row:first-child {
   border-top: 1px solid #eaeaea;
