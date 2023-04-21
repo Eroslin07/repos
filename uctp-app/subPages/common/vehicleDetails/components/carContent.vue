@@ -6,10 +6,11 @@
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
 					<text class="car-upload-title__title">车辆检测报告</text>
-					<text class="car-upload-title__text">未检测</text>
+					<text v-if="!carUpload" class="car-upload-title__text">未检测</text>
+					<text v-else class="car-upload-title__text">已检测</text>
 				</view>
 				<view class="upload-content">
-					<view class="upload-text" @click="photograph" v-if="carUpload">
+					<view class="upload-text" @click="photograph" v-if="!carUpload">
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
@@ -28,8 +29,7 @@
 				<text>行驶证</text>
 			</view>
 			<view class="driving-image">
-				<image src="../../../../static/images/home/driving-license.svg" mode=""
-					style="width: 232rpx;height: 166rpx;"></image>
+				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
 			</view>
 			<view class="driving-content">
 				<view class="car-details">
@@ -60,8 +60,7 @@
 				<text>机动车登记证书</text>
 			</view>
 			<view class="driving-image">
-				<image src="../../../../static/images/home/car-registration.svg" mode=""
-					style="width: 232rpx;height: 166rpx;"></image>
+				<image :src="vehicleImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
 			</view>
 			<view class="driving-content driving-details">
 				<view class="car-details">
@@ -200,7 +199,7 @@
 					<text class="car-upload-title__text">待匹配</text>
 				</view>
 				<view class="upload-content">
-					<view class="upload-text" @click="photograph" v-if="carUpload">
+					<view class="upload-text" @click="photograph" v-if="!carUpload">
 						<text>上传银行电子回单</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
@@ -316,11 +315,25 @@
 	export default {
 		data() {
 			return {
-				carUpload: true,
-				eyeIsShow: false
+				carUpload: false,
+				eyeIsShow: false,
+				// 行驶证
+				drivingImg: '/static/images/home/driving-license.svg',
+				// 机动车登记证
+				vehicleImg: '/static/images/home/driving-license.svg',
 			}
 		},
-		props: ['tabCar'],
+		props: {
+			tabCar: {
+				type: String,
+				default: '0'
+			},
+			vehicleDetails: {
+				type: Object,
+				default: () => {}
+			}
+		},
+
 		methods: {
 			// 上传检测报告
 			photograph() {
@@ -345,12 +358,14 @@
 						uni.showModal({
 							title: '提示',
 							content: '您的车辆检测报告已经上传完成。',
-							showCancel: false, 
+							showCancel: false,
 							confirmText: '知道了',
 							confirmColor: '#f60',
 							success: function(res) {
-								if(res.confirm){
-									
+								if (res.confirm) {
+									_this.carUpload = true;
+									_this.$emit('changeTest', _this.carUpload)
+
 								}
 							}
 						})
@@ -359,10 +374,11 @@
 			},
 			// 删除检测报告
 			handleDelete() {
+				// let _this=this
 				showConfirm('删除检测报告后，您的车辆将无法发起卖车业务，若需要继续卖车请重新上传新的检测报告').then(res => {
-					console.log(res, 'res')
 					if (res.confirm) {
-
+						this.carUpload = false
+						this.$emit('changeTest', this.carUpload)
 					}
 				})
 			},

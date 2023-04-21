@@ -61,7 +61,7 @@
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar"></ca-content>
+			<ca-content :tabCar="tabCar" @changeTest="changeTest"></ca-content>
 		</uni-card>
 	</view>
 </template>
@@ -134,15 +134,15 @@
 				isTest: true,
 				// 是否过户
 				isTransfer: false,
-				
+
 				// 父组件传过来的值
-				fatherProps:null,
+				fatherProps: null,
 			};
 		},
-		
-		onload(props){
+
+		onload(props) {
 			console.log(props)
-			this.fatherProps=JSON.parse(props.item)
+			this.fatherProps = JSON.parse(props.item)
 		},
 		methods: {
 			changeTab(item) {
@@ -177,6 +177,10 @@
 					fileListLen++
 				}
 			},
+			changeTest(val) {
+				console.log(val)
+				this.isTest = val
+			}
 		}
 	}
 </script>

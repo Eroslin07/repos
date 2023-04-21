@@ -428,6 +428,7 @@
 </template>
 
 <script>
+	let that;
 	import config from '@/config'
 	import {
 		getAccessToken
@@ -457,7 +458,6 @@
 	export default {
 		data() {
 			return {
-				that:this,
 				otherValue: '',
 				showOverlay: false,
 				carId: null,
@@ -745,6 +745,10 @@
 				// 是否是子账户
 				isChildAccount:false
 			}
+		},
+		beforeCreate () {
+		   that = this;
+		   console.log(that)
 		},
 		onBackPress(options) {
 			if (this.active == 0) {
