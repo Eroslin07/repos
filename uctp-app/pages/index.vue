@@ -3,7 +3,8 @@
 		<!-- 自定义导航栏 -->
 		<u-navbar title="车友通">
 			<view class="u-nav-slot" slot="left">
-				<image style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png" class="form-image">
+				<image @click="handleMsg" style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png"
+					class="form-image">
 				</image>
 			</view>
 		</u-navbar>
@@ -48,7 +49,7 @@
 
 				<view
 					:class="{'left-title':true,bc1:item.status==1,bc2:item.status==2,bc3:item.status==3,bc4:item.status==4}"
-					@click="tabCarStatus(item)">
+					@click="tabCarStatus(item,allChild)">
 					<view class="">{{item.label}}</view>
 					<view class="" style="padding-top:3px;">
 						{{item.num || 0 }} 辆
@@ -61,7 +62,7 @@
 				<view class="right-content">
 					<u-row style="height:68px;">
 						<u-col span="4" v-for="child in item.child" :key="child.status"
-							@click="handleTabItem(item,child)">
+							@click="handleTabItem(item,child,allChild)">
 							<view class="align-center">
 								<text>{{child.label}}</text>
 								<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
@@ -106,6 +107,8 @@
 				},
 				// 统计数据
 				gatherData: [],
+				// 所有子项
+				allChild: []
 
 			}
 		},
@@ -121,6 +124,9 @@
 			getAcount() {
 				getHomeCount().then(res => {
 					this.gatherData = res.data
+					res.data.forEach(item => {
+						this.allChild.push(...item.child)
+					})
 				}).catch((error) => {
 					for (let i = 0; i < 4; i++) {
 						this.gatherData.push({
@@ -169,12 +175,13 @@
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
 			// 收车中
-			tabCarStatus(item) {
-				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}`)
+			tabCarStatus(item,allChild) {
+				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`)
 			},
-			handleTabItem(item, child) {
+			handleTabItem(item, child,allChild) {
 				this.$tab.navigateTo(
-					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&child=${JSON.stringify(child)}`)
+					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&child=${JSON.stringify(child)}&&allChild=${JSON.stringify(allChild)}`
+					)
 			},
 
 			// 消息动态-背景图标
