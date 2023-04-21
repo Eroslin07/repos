@@ -37,7 +37,9 @@
 				<uni-row :gutter="30">
 					<uni-col :span="9">
 						<view class="car_left">
-							<view class="car_text cell-car-forSale cell-car-draft cell-car-contact cell-car-saled">待售已检测
+							<view
+								:class="{'car_text':true, 'cell-car-forSale':(tab.status==22||tab.status==23||tab.status==13), 'cell-car-draft':(tab.status==11 ||tab.status==31), 'cell-car-contact':(tab.status==12||tab.status==32), 'cell-car-saled':(tab.status==41||tab.status==42||tab.status==43)}">
+								{{tab.name}}
 							</view>
 							<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
 							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
@@ -53,7 +55,8 @@
 							<text v-else style="padding-right:3px;">***元</text>
 							<text style="padding:2px 5px;" v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
 								@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
-							<text v-else style="padding:2px 5px;" class="iconfont icon-close-eye" @click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
+							<text v-else style="padding:2px 5px;" class="iconfont icon-close-eye"
+								@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
 						</view>
 						<view class="fs12" style="color: #f60;">卖车价：
 							<text v-if="!tab.eyeIsShow && tab.vehicleReceiptAmount">***元</text>
@@ -84,7 +87,9 @@
 		getHomePageList
 	} from '@/api/home.js'
 	// import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
-    import { parseTime } from '../../../utils/ruoyi'
+	import {
+		parseTime
+	} from '../../../utils/ruoyi'
 
 	export default {
 		data() {
@@ -118,7 +123,8 @@
 				},
 				detailData: {},
 				childData: {},
-
+				childArr: [],
+				allChild: [],
 				// 加载更多
 				loadStatus: 'loadmore',
 				total: 0,
@@ -135,8 +141,9 @@
 			this.getList(this.formData)
 		},
 		onLoad(props) {
+			this.allChild = JSON.parse(props.allChild)
 			this.detailData = JSON.parse(props.item)
-			let arr = this.detailData.child.map(v => {
+			this.childArr = this.detailData.child.map(v => {
 				return {
 					name: v.label,
 					...v
@@ -145,7 +152,7 @@
 			this.navList = [{
 				name: '全部',
 				status: ''
-			}, ...arr]
+			}, ...this.childArr]
 			uni.setNavigationBarTitle({
 				title: this.detailData.label,
 			})
@@ -159,7 +166,6 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
-			console.log('下拉刷新')
 			this.getList(this.formData)
 		},
 		// 触底加载
@@ -178,11 +184,12 @@
 				this.$modal.loading("数据加载中...");
 				getHomePageList(params).then(res => {
 					this.tabList = res.data.list.map(item => {
-						console.log(item.createTime)
+						let label = this.allChild.find(v => v.status == item.status)?.label
 						return {
 							eyeIsShow: false,
 							...item,
-							createTime:parseTime(item.createTime)
+							createTime: parseTime(item.createTime),
+							name: label,
 						}
 					})
 					this.total = res.data.total;
@@ -201,10 +208,12 @@
 			getMore(params) {
 				getHomePageList(params).then(res => {
 					this.tabList = [...this.tabList, ...res.data.list].map(item => {
+						let label = this.allChild.find(v => v.status == item.status)?.label
 						return {
 							eyeIsShow: false,
 							...item,
-							createTime:parseTime(item.createTime)
+							createTime: parseTime(item.createTime),
+							name: label,
 						}
 					})
 					this.total = res.data.total;
@@ -226,7 +235,6 @@
 			},
 			// tab导航
 			handleChange(val) {
-				console.log(val)
 				this.formData.status = this.detailData.child.find(item => item.status == val.status)?.status || ''
 				this.getList(this.formData)
 			},
@@ -245,11 +253,11 @@
 				if (item.status === 31) {
 					this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
 					return;
-				}else if(item.status==11){
-					this.$tab.navigateTo('/subPages/home/bycar/index?id='+item.id)
+				} else if (item.status == 11) {
+					this.$tab.navigateTo('/subPages/home/bycar/index?id=' + item.id)
 					return;
-				}else{
-					this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?item='+JSON.stringify(item))
+				} else {
+					this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?item=' + JSON.stringify(item))
 				}
 
 			}

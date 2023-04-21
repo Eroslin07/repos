@@ -1,3 +1,10 @@
+###查询商户虚拟账户资产详情
+GET {{appBusinessUrl}}/uctp/account/get
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+
+
 ###
 ###保证金释放
 POST {{appBusinessUrl}}/uctp/account/cash/release
@@ -5,19 +12,18 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "12345673"
+  "contractNo": "123123123"
 }
 
-###
 ###保证金回填-利润
 POST {{appBusinessUrl}}/uctp/account/cash/profit/back
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567",
+  "accountNo": "123123123",
   "tranAmount": 100,
-  "contractNo": "1234567"
+  "contractNo": "123123123"
 }
 
 ###保证金回填
@@ -26,9 +32,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567",
+  "accountNo": "123123123",
   "tranAmount": 100,
-  "contractNo": "12345672"
+  "contractNo": "123123123"
 }
 
 ###待回填保证金
@@ -37,7 +43,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567"
+  "accountNo": "123123123"
 }
 
 ###保证金实占
@@ -46,9 +52,8 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "12345671"
+  "contractNo": "123123123"
 }
-
 
 ###保证金预占
 POST {{appBusinessUrl}}/uctp/account/cash/reserve
@@ -56,31 +61,29 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567",
+  "accountNo": "123123123",
   "tranAmount": 100,
-  "contractNo": "12345673"
+  "contractNo": "123123123"
 }
 
-###
 ###保证金提取-提取成功后返回我的保证金页面模型数据
 POST {{appBusinessUrl}}/uctp/account/cash/withdraw
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567",
+  "accountNo": "123123123",
   "tranAmount": 100,
   "revision": 1
 }
 
-###
 ###保证金交易明细查询
 POST {{appBusinessUrl}}/uctp/account/cash/list
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567",
+  "accountNo": "123123123",
   "type": 1,
   "pageNo": 1,
   "pageSize": 15
@@ -92,9 +95,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "1234567",
-  "tranAmount": 1000,
-  "revision": 0
+  "accountNo": "123123123",
+  "tranAmount": 100,
+  "revision": 2
 }
 
 ###保证金详情-我的保证金

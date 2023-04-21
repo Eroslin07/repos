@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-@Schema(description = "账户保证金充值提取 Request VO")
+@Schema(description = "商户保证金管理接口 Request VO")
 @Data
 public class TransactionRecordReqVO {
 
@@ -17,7 +17,7 @@ public class TransactionRecordReqVO {
             groups = {Recharge.class, Withdraw.class, Reserve.class, Difference.class, Back.class, ProfitBack.class})
     private String accountNo;
 
-    @Schema(description = "交易金额")
+    @Schema(description = "交易金额-单位分")
     @Min(value = 1, message = "交易金额必须大于0",
             groups = {Recharge.class, Withdraw.class, Reserve.class, Back.class, ProfitBack.class})
     private Integer tranAmount;

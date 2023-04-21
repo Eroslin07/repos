@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.service.cash;
 
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 
 public interface MerchantAccountService {
@@ -25,4 +26,12 @@ public interface MerchantAccountService {
      * @return
      */
     boolean accountOpen(MerchantAccountDO account);
+
+    /**
+     * 查询商户虚拟账户资产详情
+     *
+     * @param loginUserId 登陆人ID
+     * @return 商户虚拟账户资产详情
+     */
+    MerchantAccountRespVO get(Long loginUserId);
 }

@@ -32,7 +32,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList2.length" :fileList="fileList2" @delete="deletePic" name="2"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/bycar/headstock.png" mode="widthFix"
+									<image v-else src="/static/images/bycar/headstock.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(2)"></image>
 									<image v-if="fileList2.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(2)"></image>
@@ -40,7 +40,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList5.length" :fileList="fileList5" @delete="deletePic" name="5"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/bycar/tailstock.png" mode="widthFix"
+									<image v-else src="/static/images/bycar/tailstock.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(5)"></image>
 									<image v-if="fileList5.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(5)"></image>
@@ -48,7 +48,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList6.length" :fileList="fileList6" @delete="deletePic" name="6"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/bycar/car_left.png" mode="widthFix"
+									<image v-else src="/static/images/bycar/car_left.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(6)"></image>
 									<image v-if="fileList6.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(6)"></image>
@@ -56,7 +56,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList7.length" :fileList="fileList7" @delete="deletePic" name="7"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/bycar/car_right.png" mode="widthFix"
+									<image v-else src="/static/images/bycar/car_right.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(7)"></image>
 									<image v-if="fileList7.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(7)"></image>
@@ -70,7 +70,7 @@
 						<view class="image" style="position: relative;">
 							<u-upload v-if="fileList1.length" :fileList="fileList1" @delete="deletePic" name="1"
 								width="150"></u-upload>
-							<image v-else src=".../../../static/images/bycar/business.png" mode="widthFix"
+							<image v-else src="/static/images/bycar/business.png" mode="widthFix"
 								style="width: 150px;" @click="handleOcr(1)"></image>
 							<image v-if="fileList1.length == 0" src="../../../static/images/take.png" class="icon-image"
 								style="left: 75px;" @click="handleOcr(1)"></image>
@@ -112,7 +112,7 @@
 						<view class="image" style="position: relative;">
 							<u-upload v-if="fileList3.length" :fileList="fileList3" @delete="deletePic" name="3"
 								width="150"></u-upload>
-							<image v-else src=".../../../static/images/bycar/registration.png" mode="widthFix"
+							<image v-else src="/static/images/bycar/registration.png" mode="widthFix"
 								style="width: 150px;" @click="handleOcr(3)"></image>
 							<image v-if="fileList3.length == 0" src="../../../static/images/take.png" class="icon-image"
 								style="left: 75px;" @click="handleOcr(3)"></image>
@@ -230,7 +230,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList4.length" :fileList="fileList4" @delete="deletePic" name="4"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/home/ghm.png" mode="widthFix"
+									<image v-else src="/static/images/home/ghm.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(4)"></image>
 									<image v-if="fileList4.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(4)"></image>
@@ -238,7 +238,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList8.length" :fileList="fileList8" @delete="deletePic" name="8"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/home/rxm.png" mode="widthFix"
+									<image v-else src="/static/images/home/rxm.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(8)"></image>
 									<image v-if="fileList8.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(8)"></image>
@@ -1400,6 +1400,7 @@
 		bottom: 0;
 		background-color: #fff;
 		padding-bottom: 10px;
+		z-index: 999;
 
 		.button {
 			width: 80%;

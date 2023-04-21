@@ -18,15 +18,14 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.newtouch.uctp.framework.security.core.LoginUser;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
-import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.CompanyAuthDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
-import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
@@ -49,6 +48,7 @@ import com.qiyuesuo.sdk.v2.utils.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
@@ -97,7 +97,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void initLocalCache() {
         // 第一步：查询数据
-        List<QysConfigDO> configDOS = qysConfigMapper.selectList();
+        List<QysConfigDO> configDOS = qysConfigMapper.selectListAuth();
+//        List<QysConfigDO> configDOS = qysConfigMapper.selectList();
         log.info("[initLocalCache][缓存契约锁client，数量为:{}]", configDOS.size());
 
         // 第二步：构建缓存：创建或更新短信 Client
@@ -164,6 +165,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
+    @Transactional
     public String certification(String signature, String timestamp, String content){
         try {
             log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
@@ -176,6 +178,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             JSONObject jsonObject = JSON.parseObject(json);
             String companyName = jsonObject.getString("companyName");
             String status = jsonObject.getString("status");
+            String companyId = jsonObject.getString("companyId");
             QysCallbackDO qysCallbackDO = new QysCallbackDO();
             qysCallbackDO.setContent(json);
             //目前根据saas文档来的
@@ -192,6 +195,19 @@ public class QysConfigServiceImpl implements QysConfigService {
                 }
             }
             qysCallbackMapper.insert(qysCallbackDO);
+            //如果回调数据为认证成功，保存公司id
+            if ("1".equals(status) && StrUtil.isNotBlank(companyId)) {
+                QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
+                if (ObjectUtil.isNull(configDO)) {
+                    configDO = new QysConfigDO();
+                }
+                configDO.setCompanyId(Long.valueOf(companyId));
+                if (ObjectUtil.isNotNull(deptDO)) {
+                    configDO.setBusinessId(deptDO.getId());
+                    configDO.setBusinessName(deptDO.getName());
+                }
+                qysConfigMapper.insert(configDO);
+            }
             if (ObjectUtil.isNotNull(deptDO)) {
                 deptMapper.updateById(deptDO);
             }

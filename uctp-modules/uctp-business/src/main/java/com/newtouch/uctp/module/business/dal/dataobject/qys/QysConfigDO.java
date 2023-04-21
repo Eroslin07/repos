@@ -62,5 +62,9 @@ public class QysConfigDO extends TenantBaseDO {
      * 商户Id
      */
     private Long businessId;
+    /**
+     * 契约锁公司id
+     */
+    private Long companyId;
 
 }

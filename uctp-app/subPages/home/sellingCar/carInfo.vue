@@ -194,7 +194,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList4.length" :fileList="fileList4" @delete="deletePic" name="4"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/home/ghm.png" mode="widthFix"
+									<image v-else src="/static/images/home/ghm.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(4)"></image>
 									<image v-if="fileList4.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(4)"></image>
@@ -202,7 +202,7 @@
 								<u-grid-item>
 									<u-upload v-if="fileList5.length" :fileList="fileList5" @delete="deletePic" name="5"
 										width="150"></u-upload>
-									<image v-else src=".../../../static/images/home/rxm.png" mode="widthFix"
+									<image v-else src="/static/images/home/rxm.png" mode="widthFix"
 										style="width: 150px;" @click="handleOcr(5)"></image>
 									<image v-if="fileList5.length == 0" src="../../../static/images/take.png"
 										class="icon-image" @click="handleOcr(5)"></image>
@@ -428,6 +428,7 @@
 </template>
 
 <script>
+	let that;
 	import config from '@/config'
 	import {
 		getAccessToken
@@ -457,7 +458,6 @@
 	export default {
 		data() {
 			return {
-				that:this,
 				otherValue: '',
 				showOverlay: false,
 				carId: null,
@@ -745,6 +745,10 @@
 				// 是否是子账户
 				isChildAccount:false
 			}
+		},
+		beforeCreate () {
+		   that = this;
+		   console.log(that)
 		},
 		onBackPress(options) {
 			if (this.active == 0) {
@@ -1324,6 +1328,7 @@
 			bottom: 0;
 			background-color: #fff;
 			padding-bottom: 20px;
+			z-index: 999;
 
 			.button {
 				width: 80%;

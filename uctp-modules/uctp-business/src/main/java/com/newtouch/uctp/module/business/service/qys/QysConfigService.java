@@ -5,7 +5,6 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateRe
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
-import liquibase.pro.packaged.T;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -86,9 +85,7 @@ public interface QysConfigService {
     String status(String signature, String timestamp, String content) throws Exception;
     /**
      * 电子签回调接口->7）CAS验证地址：若选择单点登录集成方案，用于单点登录集成的Ticket校验；
-     * @param signature 签名
-     * @param timestamp 时间戳
-     * @param content 内容
+     * @param ticket 加密内容
      * @return
      */
     Map<String, Object> verification(String ticket) throws Exception;

@@ -681,6 +681,7 @@
 		bottom: 0;
 		background-color: #fff;
 		padding-bottom: 10px;
+		z-index: 999;
 		
 		.button {
 			width: 80%;
