@@ -16,6 +16,8 @@
     <SellCarPending v-if="status == 'MGYZ'" :type="'need'" />
     <!-- 利润提取代办 -->
     <Profit v-if="status == 'LRTQ'" :type="'need'" />
+    <!-- 车辆是否已过户至买家 -->
+    <VehicleTransferBuyer v-if="status == 'MCGH'" :type="need" />
   </div>
 </template>
 <script setup lang="ts">
@@ -27,7 +29,8 @@ import {
   ForwardDirection,
   SellCarPending,
   Profit,
-  VehicleReceiptTransfer
+  VehicleReceiptTransfer,
+  VehicleTransferBuyer
 } from '@/views/workbench/components'
 import { defineProps } from 'vue'
 import { baseInfoData } from '@/views/workbench/basInfoValue'

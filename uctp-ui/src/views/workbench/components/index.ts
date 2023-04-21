@@ -7,6 +7,7 @@ import SellCarPending from './SellCarPending.vue'
 import Profit from './profit.vue'
 import AgreementFrame from './agreementFrame.vue'
 import VehicleReceiptTransfer from './vehicleReceiptTransfer.vue'
+import VehicleTransferBuyer from './vehicleTransferBuyer.vue'
 
 export {
   MerchantApprovalPending,
@@ -17,5 +18,6 @@ export {
   SellCarPending,
   Profit,
   AgreementFrame,
-  VehicleReceiptTransfer
+  VehicleReceiptTransfer,
+  VehicleTransferBuyer
 }
