@@ -10,7 +10,7 @@
 		</u-navbar>
 		
 		<view class="logo-content align-center justify-center flex">
-			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">xxx结算中心</h2>
+			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">结算中心</h2>
 		</view>
 		<view class="logo-content align-center justify-center flex">
 			<h3 class="title" style="margin-right: 50%;">助力车商</h3>

@@ -20,7 +20,7 @@
 											<view class="title" style="text-align: right;">
 												<text v-if="item.profitLossTypeText == '收入'">+</text>
 												<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
-												{{ $amount.getComdify(item.amount || 0) }} >
+												{{ $amount.getComdify(item.amount / 100 || 0) }} >
 											</view>
 										</u-col>
 									</u-row>

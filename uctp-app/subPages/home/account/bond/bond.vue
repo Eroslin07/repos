@@ -43,7 +43,7 @@
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeName == '收入'">+</text>
 										<text v-if="item.profitLossTypeName == '支出'">-</text>
-										{{ $amount.getComdify(item.payAmount || 0) }} >
+										{{ $amount.getComdify(item.payAmount / 100 || 0) }} >
 									</view>
 								</u-col>
 							</u-row>
@@ -95,8 +95,8 @@
 			// 查询我的保证金
 			getBondDetail() {
 				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
-					this.available = this.$amount.getComdify(res.data.availableCash);
-					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash);
+					this.available = this.$amount.getComdify(res.data.availableCash / 100);
+					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash / 100);
 					this.indexList = res.data.cashDetails;
 					this.revision = res.data.revision;
 					this.status = true;
