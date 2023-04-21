@@ -23,7 +23,7 @@
 								<u-col span="4">
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeText == '收入'">+</text>
-										<text v-if="item.profitLossTypeText == '支出'">-</text>
+										<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
 										{{ $amount.getComdify(item.amount || 0) }} >
 									</view>
 								</u-col>
@@ -135,9 +135,9 @@
 			},
 			handleClick(val, data) {
 				getDetail({ accountNo: this.accountNo, profitId: data.id }).then((res) => {
-					if (val == '利润提现中') {
-						// 利润提现中
-						this.$tab.navigateTo('/subPages/home/account/profit/progressDetile?data='+encodeURIComponent(JSON.stringify(res.data)));
+					if (val == '10101002') {
+						// 利润提现
+						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
 					}
 				})
 			}

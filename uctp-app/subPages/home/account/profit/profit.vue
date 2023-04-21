@@ -147,7 +147,7 @@
 					if (val == '利润提现中') {
 						// 利润提现中
 						this.$tab.navigateTo('/subPages/home/account/profit/progressDetile?data='+encodeURIComponent(JSON.stringify(res.data)));
-					} else if (val == '利润提现') {
+					} else if (val == '10101002') {
 						// 利润提现
 						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
 					} else if (val == '10101001') {
