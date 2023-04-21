@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import java.util.List;
+
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.ACC_MERCHANT_ACCOUNT_NOT_EXISTS;
@@ -86,6 +88,18 @@ public class AccountProfitController {
             id = Long.valueOf(profitId);
         }
         ProfitDetailRespVO respVO = accountProfitService.profitDetail(accountNo, id);
+        return success(respVO);
+    }
+
+    @GetMapping("/cost/list")
+    @Operation(summary = "费用分析")
+    public CommonResult<List<ProfitCostMonthRespVO>> costList(@Valid ProfitCostQueryReqVO query) {
+        log.info("查询账户{}的费用情况", query.getAccountNo());
+
+        this.checkAccount(query.getAccountNo());
+        Long id = null;
+
+        List<ProfitCostMonthRespVO> respVO = accountProfitService.getMonthCostByQuarter(query.getAccountNo(), query.getQuarter());
         return success(respVO);
     }
 

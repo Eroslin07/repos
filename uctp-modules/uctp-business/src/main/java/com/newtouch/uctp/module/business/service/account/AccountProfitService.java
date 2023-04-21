@@ -1,10 +1,7 @@
 package com.newtouch.uctp.module.business.service.account;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummaryRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -79,4 +76,12 @@ public interface AccountProfitService {
      * @param auditOpinion 审核意见
      */
     void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditOpinion);
+
+    /**
+     * 查询某季度每月费用汇总信息
+     * @param accountNo
+     * @param quarter
+     * @return
+     */
+    List<ProfitCostMonthRespVO> getMonthCostByQuarter(String accountNo, String quarter);
 }
