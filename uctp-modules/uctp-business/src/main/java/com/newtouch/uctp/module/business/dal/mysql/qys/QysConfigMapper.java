@@ -3,9 +3,12 @@ package com.newtouch.uctp.module.business.dal.mysql.qys;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 契约锁 Mapper
@@ -29,4 +32,10 @@ public interface QysConfigMapper extends BaseMapperX<QysConfigDO> {
     }
 
 
+    default List<QysConfigDO> selectListAuth(){
+        return selectList(new QueryWrapperX<QysConfigDO>()
+                .isNotNull("SERVER_URL")
+                .isNotNull("ACCESS_KEY")
+                .isNotNull("ACCESS_SECRET"));
+    }
 }

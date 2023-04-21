@@ -52,36 +52,41 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
 
     @Override
     protected QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doSaasPrivilegeUrl(SaasPrivilegeUrlRequest request) throws Throwable {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
     protected QiyuesuoCommonResult<SaaSUserAuthPageResult> doSaasUserAuthPage(SaaSUserAuthPageRequest request) throws Throwable {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
     protected QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doSaasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request) throws Throwable {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
     public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName,String applicantInfo, String legalPerson, String registerNo, StreamFile license) {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
     public QiyuesuoCommonResult<SaaSCompanyAuthPageResult> saasCompanyAuthPageUrl(String companyName, String applicantInfo) {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
     public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact, String contactType) {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact, String contactType) {
-        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact) {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact) {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 }

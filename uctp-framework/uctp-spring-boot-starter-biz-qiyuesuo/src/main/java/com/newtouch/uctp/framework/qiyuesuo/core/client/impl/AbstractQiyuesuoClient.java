@@ -122,6 +122,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+
     @Override
     public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(SaasPrivilegeUrlRequest request) {
         QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result;

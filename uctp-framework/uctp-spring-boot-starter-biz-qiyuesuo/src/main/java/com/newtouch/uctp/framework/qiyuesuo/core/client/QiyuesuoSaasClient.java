@@ -68,6 +68,14 @@ public interface QiyuesuoSaasClient {
                                                               String contactType);
 
     /**
+     * 调用此接口来获取个人认证页面链接，链接只能打开一次，链接有效期5分钟，页面会话有效期15分钟。
+     *
+     * @param contact 操作人联系方式
+     * @return
+     */
+    QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact);
+
+    /**
      * 调用此接口，获取已认证企业的授权页面链接，企业在页面上授权后，在SAAS平台上可正常使用契约锁电子签相关功能。
      *
      * @param request 契约锁接口接受的参数
@@ -78,13 +86,11 @@ public interface QiyuesuoSaasClient {
      * 调用此接口，获取已认证企业的授权页面链接，企业在页面上授权后，在SAAS平台上可正常使用契约锁电子签相关功能。
      *
      * @param companyId 企业Id
-     * @param contact 操作人联系方式
-     * @param contactType 联系类型：MOBILE（手机号），EMAIL（邮箱）
+     * @param contact 操作人电话
      * @return
      */
     QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId,
-                                                              String contact,
-                                                              String contactType);
+                                                              String contact);
 
 
 }
