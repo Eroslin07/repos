@@ -64,12 +64,14 @@
 		.text1 {
 			text-align: left;
 			color: #999;
-			margin-bottom: 10px;
+			height: 25px;
+			line-height: 25px;
 		}
 		
 		.text2 {
 			text-align: right;
-			margin-bottom: 10px;
+			height: 25px;
+			line-height: 25px;
 		}
 	}
 </style>

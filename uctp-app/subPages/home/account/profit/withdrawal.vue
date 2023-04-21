@@ -49,10 +49,12 @@
 	import config from '@/config'
 	import { deleteImage } from '@/api/register'
 	import { getPresent } from '@/api/account/profit.js'
-	import { setCreate } from '@/api/home'
 	export default {
 		data() {
 			return {
+				// 商户账户号
+				accountNo: '55555555',
+				// accountNo: this.$store.state.user.accountNo,
 				fileList1: [],
 				amount: '',
 				allAmount: 0
@@ -114,36 +116,20 @@
 					this.$modal.msg("请输入需要提现的金额");
 					return
 				}
+				if (this.fileList1.length == 0) {
+					this.$modal.msg("请上传利润发票");
+					return
+				}
 				let data = {
-					accountNo: this.$store.state.user.accountNo,
-					merchantBankId: '',
-					tranAmount: this.amount,
+					accountNo: this.accountNo,
+					merchantBankId: 2,
+					amount: Number(this.amount),
 					invoiceIds: this.fileList1.map((item) => { return item.id })
 				}
 				getPresent(data).then((res) => {
 					this.$modal.msg("提现成功");
 					this.$tab.navigateTo('/subPages/home/account/profit/profit');
 					// this.$tab.navigateTo('/subPages/home/account/profit/progress');
-					this.$modal.msg("利润提现流程开发中...");
-					return
-					let variables = {
-						marketName: this.$store.state.user.tenantName,
-						merchantName: this.$store.state.user.deptName,
-						startUserId: this.$store.state.user.id,
-						formDataJson: {
-							formMain: {
-								merchantId: this.$store.state.user.deptId,
-								thirdId: res.data.carInfoDetails.carId,
-								formDataJson: res.data
-							}
-						}
-					}
-					let createData = { procDefKey, variables };
-					setCreate(createData).then((ress) => {
-						this.$modal.msg("已提交审核");
-					}).catch((error) => {
-						this.$modal.msgError("发起流程失败");
-					})
 				})
 			},
 			// 点击全部提现

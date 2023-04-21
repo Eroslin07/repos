@@ -126,6 +126,9 @@
 		.notice {
 			position: absolute;
 			top: 44px;
+			// #ifdef MP-WEIXIN
+			top: 88px;
+			// #endif
 		}
 		
 		.statistics {
@@ -136,6 +139,9 @@
 			left: 50%;
 			top: 60%;
 			transform: translate(-50%, -100%);
+			// #ifdef MP-WEIXIN
+			transform: translate(-50%, -60%);
+			// #endif
 		}
 		
 		.charts-box {
