@@ -43,7 +43,7 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
 
     default List<DeptDO> selectByTaxNum(String taxNum) {
         return selectList(new LambdaQueryWrapperX<DeptDO>()
-                .eqIfPresent(DeptDO::getTax_num,taxNum));
+                .eqIfPresent(DeptDO::getTaxNum,taxNum));
     }
 
     default List<DeptDO> selectByName(String name) {
