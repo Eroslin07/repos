@@ -22,7 +22,7 @@
         <!-- </div> -->
         <!-- <el-card class="content-box"> -->
         <div class="content-box">
-          <h3 style="font-weight: bold; color: #333333">车辆基础信息</h3>
+          <h3 style="font-weight: bold; color: #333333; line-height: 36px">车辆基础信息</h3>
           <div>
             <el-row>
               <el-col :span="2" class="bg-yell">行驶证：</el-col>
@@ -227,7 +227,7 @@
               </el-col>
             </el-row>
           </div>
-          <h3 style="font-weight: bold; color: #333333">交易信息</h3>
+          <h3 style="font-weight: bold; color: #333333; line-height: 36px">交易信息</h3>
           <div>
             <el-row>
               <el-col :span="2" class="bg-yell">收车金额：</el-col>
@@ -335,7 +335,7 @@
               </el-col>
             </el-row>
 
-            <h3 style="font-weight: bold" class="mb20">合同信息</h3>
+            <!-- <h3 style="font-weight: bold" class="mb20">合同信息</h3>
             <el-row>
               <el-form-item label="XXX收车委托合同">
                 <button class="colr159" @click="viewContract">查看</button>
@@ -345,7 +345,7 @@
               <el-form-item label="XXX收车合同">
                 <button type="button" class="colr159" @click="viewContract">查看</button>
               </el-form-item>
-            </el-row>
+            </el-row> -->
           </div>
         </div>
         <!-- </el-card> -->
@@ -417,7 +417,7 @@ const identifyShow = ref(true)
 // const idCardShow = ref(false)
 
 // 合同弹框
-const contractVisible = ref(false)
+// const contractVisible = ref(false)
 // const emit = defineEmits(['cancleSellCar'])
 const props = defineProps({
   // visible: propTypes.bool.def(false),
@@ -436,9 +436,9 @@ console.log(setDialogTile, props)
 // }
 
 // 查看合同
-const viewContract = () => {
-  contractVisible.value = true
-}
+// const viewContract = () => {
+//   contractVisible.value = true
+// }
 
 // 关闭合同弹框
 // const handleCancel = () => {
@@ -476,11 +476,11 @@ const viewContract = () => {
 }
 
 .content-box {
-  line-height: 36px;
   color: #606266;
   .bg-yell {
     background: #f5f5f5;
     display: flex;
+    text-align: right;
     justify-content: flex-end;
   }
 }
@@ -493,9 +493,6 @@ const viewContract = () => {
   display: flex;
   height: 40px;
   align-items: center;
-}
-.content-box {
-  line-height: 36px;
 }
 .content-box .el-row:first-child {
   border-top: 1px solid #eaeaea;
@@ -514,9 +511,6 @@ const viewContract = () => {
 .identify {
   display: inline-block;
   width: 136px;
-}
-.mb20 {
-  margin-bottom: 20px;
 }
 
 .colr159 {

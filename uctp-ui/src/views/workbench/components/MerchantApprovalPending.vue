@@ -186,11 +186,11 @@ console.log(setDialogTile)
   text-align: right;
 }
 .content-box {
-  line-height: 36px;
   color: #606266;
   .bg-yell {
     background: #f5f5f5;
     display: flex;
+    text-align: right;
     justify-content: flex-end;
   }
 }
