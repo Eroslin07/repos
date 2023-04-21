@@ -32,12 +32,12 @@ public class AccountProfitServiceTest {
     @Resource
     private RedissonClient redissonClient;
 
-    private String accountNo = "55555555";
-    private String contractNo = "2006";
+    private String accountNo = "666";
+    private String contractNo = "21001";
 
     @Test
     public void testRecorded() {
-        Integer vehicleReceiptAmount = 100;
+        Integer vehicleReceiptAmount = 201;
         Integer carSalesAmount = 200;
         List<CostDTO> costs = new ArrayList<>();
         CostDTO c = new CostDTO();
@@ -59,7 +59,7 @@ public class AccountProfitServiceTest {
         taxes.add(t);
 
         List<MerchantProfitDO> list = accountProfitService.recorded(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs, taxes);
-        Assertions.assertEquals(5, list.size());
+        Assertions.assertEquals(6, list.size());
     }
 
     @Test

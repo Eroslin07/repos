@@ -197,7 +197,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             }
 
             // 回填保证金
-            this.cashBack(accountNo, contractNo, merchantAccount.getRevision(), profitCalcResult);
+            this.cashBack(accountNo, contractNo, merchantAccount.getRevision() + 1, profitCalcResult);
 
             // 处理利润回填保证金提现状态（理论上只有一条数据）
             for (int i = 0; i < backCashList.size(); i++) {
@@ -592,7 +592,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 // 本次回填保证金（不含本次利润扣补回填保证金）
                 .currentBackCashAmount(currentBackCashAmount)
                 // 本次卖车款
-                .currentCarSalesAmount(currentBackCashAmount)
+                .currentCarSalesAmount(carSalesAmount)
                 // 本次待回填保证金
                 .currentWaitForBackCashAmount(currentWaitForBackCashAmount)
                 // 本次使用本次利润抵扣金额
@@ -960,8 +960,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             backCashFromOriginalProfit.setRevision(nowAccountRevision); // 注意版本号
 
             log.info("合同：{}使用{}原有利润回填保证金", contractNo);
-            boolean profitBackSuccessed = accountCashService.profitBack(backCashFromOriginalProfit);
-            if (!profitBackSuccessed) {
+            boolean backSuccessed = accountCashService.profitBack(backCashFromOriginalProfit);
+            if (!backSuccessed) {
                 log.error("合同：{}，利润划入时账户发生变更，利润划入失败", contractNo);
                 throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
             }
