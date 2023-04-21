@@ -291,6 +291,13 @@
 			border-bottom-color:#ee0a24;
 			border-left-color:#ee0a24;
 		}
+		/deep/ .zb-dropdown-item--down[data-v-0253f23a]{
+			z-index:9999 !important;
+		}
+		
+		/deep/ .zb-dropdown-item__content[data-v-0253f23a]{
+			z-index:999999 !important;
+		}
 	/* #endif */
 	
 
