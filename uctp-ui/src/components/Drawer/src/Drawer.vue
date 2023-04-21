@@ -161,8 +161,8 @@ const dialogSubmit = () => {
   data.variables.approvalType = dialogText.value == '同意' ? 'pass' : 'disagree'
   data.variables = detailAPI
     .putApproveAPI(data)
-    .then((res) => {
-      console.log(res)
+    .then(() => {
+      dravwerClose()
       subLoading.value = false
       message.success('提交成功')
       dialogFormVisible.value = false
@@ -178,6 +178,7 @@ const dialogSubmit = () => {
 
 // 关闭抽屉
 const dravwerClose = () => {
+  activeName.value = 'BaseInfo'
   emit('handleCloseDrawer')
 }
 </script>
