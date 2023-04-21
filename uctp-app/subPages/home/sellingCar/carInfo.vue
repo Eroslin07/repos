@@ -145,7 +145,7 @@
 						</view>
 						<view class="text">车辆价款及交易方式</view>
 					</view>
-					<u-form-item label="收车金额" prop="vehicleReceiptAmount" borderBottom>
+					<u-form-item label="收车金额"  borderBottom>
 						<u-input v-model="sellerForm.vehicleReceiptAmount" disabled border="none" placeholder="请输入收车金额">
 							<template slot="suffix">
 								<view>元</view>
@@ -670,12 +670,12 @@
 				},
 				// 卖家信息校验规则
 				sellerRules: {
-					vehicleReceiptAmount: {
-						type: 'number',
-						required: true,
-						message: '请填写收车金额',
-						trigger: ['blur', 'change']
-					},
+					// vehicleReceiptAmount: {
+					// 	type: 'string',
+					// 	required: true,
+					// 	message: '请填写收车金额',
+					// 	trigger: ['blur', 'change']
+					// },
 					sellAmount: {
 						type: 'string',
 						required: true,

@@ -18,37 +18,37 @@
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"
 				placeholder="请输入车架号(VIN)/品牌/收车费用/卖车费用">
 			</u-search>
-			<uni-card v-for="(tab, index) in tabList" :key="index" is-full style="margin-top: 10px;border-radius: 8px;"
+			<uni-card v-for="(tab, index) in tabList" :key="index" is-full
 				class="car-cost-list" @click="viewDetails(tab)">
 				<view class="col3b fs13 mb5">VIN：LE4TG4DB1JL199517</view>
-				<h3 class="car-title">宝马-宝马X12021款sDrive20Li时尚型</h3>
-				<u-line dashed style="margin:10px 0"></u-line>
-				<view class="disFlex fs13">
+				<h3 class="car-title fontWBold">宝马-宝马X12021款sDrive20Li时尚型</h3>
+				<u-line dashed></u-line>
+				<view class="disFlex fs13 lineH44">
 					<text class="col3b">车辆状态：</text>
 					<text>{{tab.status}}</text>
 				</view>
-				<view class="disFlex fs13">
+				<view class="disFlex fs13 lineH44">
 					<text class="col3b">收车费用：</text>
 					<text>100,500元</text>
 				</view>
-				<view v-if="tab.status==='待售中已检测'" class="disFlex fs13">
+				<view v-if="tab.status==='待售中已检测'" class="disFlex fs13 lineH44">
 					<text class="col3b">卖车金额：</text>
 					<text>——</text>
 				</view>
-				<view v-if="tab.status==='已售车'" class="disFlex fs13">
+				<view v-if="tab.status==='已售车'" class="disFlex fs13 lineH44">
 					<text class="col3b">卖车金额：</text>
 					<text>105,500元</text>
 				</view>
-				<view v-if="tab.status==='已售车'" class="disFlex fs13">
+				<view v-if="tab.status==='已售车'" class="disFlex fs13 lineH44">
 					<text class="col3b">平台扣减费用：</text>
 					<text>105,500元</text>
 				</view>
-				<view v-if="tab.status==='已售车'" class="disFlex fs13">
+				<view v-if="tab.status==='已售车'" class="disFlex fs13 lineH44">
 					<text class="col3b">卖车利润：</text>
 					<text>4,040元</text>
 				</view>
-				<u-line dashed style="margin:10px 0"></u-line>
-				<view class="disFlex fs13">
+				<u-line dashed></u-line>
+				<view class="disFlex fs13 lineH44">
 					<text class="col3b">经办人：</text>
 					<text>张三</text>
 				</view>
@@ -299,7 +299,10 @@
 			z-index:999999 !important;
 		}
 	/* #endif */
-	
+	/deep/ .uni-card--full {
+		border-radius:12rpx;
+		margin-top:22rpx !important;
+	}
 
 	.fs14 {
 		font-size: 14px;
@@ -342,10 +345,15 @@
 	}
 
 	.col3b {
-		color: #bbb;
+		color: #aaa;
 	}
-
+	.lineH44{
+		line-height: 50rpx;
+	}
 	.mb5 {
 		margin-bottom: 5px;
+	}
+	.fontWBold{
+		font-weight: bold;
 	}
 </style>
