@@ -70,22 +70,6 @@
 								{{child.num}}
 							</view>
 						</u-col>
-						<!-- <u-col span="4">
-							<view class="align-center">合同已发起<uni-icons type="right" size="12" color="#656C6E">
-								</uni-icons>
-							</view>
-							<view class="align-center">
-								2
-							</view>
-						</u-col>
-						<u-col span="4">
-							<view class="align-center">支付失败
-								<uni-icons type="right" size="12" color="#ccc"></uni-icons>
-							</view>
-							<view class="align-center">
-								2
-							</view>
-						</u-col> -->
 					</u-row>
 				</view>
 			</view>
@@ -108,7 +92,6 @@
 				navigateBarHeight: 0,
 				// 轮播
 				swiperList: [
-					'/static/images/swiper.jpg',
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
 					'https://img1.baidu.com/it/u=2974906504,2372510003&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
 					'https://img1.baidu.com/it/u=2953355259,1397462208&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=281',
@@ -121,11 +104,6 @@
 					"pageNo": 1,
 					"pageSize": 10,
 				},
-				// status: 'loadmore',
-				// currentPage: 1,
-				// total: 0,
-				// timer: {},
-
 				// 统计数据
 				gatherData: [],
 
@@ -136,10 +114,6 @@
 			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
 			/* #endif */
-		},
-
-		mounted() {
-			// this.getList(this.formData);
 		},
 
 		methods: {
@@ -178,7 +152,6 @@
 					title: '搜索：' + val,
 					icon: 'none'
 				})
-				// this.getList(this.formData)
 			},
 			// 清除
 			clear(val) {
@@ -186,7 +159,6 @@
 					title: '清除：' + val,
 					icon: 'none'
 				})
-				// this.getList(this.formData)
 			},
 			// 我要收车
 			buyCar() {
@@ -233,9 +205,6 @@
 				uni.getSystemInfo({
 					success: res => {
 						this.navigateBarHeight = res.statusBarHeight;
-						// let navHeight = menuButtonObject.height + (menuButtonObject.top - res
-						// 	.statusBarHeight) * 2; //导航栏高度=菜单按钮高度+（菜单按钮与顶部距离-状态栏高度）*2
-						// this.navigateBarHeight = navHeight + 4;
 					},
 					fail(err) {
 						console.log(err);
