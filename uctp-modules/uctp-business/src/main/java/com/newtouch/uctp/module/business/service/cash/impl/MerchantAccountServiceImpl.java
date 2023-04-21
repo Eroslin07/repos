@@ -1,9 +1,11 @@
 package com.newtouch.uctp.module.business.service.cash.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantAccountMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
@@ -102,6 +104,15 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public MerchantAccountRespVO get(Long loginUserId) {
+
+        MerchantAccountDO accountDO = merchantAccountMapper.selectOne(new LambdaQueryWrapper<MerchantAccountDO>()
+                .eq(MerchantAccountDO::getMerchantId, loginUserId));
+
+        return MerchantAccountRespVO.build(accountDO);
     }
 
     /**
