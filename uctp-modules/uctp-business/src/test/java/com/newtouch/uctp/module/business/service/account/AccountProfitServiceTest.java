@@ -32,8 +32,8 @@ public class AccountProfitServiceTest {
     @Resource
     private RedissonClient redissonClient;
 
-    private String accountNo = "666";
-    private String contractNo = "21001";
+    private String accountNo = "55555555";
+    private String contractNo = "22001";
 
     @Test
     public void testRecorded() {

@@ -97,8 +97,6 @@ public class AccountProfitController {
         log.info("查询账户{}的费用情况", query.getAccountNo());
 
         this.checkAccount(query.getAccountNo());
-        Long id = null;
-
         List<ProfitCostMonthRespVO> respVO = accountProfitService.getMonthCostByQuarter(query.getAccountNo(), query.getQuarter());
         return success(respVO);
     }

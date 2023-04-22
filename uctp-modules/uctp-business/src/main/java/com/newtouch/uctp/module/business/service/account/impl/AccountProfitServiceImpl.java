@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
@@ -37,10 +38,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static cn.hutool.core.date.DatePattern.NORM_DATE_PATTERN;
@@ -101,7 +99,10 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             }
 
             // 先查询当前合同在数据库中是否已存在利润数据，存在则表示是重复划入
-            Long existsCurrentContractNo = this.merchantProfitMapper.selectCount(MerchantProfitDO::getContractNo, contractNo);
+            LambdaQueryWrapper<MerchantProfitDO> countQueryWrapper = new LambdaQueryWrapper<>();
+            countQueryWrapper.eq(MerchantProfitDO::getAccountNo, accountNo);
+            countQueryWrapper.eq(MerchantProfitDO::getContractNo, contractNo);
+            Long existsCurrentContractNo = this.merchantProfitMapper.selectCount(countQueryWrapper);
             if (existsCurrentContractNo > 0) {
                 throw exception(ACC_PRESENT_PROFIT_RECORDED_REPEAT);
             }
@@ -348,8 +349,29 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     }
 
     @Override
+    @TenantIgnore
     public List<ProfitCostMonthRespVO> getMonthCostByQuarter(String accountNo, String quarter) {
-        return null;
+        log.info("查询{}第{}季度费用", accountNo, quarter);
+        String[] arr = quarter.split("Q");
+        int year = Integer.valueOf(arr[0]);
+        int q = Integer.valueOf(arr[1]);
+        int endMonth = q * 3; // 某个季度的末月
+        int startMonth = endMonth - 2; // 某个季度的首月
+
+        Calendar c1 = Calendar.getInstance();
+        c1.set(Calendar.YEAR, year);
+        c1.set(Calendar.MONTH, startMonth - 1);
+
+        Calendar c2 = Calendar.getInstance();
+        c2.set(Calendar.YEAR, year);
+        c2.set(Calendar.MONTH, endMonth - 1);
+
+        LocalDateTime startTime = LocalDateTimeUtil.of(DateUtil.beginOfMonth(c1.getTime()));
+        LocalDateTime endTime = LocalDateTimeUtil.of(DateUtil.endOfMonth(c2.getTime()));
+
+        List<ProfitCostMonthRespVO> result = this.merchantProfitMapper.selectMonthCosts(accountNo, startTime, endTime,
+                AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey(), AccountEnum.TRAN_PROFIT_TAX_COST.getKey());
+        return result;
     }
 
     @Override
