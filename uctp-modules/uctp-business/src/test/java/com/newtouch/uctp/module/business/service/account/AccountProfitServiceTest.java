@@ -32,12 +32,12 @@ public class AccountProfitServiceTest {
     @Resource
     private RedissonClient redissonClient;
 
-    private String accountNo = "55555555";
-    private String contractNo = "22001";
+    private String accountNo = "666";
+    private String contractNo = "22007";
 
     @Test
     public void testRecorded() {
-        Integer vehicleReceiptAmount = 201;
+        Integer vehicleReceiptAmount = 50;
         Integer carSalesAmount = 200;
         List<CostDTO> costs = new ArrayList<>();
         CostDTO c = new CostDTO();

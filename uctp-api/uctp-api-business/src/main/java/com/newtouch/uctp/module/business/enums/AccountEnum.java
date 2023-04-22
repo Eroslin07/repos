@@ -60,7 +60,7 @@ public enum AccountEnum {
     PRESENT_CASH_SUCCESS("10091002", "保证金提现"),
 
     // 利润：交易类型
-    TRAN_PROFIT_SALES_INCOME("10101001", "卖车款"),
+    TRAN_PROFIT_SALES_INCOME("10101001", "卖车利润"),
     TRAN_PROFIT_PRESENT("10101002", "利润提现"),
     TRAN_PROFIT_CASH_BACK("10101003", "利润-保证金回填"),
     TRAN_PROFIT_SERVICE_COST("10101004", "利润-服务费"),
