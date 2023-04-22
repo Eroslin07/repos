@@ -41,9 +41,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 import static cn.hutool.core.date.DatePattern.NORM_DATE_PATTERN;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static com.newtouch.uctp.module.business.enums.AccountConstants.PRESENT_TYPE_CASH;
 import static com.newtouch.uctp.module.business.enums.AccountConstants.PRESENT_TYPE_PROFIT;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 
@@ -380,7 +380,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     public PageResult<ProfitRespVO> profitList(String accountNo, ProfitQueryReqVO query) {
         LambdaQueryWrapper<MerchantProfitDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MerchantProfitDO::getAccountNo, accountNo)
-                .orderByDesc(MerchantProfitDO::getCreateTime);
+                .orderByDesc(MerchantProfitDO::getTradeTime);
         switch (query.getType()) {
             case  FREEZE_PROFIT:
                 // 交易类型是利润提现，才会有冻结
@@ -452,7 +452,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             respVO.setTradeToText(p.getTradeToText());
             respVO.setProfitLossType(p.getProfitLossType());
             respVO.setProfitLossTypeText(p.getProfitLossTypeText());
-            respVO.setTradeDate(p.getTradeTime() == null ? "" : DateUtil.format(p.getTradeTime(), NORM_DATE_PATTERN));
+            respVO.setTradeDate(p.getTradeTime() == null ? "" : DateUtil.format(p.getTradeTime(), NORM_DATETIME_PATTERN));
 
             // 查一下提现状态记录清单
             LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
@@ -464,7 +464,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 List<PresentStatusRecordRespVO> presentStatusRespRecords = new ArrayList<>();
                 for (PresentStatusRecordDO psr : presentStatusRecords) {
                     PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
-                            .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATE_PATTERN))
+                            .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
                             .status(psr.getStatus())
                             .statusText(psr.getStatusText())
                             .build();
@@ -962,6 +962,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .typeText(AccountEnum.CASH_BACK_TYPE_WAIT.getValue()) // 类型中文名称
                     .occurredTime(profitCalcResult.getCalcTime()) // 发生时间
                     .amount(profitCalcResult.getCurrentWaitForBackCashAmount()) // 金额
+                    .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey())
+                    .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
                     .build();
 
             waitForCashBackList.add(mcb);
@@ -977,6 +979,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .typeText(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getValue()) // 类型中文名称
                     .occurredTime(profitCalcResult.getCalcTime()) // 发生时间
                     .amount((profitCalcResult.getUseCurrentDeductionBackCashAmount() + profitCalcResult.getUseOriginalDeductionBackCashAmount()) * -1) // 金额
+                    .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey())
+                    .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
                     .build();
 
             waitForCashBackList.add(mcb);
