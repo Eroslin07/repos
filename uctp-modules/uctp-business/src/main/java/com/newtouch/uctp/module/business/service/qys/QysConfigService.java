@@ -104,7 +104,7 @@ public interface QysConfigService {
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    void send(Long carId);
+    void send(Long carId,String type);
 
     /**
      * 获取到契约锁单点登录地址
