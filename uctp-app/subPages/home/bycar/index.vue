@@ -827,7 +827,12 @@
 												_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
 												_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
 												_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+												if (_this.carForm.model.indexOf('汽车') > -1) {
+													_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
+												}
+												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));if (_this.carForm.model.indexOf('汽车') > -1) {
+													_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
+												}
 												_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
 												let rdate = data.words_result['注册日期'].words;
 												let y = rdate.slice(0, 4);
@@ -1277,7 +1282,7 @@
 						if (this.fairValue.value1 <= amount && amount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
 							this.showOverlay = false;
-							this.$tab.navigateTo(`/subPages/home/bycar/agreement?carId=${this.carId}`);
+							this.$tab.navigateTo(`/subPages/home/bycar/agreement?carId=${res.carInfoDetails.carId}`);
 						} else {
 							// 发起公允值审批流程
 							let procDefKey = "SGYZ";
