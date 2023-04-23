@@ -830,7 +830,8 @@
 												if (_this.carForm.model.indexOf('汽车') > -1) {
 													_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
 												}
-												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));if (_this.carForm.model.indexOf('汽车') > -1) {
+												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+												if (_this.carForm.brand.indexOf('汽车') > -1) {
 													_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
 												}
 												_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
