@@ -67,6 +67,10 @@ public class ContractDO extends TenantBaseDO {
      * 合同状态
      */
     private Integer status;
+    /**
+     * 合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+     */
+    private Integer contractType;
 
     /**
      * 商户id
