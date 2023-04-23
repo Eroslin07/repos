@@ -461,17 +461,18 @@ public class QysConfigServiceImpl implements QysConfigService {
 //        draftContract.addSignatory(platformSignatory);
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
-        platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User(platformDept.getPhone(), "MOBILE"));
+       // platformSignatory.setTenantName(platformDept.getName());
+        platformSignatory.setTenantName("平头哥二手车");
+        platformSignatory.setReceiver(new User("17311271898", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
 
         //乙方个人签署方
         Signatory persoanlSignatory = new Signatory();
-        persoanlSignatory.setTenantType("PERSONAL");
-        //persoanlSignatory.setTenantName("成都新致云服测试公司");
-        //persoanlSignatory.setReceiver(new User("13708206115", "MOBILE"));
-        persoanlSignatory.setTenantName(userDept.getName());
-        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
+        persoanlSignatory.setTenantType("COMPANY");
+        persoanlSignatory.setTenantName("成都新致云服测试公司");
+        persoanlSignatory.setReceiver(new User("13708206115", "MOBILE"));
+//        persoanlSignatory.setTenantName(userDept.getName());
+//        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
         //丙方
      /*   Signatory initiator2 = new Signatory();
@@ -525,22 +526,43 @@ public class QysConfigServiceImpl implements QysConfigService {
         draftContract.setSubject("三方-二手车");
         // 设置合同接收方
         // 甲方个人签署方
-        Signatory persoanlSignatory = new Signatory();
-        persoanlSignatory.setTenantType("PERSONAL");
-        persoanlSignatory.setTenantName(carInfoDetailsDO.getSellerName());
-        persoanlSignatory.setReceiver(new User(carInfoDetailsDO.getSellerTel(), "MOBILE"));
-        draftContract.addSignatory(persoanlSignatory);
-        // 乙方平台
+//        Signatory persoanlSignatory = new Signatory();
+//        persoanlSignatory.setTenantType("PERSONAL");
+//        persoanlSignatory.setTenantName(carInfoDetailsDO.getSellerName());
+//        persoanlSignatory.setReceiver(new User(carInfoDetailsDO.getSellerTel(), "MOBILE"));
+//        draftContract.addSignatory(persoanlSignatory);
+//        // 乙方平台
+//        Signatory platformSignatory = new Signatory();
+//        platformSignatory.setTenantType("COMPANY");
+//        platformSignatory.setTenantName(platformDept.getName());
+//        platformSignatory.setReceiver(new User( platformDept.getPhone(), "MOBILE"));
+//        draftContract.addSignatory(platformSignatory);
+//        //丙方
+//        Signatory initiator2 = new Signatory();
+//        initiator2.setTenantType("COMPANY");
+//        initiator2.setTenantName(userDept.getName());
+//        initiator2.setReceiver(new User(userDept.getPhone(), "MOBILE"));
+//        draftContract.addSignatory(initiator2);
+
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
-        platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User( platformDept.getPhone(), "MOBILE"));
+        // platformSignatory.setTenantName(platformDept.getName());
+        platformSignatory.setTenantName("平头哥二手车");
+        platformSignatory.setReceiver(new User("17311271898", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
-        //丙方
+
+        //乙方个人签署方
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("COMPANY");
+        persoanlSignatory.setTenantName("成都新致云服测试公司");
+        persoanlSignatory.setReceiver(new User("13708206115", "MOBILE"));
+//        persoanlSignatory.setTenantName(userDept.getName());
+//        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
+        draftContract.addSignatory(persoanlSignatory);
         Signatory initiator2 = new Signatory();
-        initiator2.setTenantType("COMPANY");
-        initiator2.setTenantName(userDept.getName());
-        initiator2.setReceiver(new User(userDept.getPhone(), "MOBILE"));
+        initiator2.setTenantType("PERSONAL");
+        initiator2.setTenantName("李杨");
+        initiator2.setReceiver(new User("17380123816", "MOBILE"));
         draftContract.addSignatory(initiator2);
 
         //模板参数
