@@ -101,7 +101,6 @@ public class QysConfigServiceImpl implements QysConfigService {
     public void initLocalCache() {
         // 第一步：查询数据
         List<QysConfigDO> configDOS = qysConfigMapper.selectListAuth();
-//        List<QysConfigDO> configDOS = qysConfigMapper.selectList();
         log.info("[initLocalCache][缓存契约锁client，数量为:{}]", configDOS.size());
 
         // 第二步：构建缓存：创建或更新短信 Client
@@ -273,7 +272,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public void test() {
         QiyuesuoClient qiyuesuoClient = qiyuesuoClientFactory.getQiyuesuoClient(1648231591874347009L);
         QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
-        qiyuesuoClient.defaultSend(null);
+        qiyuesuoClient.defaultDraftSend(null);
         qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
     }
 
@@ -312,7 +311,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             contract = this.buildContract2(carInfo,carInfoDetailsDO,userDept,platformDept,type);
         }*/
         //Contract contract = this.buildContract(carInfo,carInfoDetailsDO,userDept,platformDept);
-        QiyuesuoCommonResult<Contract> result = client.defaultSend(contract);
+        QiyuesuoCommonResult<Contract> result = client.defaultDraftSend(contract);
         if (!result.getCode().equals(0)) {
             throw new ServiceException(result.getCode(), result.getApiMsg());
         }

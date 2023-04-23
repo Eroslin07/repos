@@ -69,9 +69,9 @@ class UctpBusinessApplicationTests {
         draftContract.addTemplateParam(new TemplateParam("选择4","□"));
 
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
-        draftContract.setSend(true); // 发起合同
+        draftContract.setSend(false); // 发起合同
         //2,签字时是丙方是否会自动签章
-        QiyuesuoCommonResult<Contract> result = client.defaultSend(draftContract);
+        QiyuesuoCommonResult<Contract> result = client.defaultDraftSend(draftContract);
         System.out.println(result.getData());
     }
 

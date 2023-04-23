@@ -71,7 +71,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
 
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
         draftContract.setSend(false); // 发起合同
-        QiyuesuoCommonResult<Contract> draft = client.defaultSend(draftContract);
+        QiyuesuoCommonResult<Contract> draft = client.defaultDraftSend(draftContract);
         Contract data = draft.getData();
     }
     @Test
