@@ -35,3 +35,21 @@ export function getPresent(data) {
 		'data': data
 	})
 }
+
+// 查询待回填保证金明细
+export function getCashbackList(data) {
+	return request({
+		url: '/uctp/account/cashback/list',
+		'method': 'GET',
+		params: data
+	})
+}
+
+// 查询待回填保证金详情
+export function getCashbackDetail(data) {
+	return request({
+		url: '/uctp/account/cashback/detail',
+		'method': 'GET',
+		params: data
+	})
+}
