@@ -111,4 +111,12 @@ public class BpmTaskController {
         BpmTaskApproveFormRespVO bpmTaskApproveFormRespVO = taskService.getTaskFormInfo(taskId, businessKey);
         return success(bpmTaskApproveFormRespVO);
     }
+
+    @PostMapping("/seataTest")
+    public CommonResult<Boolean> seataTest() {
+        taskService.testSeata();
+        return success(true);
+    }
+
+
 }

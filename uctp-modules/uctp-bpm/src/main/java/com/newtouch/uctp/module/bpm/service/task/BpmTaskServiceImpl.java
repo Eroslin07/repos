@@ -2,8 +2,10 @@ package com.newtouch.uctp.module.bpm.service.task;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
@@ -57,6 +59,8 @@ import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import com.newtouch.uctp.module.bpm.service.message.BpmMessageService;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
+import com.newtouch.uctp.module.system.api.logger.OperateLogApi;
+import com.newtouch.uctp.module.system.api.logger.dto.OperateLogCreateReqDTO;
 import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 
@@ -100,6 +104,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private BpmFormDataService bpmFormDataService;
     @Resource
     private BpmProcessDefinitionExtMapper bpmProcessDefinitionExtMapper;
+    @Resource
+    private OperateLogApi operateLogApi;
 
     @Override
     public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageVO) {
@@ -516,4 +522,37 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         return historyService.createHistoricTaskInstanceQuery().taskId(id).singleResult();
     }
 
+
+    @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
+    public void testSeata() {
+        BpmFormMainDO bpmFormMainDO = new BpmFormMainDO();
+        bpmFormMainDO.setId(IdUtil.getSnowflakeNextId());
+        bpmFormMainDO.setStatus(1);
+        bpmFormMainDO.setRemark("分布式事务测试");
+        bpmFormMainMapper.insert(bpmFormMainDO);
+
+        OperateLogCreateReqDTO createReqDTO = new OperateLogCreateReqDTO();
+        createReqDTO.setTraceId(UUID.randomUUID().toString());
+        createReqDTO.setUserId(1L);
+        createReqDTO.setUserType(11);
+        createReqDTO.setModule("22");
+        createReqDTO.setName("helong");
+        createReqDTO.setType(22);
+        createReqDTO.setContent("111");
+        createReqDTO.setRequestMethod("/creat");
+        createReqDTO.setRequestUrl("3333");
+        createReqDTO.setUserIp("localhost");
+        createReqDTO.setUserAgent("3");
+        createReqDTO.setJavaMethod("com.newtouch.uctp.UserController.save(...)");
+        createReqDTO.setJavaMethodArgs("333");
+        createReqDTO.setStartTime(LocalDateTime.now());
+        createReqDTO.setDuration(1);
+        createReqDTO.setResultCode(33);
+        operateLogApi.createOperateLog(createReqDTO);
+        if (true) {
+            throw new RuntimeException("11");
+        }
+    }
 }
