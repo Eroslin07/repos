@@ -49,9 +49,7 @@
 			},
 			// 取消合同签章
 			handleCancel() {
-				getCancelContract().then((res) => {
-					this.$tab.navigateTo(`/subPages/common/webview/index?title=取消收车合同签章&url=${res.data}`);
-				})
+				this.$tab.navigateBack()
 			},
 			// 关闭
 			handleClose() {
