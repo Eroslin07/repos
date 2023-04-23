@@ -13,8 +13,10 @@ import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRec
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantCashBackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
+import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitInvoiceDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantCashBackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
+import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitInvoiceMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
@@ -32,7 +34,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
@@ -66,6 +67,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Resource
     private MerchantProfitMapper merchantProfitMapper;
+
+    @Resource
+    private MerchantProfitInvoiceMapper merchantProfitInvoiceMapper;
 
     @Resource
     private MerchantCashBackMapper merchantCashBackMapper;
@@ -249,12 +253,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Override
     @Transactional
     @TenantIgnore
-    public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds) {
-        String invoiceIdsStr = null;
-        if (!CollectionUtils.isEmpty(invoiceIds)) {
-            invoiceIdsStr = StringUtils.join(invoiceIds, "#");
-        }
-        log.info("调用利润提现接口，accountNo:{},merchantBankId:{},amount:{},invoiceIds:{}", accountNo, merchantBankId, amount, invoiceIdsStr);
+    public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<ProfitPresentInvoiceReqVO> invoiceFiles) {
+        log.info("调用利润提现接口，accountNo:{},merchantBankId:{},amount:{}", accountNo, merchantBankId, amount);
 
         // 根据银行卡ID查询账户
         MerchantBankDO bank = merchantBankService.getById(merchantBankId);
@@ -304,6 +304,25 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
         // 保存
         merchantProfitMapper.insert(mp);
+
+        if (invoiceFiles != null && !invoiceFiles.isEmpty()) {
+            List<MerchantProfitInvoiceDO> invoices = new ArrayList<>();
+            for (ProfitPresentInvoiceReqVO f : invoiceFiles) {
+                MerchantProfitInvoiceDO mpi = MerchantProfitInvoiceDO.builder()
+                        .profitId(mp.getId())
+                        .fileId(Long.valueOf(f.getFileId()))
+                        .fileUrl(f.getFileUrl())
+                        .uploadTime(LocalDateTime.now())
+                        .build();
+
+                mpi.setDeleted(false);
+
+                invoices.add(mpi);
+            }
+            // 保存
+            merchantProfitInvoiceMapper.insertBatch(invoices);
+        }
+
         // 触发提现申请
         this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.APPLY);
 
@@ -455,25 +474,45 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             respVO.setProfitLossTypeText(p.getProfitLossTypeText());
             respVO.setTradeDate(p.getTradeTime() == null ? "" : DateUtil.format(p.getTradeTime(), NORM_DATETIME_PATTERN));
 
-            // 查一下提现状态记录清单
-            LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
-            presentStatusRecordWrapper.eq(PresentStatusRecordDO::getPresentNo, profitId)
-                            .orderByAsc(PresentStatusRecordDO::getOccurredTime); // 交易状态变更时间升序
+            if (AccountEnum.TRAN_PROFIT_PRESENT.getKey().equals(p.getTradeType())) {
+                // 利润提现交易才查提现状态记录清单
+                LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
+                presentStatusRecordWrapper.eq(PresentStatusRecordDO::getPresentNo, profitId)
+                        .orderByAsc(PresentStatusRecordDO::getOccurredTime); // 交易状态变更时间升序
 
-            List<PresentStatusRecordDO> presentStatusRecords = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper);
-            if (presentStatusRecords != null && !presentStatusRecords.isEmpty()) {
-                List<PresentStatusRecordRespVO> presentStatusRespRecords = new ArrayList<>();
-                for (PresentStatusRecordDO psr : presentStatusRecords) {
-                    PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
-                            .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
-                            .status(psr.getStatus())
-                            .statusText(psr.getStatusText())
-                            .build();
+                List<PresentStatusRecordDO> presentStatusRecords = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper);
+                if (presentStatusRecords != null && !presentStatusRecords.isEmpty()) {
+                    List<PresentStatusRecordRespVO> presentStatusRespRecords = new ArrayList<>();
+                    for (PresentStatusRecordDO psr : presentStatusRecords) {
+                        PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
+                                .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
+                                .status(psr.getStatus())
+                                .statusText(psr.getStatusText())
+                                .build();
 
-                    presentStatusRespRecords.add(psrrvo);
+                        presentStatusRespRecords.add(psrrvo);
+                    }
+
+                    respVO.setPresentStatusRecords(presentStatusRespRecords);
                 }
 
-                respVO.setPresentStatusRecords(presentStatusRespRecords);
+                LambdaQueryWrapper<MerchantProfitInvoiceDO> invoiceWrapper = new LambdaQueryWrapper<>();
+                invoiceWrapper.eq(MerchantProfitInvoiceDO::getProfitId, profitId)
+                        .orderByAsc(MerchantProfitInvoiceDO::getUploadTime); // 交易状态上传时间升序
+
+                List<MerchantProfitInvoiceDO> invoiceFiles = merchantProfitInvoiceMapper.selectList(invoiceWrapper);
+                if (invoiceFiles != null && !invoiceFiles.isEmpty()) {
+                    List<ProfitPresentInvoiceRespVO> invoiceRespList = new ArrayList<>();
+                    for (MerchantProfitInvoiceDO mpi : invoiceFiles) {
+                        ProfitPresentInvoiceRespVO ppir = new ProfitPresentInvoiceRespVO();
+                        ppir.setFileId(mpi.getFileId().toString());
+                        ppir.setFileUrl(mpi.getFileUrl());
+
+                        invoiceRespList.add(ppir);
+                    }
+
+                    respVO.setInvoiceFiles(invoiceRespList);
+                }
             }
 
             return respVO;

@@ -55,7 +55,7 @@ public class AccountProfitController {
 
         this.checkAccount(accountNo);
         Long profitId = accountProfitService.profitPresent(accountNo, Long.valueOf(profitPresentReqVO.getMerchantBankId()),
-                profitPresentReqVO.getAmount(), profitPresentReqVO.getInvoiceIds());
+                profitPresentReqVO.getAmount(), profitPresentReqVO.getInvoiceFiles());
 
         String profitIdStr = "";
         if (profitId != null) {
