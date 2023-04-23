@@ -122,6 +122,10 @@
 					this.$modal.msg("请上传利润发票");
 					return
 				}
+				if (this.amount > this.allAmount / 100) {
+					this.$modal.msg("提现金额大于可用利润余额，请重新输入提现金额");
+					return
+				}
 				let data = {
 					accountNo: this.accountNo,
 					merchantBankId: 2,
@@ -136,7 +140,7 @@
 			},
 			// 点击全部提现
 			handleQuanbu() {
-				this.amount = this.allAmount
+				this.amount = this.allAmount / 100;
 			}
 		}
 	}
