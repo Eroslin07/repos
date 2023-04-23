@@ -137,7 +137,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     taxes);
 
             log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
-            if (carSalesAmount.compareTo(profitCalcResult.getCurrentFeeTotalAmount()) <= 0) {
+            if (profitCalcResult.getCurrentProfitAmount().compareTo(0) <= 0) {
                 // 如果本次合同卖车款小于或等于本次总费用（理论上不会出现，但要防止只能报异常处理）
                 log.error("合同：{}卖车款小于或等于总费用", contractNo);
                 throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
@@ -577,8 +577,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             }
         }
 
-        // 本次利润=IF(本次收益>0,本次收益,0)
-        Integer currentProfitAmount = currentRevenueAmount.compareTo(0) > 0 ? currentRevenueAmount : 0;
+        // 本次利润=卖车款-费用
+        Integer currentProfitAmount = carSalesAmount - currentFeeTotalAmount;
 
         // 本次待回填保证金=IF(本次收益>0,0,收车款-本次回填保证金)
         Integer currentWaitForBackCashAmount = currentRevenueAmount.compareTo(0) > 0 ? 0 : vehicleReceiptAmount - currentBackCashAmount;
@@ -601,13 +601,15 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             }
         }
 
-
         // 现待回填保证金=原待回填保证金+本次待回填保证金-本次使用本次利润抵扣金额-本次使用原利润抵扣金额
         Integer nowWaitForBackCashTotalAmount = originalWaitForBackCashTotalAmount + currentWaitForBackCashAmount
                 - useCurrentDeductionBackCashAmount - useOriginalDeductionBackCashAmount;
 
+        // 本次利润余额=本次利润-本次回填保证金-本次使用本次利润抵扣金额
+        Integer currentProfitBalanceAmount = currentProfitAmount - currentBackCashAmount - useCurrentDeductionBackCashAmount;
+
         // 现利润余额=原利润余额+本次利润-本次使用本次利润抵扣金额-本次使用原利润抵扣金额
-        Integer nowProfitTotalAmount = originalProfitTotalAmount + currentProfitAmount - useCurrentDeductionBackCashAmount -useOriginalDeductionBackCashAmount;
+        Integer nowProfitTotalAmount = originalProfitTotalAmount + currentProfitBalanceAmount;
 
         ProfitCalcResultDTO result = ProfitCalcResultDTO.builder()
                 // 现待回填保证金
@@ -618,14 +620,18 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .currentBackCashAmount(currentBackCashAmount)
                 // 本次卖车款
                 .currentCarSalesAmount(carSalesAmount)
+                // 本次收车款
+                .currentVehicleReceiptAmount(vehicleReceiptAmount)
                 // 本次待回填保证金
                 .currentWaitForBackCashAmount(currentWaitForBackCashAmount)
                 // 本次使用本次利润抵扣金额
                 .useCurrentDeductionBackCashAmount(useCurrentDeductionBackCashAmount)
                 // 本次使用原有利润抵扣金额
                 .useOriginalDeductionBackCashAmount(useOriginalDeductionBackCashAmount)
-                // 本次利润（纯利）
+                // 本次利润
                 .currentProfitAmount(currentProfitAmount)
+                // 本次利润余额
+                .currentProfitBalanceAmount(currentProfitBalanceAmount)
                 // 本次收益
                 .currentRevenueAmount(currentRevenueAmount)
                 // 本次总费用
@@ -758,8 +764,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTo(AccountEnum.TRADE_TO_MY_PROFIT.getKey())
                     .tradeToText(AccountEnum.TRADE_TO_MY_PROFIT.getValue())
                     .presentState(null) // 卖车利润初始写入无提现状态
-                    // 本次正收益时，记录正收益，否则本次利润余额为0
-                    .profitBalance(profitCalcResult.getCurrentProfitAmount())
+                    .profitBalance(profitCalcResult.getCurrentProfitBalanceAmount())
                     .cashBack(profitCalcResult.getCurrentWaitForBackCashAmount())
                     .tradeTime(now)
                     .build();
@@ -769,7 +774,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             profitList.add(profit);
         }
 
-        // 本次回填保证金，不可能为负数
+        // 本次回填保证金（利润-扣减），不可能为负数
         if (profitCalcResult.getCurrentBackCashAmount().compareTo(0) > 0) {
             List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
 
@@ -888,8 +893,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             MerchantProfitDO profit = MerchantProfitDO.builder()
                     .accountNo(accountNo)
                     .contractNo(contractNo)
-                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_INCOME.getKey()) // 记录成收入
-                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_INCOME.getValue())
+                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_IGNORE.getKey()) // 记录成不计入（冗余记录，不算收支）
+                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_IGNORE.getValue())
                     .profit(profitCalcResult.getCurrentProfitAmount())
                     .tradeType(AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey())
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_SALES_PROFIT.getValue())
@@ -901,8 +906,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             profit.setDeleted(false);
             profit.setRevision(0);
 
-            // TODO 利润待确认是否要冗余记录
-            // profitList.add(profit);
+            profitList.add(profit);
         }
 
         // 本次+原有利润回填

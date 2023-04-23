@@ -22,6 +22,7 @@ public enum AccountEnum {
     //损益类型
     PROFIT_LOSS_TYPE_INCOME("10021001", "收入"),
     PROFIT_LOSS_TYPE_DISBURSEMENT("10021002", "支出"),
+    PROFIT_LOSS_TYPE_IGNORE("10021003", "不计入"),
 
     //支付渠道
     PAY_CHANNEL_BANK("10031001", "兴业银行"),
@@ -60,13 +61,13 @@ public enum AccountEnum {
     PRESENT_CASH_SUCCESS("10091002", "保证金提现"),
 
     // 利润：交易类型
-    TRAN_PROFIT_SALES_INCOME("10101001", "卖车利润"),
+    TRAN_PROFIT_SALES_INCOME("10101001", "卖车款"),
     TRAN_PROFIT_PRESENT("10101002", "利润提现"),
-    TRAN_PROFIT_CASH_BACK("10101003", "利润-保证金回填"),
+    TRAN_PROFIT_CASH_BACK("10101003", "利润-扣减"),
     TRAN_PROFIT_SERVICE_COST("10101004", "利润-服务费"),
     TRAN_PROFIT_TAX_COST("10101005", "利润-税费"),
     TRAN_PROFIT_SALES_PROFIT("10101006", "利润"),
-    TRAN_PROFIT_CASH_DEDUCTION("10101007", "利润-抵扣保证金"),
+    TRAN_PROFIT_CASH_DEDUCTION("10101007", "利润-扣减原待回填保证金"),
 
     // 利润：提现状态
     PRESENT_PROFIT_CASH_BACK_WAIT("10111001", "待回填保证金"),
