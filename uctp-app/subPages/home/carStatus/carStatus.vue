@@ -45,11 +45,11 @@
 							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
 						</view>
 					</uni-col>
-					<uni-col :span="15">
-						<h3 style="color:#000">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
-						<view class="fs12">VIN：{{tab.vin || '暂无'}}</view>
-						<view class="fs12">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
-						<view class="fs12" style="color: #000;">收车价：
+					<uni-col :span="15" class="right-box">
+						<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<!-- <view class="fs12">VIN：{{tab.vin || '暂无'}}</view> -->
+						<view class="right-mile">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
+						<!-- <view class="fs12" style="color: #000;">收车价：
 							<text v-if="tab.eyeIsShow"
 								style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
 							<text v-else style="padding-right:3px;">***元</text>
@@ -61,8 +61,33 @@
 						<view class="fs12" style="color: #f60;">卖车价：
 							<text v-if="!tab.eyeIsShow && tab.vehicleReceiptAmount">***元</text>
 							<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
+						</view> -->
+						<view class="right-price">
+							<view class="price-show" v-if="tab.eyeIsShow">
+								<view class="">
+									收：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
+								</view>
+								<view class="sell-car-price">
+									卖：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
+								</view>
+							</view>
+							<view class="price-show" v-if="!tab.eyeIsShow">
+								<view class="">
+									收：<text>****万元</text>
+								</view>
+								<view class="sell-car-price">
+									卖：<text>****万元</text>
+								</view>
+							</view>
+							<view class="show-money">
+								<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
+									@click.stop="handleShowMoney(tab,false)"></text>
+								<text v-else class="iconfont icon-close-eye"
+									@click.stop="handleShowMoney(tab,true)"></text>
+							</view>
 						</view>
-						<view class="fs12">创建时间：{{ tab.createTime }}</view>
+
+						<view class="right-time">创建时间：{{ tab.createTime }}</view>
 					</uni-col>
 				</uni-row>
 			</uni-card>
@@ -136,7 +161,18 @@
 		// 	DropdownMenu,
 		// 	DropdownItem
 		// },
-
+		filters: {
+			handleMoney(val) {
+				let value = parseFloat(val)
+				if (value > 1000) {
+					return (value / 10000).toFixed(2)
+				} else if (value) {
+					return value
+				} else {
+					return '——'
+				}
+			}
+		},
 		mounted() {
 			this.getList(this.formData)
 		},
@@ -185,8 +221,8 @@
 				getHomePageList(params).then(res => {
 					this.tabList = res.data.list.map(item => {
 						let label = this.allChild.find(v => v.status == item.status)?.label
+						this.$set(item, 'eyeIsShow', false)
 						return {
-							eyeIsShow: false,
 							...item,
 							createTime: parseTime(item.createTime),
 							name: label,
@@ -209,8 +245,8 @@
 				getHomePageList(params).then(res => {
 					this.tabList = [...this.tabList, ...res.data.list].map(item => {
 						let label = this.allChild.find(v => v.status == item.status)?.label
+						this.$set(item, 'eyeIsShow', false)
 						return {
-							eyeIsShow: false,
 							...item,
 							createTime: parseTime(item.createTime),
 							name: label,
@@ -246,7 +282,11 @@
 				})
 				this.getList(this.formData)
 			},
-
+			// 显示隐藏金额
+			handleShowMoney(tab, flag) {
+				console.log(tab, flag, '6666')
+				tab.eyeIsShow = flag;
+			},
 			// 查看详情
 			handleCard(item) {
 				console.log(item, 2222)
@@ -294,24 +334,79 @@
 		.car-image {
 			width: 100%;
 			height: 100px;
-			border-radius: 8px;
+			border-radius: 12rpx;
 		}
 
 		.car_left {
+			width: 240rpx;
+			height: 190rpx;
 			position: relative;
 			border-radius: 8px;
 			overflow: hidden;
 
 			.car_text {
 				width: 100%;
+				height: 36rpx;
+				line-height: 36rpx;
 				text-align: center;
 				position: absolute;
-				bottom: 6px;
-				font-size: 12px;
-				padding: 0 5px;
-				border-radius: 0 0 8px 8px;
+				bottom: 0px;
+				font-size: 20rpx;
+				// padding: 0 5px;
+				border-radius: 0 0 12rpx 12rpx;
 				z-index: 999;
 			}
+
+			// image{
+			// 	vertical-align: bottom;
+			// }
+		}
+
+		.right-box {
+			font-size: 22rpx;
+			font-family: PingFangSC-Regular, PingFang SC;
+			font-weight: 400;
+			line-height: 38rpx;
+			text-shadow: 0px 6px 30px rgba(0, 34, 81, 0.08);
+		}
+
+		.right-title {
+			font-size: 28rpx;
+			color: #333333;
+			font-weight: 400;
+		}
+
+		.right-mile {
+			font-size: 22rpx;
+			color: #999999;
+		}
+
+		.right-price {
+			font-size: 22rpx;
+			position: relative;
+		}
+
+		.price-show {
+			font-size: 22rpx;
+			display: flex;
+			flex-direction: row;
+		}
+
+		.sell-car-price {
+			font-size: 22rpx;
+			color: #FA6400;
+			margin-left: 12rpx;
+		}
+
+		.show-money {
+			padding:0 10rpx 5rpx;
+			position: absolute;
+			right: 5rpx;
+			top: 0;
+		}
+
+		.right-time {
+			font-size: 22rpx;
 		}
 
 		// 待售未检测
@@ -337,6 +432,7 @@
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(114, 241, 181, .3) 0%, rgba(15, 156, 88, .8) 50%, rgba(114, 241, 181, .3) 100%);
 		}
+
 
 		.empty-page {
 			width: 100%;
