@@ -1,10 +1,17 @@
 <template>
-	<view class="mine-container" :style="{height: `${windowHeight}px`}">
+	<view class="mine-container">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="我的" bgColor="rgba(0, 0, 0, 0)" :titleStyle="{'color': '#000'}" safeAreaInsetTop fixed>
+			<view class="u-nav-slot" slot="left">
+				<view class="bank-logo"></view>
+			</view>
+		</u-navbar>
 		<!--顶部个人信息栏-->
-		<view class="header-section">
-			<view class="flex padding justify-between">
+		<view class="header-section" style="position: relative;">
+			<image src="../../static/images/mine/my-bg.png" class="my_image"></image>
+			<view class="flex padding justify-between my-title">
 				<view class="flex align-center">
-					<view v-if="!avatar" class="cu-avatar xl round bg-white"  @click="handleToAvatar">
+					<view v-if="!avatar" class="cu-avatar xl round bg-white" @click="handleToAvatar">
 						<view class="iconfont icon-people text-gray icon"></view>
 					</view>
 					<image v-if="avatar" @click="handleToAvatar" :src="avatar" class="cu-avatar xl round"
@@ -19,33 +26,33 @@
 						</view>
 					</view>
 				</view>
-				<view @click="handleToInfo" class="flex align-center">
-					<text>个人信息</text>
-					<view class="iconfont icon-right"></view>
+				<view class="flex authentication-box">
+					<view class="flex authentication">
+						<image src="../../static/images/mine/slices.png" mode="" style="width: 32rpx;height: 32rpx;">
+						</image>
+						<text>企业 ></text>
+					</view>
+					<view class=" flex authentication active">
+						<image src="../../static/images/mine/slices-active.png" mode=""
+							style="width: 32rpx;height: 32rpx;"></image>
+						<text>个人 ></text>
+					</view>
 				</view>
 			</view>
 		</view>
-
 		<view class="content-section">
-			<view class="mine-actions grid col-2 text-center">
-				<view class="action-item" @click="handleCollection">
-					<view class="text">收车15辆 ></view>
-				</view>
-				<view class="action-item" @click="handleSelling">
-					<text class="text">卖车10辆 ></text>
-				</view>
-			</view>
-
 			<view class="menu-list">
 				<view class="list-cell list-cell-arrow" @click="handleToInfo">
 					<view class="menu-item-box">
-						<view class="iconfont icon-user menu-icon"></view>
+						<image src="../../static/images/mine/information.png"
+							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
 						<view>个人信息</view>
 					</view>
 				</view>
 				<view class="list-cell list-cell-arrow" @click="handleToStaff">
 					<view class="menu-item-box">
-						<view class="iconfont icon-user menu-icon"></view>
+						<image src="../../static/images/mine/staff.png"
+							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
 						<view>员工管理</view>
 					</view>
 				</view>
@@ -149,32 +156,67 @@
 			handleAbout() {
 				this.$tab.navigateTo('/subPages/mine/about/index')
 			},
-			// 收车
-			handleCollection() {
-				this.$tab.navigateTo('/subPages/home/bycar/index')
-			},
-			// 卖车
-			handleSelling() {
-				this.$tab.navigateTo('/subPages/home/sellingCar/index')
-			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-	page {
-		background-color: #f5f6f7;
-	}
-	
 	.mine-container {
-		width: 100%;
-		height: 100%;
-		background-color: #f5f6f7;
+		.my_image {
+			width: 100%;
+			height: 220pt;
+		}
 
 		.header-section {
-			padding: 15px 15px 45px 15px;
-			background-color: #3c96f3;
-			color: white;
+			.my-title {
+				position: absolute;
+				top: 188rpx;
+				width: 694rpx;
+				left: 50%;
+				transform: translateX(-50%);
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, #FFFFFF 100%);
+				border-radius: 24rpx;
+				border: 2rpx solid #FFFFFF;
+
+				>view {
+					justify-content: center;
+				}
+
+				flex-direction: column;
+
+				.authentication-box {
+					align-items: center;
+					justify-content: center;
+					margin-top: 12rpx;
+
+					.authentication {
+						background: rgba(255, 255, 255, 0.2);
+						border-radius: 21rpx;
+						align-items: center;
+						font-size: 20rpx;
+						width: 116rpx;
+						height: 40rpx;
+						color: #999999;
+						justify-content: center;
+						border: 2rpx solid #DBDBDB;
+
+						>text {
+							margin-left: 4rpx;
+						}
+
+						&:first-child {
+							margin-right: 24rpx;
+						}
+
+						&.active {
+
+							color: #FA6400;
+							background: rgba(250, 100, 0, 0.2);
+							border: 2rpx solid rgba(250, 100, 0, 0.5);
+						}
+					}
+				}
+			}
 
 			.login-tip {
 				font-size: 18px;
@@ -200,29 +242,26 @@
 		}
 
 		.content-section {
-			position: relative;
-			top: -50px;
+			margin-top: -136rpx;
 
-			.mine-actions {
-				margin: 15px 15px;
-				padding: 20px 0px;
-				border-radius: 8px;
-				background-color: white;
+			.menu-list {
+				width: 694rpx;
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, #FFFFFF 100%);
+				border-radius: 24rpx;
+				border: 2rpx solid #F7F7F7;
+				padding-left: 36rpx;
 
-				.action-item {
-					.icon {
-						font-size: 28px;
-					}
+				.list-cell {
+					padding-left: 0;
+					border-bottom: 2rpx solid #F5F5F5;
 
-					.text {
-						display: block;
-						font-size: 16px;
-						margin: 8px 0px;
+					:last-child {
+						border: none;
 					}
 				}
 			}
 		}
-		
+
 		.item-box {
 			background-color: #FFFFFF;
 			margin: 30rpx;
