@@ -20,17 +20,18 @@
 						</view>
 					</uni-col>
 					<uni-col :span="15">
-						<h3>{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
-						<view class="fs12">VIN：{{tab.vin}}</view>
-						<view class="fs12">{{'2023-04' || '暂无'}} | {{tab.mileage || 0}} 万公里</view>
-						<view style="color: #000;" class="fs12">收车价：
-							<text v-if="isSHowMoney">{{tab.vehicleReceiptAmount || 0}} 元</text>
+						<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<!-- <view class="fs12">VIN：{{tab.vin}}</view> -->
+						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || 0}} 万公里</view>
+						<view class="right-price">收车价：
+							<text v-if="tab.isSHowMoney">{{tab.vehicleReceiptAmount | handleMoney}} 万元</text>
 							<text v-else>***元</text>
-							<text v-if="isSHowMoney" class="iconfont icon-open-eye"
-								@click.stop="isSHowMoney=!isSHowMoney"></text>
-							<text v-else class="iconfont icon-close-eye" @click.stop="isSHowMoney=!isSHowMoney"></text>
+							<text v-if="tab.isSHowMoney" class="iconfont icon-open-eye eyeIcon"
+								@click.stop="handleMoneyShow(tab,false)"></text>
+							<text v-else class="iconfont icon-close-eye eyeIcon"
+								@click.stop="handleMoneyShow(tab,true)"></text>
 						</view>
-						<view class="fs12">创建时间：{{tab.createTime || '暂无'}}</view>
+						<view class="right-time">创建时间：{{tab.createTime || '暂无'}}</view>
 					</uni-col>
 				</uni-row>
 			</uni-card>
@@ -58,7 +59,7 @@
 				formData: {
 					statusThree: [221, 231],
 					searchValue: "",
-					businessId:this.$store.state.user.deptId,
+					businessId: this.$store.state.user.deptId,
 					pageNo: 1,
 					pageSize: 10,
 				},
@@ -68,8 +69,18 @@
 				show: false,
 				// 加载图标
 				loadStatus: 'loadmore',
-				// 是否展示金额
-				isSHowMoney: false
+			}
+		},
+		filters:{
+			handleMoney(val){
+				let value=parseFloat(val)
+				if(value>1000){
+					return (value/10000).toFixed(2)
+				}else if(value){
+					return value
+				}else{
+					return '——'
+				}
 			}
 		},
 		mounted() {
@@ -102,6 +113,7 @@
 				getSellPage(obj).then((res) => {
 					this.tabList = res.data.list.map(val => {
 						val.createTime = parseTime(val.createTime || Number(new Date()))
+						this.$set(val, 'isSHowMoney', false)
 						return val
 					})
 
@@ -123,6 +135,7 @@
 				getSellPage(obj).then(res => {
 					this.tabList = [...this.tabList, ...res.data.list].map(val => {
 						val.createTime = parseTime(val.createTime || Number(new Date()))
+						this.$set(val, 'isSHowMoney', false)
 						return val;
 					})
 					this.total = res.data.total
@@ -150,6 +163,11 @@
 					icon: 'none'
 				})
 				this.getList(this.formData);
+			},
+			// 显示隐藏金额
+			handleMoneyShow(tab, flag) {
+				console.log(tab, flag, 8899)
+				tab.isSHowMoney = flag;
 			},
 			// 点击车辆卡片
 			handleCard(item) {
@@ -211,19 +229,22 @@
 	}
 
 	.car_left {
+		width: 240rpx;
+		height: 190rpx;
 		position: relative;
-		border-radius: 8px;
+		border-radius: 12rpx;
 		overflow: hidden;
-		background-color: #169bd5;
 
 		.car_text {
 			width: 100%;
+			height: 36rpx;
+			line-height: 36rpx;
 			text-align: center;
 			position: absolute;
 			bottom: 0px;
-			font-size: 12px;
-			padding: 0 5px;
-			border-radius: 0 0 8px 8px;
+			font-size: 20rpx;
+			// padding: 0 5px;
+			border-radius: 0 0 12rpx 12rpx;
 			z-index: 999;
 		}
 
@@ -241,6 +262,32 @@
 			color: #fff;
 			background-image: linear-gradient(to right, rgba(205, 116, 2, .3) 0%, rgba(205, 116, 2, .8) 50%, rgba(205, 116, 2, .3) 100%);
 		}
+	}
+
+	.right-title {
+		font-size: 28rpx;
+		color: #333333;
+		font-weight: 400;
+	}
+
+	.right-mile {
+		font-size: 22rpx;
+		color: #999999;
+	}
+
+	.right-price {
+		font-size: 22rpx;
+		position: relative;
+	}
+
+	.eyeIcon {
+		position: absolute;
+		right: 6rpx;
+		top: 0;
+	}
+
+	.right-time {
+		font-size: 22rpx;
 	}
 
 	.fs12 {

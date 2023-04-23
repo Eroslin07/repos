@@ -60,8 +60,7 @@
 		data() {
 			return {
 				// 商户账户号
-				accountNo: '55555555',
-				// accountNo: this.$store.state.user.accountNo,
+				accountNo: this.$store.state.user.accountNo,
 				// 日期
 				startYear: 2023,
 				endYear: new Date().getFullYear(),
