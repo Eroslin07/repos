@@ -18,7 +18,7 @@ const user = {
     tenantId: uni.getStorageSync('TENANT_ID') || storage.get(constant.tenantId),
     deptName: uni.getStorageSync('SET_DEPTNAME') || storage.get(constant.deptName),
     tenantName: uni.getStorageSync('SET_TENANTNAME') || storage.get(constant.tenantName),
-    accountNo: '22222222'
+    accountNo: '55555555'
   },
 
   mutations: {

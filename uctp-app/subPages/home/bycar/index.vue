@@ -827,7 +827,13 @@
 												_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
 												_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
 												_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+												if (_this.carForm.model.indexOf('汽车') > -1) {
+													_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
+												}
 												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+												if (_this.carForm.brand.indexOf('汽车') > -1) {
+													_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
+												}
 												_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
 												let rdate = data.words_result['注册日期'].words;
 												let y = rdate.slice(0, 4);
@@ -1228,23 +1234,27 @@
 			// 点击交易信息保存
 			handleSubmit(val) {
 				let _this = this;
-				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
-				amount = amount / 10000;
-				if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-					_this.saveSellerInfo(val);
-				} else {
-					uni.showModal({
-						title: '提示',
-						content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
-						confirmText: '是',
-						cancelText: '否',
-						confirmColor: '#fa6401',
-						success(ress) {
-							if (ress.confirm) {
-								_this.saveSellerInfo(val);
+				if (val) {
+					let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
+					amount = amount / 10000;
+					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
+						_this.saveSellerInfo(val);
+					} else {
+						uni.showModal({
+							title: '提示',
+							content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+							confirmText: '是',
+							cancelText: '否',
+							confirmColor: '#fa6401',
+							success(ress) {
+								if (ress.confirm) {
+									_this.saveSellerInfo(val);
+								}
 							}
-						}
-					})
+						})
+					}
+				} else {
+					_this.saveSellerInfo();
 				}
 			},
 			saveSellerInfo(val) {
@@ -1277,7 +1287,7 @@
 						if (this.fairValue.value1 <= amount && amount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
 							this.showOverlay = false;
-							this.$tab.navigateTo(`/subPages/home/bycar/agreement?carId=${this.carId}`);
+							this.$tab.navigateTo(`/subPages/home/bycar/agreement?carId=${res.data.carInfoDetails.carId}`);
 						} else {
 							// 发起公允值审批流程
 							let procDefKey = "SGYZ";

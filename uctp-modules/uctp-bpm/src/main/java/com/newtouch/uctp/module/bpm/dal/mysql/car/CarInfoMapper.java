@@ -1,10 +1,11 @@
 package com.newtouch.uctp.module.bpm.dal.mysql.car;
 
 
-import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
-import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
+import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 
 /**
  * 动态表单 Mapper
@@ -12,7 +13,7 @@ import org.apache.ibatis.annotations.Param;
  * @author 风里雾里
  */
 @Mapper
-public interface CarMapper extends BaseMapperX<CarInfoDO> {
+public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     /**
      * 更新车辆状态
      * 具体状态看原型图

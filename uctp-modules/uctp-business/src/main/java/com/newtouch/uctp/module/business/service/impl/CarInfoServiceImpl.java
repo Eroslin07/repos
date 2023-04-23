@@ -2,6 +2,22 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
@@ -12,6 +28,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
+import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
@@ -20,22 +37,10 @@ import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
 import com.newtouch.uctp.module.system.enums.DictTypeConstants;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_STATUS_ERROR;
 import static com.newtouch.uctp.module.system.enums.DictTypeConstants.*;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.DICT_TYPE_NOT_EXISTS;
 
@@ -50,6 +55,8 @@ import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.DICT_TYPE
 public class CarInfoServiceImpl implements CarInfoService {
     @Resource
     private CarInfoMapper carInfoMapper;
+    @Resource
+    private CarInfoDetailsMapper carInfoDetailsMapper;
     @Resource
     private BusinessFileService businessFileService;
     @Resource
@@ -518,31 +525,37 @@ public class CarInfoServiceImpl implements CarInfoService {
         AppBpmCarInfoRespVO vo = new AppBpmCarInfoRespVO();
         vo.setCarInfo(carInfo);
         vo.setCarInfoDetails(carInfoDetails);
+        if (ObjectUtil.isNull(carInfo)) {
+            return vo;
+        }
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
-        //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
-        fileList.forEach(file->{
-            switch (file.getFileType()){
-                case "1":
-                case "1-1":
-                    //1-1 表是车辆第一张图片
-                    vo.getFileA().add(new AppSimpleFileVO(file));
-                    break;
-                case "2":
-                    vo.getFileB().add(new AppSimpleFileVO(file));
-                    break;
-                case "3":
-                    vo.getFileC().add(new AppSimpleFileVO(file));
-                    break;
-                case "4":
-                    vo.getFileD().add(new AppSimpleFileVO(file));
-                    break;
-                case "5":
-                    vo.getFileE().add(new AppSimpleFileVO(file));
-                    break;
-                default:
-                    break;
-            }
-        });
+        if (CollUtil.isNotEmpty(fileList)) {
+            //1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证  6银行卡 7发票 8商户身份证
+            fileList.forEach(file->{
+                switch (file.getFileType()){
+                    case "1":
+                    case "1-1":
+                        //1-1 表是车辆第一张图片
+                        vo.getFileA().add(new AppSimpleFileVO(file));
+                        break;
+                    case "2":
+                        vo.getFileB().add(new AppSimpleFileVO(file));
+                        break;
+                    case "3":
+                        vo.getFileC().add(new AppSimpleFileVO(file));
+                        break;
+                    case "4":
+                        vo.getFileD().add(new AppSimpleFileVO(file));
+                        break;
+                    case "5":
+                        vo.getFileE().add(new AppSimpleFileVO(file));
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+
         return vo;
     }
 
@@ -767,6 +780,21 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfoDetails.setFeesAndCommitments(null);
         carInfoMapper.updateById(carInfo);
         carInfoDetailsService.updateCarInfoDetail(carInfoDetails);
+    }
+
+    @Override
+    public CarTransferInfoVO getTransferInfo(Long carId) {
+        CarTransferInfoVO carTransferInfoVO = new CarTransferInfoVO();
+        // 1.根据车辆ID获取车辆主信息
+        CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
+        // 2.根据车辆ID获取车辆扩展子表明细信息
+        CarInfoDetailsDO infoDetails = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, carId);
+        carTransferInfoVO.setCarInfo(carInfoDO);
+        carTransferInfoVO.setCarInfoDetails(infoDetails);
+        // 3.处理车辆的图片信息
+        this.buildBmpVO(carInfoDO,infoDetails);
+
+        return carTransferInfoVO;
     }
 
 

@@ -55,9 +55,12 @@
 </template>
 
 <script>
+	import { getCostList } from '@/api/cost/index.js'
 	export default {
 		data() {
 			return {
+				// 商户账户号
+				accountNo: this.$store.state.user.accountNo,
 				// 日期
 				startYear: 2023,
 				endYear: new Date().getFullYear(),
@@ -182,21 +185,29 @@
 
 			// 图表数据
 			getServerData() {
-				setTimeout(() => {
-					let res = {
-						categories: ["1月", "2月", "3月"],
-						series: [{
-								name: "税费",
-								data: [35, 36, 31]
-							},
-							{
-								name: "服务费",
-								data: [18, 27, 21]
-							}
-						]
-					};
-					this.chartData = JSON.parse(JSON.stringify(res));
-				}, 500);
+				let date = this.dateValue.toString();
+				let quarter = date.slice(0, 4) + 'Q' + date.slice(4);
+				let data = {
+					accountNo: this.accountNo,
+					quarter
+				}
+				getCostList(data).then((res) => {
+					setTimeout(() => {
+						let res = {
+							categories: ["1月", "2月", "3月"],
+							series: [{
+									name: "税费",
+									data: [35, 36, 31]
+								},
+								{
+									name: "服务费",
+									data: [18, 27, 21]
+								}
+							]
+						};
+						this.chartData = JSON.parse(JSON.stringify(res));
+					}, 500);
+				})
 			},
 
 			//查看车辆明细
