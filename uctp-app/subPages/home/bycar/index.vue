@@ -1277,7 +1277,7 @@
 						if (this.fairValue.value1 <= amount && amount <= this.fairValue.value2) {
 							this.$modal.closeLoading()
 							this.showOverlay = false;
-							this.$tab.navigateTo('/subPages/home/bycar/agreement');
+							this.$tab.navigateTo(`/subPages/home/bycar/agreement?carId=${this.carId}`);
 						} else {
 							// 发起公允值审批流程
 							let procDefKey = "SGYZ";

@@ -6,16 +6,14 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoCli
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SdkClient;
 import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
-import com.qiyuesuo.sdk.v2.request.ContractDraftRequest;
-import com.qiyuesuo.sdk.v2.request.SaaSUserAuthPageRequest;
-import com.qiyuesuo.sdk.v2.request.SaasCompanyAuthPageUrlRequest;
-import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SdkResponse;
+import com.qiyuesuo.sdk.v2.request.*;
+import com.qiyuesuo.sdk.v2.response.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     /**
@@ -44,6 +42,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         ContractDraftRequest request = new ContractDraftRequest(contract);
         String response = this.client.service(request);
         SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response, Contract.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<DocumentAddResult> doDefaultDocumentAddByTemplate(DocumentAddByTemplateRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<DocumentAddResult> sdkResponse = JSONUtils.toQysResponse(response, DocumentAddResult.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
                 , sdkResponse.getMessage()
                 , sdkResponse.getResult()
@@ -88,5 +96,23 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     @Override
     public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact) {
         throw new UnsupportedOperationException("default的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<DocumentAddResult> defaultDocumentAddByTemplate(Long contractId, Long templateId, List<TemplateParam> params, String title) {
+                DocumentAddByTemplateRequest request =
+                        new DocumentAddByTemplateRequest(contractId,templateId,params,title);
+        return this.defaultDocumentAddByTemplate(request);
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId) throws Throwable {
+        ContractSendRequest request = new ContractSendRequest(contractId, Arrays.asList());
+        String response = this.client.service(request);
+        SdkResponse<DocumentAddResult> sdkResponse = JSONUtils.toQysResponse(response, DocumentAddResult.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
     }
 }

@@ -48,6 +48,10 @@
 				revision: 0
 			}
 		},
+		onBackPress(options) {
+			this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			return true;
+		},
 		onLoad(options) {
 			this.revision = options.revision;
 		},

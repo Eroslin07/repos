@@ -90,6 +90,8 @@ public class AppCarInfoCreateReqVO{
     @Schema(description = "保险期至")
     private String insuranceEndData;
 
+    private Long id;
+
 
     /**
      * 车辆手续及备件

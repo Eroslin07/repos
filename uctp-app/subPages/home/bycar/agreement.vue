@@ -24,8 +24,13 @@
 	export default {
 		data() {
 			return {
-				checkboxValue: null
+				checkboxValue: null,
+        carId:''
 			}
+		},
+		onLoad(options){
+			console.log((options))
+			this.carId=options.carId
 		},
 		methods: {
 			// 查看
@@ -35,8 +40,9 @@
 			// 合同签章
 			handleAffirm() {
 				const data={
-					carId:'1648668268713422850',
-					type:'2'
+					// carId:'1648668268713422850',
+					carId:this.carId,
+					type:'1'
 				}
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
@@ -44,9 +50,7 @@
 			},
 			// 取消合同签章
 			handleCancel() {
-				getCancelContract().then((res) => {
-					this.$tab.navigateTo(`/subPages/common/webview/index?title=取消收车合同签章&url=${res.data}`);
-				})
+				this.$tab.navigateBack()
 			},
 			// 关闭
 			handleClose() {
