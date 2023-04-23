@@ -22,3 +22,26 @@ spring:
         namespace: @nacos.namespace@
         # 配置文件格式
         file-extension: yaml
+seata:
+  enabled: true
+  application-id: ${spring.application.name:}
+  tx-service-group: ${spring.application.name}_tx_group
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: ${spring.cloud.nacos.server-addr}
+      namespace: seata
+      group: SEATA_GROUP
+      cluster: default
+      username: @nacos.username@
+      password: @nacos.password@
+  config:
+    type: nacos
+    nacos:
+      server-addr: ${spring.cloud.nacos.server-addr}
+      namespace: seata
+      group: SEATA_GROUP
+      data-id: seataServer.properties
+      username: @nacos.username@
+      password: @nacos.password@
