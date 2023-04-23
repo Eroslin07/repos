@@ -60,6 +60,10 @@
 				status2: false
 			}
 		},
+		onBackPress(options) {
+			this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			return true;
+		},
 		onLoad(options) {
 			this.amount = options.amount;
 		},
