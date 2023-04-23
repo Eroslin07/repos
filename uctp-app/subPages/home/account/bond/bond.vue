@@ -21,7 +21,7 @@
 		
 		<view class="mingxi">
 			<view class="jiaoyi">
-				<u-row justify="space-between" customStyle="margin-bottom: 10px;">
+				<u-row justify="space-between">
 					<u-col span="4">
 						<view class="title">保证金交易明细</view>
 					</u-col>

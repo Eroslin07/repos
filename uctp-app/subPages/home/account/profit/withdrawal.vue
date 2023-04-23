@@ -35,7 +35,7 @@
 					@delete="deletePic"
 					name="1"
 					multiple
-					:maxCount="10"
+					:maxCount="3"
 				></u-upload>
 			</view>
 		</uni-card>
@@ -53,12 +53,15 @@
 		data() {
 			return {
 				// 商户账户号
-				accountNo: '55555555',
-				// accountNo: this.$store.state.user.accountNo,
+				accountNo: this.$store.state.user.accountNo,
 				fileList1: [],
 				amount: '',
 				allAmount: 0
 			}
+		},
+		onBackPress(options) {
+			this.$tab.redirectTo('/subPages/home/account/profit/profit');
+			return true;
 		},
 		onLoad(options) {
 			this.allAmount = options.amount;
@@ -71,7 +74,6 @@
 					this[`fileList${event.name}`].splice(event.index, 1);
 				})
 			},
-			// 新增图片
 			async afterRead(event) {
 				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
 				let lists = [].concat(event.file)
@@ -124,7 +126,7 @@
 					accountNo: this.accountNo,
 					merchantBankId: 2,
 					amount: Number(this.amount * 100),
-					invoiceIds: this.fileList1.map((item) => { return item.id })
+					invoiceIds: this.fileList1.map((item) => { return {id: item.id, url: item.url} })
 				}
 				getPresent(data).then((res) => {
 					this.$modal.msg("提现成功");

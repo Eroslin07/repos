@@ -14,7 +14,7 @@
 			</view>
 			<view class="statistics">
 				<view style="margin-bottom: 10px;">资产总额</view>
-				<view style="font-size: 24px;">20.73<text style="font-size: 14px;">万元</text></view>
+				<view style="font-size: 24px;">{{ $amount.getComdify((data.cash + data.profit) / 100 || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 		</view>
 		
@@ -24,13 +24,13 @@
 					<u-grid-item>
 						<view @click="handleClick(1)" style="text-align: center;">
 							<view>保证金 ></view>
-							<view>20.05万元</view>
+							<view>{{ $amount.getComdify(data.cash / 10000 || 0) }}万元</view>
 						</view>
 					</u-grid-item>
 					<u-grid-item>
 						<view @click="handleClick(2)" style="text-align: center;">
 							<view>利润 ></view>
-							<view>6,800.00元</view>
+							<view>{{ $amount.getComdify(data.profit / 100 || 0) }}元</view>
 						</view>
 					</u-grid-item>
 				</u-grid>
@@ -46,11 +46,12 @@
 </template>
 
 <script>
+	import { getAccount } from '@/api/account/index.js'
 	export default {
 		data() {
 			return {
 				text: '资金受兴业银行监管、保证资金账户7×24小时充值/提现',
-				
+				data: {},
 				chartData: {},
 				opts: {
 					title: {
@@ -81,10 +82,16 @@
 				},
 			}
 		},
-		onReady() {
-			this.getServerData();
+		mounted() {
+			this.getList();
 		},
 		methods: {
+			getList() {
+				getAccount().then((res) => {
+					this.data = res.data;
+					this.getServerData();
+				})
+			},
 			// 图表数据
 			getServerData() {
 				setTimeout(() => {
@@ -92,10 +99,10 @@
 						series: [{
 							data: [{
 								"name": "利润",
-								"value": 50
+								"value": this.data.profit / 100
 							}, {
 								"name": "保证金",
-								"value": 30
+								"value": this.data.cash / 100
 							}]
 						}]
 					};
