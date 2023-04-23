@@ -21,7 +21,7 @@
 									name="1"
 									width="150"
 								></u-upload>
-								<image v-else src=".../../../static/images/home/ghm.png"
+								<image v-else src="/static/images/home/ghm.png"
 									mode="widthFix" style="width: 150px;" @click="handleOcr(1, 'idCard')"></image>
 								<image
 									v-if="fileList1.length == 0"
@@ -37,7 +37,7 @@
 									name="2"
 									width="150"
 								></u-upload>
-								<image v-else src=".../../../static/images/home/rxm.png"
+								<image v-else src="/static/images/home/rxm.png"
 									mode="widthFix" style="width: 150px;" @click="handleOcr(2, 'idCard')"></image>
 								<image
 									v-if="fileList2.length == 0"
@@ -77,7 +77,7 @@
 							name="3"
 							width="150"
 						></u-upload>
-						<image v-else src=".../../../static/images/home/yyzz.png"
+						<image v-else src="/static/images/home/yyzz.png"
 							mode="widthFix" style="width: 150px;" @click="handleOcr(3, 'business')"></image>
 						<image
 							v-if="fileList3.length == 0"

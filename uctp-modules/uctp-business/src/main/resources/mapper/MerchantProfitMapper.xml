@@ -2,4 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper">
 
+    <select id="selectMonthCosts"
+            resultType="com.newtouch.uctp.module.business.controller.app.account.vo.ProfitCostMonthRespVO">
+        select tmp.month, sum(costTotalAmount) as costTotalAmount, sum(taxTotalAmount) as taxTotalAmount from (
+            select
+                    t.account_no,
+                    date_format(t.trade_time, '%Y%m') as month,
+                    t.trade_type,
+                    case
+                    when t.trade_type = #{serviceCostType} then t.profit * -1
+                    else 0
+                end as costTotalAmount,
+                    case
+                    when t.trade_type = #{taxCostType} then t.profit * -1
+                    else 0
+                end as taxTotalAmount
+            from
+                    uctp_merchant_profit t
+            where
+                    t.account_no = #{accountNo}
+                and t.trade_type in (#{serviceCostType}, #{taxCostType})
+                and t.trade_time between #{startTime}
+                and #{endTime}
+        ) tmp
+        group by tmp.month
+    </select>
 </mapper>

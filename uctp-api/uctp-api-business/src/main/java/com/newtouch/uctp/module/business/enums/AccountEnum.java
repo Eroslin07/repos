@@ -60,11 +60,13 @@ public enum AccountEnum {
     PRESENT_CASH_SUCCESS("10091002", "保证金提现"),
 
     // 利润：交易类型
-    TRAN_PROFIT_SALES_PROFIT("10101001", "卖车利润"),
+    TRAN_PROFIT_SALES_INCOME("10101001", "卖车利润"),
     TRAN_PROFIT_PRESENT("10101002", "利润提现"),
     TRAN_PROFIT_CASH_BACK("10101003", "利润-保证金回填"),
     TRAN_PROFIT_SERVICE_COST("10101004", "利润-服务费"),
     TRAN_PROFIT_TAX_COST("10101005", "利润-税费"),
+    TRAN_PROFIT_SALES_PROFIT("10101006", "利润"),
+    TRAN_PROFIT_CASH_DEDUCTION("10101007", "利润-抵扣保证金"),
 
     // 利润：提现状态
     PRESENT_PROFIT_CASH_BACK_WAIT("10111001", "待回填保证金"),
@@ -75,7 +77,11 @@ public enum AccountEnum {
     PRESENT_PROFIT_AUDIT_APPROVED("10111005", "市场方审批成功"),
     PRESENT_PROFIT_BANK_PROCESSING("10111006", "银行处理"),
     PRESENT_PROFIT_BANK_SUCCESS("10111007", "到账成功"),
-    PRESENT_PROFIT_BANK_FAIL("10111008", "到账失败");
+    PRESENT_PROFIT_BANK_FAIL("10111008", "到账失败"),
+
+    // 待回填保证金：明细类型
+    CASH_BACK_TYPE_WAIT("10121001", "待回填保证金"),
+    CASH_BACK_TYPE_PROFIT_DEDUCTION("10121002", "利润抵扣额度");
 
     private String key;
     private String value;

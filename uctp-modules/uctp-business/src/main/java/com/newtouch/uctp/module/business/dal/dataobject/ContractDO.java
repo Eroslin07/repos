@@ -49,6 +49,21 @@ public class ContractDO extends TenantBaseDO {
     private String contractName;
 
     /**
+     * 甲方
+     */
+    private String firstParty;
+
+    /**
+     * 乙方
+     */
+    private String secondParty;
+
+    /**
+     * 签约金额
+     */
+    private String signUpAmount;
+
+    /**
      * 合同状态
      */
     private Integer status;
@@ -57,4 +72,9 @@ public class ContractDO extends TenantBaseDO {
      * 商户id
      */
     private Long businessId;
+
+    /**
+     * 签约时间
+     */
+    private LocalDateTime signingData;
 }

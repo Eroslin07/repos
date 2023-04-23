@@ -1,25 +1,22 @@
 <template>
 	<view class="cost">
 		<uni-card :is-shadow="false" is-full>
-			<view class="">
-				<view class="const-analy-header">
-					<view>
-						<zb-dropdown-menu>
-							<zb-dropdown-item :name="dateTitle" :options="options" v-model="dateValue">
-							</zb-dropdown-item>
-						</zb-dropdown-menu>
-					</view>
+			<view class="header-box">
+				<view class="const-analy-header" id="constHeader">
+					<zb-dropdown-menu z-index="99999"  :catchtouchmove="true">
+						<zb-dropdown-item :name="dateTitle" :options="options" v-model="dateValue">
+						</zb-dropdown-item>
+					</zb-dropdown-menu>
 				</view>
-
 				<view class="charts-box">
-					<qiun-data-charts type="column" :opts="opts" :chartData="chartData" />
+					<qiun-data-charts style="position:absolute;z-index:1;top:0;left:0" type="column" :opts="opts" :chartData="chartData" />
 				</view>
 			</view>
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"
 				placeholder="请输入车架号(VIN)/品牌/收车费用/卖车费用">
 			</u-search>
-			<uni-card v-for="(tab, index) in tabList" :key="index" is-full
-				class="car-cost-list" @click="viewDetails(tab)">
+			<uni-card v-for="(tab, index) in tabList" :key="index" is-full class="car-cost-list"
+				@click="viewDetails(tab)">
 				<view class="col3b fs13 mb5">VIN：LE4TG4DB1JL199517</view>
 				<h3 class="car-title fontWBold">宝马-宝马X12021款sDrive20Li时尚型</h3>
 				<u-line dashed></u-line>
@@ -214,9 +211,9 @@
 
 <style lang="scss" scoped>
 	.const-analy-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		width: 50vw;
+		// display: flex;
+		// justify-content: flex-start;
 		font-size: 14px;
 		color: #40ADDD;
 	}
@@ -241,14 +238,16 @@
 		}
 	}
 
-	/* #ifdef MP-WEIXIN */
-	/deep/ .zb-dropdown-menu__bar.data-v-9684d88c {
+
+	/deep/ #constHeader .zb-dropdown-menu__bar {
 		box-shadow: none;
 	}
-	/deep/ .zb-dropdown-menu__title.data-v-9684d88c {
+
+	/deep/ #constHeader .zb-dropdown-menu__title {
 		padding: 0 15px 0 0;
 	}
-	/deep/ .zb-dropdown-menu__title.data-v-9684d88c::after {
+
+	/deep/ #constHeader .zb-dropdown-menu__title::after {
 		border-width: 5px;
 		border-bottom-color: #8d8d8d;
 		border-left-color: #8d8d8d;
@@ -256,52 +255,37 @@
 		right: -10px;
 		opacity: 0.9
 	}
-	/deep/ .zb-dropdown-menu__title--active.data-v-9684d88c::after{
+
+	/deep/ #constHeader .zb-dropdown-menu__title--active::after {
 		margin-top: -3px;
-		border-bottom-color:#ee0a24;
-		border-left-color:#ee0a24;
-	}
-	/deep/ .zb-dropdown-item--down.data-v-0253f23a {
-		z-index:9999 !important;
-	}
-	
-	/deep/ .zb-dropdown-item__content.data-v-0253f23a{
-		z-index:999999 !important;
+		border-bottom-color: #ee0a24;
+		border-left-color: #ee0a24;
 	}
 
-	/* #endif */
+	/deep/ #constHeader .zb-dropdown-item--down {
+		z-index: 9999 !important;
+	}
+
+	/deep/ #constHeader .zb-dropdown-item__content {
+		z-index: 9999 !important;
+	}
+
+	/deep/ #constHeader .zb-dropdown-menu__item {
+		justify-content: flex-start;
+	}
 	
-	/* #ifdef H5 */
-		/deep/ .zb-dropdown-menu__bar[data-v-9684d88c] {
-			box-shadow: none;
-		}
-		/deep/ .zb-dropdown-menu__title[data-v-9684d88c] {
-			padding: 0 15px 0 0;
-		}
-		/deep/ .zb-dropdown-menu__title::after {
-			border-width: 5px;
-			border-bottom-color: #8d8d8d;
-			border-left-color: #8d8d8d;
-			margin-top: -8px;
-			right: -10px;
-			opacity: 0.9
-		}
-		/deep/ .zb-dropdown-menu__title--active[data-v-9684d88c]::after{
-			margin-top: -3px;
-			border-bottom-color:#ee0a24;
-			border-left-color:#ee0a24;
-		}
-		/deep/ .zb-dropdown-item--down[data-v-0253f23a]{
-			z-index:9999 !important;
-		}
-		
-		/deep/ .zb-dropdown-item__content[data-v-0253f23a]{
-			z-index:999999 !important;
-		}
-	/* #endif */
+	/deep/ #constHeader .zb-overlay.data-v-0253f23a {
+		z-index:9998 !important;
+	}
+
+
 	/deep/ .uni-card--full {
-		border-radius:12rpx;
-		margin-top:22rpx !important;
+		border-radius: 12rpx;
+		margin-top: 22rpx !important;
+	}
+	
+	/deep/ .u-line.data-v-727e452e {
+		margin:10px 0 !important; 
 	}
 
 	.fs14 {
@@ -323,11 +307,14 @@
 	.floatR {
 		float: right;
 	}
-
+	
 	.charts-box {
 		width: 100%;
 		height: 249px;
+		position:relative;
+		z-index:1;
 	}
+	
 
 	.car-title {
 		white-space: nowrap;
@@ -347,13 +334,16 @@
 	.col3b {
 		color: #aaa;
 	}
-	.lineH44{
+
+	.lineH44 {
 		line-height: 50rpx;
 	}
+
 	.mb5 {
 		margin-bottom: 5px;
 	}
-	.fontWBold{
+
+	.fontWBold {
 		font-weight: bold;
 	}
 </style>
