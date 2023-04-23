@@ -68,6 +68,7 @@ public enum AccountEnum {
     TRAN_PROFIT_TAX_COST("10101005", "利润-税费"),
     TRAN_PROFIT_SALES_PROFIT("10101006", "利润"),
     TRAN_PROFIT_CASH_DEDUCTION("10101007", "利润-扣减原待回填保证金"),
+    TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT("10101008", "原有利润-扣减"),
 
     // 利润：提现状态
     PRESENT_PROFIT_CASH_BACK_WAIT("10111001", "待回填保证金"),

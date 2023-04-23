@@ -21,9 +21,11 @@ public class ProfitCalcResultDTO {
     private Integer currentCarSalesAmount;
     // 本次待回填保证金
     private Integer currentWaitForBackCashAmount;
-    // 本次使用本次利润抵扣金额
-    private Integer useCurrentDeductionBackCashAmount;
-    // 本次使用原有利润抵扣金额
+    // 使用本次利润抵扣原待回填保证金
+    private Integer useCurrentDeductionOriginalBackCashAmount;
+    // 使用原有利润抵扣原待回填保证金
+    private Integer useOriginalDeductionOriginalBackCashAmount;
+    // 使用原有利润抵扣本次回填保证金
     private Integer useOriginalDeductionBackCashAmount;
     // 本次利润
     private Integer currentProfitAmount;
