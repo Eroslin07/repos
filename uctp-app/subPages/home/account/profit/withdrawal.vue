@@ -26,7 +26,7 @@
 					</template>
 				</u-input>
 			</view>
-			<view>可用利润余额{{ $amount.getComdify(allAmount) }}元。</view>
+			<view>可用利润余额{{ $amount.getComdify(allAmount / 100) }}元。</view>
 			<view style="margin-top: 10px;">上传利润发票</view>
 			<view style="margin-top: 10px;">
 				<u-upload
@@ -123,7 +123,7 @@
 				let data = {
 					accountNo: this.accountNo,
 					merchantBankId: 2,
-					amount: Number(this.amount),
+					amount: Number(this.amount * 100),
 					invoiceIds: this.fileList1.map((item) => { return item.id })
 				}
 				getPresent(data).then((res) => {

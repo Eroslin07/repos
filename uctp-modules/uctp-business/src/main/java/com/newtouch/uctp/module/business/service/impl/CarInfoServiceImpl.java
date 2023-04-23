@@ -81,63 +81,101 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     @Transactional
     public AppBpmCarInfoRespVO insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
-        //保存之前先删除
-        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(), 1, 11);
-        if(carInfoDOS.size()>0){
-            for (CarInfoDO carInfo:carInfoDOS) {
-                Long id = carInfo.getId();
-                carInfoMapper.deleteById(id);
-                carInfoDetailsService.deleteByCarId(id);
-                businessFileService.deleteByMainId(carInfo.getId());
-            }
-        }
-
-        //车辆主表信息
         CarInfoDO infoDO = new CarInfoDO();
-        infoDO.setBrand(createReqVO.getBrand());
-        infoDO.setVin(createReqVO.getVin());
-        infoDO.setBrand(createReqVO.getBrand());//车辆品牌
-        infoDO.setCarType(createReqVO.getCarType());//车辆类型
-        infoDO.setBrandType(createReqVO.getBrandType());//品牌型号
-        infoDO.setModel(createReqVO.getModel());//品牌/车型
-        infoDO.setModelId(createReqVO.getModelId());//车型id
-        infoDO.setPlateNum(createReqVO.getPlateNum());
-        infoDO.setEngineNum(createReqVO.getEngineNum());
-        infoDO.setRemarks(createReqVO.getRemarks());
-        LocalDateTime current = LocalDateTime.now();
-        infoDO.setPickUpTime(current);
-        infoDO.setCheckStatus(0);
-        infoDO.setBusinessId(createReqVO.getDeptId());
-        infoDO.setTenantId(createReqVO.getTenantId());
-
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
-        String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
-        infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
-        infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
-
-        infoDO.setInsurance(createReqVO.getInsurance());
-        infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
-        infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
-        infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
-        infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
-        carInfoMapper.insert(infoDO);
-
-        //车辆明细数据
         CarInfoDetailsDO detailsDO = new CarInfoDetailsDO();
-        detailsDO.setCarId(infoDO.getId());
-        detailsDO.setMileage(createReqVO.getMileage());
-        detailsDO.setColour(createReqVO.getColour());
-        detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
-        detailsDO.setCertificateNo(createReqVO.getCertificateNo());
-        detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
-        detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
-        detailsDO.setTenantId(createReqVO.getTenantId());
-        detailsDO.setProceduresAndSpareParts(createReqVO.getProceduresAndSpareParts());
-        carInfoDetailsService.insertCarInfoDetail(detailsDO);
 
+
+        if(null!=createReqVO.getId()){
+            //保存之前查看是否存在草稿
+            List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(), 1, 11);
+            infoDO = carInfoDOS.get(0);
+            Long id = infoDO.getId();
+            detailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+
+            //车辆主表信息
+            infoDO.setBrand(createReqVO.getBrand());
+            infoDO.setVin(createReqVO.getVin());
+            infoDO.setBrand(createReqVO.getBrand());//车辆品牌
+            infoDO.setCarType(createReqVO.getCarType());//车辆类型
+            infoDO.setBrandType(createReqVO.getBrandType());//品牌型号
+            infoDO.setModel(createReqVO.getModel());//品牌/车型
+            infoDO.setModelId(createReqVO.getModelId());//车型id
+            infoDO.setPlateNum(createReqVO.getPlateNum());
+            infoDO.setEngineNum(createReqVO.getEngineNum());
+            infoDO.setRemarks(createReqVO.getRemarks());
+            LocalDateTime current = LocalDateTime.now();
+            infoDO.setPickUpTime(current);
+            infoDO.setCheckStatus(0);
+            infoDO.setBusinessId(createReqVO.getDeptId());
+            infoDO.setTenantId(createReqVO.getTenantId());
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
+            String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
+            infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
+            infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+            infoDO.setInsurance(createReqVO.getInsurance());
+            infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+            infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
+            infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
+            infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
+            carInfoMapper.updateById(infoDO);
+            //车辆明细数据
+            detailsDO.setMileage(createReqVO.getMileage());
+            detailsDO.setColour(createReqVO.getColour());
+            detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
+            detailsDO.setCertificateNo(createReqVO.getCertificateNo());
+            detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
+            detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
+            detailsDO.setTenantId(createReqVO.getTenantId());
+            detailsDO.setProceduresAndSpareParts(createReqVO.getProceduresAndSpareParts());
+            carInfoDetailsService.updateCarInfoDetail(detailsDO);
+        }else{
+            //车辆主表信息
+            infoDO.setBrand(createReqVO.getBrand());
+            infoDO.setVin(createReqVO.getVin());
+            infoDO.setBrand(createReqVO.getBrand());//车辆品牌
+            infoDO.setCarType(createReqVO.getCarType());//车辆类型
+            infoDO.setBrandType(createReqVO.getBrandType());//品牌型号
+            infoDO.setModel(createReqVO.getModel());//品牌/车型
+            infoDO.setModelId(createReqVO.getModelId());//车型id
+            infoDO.setPlateNum(createReqVO.getPlateNum());
+            infoDO.setEngineNum(createReqVO.getEngineNum());
+            infoDO.setRemarks(createReqVO.getRemarks());
+            LocalDateTime current = LocalDateTime.now();
+            infoDO.setPickUpTime(current);
+            infoDO.setCheckStatus(0);
+            infoDO.setBusinessId(createReqVO.getDeptId());
+            infoDO.setTenantId(createReqVO.getTenantId());
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
+            String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
+            infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
+            infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+            infoDO.setInsurance(createReqVO.getInsurance());
+            infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+            infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
+            infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
+            infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
+
+            //车辆明细数据
+            detailsDO.setMileage(createReqVO.getMileage());
+            detailsDO.setColour(createReqVO.getColour());
+            detailsDO.setNatureOfOperat(createReqVO.getNatureOfOperat());
+            detailsDO.setCertificateNo(createReqVO.getCertificateNo());
+            detailsDO.setFirstRegistDate(createReqVO.getFirstRegistDate());
+            detailsDO.setDrivingLicense(createReqVO.getDrivingLicense());
+            detailsDO.setTenantId(createReqVO.getTenantId());
+            detailsDO.setProceduresAndSpareParts(createReqVO.getProceduresAndSpareParts());
+
+            carInfoMapper.insert(infoDO);
+            detailsDO.setCarId(infoDO.getId());
+            carInfoDetailsService.insertCarInfoDetail(detailsDO);
+
+        }
         //保存图片到中间表
         List<String> carUrl = createReqVO.getCarUrl();
+        businessFileService.deleteByMainIdAndType(infoDO.getId(),"1-1");
+        businessFileService.deleteByMainIdAndType(infoDO.getId(),"1");
         for(int a=0;a<carUrl.size();a++){//车辆图片
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(carUrl.get(a)));
@@ -151,6 +189,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
 
         List<String> licenseUrl = createReqVO.getDrivingLicenseUrl();
+        businessFileService.deleteByMainIdAndType(infoDO.getId(),"2");
         for(int a=0;a<licenseUrl.size();a++){//行驶证图片
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(licenseUrl.get(a)));
@@ -160,6 +199,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
 
         List<String> certificateUrl = createReqVO.getCertificateUrl();
+        businessFileService.deleteByMainIdAndType(infoDO.getId(),"3");
         for(int a=0;a<licenseUrl.size();a++){//登记证书图片
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(certificateUrl.get(a)));
@@ -197,6 +237,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfoDO.setVehicleReceiptAmount(reqVO.getVehicleReceiptAmount());
         carInfoMapper.updateById(carInfoDO);
 
+        businessFileService.deleteByMainIdAndType(carInfoDO.getId(),"4");
         for(int a=0;a<reqVO.getIdCardUrl().size();a++){//卖家身份证图片
             BusinessFileDO businessFileDO = new BusinessFileDO();
             businessFileDO.setId(Long.valueOf(reqVO.getIdCardUrl().get(a)));

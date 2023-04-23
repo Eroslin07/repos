@@ -48,6 +48,10 @@
 				revision: 0
 			}
 		},
+		onBackPress(options) {
+			this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			return true;
+		},
 		onLoad(options) {
 			this.revision = options.revision;
 		},
@@ -59,7 +63,7 @@
 				} else {
 					let data = {
 						accountNo: this.$store.state.user.accountNo,
-						tranAmount: Number(this.amount),
+						tranAmount: Number(this.amount * 100),
 						revision: this.revision
 					}
 					getRecharge(data).then((res) => {
@@ -78,7 +82,7 @@
 				this.$modal.msg("微信支付");
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
-					tranAmount: Number(this.amount),
+					tranAmount: Number(this.amount * 100),
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
@@ -90,7 +94,7 @@
 				this.$modal.msg("云闪付");
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
-					tranAmount: Number(this.amount),
+					tranAmount: Number(this.amount * 100),
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {

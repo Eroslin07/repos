@@ -9,16 +9,15 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultCodeMapp
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SaaSSdkClient;
 import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.bean.User;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
+import com.qiyuesuo.sdk.v2.request.DocumentAddByTemplateRequest;
 import com.qiyuesuo.sdk.v2.request.SaaSUserAuthPageRequest;
 import com.qiyuesuo.sdk.v2.request.SaasCompanyAuthPageUrlRequest;
 import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SdkResponse;
+import com.qiyuesuo.sdk.v2.response.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +46,12 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 
     @Override
     protected QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract) throws Throwable {
-        throw new UnsupportedOperationException("default的client不支持调用此方法");
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<DocumentAddResult> doDefaultDocumentAddByTemplate(DocumentAddByTemplateRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
@@ -134,12 +138,27 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setUser(user);
         request.setCompanyId(companyId);
         request.setCreateToken(true);
-        request.setCallbackUrl("");
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/certification");
         //TODO 成功后的地址需要商量
-        request.setSuccessUrl("www.baidu.com");
+        request.setSuccessUrl("");
         //目前只授权印章
         List<String> privilegeModules = Arrays.asList("SEAL");
         request.setPrivilegeModules(privilegeModules);
         return this.saasPrivilegeUrl(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<DocumentAddResult> defaultDocumentAddByTemplate(Long contractId, Long templateId, List<TemplateParam> params, String title) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+//    @Override
+//    public QiyuesuoCommonResult<Object> defaultContractSend(Long contractId) {
+//        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+//    }
+
+    @Override
+    protected QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 }

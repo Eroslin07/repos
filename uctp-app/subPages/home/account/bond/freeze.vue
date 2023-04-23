@@ -28,7 +28,7 @@
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeName == '收入'">+</text>
 										<text v-if="item.profitLossTypeName == '支出'">-</text>
-										{{ $amount.getComdify(item.payAmount) }} >
+										{{ $amount.getComdify(item.payAmount / 100) }} >
 									</view>
 								</u-col>
 							</u-row>
@@ -59,6 +59,10 @@
 				pageSize: 10,
 				status2: false
 			}
+		},
+		onBackPress(options) {
+			this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			return true;
 		},
 		onLoad(options) {
 			this.amount = options.amount;

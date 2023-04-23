@@ -9,9 +9,9 @@
 					<view style="float: left;"><u--text :suffixIcon="eyeShow == true ? 'eye-off' : 'eye'" iconStyle="font-size: 18px;margin-left: 5px;" text="可用余额" @click="handleEye"></u--text></view>
 					<view style="float: right;" @click="handleCircle"><u--text suffixIcon="error-circle" iconStyle="font-size: 18px"></u--text></view>
 				</view>
-				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit) }}<text style="font-size: 12px;">元</text></view>
-				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 ' + $amount.getComdify(freezeProfit) + ' 元'"></u--text></view>
-				<view style="margin-bottom: 16px;"><u--text iconStyle="font-size: 18px" :text="'待回填保证金' + $amount.getComdify(cashBack) + '元'"></u--text></view>
+				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit / 100) }}<text style="font-size: 12px;">元</text></view>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 ' + $amount.getComdify(freezeProfit / 100) + ' 元'"></u--text></view>
+				<view style="margin-bottom: 16px;"><u--text iconStyle="font-size: 18px" :text="'待回填保证金' + $amount.getComdify(cashBack / 100) + '元'"></u--text></view>
 				<button class="button" @click="handleWithdrawal" style="background-color: #fa6401;color: #fff;">提现</button>
 			</view>
 		</view>
@@ -40,7 +40,7 @@
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeText == '收入'">+</text>
 										<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
-										{{ $amount.getComdify(item.amount || 0) }} >
+										{{ $amount.getComdify(item.amount / 100 || 0) }} >
 									</view>
 								</u-col>
 							</u-row>

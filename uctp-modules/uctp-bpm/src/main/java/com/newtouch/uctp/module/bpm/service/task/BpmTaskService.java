@@ -148,4 +148,6 @@ public interface BpmTaskService {
     PageResult<BpmTaskDoneRespVO> getDoneTaskPageV2(Long loginUserId, BpmTaskDoneReqVO pageVO);
 
     BpmTaskApproveFormRespVO getTaskFormInfo(String taskId, String businessKey);
+
+    void testSeata();
 }

@@ -143,6 +143,11 @@
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
         <!-- freemarker模板引擎基础 end -->
+        <!-- Seata 分布式事务组件 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

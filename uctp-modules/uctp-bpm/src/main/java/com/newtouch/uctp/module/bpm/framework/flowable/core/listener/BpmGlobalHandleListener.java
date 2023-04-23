@@ -5,10 +5,6 @@ import cn.hutool.core.util.StrUtil;
 
 import javax.annotation.Resource;
 
-import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
-import com.newtouch.uctp.module.bpm.dal.mysql.car.CarMapper;
-import com.newtouch.uctp.module.bpm.service.user.UserService;
-import com.newtouch.uctp.module.business.enums.CarStatus;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
@@ -16,12 +12,15 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
+import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
+import com.newtouch.uctp.module.bpm.service.user.UserService;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
-import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
+import com.newtouch.uctp.module.business.enums.CarStatus;
 
 /**
  * 流程引擎全局业务处理器
@@ -39,7 +38,7 @@ public class BpmGlobalHandleListener {
     @Resource
     private UserService userService;
     @Resource
-    private CarMapper carMapper;
+    private CarInfoMapper carInfoMapper;
 
     /**
      * 流程创建时处理
@@ -54,10 +53,10 @@ public class BpmGlobalHandleListener {
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
             //收车公允价值流程发起，修改车辆状态
-            carMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A_b.value(),CarStatus.COLLECT_A_b_a.value(),"已发起","");
+            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A_b.value(),CarStatus.COLLECT_A_b_a.value(),"已发起","");
         }else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允价值流程发起，修改车辆状态
-            carMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
+            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
         }
         // TODO: 根据业务场景进行个性化处理
         System.out.println(bpmFormMainVO);
@@ -95,28 +94,28 @@ public class BpmGlobalHandleListener {
             if ("disagree".equals(approvalType)) {
                 noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
                 //修改车辆状态
-                carMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
+                carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
             } else if ("pass".equals(approvalType)) {
                 noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
                 //carinfo记录流程状态
-                CarInfoDO carInfoDO = carMapper.selectById(bpmFormMainVO.getThirdId());
+                CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
                 carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
-                carMapper.updateById(carInfoDO);
+                carInfoMapper.updateById(carInfoDO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允审批不通过
             if ("disagree".equals(approvalType)) {
                 noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
                 //修改车辆状态
-                carMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
+                carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
             } else if ("pass".equals(approvalType)) {
                 noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
                 //carinfo记录流程状态
-                CarInfoDO carInfoDO = carMapper.selectById(bpmFormMainVO.getThirdId());
+                CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
                 carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
-                carMapper.updateById(carInfoDO);
+                carInfoMapper.updateById(carInfoDO);
             }
         }
 

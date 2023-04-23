@@ -192,6 +192,7 @@ console.log(setDialogTile)
     display: flex;
     text-align: right;
     justify-content: flex-end;
+    padding-right: 5px;
   }
 }
 :deep(.el-main) {
