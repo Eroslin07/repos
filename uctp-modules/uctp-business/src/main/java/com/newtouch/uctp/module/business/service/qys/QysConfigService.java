@@ -133,4 +133,13 @@ public interface QysConfigService {
      */
     void privilegeUrl();
 
+    /**
+     * 企业授权，获取token
+     *
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content   内容
+     * @return
+     */
+    String privilege(String signature, String timestamp, String content) throws Exception;
 }

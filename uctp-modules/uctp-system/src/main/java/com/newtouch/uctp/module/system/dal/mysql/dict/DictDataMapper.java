@@ -48,4 +48,8 @@ public interface DictDataMapper extends BaseMapperX<DictDataDO> {
                 .eqIfPresent(DictDataDO::getStatus, reqVO.getStatus()));
     }
 
+    default List<DictDataDO> selectListByDictTypes(String[] dictTypes){
+        return selectList(new LambdaQueryWrapperX<DictDataDO>()
+                .in(DictDataDO::getDictType,dictTypes));
+    }
 }
