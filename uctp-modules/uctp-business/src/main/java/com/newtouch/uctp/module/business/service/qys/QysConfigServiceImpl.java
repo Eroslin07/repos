@@ -36,7 +36,6 @@ import com.newtouch.uctp.module.business.dal.dataobject.user.UserExtDO;
 import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
-import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
@@ -94,8 +93,6 @@ public class QysConfigServiceImpl implements QysConfigService {
     private QiyuesuoClientFactory qiyuesuoClientFactory;
     @Resource
     private CarInfoService carInfoService;
-    @Resource
-    private QysCallbackMapper qysCallbackMapper;
     @Resource
     private QysCallbackService qysCallbackService;
     @Resource
@@ -197,35 +194,22 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     @Transactional
-    public String certification(String signature, String timestamp, String content){
-        try {
-            log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
-            //验证签名
-            if (!this.verificationSignature(signature,timestamp)) {
-                return "fail";
-            }
-            //解密消息
-            String json = this.decryptMessage(content);
-            JSONObject jsonObject = JSON.parseObject(json);
-            String companyName = jsonObject.getString("companyName");
-            String status = jsonObject.getString("status");
-            String companyId = jsonObject.getString("companyId");
-            QysCallbackDO qysCallbackDO = new QysCallbackDO();
-            qysCallbackDO.setContent(json);
-            //目前根据saas文档来的
-            qysCallbackDO.setType(QysCallBackType.COMPANY_AUTH.value());
-            //查询企业,后面确认下工商注册号是不是我们的一样
-            List<DeptDO> deptDOS = deptMapper.selectByName(companyName);
-            DeptDO deptDO = null;
-            if (CollUtil.isNotEmpty(deptDOS)) {
-                log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{}",companyName);
-                deptDO = deptDOS.get(0);
-                if (ObjectUtil.isNotNull(deptDO)) {
-                    qysCallbackDO.setMainId(deptDO.getId());
-                    deptDO.setAuth(Integer.valueOf(status));
-                }
-            }
-            qysCallbackMapper.insert(qysCallbackDO);
+    public String certification(String signature, String timestamp, String content) throws Exception {
+        log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        String json = this.decryptMessage(content);
+        JSONObject jsonObject = JSON.parseObject(json);
+        String companyName = jsonObject.getString("companyName");
+        String status = jsonObject.getString("status");
+        String companyId = jsonObject.getString("companyId");
+        String registerNo = jsonObject.getString("registerNo");
+        //通过营业执照，和公司名称找到公司数据
+        DeptDO deptDO = deptMapper.selectOne("name", companyName, "tax_num", registerNo);
+        if (ObjectUtil.isNotNull(deptDO)) {
             //如果回调数据为认证成功，保存公司id
             if ("1".equals(status) && StrUtil.isNotBlank(companyId)) {
                 QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
@@ -233,19 +217,17 @@ public class QysConfigServiceImpl implements QysConfigService {
                     configDO = new QysConfigDO();
                 }
                 configDO.setCompanyId(Long.valueOf(companyId));
-                if (ObjectUtil.isNotNull(deptDO)) {
-                    configDO.setBusinessId(deptDO.getId());
-                    configDO.setBusinessName(deptDO.getName());
-                }
+                configDO.setBusinessId(deptDO.getId());
+                configDO.setBusinessName(deptDO.getName());
                 qysConfigMapper.insert(configDO);
             }
-            if (ObjectUtil.isNotNull(deptDO)) {
-                deptMapper.updateById(deptDO);
-            }
-            return "success";
-        }catch (Exception e){
-            log.error("[certification]电子签回调出错", e);
+            deptMapper.updateById(deptDO);
+        }else {
+            log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
         }
+        qysCallbackService.saveDO(json,
+                QysCallBackType.COMPANY_AUTH.value(),
+                Integer.valueOf(status),deptDO);
         return "success";
     }
 
@@ -529,6 +511,33 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
         log.info("企业授权【{}】,授权地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
         //TODO 发送短信提醒企业授权
+    }
+
+    @Override
+    public String privilege(String signature, String timestamp, String content) throws Exception {
+        log.info("[privilege]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        String json = this.decryptMessage(content);
+        JSONObject jsonObject = JSON.parseObject(json);
+        Long companyId = jsonObject.getLong("companyId");
+        String companyName = jsonObject.getString("companyName");
+        String accessToken = jsonObject.getString("accessToken");
+        String accessSecret = jsonObject.getString("accessSecret");
+        QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
+        if (ObjectUtil.isNull(configDO)) {
+            log.warn("[privilege]电子签回调出错，找不到对应公司【{}】",jsonObject);
+            return "fail";
+        }
+        configDO.setCode("default");
+        configDO.setServerUrl("https://openapi.qiyuesuo.cn");
+        configDO.setAccessKey(accessToken);
+        configDO.setAccessSecret(accessSecret);
+        qysConfigMapper.updateById(configDO);
+        return "success";
     }
 
 

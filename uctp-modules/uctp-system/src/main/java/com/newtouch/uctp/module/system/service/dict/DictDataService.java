@@ -9,6 +9,7 @@ import com.newtouch.uctp.module.system.dal.dataobject.dict.DictDataDO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 字典数据 Service 接口
@@ -105,4 +106,11 @@ public interface DictDataService {
      * @return 字典数据
      */
     DictDataDO parseDictData(String dictType, String label);
+
+    /**
+     * 将字典表转成key-value的形式
+     * @param dictTypes  dictType类型
+     * @return
+     */
+    Map<String, String> getDictDataListMap(String[] dictTypes);
 }

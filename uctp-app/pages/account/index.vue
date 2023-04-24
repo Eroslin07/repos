@@ -50,7 +50,7 @@
 	export default {
 		data() {
 			return {
-				text: '资金受兴业银行监管、保证资金账户7×24小时充值/提现',
+				text: '资金受浦发银行监管、保证资金账户7×24小时充值/提现',
 				data: {},
 				chartData: {},
 				opts: {
