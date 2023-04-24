@@ -1,5 +1,28 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
@@ -10,26 +33,6 @@ import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
 import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.annotation.security.PermitAll;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
@@ -479,5 +482,10 @@ public class AppCarInfoController {
 //        return success(pageUrl1);
 //    }
 
-
+    @GetMapping("/getTransferInfo")
+    @Operation(summary = "根据车辆ID获取流程所需的过户信息")
+    @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
+    public CommonResult<CarTransferInfoVO> getTransferInfo(@RequestParam("carId") Long carId){
+        return success(carInfoService.getTransferInfo(carId));
+    }
 }

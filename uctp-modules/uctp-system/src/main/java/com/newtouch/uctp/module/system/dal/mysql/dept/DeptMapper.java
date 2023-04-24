@@ -2,8 +2,6 @@ package com.newtouch.uctp.module.system.dal.mysql.dept;
 
 import java.util.List;
 
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
@@ -52,7 +50,7 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
 
     default List<DeptDO> selectByTaxNum(String taxNum) {
         return selectList(new LambdaQueryWrapperX<DeptDO>()
-                .eqIfPresent(DeptDO::getTax_num,taxNum));
+                .eqIfPresent(DeptDO::getTaxNum,taxNum));
     }
 
     default List<DeptDO> selectByName(String name) {

@@ -33,5 +33,17 @@ public class DeptRespDTO {
      * 枚举 {@link CommonStatusEnum}
      */
     private Integer status;
+    /**
+     * 营业执照号
+     */
+    private String taxNum;
+    /**
+     * 法定代表人
+     */
+    private String legalRepresentative;
+    /**
+     * 契约锁公司Id
+     */
+    private Long companyId;
 
 }

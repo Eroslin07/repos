@@ -41,7 +41,8 @@
 			handleAffirm() {
 				const data={
 					// carId:'1648668268713422850',
-					carId:this.carId
+					carId:this.carId,
+					type:'1'
 				}
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);

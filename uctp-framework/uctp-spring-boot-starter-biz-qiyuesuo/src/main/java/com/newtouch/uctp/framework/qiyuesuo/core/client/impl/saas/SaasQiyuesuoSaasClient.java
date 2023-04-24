@@ -140,7 +140,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setCreateToken(true);
         request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/certification");
         //TODO 成功后的地址需要商量
-        request.setSuccessUrl("");
+        request.setSuccessUrl("https://fssc.cloud:28000/");
         //目前只授权印章
         List<String> privilegeModules = Arrays.asList("SEAL");
         request.setPrivilegeModules(privilegeModules);

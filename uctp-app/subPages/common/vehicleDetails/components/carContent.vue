@@ -325,7 +325,7 @@
 				type: String,
 				default: '0'
 			},
-			vehicleDetails: {
+			allDetails: {
 				type: Object,
 				default: () => {}
 			}

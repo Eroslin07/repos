@@ -1,7 +1,7 @@
 <template>
 	<view class="selling-car">
 		<!-- 自定义导航栏 -->
-		<!-- <u-navbar title="我要卖车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
+		<u-navbar title="我要卖车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
 			<u-grid-item>
 				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
@@ -145,7 +145,7 @@
 						</view>
 						<view class="text">车辆价款及交易方式</view>
 					</view>
-					<u-form-item label="收车金额"  borderBottom>
+					<u-form-item label="收车金额" borderBottom>
 						<u-input v-model="sellerForm.vehicleReceiptAmount" disabled border="none" placeholder="请输入收车金额">
 							<template slot="suffix">
 								<view>元</view>
@@ -250,9 +250,9 @@
 										<view>组</view>
 									</template>
 								</u-input>
-								<u--input type="text" showWordLimit v-model="carForm.other" :disabled="isDisabledAcc"
-									maxlength="10" v-if="item.name == 'accidentVehicle'" disabledColor="#ffffff"
-									border="none" placeholder="请输入"></u--input>
+								<u--input type="text" showWordLimit v-model="carForm.otherEvent"
+									:disabled="isDisabledAcc" maxlength="10" v-if="item.name == 'accidentVehicle'"
+									disabledColor="#ffffff" border="none" placeholder="请输入"></u--input>
 							</view>
 							</u--text>
 						</u-form-item>
@@ -373,8 +373,8 @@
 					<!-- <u-form-item label="其他"></u-form-item> -->
 					<u-form-item label="其他" borderBottom labelWidth="40">
 						<!-- <u--input v-model="other" maxlength="18" type="textarea" showWordLimit border="none" placeholder="请输入"></u--input> -->
-						<u--textarea v-model="other" height="24" maxlength="18" confirmType="done" count border="none"
-							placeholder="请输入"></u--textarea>
+						<u--textarea v-model="carForm.other" height="24" maxlength="18" confirmType="done" count
+							border="none" placeholder="请输入"></u--textarea>
 					</u-form-item>
 				</u--form>
 			</view>
@@ -498,6 +498,7 @@
 					checkboxValue: [],
 					vehicleKey: '',
 					accidentVehicle: '',
+					other: '',
 				},
 				// 车辆信息校验规则
 				carRules: {
@@ -773,15 +774,21 @@
 				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
 				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
-				this.carForm.remarks = ''
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
+					// 车况及其他费用及约定
+					this.feesForm = {
+						...res.data.feesAndCommitments,
+						...res.data.vehicleProblem
+					}
 				} else {
 					obj = res.data.proceduresAndSpareParts;
+					// 清空特殊约定
+					this.carForm.remarks = ''
 				}
 				for (let key in obj) {
 					if (obj[key] === true) {
@@ -797,7 +804,7 @@
 					if (key == 'accidentVehicle') {
 						if (obj[key] != '') {
 							this.carForm.accidentVehicle = obj[key];
-							this.carForm.other = obj[key];
+							this.carForm.otherEvent = obj[key];
 							this.carForm.checkboxValue.push(key);
 						}
 					}
@@ -819,11 +826,7 @@
 				} else {
 					this.isDisabledAcc = true
 				}
-				// 车况及其他费用及约定
-				this.feesForm = {
-					...res.data.feesAndCommitments,
-					...res.data.vehicleProblem
-				}
+				
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
@@ -843,7 +846,11 @@
 		filters: {
 			filterMoney(val) {
 				if (val) {
-					return that.$amount.getComdify(val - 0)
+					let money = that.$amount.getComdify(val - 0)
+					console.log(money,'money')
+					return money ? money : 0
+				}else{
+					return 0
 				}
 
 			}
@@ -874,9 +881,13 @@
 				}
 			},
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				if (this.active == 0) {
+					this.handleSaveCar();
+				} else if (this.active == 1) {
+					this.vehicleInfor = true;
+					this.sellerInfor = false;
+					this.active = 0;
+				}
 			},
 			formatter(type, value) {
 				if (type === 'year') {
@@ -1103,7 +1114,7 @@
 					proceduresAndSpareParts['vehicleKey'] = 0;
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
-					proceduresAndSpareParts['accidentVehicle'] = this.carForm.other;
+					proceduresAndSpareParts['accidentVehicle'] = this.carForm.otherEvent;
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
 				}
@@ -1137,7 +1148,7 @@
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
-					other: this.other //其他
+					other: this.carForm.other //其他
 				}
 
 				this.$modal.loading("提交中，请耐心等待...");

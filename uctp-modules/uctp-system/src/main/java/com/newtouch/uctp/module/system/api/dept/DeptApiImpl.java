@@ -48,4 +48,10 @@ public class DeptApiImpl implements DeptApi {
         return success(DeptConvert.INSTANCE.convert03(dept));
     }
 
+    @Override
+    public CommonResult<DeptRespDTO> getDeptByUserId(Long userId) {
+        DeptDO dept = deptService.getDeptByUserId(userId);
+        return success(DeptConvert.INSTANCE.convert03(dept));
+    }
+
 }

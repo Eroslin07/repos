@@ -16,43 +16,43 @@
 			</u-swiper>
 			<view class="car-content">
 				<view class="car-title">
-					<text>宝马-宝马X1 2021款 sDrive20Li 时尚型</text>
+					<text>{{carInfo.model}}</text>
 				</view>
 				<view class="car-vin">
 					<text>车架号（VIN）</text>
-					<text>LE4TG4DB1JL199517</text>
+					<text>{{carInfo.vin}}</text>
 				</view>
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>定金+尾款</text>
+						<text>{{ carInfoDetails.remitType}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>全款</text>
+						<text>{{carInfo.paymentType}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>在库时长</text>
-						<text>30天</text>
+						<text>{{carInfoDetails.days }}天</text>
 					</view>
 					<view class="car-item">
 						<text>首次上牌</text>
-						<text>2019年6月</text>
+						<text>{{carInfoDetails.firstRegistDate}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>3万公里</text>
+						<text>{{carInfoDetails.mileage}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>张三</text>
+						<text>{{carInfoDetails.creator}}</text>
 					</view>
 				</view>
 			</view>
@@ -61,20 +61,27 @@
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" @changeTest="changeTest"></ca-content>
+			<ca-content :tabCar="tabCar" :allDetails="allDetails" @changeTest="changeTest"></ca-content>
 		</uni-card>
 	</view>
 </template>
 
 <script>
 	import caContent from './components/carContent.vue'
+	import {
+		getCarInfoById
+	} from '@/api/cost/carInfo.js'
 	export default {
 		components: {
 			caContent
 		},
 		data() {
 			return {
-				currentNum: 0,
+				// 基础数据
+				carInfo: {},
+				carInfoDetails: {},
+				allDetails:{},
+				currentNum: '0',
 				carUpload: true,
 				carsList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -141,11 +148,23 @@
 			};
 		},
 
-		onload(props) {
-			console.log(props)
-			this.fatherProps = JSON.parse(props.item)
+		onLoad(props) {
+			console.log(props, 'this.fatherProps.id')
+			this.getCarDetails('1650072138860851201')
 		},
 		methods: {
+			// 获取数据
+			getCarDetails(id) {
+				let data = {
+					ID: id
+				}
+				getCarInfoById(data).then(res => {
+					this.carInfo = res.data.carInfo;
+					this.carInfoDetails = res.data.carInfoDetails;
+					this.allDetails=res.data;
+					this.$set(this.carInfoDetails,'days',this.getDays(res.data.carInfoDetails.createTime))
+				})
+			},
 			changeTab(item) {
 				console.log(item)
 				this.tabCar = item.index
@@ -181,6 +200,12 @@
 			changeTest(val) {
 				console.log(val)
 				this.isTest = val
+			},
+
+			// 时间戳转天
+			getDays(value = 0) {
+				let currentTime = new Date().getTime();
+				return (currentTime - val) / 3600 / 24
 			}
 		}
 	}

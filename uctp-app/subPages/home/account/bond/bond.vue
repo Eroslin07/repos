@@ -21,7 +21,7 @@
 		
 		<view class="mingxi">
 			<view class="jiaoyi">
-				<u-row justify="space-between" customStyle="margin-bottom: 10px;">
+				<u-row justify="space-between">
 					<u-col span="4">
 						<view class="title">保证金交易明细</view>
 					</u-col>
@@ -74,19 +74,13 @@
 				status: false
 			}
 		},
-		onBackPress(options) {
-			this.$tab.switchTab('/pages/account/index');
-			return true;
-		},
 		mounted() {
 			this.$modal.loading("数据加载中，请耐心等待...");
 			this.getBondDetail();
 		},
 		methods: {
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				this.$tab.switchTab('/pages/account/index');
 			},
 			// 是否隐藏金额
 			handleEye() {

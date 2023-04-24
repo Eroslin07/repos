@@ -232,6 +232,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     }
 
     @Override
+    @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public void approveTaskV2(Long userId, BpmTaskApproveReqVO reqVO) {
         // 校验任务存在

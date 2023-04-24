@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>兴业银行（***1167）</view>
+			<view>浦发银行（***1167）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -58,6 +58,10 @@
 					this.$modal.msg("请输入需要提现的金额");
 					return
 				}
+				if (this.amount > this.$amount.getDelcommafy(this.allAmount)) {
+					this.$modal.msg("提现金额大于可用利润余额，请重新输入提现金额");
+					return
+				}
 				let data = {
 					accountNo: this.$store.state.user.accountNo,
 					tranAmount: Number(this.amount * 100),
@@ -71,7 +75,7 @@
 			},
 			// 点击全部提现
 			handleQuanbu() {
-				this.amount = this.allAmount
+				this.amount = this.$amount.getDelcommafy(this.allAmount)
 			}
 		}
 	}

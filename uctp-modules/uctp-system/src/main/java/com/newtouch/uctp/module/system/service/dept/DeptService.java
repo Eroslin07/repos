@@ -151,4 +151,6 @@ public interface DeptService {
     List<DeptDO> selectByTaxNum(String taxNum);
 
     List<DeptDO> selectByName(String name);
+
+    DeptDO getDeptByUserId(Long userId);
 }

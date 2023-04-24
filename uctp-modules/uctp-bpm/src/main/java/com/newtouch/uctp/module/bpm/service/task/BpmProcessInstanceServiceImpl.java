@@ -9,6 +9,7 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -211,6 +212,8 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     }
 
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public String createProcessInstanceByKey(Long userId, String processDefinitionKey, Map<String, Object> variables) {
         if (CollectionUtils.isEmpty(variables)) {
             variables = new HashMap<String, Object>();

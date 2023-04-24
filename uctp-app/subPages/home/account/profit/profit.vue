@@ -11,14 +11,14 @@
 				</view>
 				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit / 100) }}<text style="font-size: 12px;">元</text></view>
 				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 ' + $amount.getComdify(freezeProfit / 100) + ' 元'"></u--text></view>
-				<view style="margin-bottom: 16px;"><u--text iconStyle="font-size: 18px" :text="'待回填保证金' + $amount.getComdify(cashBack / 100) + '元'"></u--text></view>
+				<view style="margin-bottom: 16px;" @click="handleBackfilled"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'待回填保证金 ' + $amount.getComdify(cashBack / 100) + ' 元'"></u--text></view>
 				<button class="button" @click="handleWithdrawal" style="background-color: #fa6401;color: #fff;">提现</button>
 			</view>
 		</view>
 		
 		<view class="mingxi">
 			<view class="jiaoyi">
-				<u-row justify="space-between" customStyle="margin-bottom: 10px;">
+				<u-row justify="space-between">
 					<u-col span="4">
 						<view class="title">利润交易明细</view>
 					</u-col>
@@ -63,8 +63,7 @@
 			return {
 				eyeShow: false,
 				// 商户账户号
-				accountNo: '55555555',
-				// accountNo: this.$store.state.user.accountNo,
+				accountNo: this.$store.state.user.accountNo,
 				// 利润余额
 				profit: 0,
 				// 冻结余额
@@ -75,19 +74,13 @@
 				status: false
 			}
 		},
-		onBackPress(options) {
-			this.$tab.switchTab('/pages/account/index');
-			return true;
-		},
 		mounted() {
 			this.getSummary();
 			this.getList();
 		},
 		methods: {
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				this.$tab.switchTab('/pages/account/index');
 			},
 			// 是否隐藏金额
 			handleEye() {
@@ -97,7 +90,7 @@
 				uni.showModal({
 				  title: '利润提现',
 					showCancel: false,
-				  content: '利润提现时，请提前开好发票，在APP提现申请时上传发票照片，提交申请后，请及时将纸质发票交至市场处，便于市场审核通过。',
+				  content: '利润提现时，请提前准备好发票，并请核对开票抬头和金额。提交申请后，请及时将纸质发票交到市场方进行审核！',
 				  confirmText: '知道了',
 					confirmColor: '#fa6401'
 				})
@@ -135,7 +128,7 @@
 			},
 			// 点击待回填保证金
 			handleBackfilled() {
-				this.$tab.navigateTo('/subPages/home/account/profit/backfilled');
+				this.$tab.navigateTo('/subPages/home/account/profit/backfilled?amount=' + this.cashBack);
 			},
 			// 点击全部
 			handleWhole() {
@@ -150,7 +143,7 @@
 					} else if (val == '10101002') {
 						// 利润提现
 						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
-					} else if (val == '10101001') {
+					} else if (val == '10101001' || val == '10101006') {
 						// 卖车利润
 						this.$tab.navigateTo('/subPages/home/account/profit/info?data='+encodeURIComponent(JSON.stringify(res.data)));
 					} else if (val == '待回填保证金') {

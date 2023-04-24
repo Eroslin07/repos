@@ -46,8 +46,7 @@
 		data() {
 			return {
 				// 商户账户号
-				accountNo: '55555555',
-				// accountNo: this.$store.state.user.accountNo,
+				accountNo: this.$store.state.user.accountNo,
 				list: [{
 					name: '全部',
 				}, {

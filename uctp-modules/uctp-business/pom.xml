@@ -29,18 +29,16 @@
             <artifactId>uctp-api-business</artifactId>
             <version>${revision}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-api-system</artifactId>
-            <version>${revision}</version>
-        </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-api-infra</artifactId>
             <version>${revision}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-api-system</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-modules-bpm</artifactId>
@@ -80,11 +78,6 @@
 <!--            <scope>system</scope>-->
 <!--            <systemPath>${pom.basedir}/lib/sdk-java-3.5.2.jar</systemPath>-->
 <!--        </dependency>-->
-        <!-- 业务组件 -->
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
-        </dependency>
         <!-- Web 相关 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
@@ -156,12 +149,6 @@
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-        </dependency>
-        <!-- 依赖服务 -->
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-api-system</artifactId>
-            <version>${revision}</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.vaadin.external.google</groupId>-->

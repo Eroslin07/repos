@@ -34,7 +34,8 @@
 		}, {
 			"path": "pages/mine/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
 			}
 		}
 	],
@@ -55,8 +56,8 @@
 		}, {
 			"path": "home/bycar/index",
 			"style": {
-				"navigationBarTitleText": "我要收车"
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "我要收车",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "home/bycar/agreement",
@@ -72,14 +73,15 @@
 			"path": "home/sellingCar/index",
 			"style": {
 				"navigationBarTitleText": "我要卖车",
-				// "navigationStyle": "custom"
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": true,
 				"onReachBottomDistance": 150
 			}
 		}, {
 			"path": "home/sellingCar/carInfo",
 			"style": {
-				"navigationBarTitleText": "我要卖车"
+				"navigationBarTitleText": "我要卖车",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "work/index",
@@ -121,12 +123,14 @@
 		}, {
 			"path": "home/account/bond/progress",
 			"style": {
-				"navigationBarTitleText": "保证金提现"
+				"navigationBarTitleText": "保证金提现",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "home/account/bond/recharge",
 			"style": {
-				"navigationBarTitleText": "保证金充值"
+				"navigationBarTitleText": "保证金充值",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "home/account/bond/info",
@@ -162,6 +166,7 @@
 			"path": "home/account/bond/freeze",
 			"style": {
 				"navigationBarTitleText": "保证金冻结明细",
+				"navigationStyle": "custom",
 				"onReachBottomDistance": 150,
 				"enablePullDownRefresh": true
 			}
@@ -201,7 +206,8 @@
 		}, {
 			"path": "home/account/profit/progress",
 			"style": {
-				"navigationBarTitleText": "利润提现"
+				"navigationBarTitleText": "利润提现",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "home/account/profit/progressDetile",
