@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -40,14 +41,26 @@ import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.QysCallBackType;
+import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.ContractService;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
 import com.newtouch.uctp.module.business.util.UppercaseUtil;
+import com.newtouch.uctp.module.infra.api.file.FileApi;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
+import com.newtouch.uctp.module.system.api.dept.DeptApi;
+import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
+import com.newtouch.uctp.module.system.api.user.AdminUserApi;
+import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 import com.qiyuesuo.sdk.v2.bean.*;
+import com.qiyuesuo.sdk.v2.http.StreamFile;
+import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
+import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
+import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -56,6 +69,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -98,7 +113,16 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Resource
     private UserExtMapper userExtMapper;
     @Resource
+    private DeptApi deptApi;
+    @Resource
+    private AdminUserApi adminUserApi;
+
+    @Resource
     private ContractMapper contractMapper;
+    @Resource
+    private FileApi fileApi;
+    @Resource
+    private BusinessFileService businessFileService;
 
     @PostConstruct
     @Override
@@ -448,10 +472,67 @@ public class QysConfigServiceImpl implements QysConfigService {
         return ssoUrl;
     }
 
+    @GlobalTransactional
+    @Transactional
+    @Override
+    public void companyAuth(Long userId) throws FileNotFoundException {
+        AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
+        DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
+        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
+        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
+        StreamFile streamFile = null;
+        if (CollUtil.isNotEmpty(fileList)) {
+            FileRespDTO fileRespDTO = fileList.get(0);
+            streamFile = new StreamFile(fileRespDTO.getName(), new FileInputStream(fileRespDTO.getUrl()));
+        }
+//        {"name":"aaa","contact": "15100000000","contactType": "MOBILE"}
+        Map<String, String> applicantInfo = MapUtil
+                .builder("name", userRespDTO.getNickname())
+                .put("contact", userRespDTO.getMobile())
+                .put("contactType", "MOBILE").build();
+
+        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl(deptRespDTO.getName(),
+                JSON.toJSONString(applicantInfo),
+                deptRespDTO.getLegalRepresentative(),
+                deptRespDTO.getTaxNum(),
+                streamFile);
+        SaaSCompanyAuthPageResult checkedData = result.getCheckedData();
+        log.info("企业认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
+        //TODO 发送短信提醒操作人认证
+    }
+
+    @GlobalTransactional
+    @Transactional
+    @Override
+    public void userAuth(Long userId){
+        AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
+        DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
+        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
+        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
+        SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
+        log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
+        //TODO 发送短信提醒操作人认证
+    }
+    @GlobalTransactional
+    @Transactional
+    @Override
+    public void privilegeUrl() {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
+        DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
+        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
+        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
+        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
+        log.info("企业授权【{}】,授权地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
+        //TODO 发送短信提醒企业授权
+    }
+
+
     //收车委托合同
     private Contract buildContract(DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
-        draftContract.setSubject("三方-二手车");
+        draftContract.setSubject("三方-二手车-666");
         // 设置合同接收方
         // 甲方平台
 //        Signatory platformSignatory = new Signatory();
@@ -462,15 +543,15 @@ public class QysConfigServiceImpl implements QysConfigService {
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
        // platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setTenantName("平头哥二手车");
-        platformSignatory.setReceiver(new User("17311271898", "MOBILE"));
+        platformSignatory.setTenantName("成都新致云服测试公司");
+        platformSignatory.setReceiver(new User("13708206115", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
 
         //乙方个人签署方
         Signatory persoanlSignatory = new Signatory();
         persoanlSignatory.setTenantType("COMPANY");
-        persoanlSignatory.setTenantName("成都新致云服测试公司");
-        persoanlSignatory.setReceiver(new User("13708206115", "MOBILE"));
+        persoanlSignatory.setTenantName("平头哥二手车");
+        persoanlSignatory.setReceiver(new User("17311271898", "MOBILE"));
 //        persoanlSignatory.setTenantName(userDept.getName());
 //        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
