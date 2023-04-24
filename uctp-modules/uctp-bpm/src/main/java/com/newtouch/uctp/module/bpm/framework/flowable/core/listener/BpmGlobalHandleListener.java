@@ -20,6 +20,7 @@ import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
+import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 
 /**
@@ -39,6 +40,8 @@ public class BpmGlobalHandleListener {
     private UserService userService;
     @Resource
     private CarInfoMapper carInfoMapper;
+    @Resource
+    private QysConfigApi qysConfigApi;
 
     /**
      * 流程创建时处理
@@ -79,15 +82,17 @@ public class BpmGlobalHandleListener {
         // TODO: 根据业务场景进行个性化处理
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.ZHSQ.name())) {
             if ("pass".equals(approvalType)) {
-                //注册成功
-                noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
-                //更新用户状态
+                // 更新用户状态
                 userService.updateUserStatus(bpmFormMainVO.getStartUserId());
+                // 公司认证
+                qysConfigApi.companyAuth(bpmFormMainVO.getStartUserId());
+                // 注册成功
+                noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
             }else if ("disagree".equals(approvalType)){
-                //注册失败
-                noticeService.saveTaskNotice("1", "11", reason, bpmFormMainVO);
-                //删除用户
+                // 删除用户
                 userService.deleteUser(bpmFormMainVO.getStartUserId());
+                // 注册失败
+                noticeService.saveTaskNotice("1", "11", reason, bpmFormMainVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
            //收车公允审批不通过
