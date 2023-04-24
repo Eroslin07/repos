@@ -7,14 +7,14 @@
 		<view class="user_list">
 			<u-swipe-action>
 				<u-swipe-action-item v-for="(item, index) in list" :key="index" :options="options1"
-					@click="handleClick(index)">
-					<view class="user flex">
+					>
+					<view class="user flex" @click="handleClick(index)">
 						<view>
 							<text :class="item.status ? 'ren' : 'wei'">认</text>
 							<text>{{ item.name }}</text>
 							<text>{{ item.phone }}</text>
 						</view>
-						<view >
+						<view>
 							<text v-if="item.status" class="zhengchang">正常</text>
 							<text v-else class="tingyong">停用</text>
 						</view>
@@ -61,10 +61,11 @@
 		methods: {
 			handleAdd() {
 				// 新增员工
-				this.$tab.navigateTo('/subPages/mine/staff/addStaff')
+				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=add`)
 			},
 			handleClick(i) {
-
+				// 修改员工
+				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit`)
 			}
 		}
 	}
@@ -82,9 +83,10 @@
 			height: 45px;
 			line-height: 45px;
 			color: #FA6400;
-			 text{
-				 padding-left: 12rpx;
-			 }
+
+			text {
+				padding-left: 12rpx;
+			}
 		}
 
 		.user_list {
@@ -97,6 +99,7 @@
 				border-bottom: 1px solid #F5F5F5;
 				justify-content: space-between;
 				align-items: center;
+
 				text {
 					margin-right: 10px;
 				}
