@@ -486,7 +486,7 @@ public class AppCarInfoController {
     @GetMapping("/getTransferInfo")
     @Operation(summary = "根据车辆ID获取流程所需的过户信息")
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
-    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId){
-        return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId)));
+    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey){
+        return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId, procDefKey)));
     }
 }

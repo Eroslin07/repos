@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
@@ -30,6 +31,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
+import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
@@ -75,6 +77,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Resource
     private FileApi fileApi;
+
+    @Resource
+    private ContractMapper contractMapper;
 
     @Override
     public Long createCarInfo(AppCarInfoCreateReqVO createReqVO) {
@@ -824,7 +829,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
-    public CarTransferInfoVO getTransferInfo(Long carId) {
+    public CarTransferInfoVO getTransferInfo(Long carId, String procDefKey) {
         CarTransferInfoVO carTransferInfoVO = new CarTransferInfoVO();
         // 1.根据车辆ID获取车辆主信息
         CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
@@ -834,8 +839,52 @@ public class CarInfoServiceImpl implements CarInfoService {
         carTransferInfoVO.setCarInfoDetails(infoDetails);
         // 3.处理车辆的图片信息
         this.buildBmpVO(carInfoDO,infoDetails);
+        // 4.处理合同   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+        if (ObjectUtil.equals("SCGH", procDefKey)) {
+            // 收车过户
+            List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
+            contractList.add(this.getContractApprovalShowInfo(carId, 1));
+            contractList.add(this.getContractApprovalShowInfo(carId, 2));
+            String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+            carTransferInfoVO.setContractCode(contractCode);
+            carTransferInfoVO.setContractList(contractList);
+        } else if (ObjectUtil.equals("MCGH", procDefKey)) {
+            // 卖车过户
+            List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
+            contractList.add(this.getContractApprovalShowInfo(carId, 3));
+            contractList.add(this.getContractApprovalShowInfo(carId, 4));
+            String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+            carTransferInfoVO.setContractCode(contractCode);
+            carTransferInfoVO.setContractList(contractList);
+        }
 
         return carTransferInfoVO;
+    }
+
+    /**
+     * 根据车辆ID和合同类型查询合同附件信息
+     * @param carId  车辆ID
+     * @param contractType 合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+     * @return
+     */
+    private ContractApprovalShowVO getContractApprovalShowInfo(Long carId, Integer contractType) {
+        ContractApprovalShowVO contractApprovalShowVO = new ContractApprovalShowVO();
+        contractApprovalShowVO.setContractType(contractType);
+        ContractDO contractDO = this.contractMapper.selectOne(ContractDO::getCarId, carId, ContractDO::getContractType, contractType);
+        if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
+            return contractApprovalShowVO;
+        }
+        contractApprovalShowVO.setContractId(contractDO.getContractId());
+        contractApprovalShowVO.setContractName(contractDO.getContractName());
+        List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getContractId());
+        if (!CollectionUtils.isEmpty(fileList)) {
+            FileRespDTO fileRespDTO = fileList.get(0);
+            contractApprovalShowVO.setContractFileId(String.valueOf(fileRespDTO.getId()));
+            contractApprovalShowVO.setContractFilePath(fileRespDTO.getPath());
+            contractApprovalShowVO.setContractFileUrl(fileRespDTO.getUrl());
+        }
+
+        return contractApprovalShowVO;
     }
 
 
