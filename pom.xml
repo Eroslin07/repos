@@ -138,6 +138,8 @@
                 <redis.password>123456</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_lc</nacos.namespace>
+                <!-- 契约锁请求地址  -->
+                <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
             </properties>
         </profile>
         <!-- 测试环境 -->
@@ -158,6 +160,8 @@
                 <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_test</nacos.namespace>
+                <!-- 契约锁请求地址  -->
+                <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
             </properties>
         </profile>
         <!-- UAT验证环境 -->
@@ -178,6 +182,8 @@
                 <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_uat</nacos.namespace>
+                <!-- 契约锁请求地址  -->
+                <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
             </properties>
         </profile>
         <!-- 生产环境 -->
@@ -198,6 +204,8 @@
                 <redis.password>j47qendm4bA7f7k</redis.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_prod</nacos.namespace>
+                <!-- 契约锁请求地址  -->
+                <qys.server-url>https://openapi.qiyuesuo.com</qys.server-url>
             </properties>
         </profile>
     </profiles>

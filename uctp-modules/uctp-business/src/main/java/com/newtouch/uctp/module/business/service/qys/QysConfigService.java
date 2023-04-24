@@ -129,9 +129,11 @@ public interface QysConfigService {
     void userAuth(Long userId);
 
     /**
+     *
      * 企业授权
+     *  @param userId 注册用户id
      */
-    void privilegeUrl();
+    void privilegeUrl(Long userId);
 
     /**
      * 企业授权，获取token
@@ -141,5 +143,5 @@ public interface QysConfigService {
      * @param content   内容
      * @return
      */
-    String privilege(String signature, String timestamp, String content) throws Exception;
+    String callBackPrivilege(String signature, String timestamp, String content) throws Exception;
 }

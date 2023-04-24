@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -40,10 +41,7 @@ import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.QysCallBackType;
-import com.newtouch.uctp.module.business.service.BusinessFileService;
-import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
-import com.newtouch.uctp.module.business.service.CarInfoService;
-import com.newtouch.uctp.module.business.service.ContractService;
+import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
 import com.newtouch.uctp.module.business.util.UppercaseUtil;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
@@ -121,6 +119,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     private FileApi fileApi;
     @Resource
     private BusinessFileService businessFileService;
+    @Resource
+    private NoticeService noticeService;
 
     @PostConstruct
     @Override
@@ -191,7 +191,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public PageResult<QysConfigDO> getQysConfigPage(QysConfigPageReqVO pageReqVO) {
         return qysConfigMapper.selectPage(pageReqVO);
     }
-
+    @GlobalTransactional
     @Override
     @Transactional
     public String certification(String signature, String timestamp, String content) throws Exception {
@@ -222,8 +222,17 @@ public class QysConfigServiceImpl implements QysConfigService {
                 qysConfigMapper.insert(configDO);
             }
             deptMapper.updateById(deptDO);
+            //继续做企业授权
+            List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
+            if (CollUtil.isNotEmpty(checkedData)) {
+                //此时只会存在一条当前部门下的用户数据
+                AdminUserRespDTO userRespDTO = checkedData.get(0);
+                this.privilegeUrl(userRespDTO.getId());
+            }else {
+                log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
+            }
         }else {
-            log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
+            log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
         }
         qysCallbackService.saveDO(json,
                 QysCallBackType.COMPANY_AUTH.value(),
@@ -485,6 +494,13 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSCompanyAuthPageResult checkedData = result.getCheckedData();
         log.info("企业认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
         //TODO 发送短信提醒操作人认证
+        Map<String, String> map = MapUtil
+                .builder("title", "")
+                .put("contentType", "")
+                .put("phone", userRespDTO.getMobile())
+                .put("businessId", deptRespDTO.getId().toString())
+                .put("type", "1").build();
+        noticeService.saveNotice(map);
     }
 
     @GlobalTransactional
@@ -498,12 +514,18 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
         log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
         //TODO 发送短信提醒操作人认证
+        Map<String, String> map = MapUtil
+                .builder("title", "")
+                .put("contentType", "")
+                .put("phone", userRespDTO.getMobile())
+                .put("businessId", deptRespDTO.getId().toString())
+                .put("type", "1").build();
+        noticeService.saveNotice(map);
     }
     @GlobalTransactional
     @Transactional
     @Override
-    public void privilegeUrl() {
-        Long userId = SecurityFrameworkUtils.getLoginUserId();
+    public void privilegeUrl(Long userId) {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
         QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
@@ -511,10 +533,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
         log.info("企业授权【{}】,授权地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
         //TODO 发送短信提醒企业授权
+        Map<String, String> map = MapUtil
+                .builder("title", "")
+                .put("contentType", "")
+                .put("phone", userRespDTO.getMobile())
+                .put("businessId", deptRespDTO.getId().toString())
+                .put("type", "1").build();
+        noticeService.saveNotice(map);
     }
-
+    @Transactional
     @Override
-    public String privilege(String signature, String timestamp, String content) throws Exception {
+    public String callBackPrivilege(String signature, String timestamp, String content) throws Exception {
         log.info("[privilege]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
@@ -524,7 +553,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         String json = this.decryptMessage(content);
         JSONObject jsonObject = JSON.parseObject(json);
         Long companyId = jsonObject.getLong("companyId");
-        String companyName = jsonObject.getString("companyName");
         String accessToken = jsonObject.getString("accessToken");
         String accessSecret = jsonObject.getString("accessSecret");
         QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
