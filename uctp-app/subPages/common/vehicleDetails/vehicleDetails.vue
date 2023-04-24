@@ -5,9 +5,9 @@
 				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
-						<text>卖车中-合同已发起</text>
-						<text :class="{bcClor:isTest}">检</text>
-						<text :class="{bcClor:isTransfer}">户</text>
+						<text>{{firstStatus}}-{{secondStatus}}</text>
+						<text :class="{bcClor:isShowTest}">检</text>
+						<text :class="{bcClor:isShowTransfer}">户</text>
 					</view>
 					<view class="indicator-num">
 						<text class="indicator-num__text">{{ currentNum + 1 }}/{{ carsList.length }}</text>
@@ -16,43 +16,43 @@
 			</u-swiper>
 			<view class="car-content">
 				<view class="car-title">
-					<text>{{carInfo.model}}</text>
+					<text>{{carInfoAll.carInfo.model}}</text>
 				</view>
 				<view class="car-vin">
 					<text>车架号（VIN）</text>
-					<text>{{carInfo.vin}}</text>
+					<text>{{carInfoAll.carInfo.vin}}</text>
 				</view>
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>{{ carInfoDetails.remitType}}</text>
+						<text>{{ carInfoAll.carInfoDetails.remitType}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>{{carInfo.paymentType}}</text>
+						<text>{{carInfoAll.carInfo.paymentType}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>在库时长</text>
-						<text>{{carInfoDetails.days }}天</text>
+						<text>{{carInfoAll.carInfoDetails.days }}天</text>
 					</view>
 					<view class="car-item">
 						<text>首次上牌</text>
-						<text>{{carInfoDetails.firstRegistDate}}</text>
+						<text>{{carInfoAll.carInfoDetails.firstRegistDate}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>{{carInfoDetails.mileage}}万公里</text>
+						<text>{{carInfoAll.carInfoDetails.mileage}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>{{carInfoDetails.creator}}</text>
+						<text>{{carInfoAll.carInfoDetails.creator}}</text>
 					</view>
 				</view>
 			</view>
@@ -61,7 +61,7 @@
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" :allDetails="allDetails" @changeTest="changeTest"></ca-content>
+			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" @changeTest="changeTest"></ca-content>
 		</uni-card>
 	</view>
 </template>
@@ -71,17 +71,22 @@
 	import {
 		getCarInfoById
 	} from '@/api/cost/carInfo.js'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
+	import store from '@/store/index.js'
 	export default {
 		components: {
 			caContent
 		},
 		data() {
 			return {
-				// 基础数据
-				carInfo: {},
-				carInfoDetails: {},
-				allDetails:{},
-				currentNum: '0',
+				//卡片详情
+				carInfoAll: {
+					carInfo: {},
+					carInfoDetails: {},
+				},
+				currentNum: 0,
 				carUpload: true,
 				carsList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -102,7 +107,7 @@
 						name: '发票信息'
 					},
 				],
-				tabCar: '0',
+				tabCar: 0,
 				uploadeList: [],
 				listData: [{
 						title: '车辆信息',
@@ -139,9 +144,7 @@
 					}
 				],
 				// 是否检测
-				isTest: true,
-				// 是否过户
-				isTransfer: false,
+				carUpload: false,
 
 				// 父组件传过来的值
 				fatherProps: null,
@@ -152,6 +155,33 @@
 			console.log(props, 'this.fatherProps.id')
 			this.getCarDetails('1650072138860851201')
 		},
+		computed: {
+			firstStatus() {
+				let statusValue = store.state.allStatus.statusValue
+				return statusValue[this.carInfoAll.carInfo.salesStatus]
+			},
+			secondStatus() {
+				let statusValue = store.state.allStatus.statusValue
+				console.log(store.state,statusValue[this.carInfoAll.carInfo.status])
+				return statusValue[this.carInfoAll.carInfo.status]
+			},
+			isShowTest() {
+				if (this.carInfoAll.carInfo.status > 22 || this.carUpload) {
+					return true
+				} else {
+					return false
+				}
+			},
+			isShowTransfer() {
+				let arr = [22, 23, 42, 43]
+				let flag = arr.indexOf(this.carInfoAll.carInfo.status)
+				if (flag > 0) {
+					return true
+				} else {
+					return false
+				}
+			}
+		},
 		methods: {
 			// 获取数据
 			getCarDetails(id) {
@@ -159,12 +189,23 @@
 					ID: id
 				}
 				getCarInfoById(data).then(res => {
-					this.carInfo = res.data.carInfo;
-					this.carInfoDetails = res.data.carInfoDetails;
-					this.allDetails=res.data;
-					this.$set(this.carInfoDetails,'days',this.getDays(res.data.carInfoDetails.createTime))
+					this.carInfoAll = res.data
+					let {
+						carInfo: {
+							scrapDate,
+							annualInspectionDate,
+							insuranceEndData
+						}
+					} = res.data
+					this.carInfoAll.carInfo.scrapDate = parseTime(scrapDate, '{y}-{m}-{d}')
+					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
+					this.carInfoAll.carInfo.insuranceEndData=parseTime(insuranceEndData,'{y}-{m}-{d}')
+					// 库存天数
+					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
+						.createTime))
 				})
 			},
+			// 切换tab
 			changeTab(item) {
 				console.log(item)
 				this.tabCar = item.index
@@ -198,14 +239,13 @@
 				}
 			},
 			changeTest(val) {
-				console.log(val)
-				this.isTest = val
+				this.carUpload = val
 			},
 
 			// 时间戳转天
 			getDays(value = 0) {
 				let currentTime = new Date().getTime();
-				return (currentTime - val) / 3600 / 24
+				return Math.floor((currentTime - value)/1000 / 3600 / 24)
 			}
 		}
 	}
