@@ -29,7 +29,7 @@
 					<view class="text1">交易单号</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">兴业银行</view>
+					<view class="text2">浦发银行</view>
 					<view class="text2">2023-03-23 16:08:03</view>
 					<view class="text2">2023-03-24 17:00:00</view>
 					<view class="text2">MC12323432123211</view>
