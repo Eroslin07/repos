@@ -780,6 +780,11 @@
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
+					// 车况及其他费用及约定
+					this.feesForm = {
+						...res.data.feesAndCommitments,
+						...res.data.vehicleProblem
+					}
 				} else {
 					obj = res.data.proceduresAndSpareParts;
 					// 清空特殊约定
@@ -821,11 +826,7 @@
 				} else {
 					this.isDisabledAcc = true
 				}
-				// 车况及其他费用及约定
-				this.feesForm = {
-					...res.data.feesAndCommitments,
-					...res.data.vehicleProblem
-				}
+				
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
