@@ -7,7 +7,7 @@
 		<view class="user_list">
 			<u-swipe-action>
 				<u-swipe-action-item v-for="(item, index) in list" :key="index" :options="options1"
-					>
+					@click="removeItem(item)" >
 					<view class="user flex" @click="handleClick(index)">
 						<view>
 							<text :class="item.status ? 'ren' : 'wei'">认</text>
@@ -66,6 +66,10 @@
 			handleClick(i) {
 				// 修改员工
 				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit`)
+			},
+			// 删除
+			removeItem(item){
+				console.log(item)
 			}
 		}
 	}

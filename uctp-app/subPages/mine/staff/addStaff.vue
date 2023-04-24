@@ -13,7 +13,8 @@
 					<u--input v-model="staffForm.IDNumber" border="none" placeholder="请输入身份证号"></u--input>
 				</u-form-item>
 				<u-form-item label="是否停用" prop="status" borderBottom>
-					<uni-data-checkbox v-model="staffForm.status" selectedColor="#FA6400" :localdata="statusList"></uni-data-checkbox>
+					<uni-data-checkbox v-model="staffForm.status" selectedColor="#FA6400"
+						:localdata="statusList"></uni-data-checkbox>
 				</u-form-item>
 			</u--form>
 		</uni-card>
@@ -46,7 +47,7 @@
 					name: '',
 					phone: '',
 					IDNumber: '',
-					status:''
+					status: '0'
 				},
 				rules: {
 					name: {
@@ -75,10 +76,10 @@
 					}
 				},
 				statusList: [{
-					text: '是',
+					text: '否',
 					value: '0'
 				}, {
-					text: '否',
+					text: '是',
 					value: '1'
 				}],
 				type: ''
@@ -92,12 +93,34 @@
 			// 保存
 			handleSave() {
 				this.$refs.staffForm.validate().then(res => {
-
+					if (this.type == 'add') {
+						uni.showModal({
+							title: '提示',
+							showCancel: false,
+							content: '您的员工已新增完成并已触发实名认证短信，请及时提醒您的员工进行认证，认证时效为15分钟。',
+							confirmText: '知道了',
+							confirmColor: '#fa6401'
+						})
+					}else{
+						uni.showModal({
+							title: '提示',
+							showCancel: false,
+							content: '您的员工已修改完成。',
+							confirmText: '知道了',
+							confirmColor: '#fa6401'
+						})
+					}
 				})
 			},
 			//重新认证
 			handleauthentication() {
-
+				uni.showModal({
+					title: '提示',
+					showCancel: false,
+					content: '您已重新触发实名认证短信，请及时提醒您的员工进行认证，认证时效为15分钟。',
+					confirmText: '知道了',
+					confirmColor: '#fa6401'
+				})
 			}
 		}
 	}
