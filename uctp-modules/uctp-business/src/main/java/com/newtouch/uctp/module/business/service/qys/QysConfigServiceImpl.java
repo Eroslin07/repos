@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -11,6 +12,7 @@ import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
@@ -20,33 +22,36 @@ import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelPropert
 import com.newtouch.uctp.framework.security.core.LoginUser;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
+import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.CompanyAuthDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
-import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
+import com.newtouch.uctp.module.business.dal.dataobject.*;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
+import com.newtouch.uctp.module.business.dal.dataobject.file.FileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.UserExtDO;
+import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
 import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
+import com.newtouch.uctp.module.business.dal.mysql.file.FileMapper;
+import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.QysCallBackType;
-import com.newtouch.uctp.module.business.service.BusinessFileService;
-import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
-import com.newtouch.uctp.module.business.service.CarInfoService;
-import com.newtouch.uctp.module.business.service.ContractService;
+import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
+import com.newtouch.uctp.module.business.util.ContractUtil;
 import com.newtouch.uctp.module.business.util.UppercaseUtil;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
+import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
+import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
@@ -69,8 +74,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -93,6 +98,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     private QiyuesuoClientFactory qiyuesuoClientFactory;
     @Resource
     private CarInfoService carInfoService;
+    @Resource
+    private QysCallbackMapper qysCallbackMapper;
     @Resource
     private QysCallbackService qysCallbackService;
     @Resource
@@ -119,8 +126,16 @@ public class QysConfigServiceImpl implements QysConfigService {
     private ContractMapper contractMapper;
     @Resource
     private FileApi fileApi;
+   /* @Resource
+    private FileMapper fileMapper;*/
+    @Resource
+    private BusinessFileMapper businessFileMapper;
+   /* @Resource
+    private FileService fileService;*/
     @Resource
     private BusinessFileService businessFileService;
+    @Resource
+    private NoticeService noticeService;
 
     @PostConstruct
     @Override
@@ -191,7 +206,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public PageResult<QysConfigDO> getQysConfigPage(QysConfigPageReqVO pageReqVO) {
         return qysConfigMapper.selectPage(pageReqVO);
     }
-
+    @GlobalTransactional
     @Override
     @Transactional
     public String certification(String signature, String timestamp, String content) throws Exception {
@@ -222,8 +237,17 @@ public class QysConfigServiceImpl implements QysConfigService {
                 qysConfigMapper.insert(configDO);
             }
             deptMapper.updateById(deptDO);
+            //继续做企业授权
+            List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
+            if (CollUtil.isNotEmpty(checkedData)) {
+                //此时只会存在一条当前部门下的用户数据
+                AdminUserRespDTO userRespDTO = checkedData.get(0);
+                this.privilegeUrl(userRespDTO.getId());
+            }else {
+                log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
+            }
         }else {
-            log.warn("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
+            log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
         }
         qysCallbackService.saveDO(json,
                 QysCallBackType.COMPANY_AUTH.value(),
@@ -289,9 +313,9 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void send(Long carId,String type) {
-        CarInfoDO carInfo = carInfoService.getCarInfo(Long.valueOf(carId));
-        CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(Long.valueOf(carId));
+    public void send(Long carId,String type,Long contractId)  {
+        CarInfoDO carInfo = carInfoService.getCarInfo(carId);
+        CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(carId);
 
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);
@@ -323,16 +347,51 @@ public class QysConfigServiceImpl implements QysConfigService {
         if("1".equals(type)){
             Contract buyWTcontract =  this.buildContract(userDept,platformDept);
             //草稿
-            QiyuesuoCommonResult<Contract> buyWTresult = client.defaultDraftSend(buyWTcontract);
+            Contract checkContract = client.defaultDraftSend(buyWTcontract).getCheckedData();
+         /*   QiyuesuoCommonResult<Contract> buyWTresult = client.defaultDraftSend(buyWTcontract);
             if (!buyWTresult.getCode().equals(0)) {
                 throw new ServiceException(buyWTresult.getCode(), buyWTresult.getApiMsg());
-            }
+            }*/
             //模版参数
             List<TemplateParam> buyWTtemplate = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "1");
-            Long buyWTcontractId = buyWTresult.getData().getId();
+            Long buyWTcontractId = checkContract.getId();
             //选模版
             DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(buyWTcontractId, 3086496292898148540L, buyWTtemplate, "二手车委托收购协议").getCheckedData();
-            Long documentId = documentAddResult.getDocumentId();
+            //Long documentId = documentAddResult.getDocumentId();
+            //收车委托合同发起
+            //DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(buyWTcontractId, 3086496292898148540L, buyWTtemplate, "二手车委托收购协议").getData();
+            //Long documentId = documentAddResult.getDocumentId();
+            //FileDO fileDO=new FileDO();
+//            try {
+//                FileCreateReqDTO fileCreateReqDTO=new FileCreateReqDTO();
+//
+//                byte[] bytes = ContractUtil.ContractDown(documentId);
+//                fileCreateReqDTO.setContent(bytes);
+//                fileCreateReqDTO.setName("收车委托合同.pdf");
+//                fileCreateReqDTO.setPath(null);
+//                CommonResult<FileDTO> resultFile = fileApi.createFile(fileCreateReqDTO);
+//               //String resultFile1 = fileApi.createFileNew(fileCreateReqDTO);
+//                FileDTO FileDTO = resultFile.getData();
+//
+//                System.out.println("访问路径-----》"+FileDTO);
+//                //FileDO fileDO=fileMapper.selectOne("url",file);
+//                if (ObjectUtil.isNull(FileDTO)) {
+//                    throw exception(FILL_ERROR);
+//                }
+//                BusinessFileDO businessFile =new BusinessFileDO();
+//                businessFile.setId(FileDTO.getId());
+//                businessFile.setMainId(buyWTcontractId);
+//                businessFile.setTenantId(TenantContextHolder.getTenantId());
+//                businessFile.setFileType("11");
+//                businessFileMapper.insert(businessFile);
+//
+//
+//                List<FileRespDTO> fileList = businessFileService.getDTOByMainId(buyWTcontractId);
+//                System.out.println("访问路径-----》"+FileDTO);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+
             //收车委托合同发起
             client.defaultContractSend(buyWTcontractId);
             //存合同
@@ -346,23 +405,27 @@ public class QysConfigServiceImpl implements QysConfigService {
             buyWTContrsctDo.setBusinessId(usersDO.getDeptId());
             contractMapper.insert(buyWTContrsctDo);
             //--------收车合同---------
-            Contract buyContract =  this.buildBuyContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+            /*Contract buyContract =  this.buildBuyContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+            //Contract buyWTcontract =  this.buildContract(userDept,platformDept);
             //草稿
-            QiyuesuoCommonResult<Contract> buyResult = client.defaultDraftSend(buyContract);
+            Contract checkbuyContract = client.defaultDraftSend(buyContract).getCheckedData();*/
+            //草稿
+            /*QiyuesuoCommonResult<Contract> buyResult = client.defaultDraftSend(buyContract);
             if (!buyResult.getCode().equals(0)) {
                 throw new ServiceException(buyResult.getCode(), buyResult.getApiMsg());
-            }
+            }*/
             //模版参数
-            List<TemplateParam> buyTemplate = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "3");
-            Long buyContractId = buyResult.getData().getId();
+          /*  List<TemplateParam> buyTemplate = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "3");
+            //Long buyContractId = buyResult.getData().getId();
+            Long buyContractId = checkbuyContract.getId();
             //选模版
-            client.defaultDocumentAddByTemplate(buyContractId,3086576123044233944L,buyTemplate,"二手车收购协议");
+            client.defaultDocumentAddByTemplate(buyContractId,3086576123044233944L,buyTemplate,"二手车收购协议");*/
             //收车合同发起
-            client.defaultContractSend(buyContractId);
+            client.defaultContractSend(contractId);
             //存合同
             ContractDO buyContrsctDo=new ContractDO();
             buyContrsctDo.setCarId(carId);
-            buyContrsctDo.setContractId(buyContractId);
+            buyContrsctDo.setContractId(contractId);
             buyContrsctDo.setContractName("二手车收购协议");
             buyContrsctDo.setStatus(0);
             buyContrsctDo.setContractType(2);
@@ -372,14 +435,16 @@ public class QysConfigServiceImpl implements QysConfigService {
         }else {
             //卖车委托，卖车合同
             Contract sellWTcontract =  this.buildSellWTContract(userDept,platformDept);
+            Contract checkbuyContract = client.defaultDraftSend(sellWTcontract).getCheckedData();
             //草稿
-            QiyuesuoCommonResult<Contract> sellWTresult = client.defaultDraftSend(sellWTcontract);
+            /*QiyuesuoCommonResult<Contract> sellWTresult = client.defaultDraftSend(sellWTcontract);
             if (!sellWTresult.getCode().equals(0)) {
                 throw new ServiceException(sellWTresult.getCode(), sellWTresult.getApiMsg());
-            }
+            }*/
             //卖车委托模版参数
             List<TemplateParam> sellWTtemplate = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "2");
-            Long sellWTContractId = sellWTresult.getData().getId();
+            //Long sellWTContractId = sellWTresult.getData().getId();
+            Long sellWTContractId = checkbuyContract.getId();
             //选模版
             client.defaultDocumentAddByTemplate(sellWTContractId,3086576085266137782L,sellWTtemplate,"二手车委托代销售协议");
             //收车委托合同发起
@@ -395,7 +460,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             sellWTContrsctDo.setBusinessId(usersDO.getDeptId());
             contractMapper.insert(sellWTContrsctDo);
             //--------卖车合同---------
-            Contract sellContract =  this.buildBuyContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+            /*Contract sellContract =  this.buildSellContract(carInfo,carInfoDetailsDO,userDept,platformDept);
             //草稿
             QiyuesuoCommonResult<Contract> sellResult = client.defaultDraftSend(sellContract);
             if (!sellResult.getCode().equals(0)) {
@@ -405,13 +470,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             List<TemplateParam> sellTemplate = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "4");
             Long sellContractId = sellResult.getData().getId();
             //选模版
-            client.defaultDocumentAddByTemplate(sellContractId,3086576170024633076L,sellTemplate,"二手车代销售协议");
+            client.defaultDocumentAddByTemplate(contractId,3086576170024633076L,sellTemplate,"二手车代销售协议");*/
             //收车合同发起
-            client.defaultContractSend(sellContractId);
+            client.defaultContractSend(contractId);
             //存合同
             ContractDO sellContrsctDo=new ContractDO();
             sellContrsctDo.setCarId(carId);
-            sellContrsctDo.setContractId(sellContractId);
+            sellContrsctDo.setContractId(contractId);
             sellContrsctDo.setContractName("二手车代销售协议");
             sellContrsctDo.setStatus(0);
             sellContrsctDo.setContractType(4);
@@ -422,6 +487,113 @@ public class QysConfigServiceImpl implements QysConfigService {
 
 
         //保存在那里需要确认
+    }
+
+    @Override
+    public QYSContractVO ContractEcho(Long carId, String type) {
+        QYSContractVO qysContractVO=new QYSContractVO();
+        CarInfoDO carInfo = carInfoService.getCarInfo(Long.valueOf(carId));
+        CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(Long.valueOf(carId));
+
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        if (ObjectUtil.isNull(carInfoDetailsDO)) {
+            throw exception(CAR_INFO_DETAILS_NOT_EXISTS);
+        }
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+
+        AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
+        if (ObjectUtil.isNull(usersDO)) {
+            throw exception(USERS_INFO_ERROR);
+        }
+        UserExtDO userExtDO= userExtMapper.selectOne("USER_ID",usersDO.getId());
+        DeptDO userDept=deptMapper.selectById(usersDO.getDeptId());
+        if (ObjectUtil.isNull(userDept)) {
+            throw exception(DEPT_INFO_ERROR);
+        }
+        DeptDO pDept=deptMapper.selectOne("id",userDept.getParentId());
+        DeptDO platformDept=deptMapper.selectOne("parent_id",pDept.getParentId(),"attr",1);
+        if (ObjectUtil.isNull(platformDept)) {
+            throw exception(DEPT_INFO_ERROR);
+        }
+        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
+        Contract contract =  new Contract();
+        //模版参数
+        List<TemplateParam> template = new ArrayList<>();
+        Long contractId = null;
+        Long documentId = null;
+        BusinessFileDO businessFile =new BusinessFileDO();
+        String contractName="二手车收购协议.pdf";
+        if (type.equals("1")){
+            //收车
+            contract =  this.buildBuyContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+            //草稿
+            QiyuesuoCommonResult<Contract> buyResult = client.defaultDraftSend(contract);
+            if (!buyResult.getCode().equals(0)) {
+                throw new ServiceException(buyResult.getCode(), buyResult.getApiMsg());
+            }
+            //模版参数
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "3");
+            contractId = buyResult.getData().getId();
+            //选模版
+            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3086576123044233944L, template, "二手车收购协议").getData();
+             documentId = documentAddResult.getDocumentId();
+            businessFile.setFileType("11");//收车合同类型
+        }else if(type.equals("2")){
+            //卖车
+            contract =  this.buildSellContract(carInfo,carInfoDetailsDO,userDept,platformDept);
+            //草稿
+            QiyuesuoCommonResult<Contract> sellResult = client.defaultDraftSend(contract);
+            if (!sellResult.getCode().equals(0)) {
+                throw new ServiceException(sellResult.getCode(), sellResult.getApiMsg());
+            }
+            //模版参数
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "4");
+            contractId = sellResult.getData().getId();
+            //选模版
+            DocumentAddResult documentAddResult =  client.defaultDocumentAddByTemplate(contractId,3086576170024633076L,template,"二手车代销售协议").getData();
+            documentId = documentAddResult.getDocumentId();
+            businessFile.setFileType("13");//卖车合同类型
+            contractName="二手车销售协议.pdf";
+        }
+
+        try {
+
+            FileCreateReqDTO fileCreateReqDTO=new FileCreateReqDTO();
+
+            byte[] bytes = ContractUtil.ContractDown(documentId);
+            fileCreateReqDTO.setContent(bytes);
+            fileCreateReqDTO.setName(contractName);
+            fileCreateReqDTO.setPath(null);
+            CommonResult<FileDTO> resultFile = fileApi.createFile(fileCreateReqDTO);
+            //String resultFile1 = fileApi.createFileNew(fileCreateReqDTO);
+           // CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
+            //byte[] bytes = ContractUtil.ContractDown(documentId);
+            //CommonResult<FileDTO> resultFile = fileApi.createFileNew("收车委托合同.pdf",null,bytes);
+            FileDTO FileDTO = resultFile.getData();
+
+           // FileDO fileDO = fileService.createFileNew(contractName,null,bytes);
+           // String file = fileApi.createFile(contractName,null,bytes);
+           // FileDO fileDO=fileMapper.selectOne("url",file);
+            if (ObjectUtil.isNull(FileDTO)) {
+                throw exception(FILL_ERROR);
+            }
+
+            businessFile.setId(FileDTO.getId());
+            businessFile.setTenantId(TenantContextHolder.getTenantId());
+            businessFile.setMainId(contractId);
+            businessFileMapper.insert(businessFile);
+            qysContractVO.setUrl(FileDTO.getUrl());
+            System.out.println("访问路径-----》"+FileDTO.getUrl());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        qysContractVO.setCarId(carId);
+        qysContractVO.setContractId(contractId);
+
+        return qysContractVO;
     }
 
     @Override
@@ -485,6 +657,13 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSCompanyAuthPageResult checkedData = result.getCheckedData();
         log.info("企业认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
         //TODO 发送短信提醒操作人认证
+        Map<String, String> map = MapUtil
+                .builder("title", "")
+                .put("contentType", "")
+                .put("phone", userRespDTO.getMobile())
+                .put("businessId", deptRespDTO.getId().toString())
+                .put("type", "1").build();
+        noticeService.saveNotice(map);
     }
 
     @GlobalTransactional
@@ -498,12 +677,18 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
         log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
         //TODO 发送短信提醒操作人认证
+        Map<String, String> map = MapUtil
+                .builder("title", "")
+                .put("contentType", "")
+                .put("phone", userRespDTO.getMobile())
+                .put("businessId", deptRespDTO.getId().toString())
+                .put("type", "1").build();
+        noticeService.saveNotice(map);
     }
     @GlobalTransactional
     @Transactional
     @Override
-    public void privilegeUrl() {
-        Long userId = SecurityFrameworkUtils.getLoginUserId();
+    public void privilegeUrl(Long userId) {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
         QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
@@ -511,10 +696,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
         log.info("企业授权【{}】,授权地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
         //TODO 发送短信提醒企业授权
+        Map<String, String> map = MapUtil
+                .builder("title", "")
+                .put("contentType", "")
+                .put("phone", userRespDTO.getMobile())
+                .put("businessId", deptRespDTO.getId().toString())
+                .put("type", "1").build();
+        noticeService.saveNotice(map);
     }
-
+    @Transactional
     @Override
-    public String privilege(String signature, String timestamp, String content) throws Exception {
+    public String callBackPrivilege(String signature, String timestamp, String content) throws Exception {
         log.info("[privilege]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
@@ -524,7 +716,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         String json = this.decryptMessage(content);
         JSONObject jsonObject = JSON.parseObject(json);
         Long companyId = jsonObject.getLong("companyId");
-        String companyName = jsonObject.getString("companyName");
         String accessToken = jsonObject.getString("accessToken");
         String accessSecret = jsonObject.getString("accessSecret");
         QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
@@ -647,15 +838,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         //乙方个人签署方
         Signatory persoanlSignatory = new Signatory();
         persoanlSignatory.setTenantType("COMPANY");
-        persoanlSignatory.setTenantName("成都新致云服测试公司");
+        persoanlSignatory.setTenantName("上海新致软件股份测试有限公司");
         persoanlSignatory.setReceiver(new User("13708206115", "MOBILE"));
 //        persoanlSignatory.setTenantName(userDept.getName());
 //        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
         Signatory initiator2 = new Signatory();
         initiator2.setTenantType("PERSONAL");
-        initiator2.setTenantName("李杨");
-        initiator2.setReceiver(new User("17380123816", "MOBILE"));
+//        initiator2.setTenantName("李杨");
+//        initiator2.setReceiver(new User("17380123816", "MOBILE"));
+        initiator2.setTenantName("阿卡丽");
+        initiator2.setReceiver(new User("17396202169", "MOBILE"));
         draftContract.addSignatory(initiator2);
 
         //模板参数

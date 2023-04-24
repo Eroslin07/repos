@@ -24,5 +24,5 @@ public interface CarTransferApi {
     @GetMapping(PREFIX + "/getTransferInfo")
     @Operation(summary = "根据车辆ID获取流程所需的过户信息")
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
-    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId);
+    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey);
 }

@@ -6,6 +6,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.io.FileUtils;
 import com.newtouch.uctp.framework.file.core.client.FileClient;
 import com.newtouch.uctp.framework.file.core.utils.FileTypeUtils;
+import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.BusinessFileDO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
@@ -45,7 +46,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @SneakyThrows
-    public String createFile(String name, String path, byte[] content) {
+    public FileDTO createFile(String name, String path, byte[] content) {
         // 计算默认的 path 名
         String type = FileTypeUtils.getMineType(content, name);
         if (StrUtil.isEmpty(path)) {
@@ -63,6 +64,7 @@ public class FileServiceImpl implements FileService {
 
         // 保存到数据库
         FileDO file = new FileDO();
+        FileDTO fileDTO = new FileDTO();
         file.setConfigId(client.getId());
         file.setName(name);
         file.setPath(path);
@@ -70,7 +72,14 @@ public class FileServiceImpl implements FileService {
         file.setType(type);
         file.setSize(content.length);
         fileMapper.insert(file);
-        return url;
+        fileDTO.setConfigId(client.getId());
+        fileDTO.setName(name);
+        fileDTO.setPath(path);
+        fileDTO.setUrl(url);
+        fileDTO.setType(type);
+        fileDTO.setSize(content.length);
+        fileDTO.setId(file.getId());
+        return fileDTO;
     }
 
 

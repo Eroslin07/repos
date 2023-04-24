@@ -34,4 +34,9 @@ public class CarTransferInfoVO implements Serializable {
     private List<AppSimpleFileVO> fileD = Lists.newArrayList();
     @Schema(description = "买家身份证图片(卖车时)")
     private List<AppSimpleFileVO> fileE = Lists.newArrayList();
+    @Schema(description = "收车/卖车合同号，流程生成标题时使用")
+    private String contractCode;
+    @Schema(description = "收车/卖车合同及合同附件简要信息")
+    private List<ContractApprovalShowVO> contractList = Lists.newArrayList();
+
 }

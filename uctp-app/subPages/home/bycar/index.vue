@@ -196,7 +196,7 @@
 							iconStyle="font-size: 16px; color: #e26e1f" text="保证金可用余额150000元" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
-						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus != 0">公允价值审核-退回 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'">公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
 						<u-radio-group v-model="sellerForm.payType" placement="row" activeColor="#fd6404">
@@ -669,7 +669,7 @@
 				modelId: null,
 				modelName: null,
 				date: null,
-				fairStatus: 0
+				fairStatus: null
 			}
 		},
 		onBackPress(options) {
@@ -809,7 +809,7 @@
 								}).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.error_msg) {
-										_this.$modal.msg("上传模板不正确，请重新上传");
+										_this.$modal.msg("请上传正确且清晰的行驶证照片");
 										_this[`fileList${index}`] = [];
 									} else {
 										if (data.words_result['发动机号码']) {
@@ -880,7 +880,7 @@
 								getIdCard({ IDCardUrl: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.error_msg) {
-										_this.$modal.msg("上传模板不正确，请重新上传");
+										_this.$modal.msg("请上传正确且清晰的身份证照照片");
 										_this[`fileList${index}`] = [];
 									} else {
 										if (data.words_result['公民身份号码']) {
@@ -1044,6 +1044,7 @@
 					bankCard: data.carInfoDetails.bankCard,
 					thirdBankCard: data.carInfoDetails.thirdBankCard,
 				}
+				this.fairStatus = data.carInfo.bpmStatus;
 				data.fileD.forEach((item,index) => {
 					if (index == 0) {
 						this.fileList4 = [item];

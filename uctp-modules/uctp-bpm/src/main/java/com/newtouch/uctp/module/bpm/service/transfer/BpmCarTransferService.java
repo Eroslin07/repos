@@ -5,5 +5,5 @@ package com.newtouch.uctp.module.bpm.service.transfer;
  * @date 2023/4/24 15:04
  */
 public interface BpmCarTransferService {
-    String createTransferBpm(Long carId);
+    String createTransferBpm(Long carId, String procDefKey);
 }

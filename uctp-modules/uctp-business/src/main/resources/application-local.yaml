@@ -140,3 +140,6 @@ uctp:
   error-code: # 错误码相关配置项
     enable: false
   demo: false # 关闭演示模式
+
+qys:
+  server-url: @qys.server-url@ #获取契约锁请求地址

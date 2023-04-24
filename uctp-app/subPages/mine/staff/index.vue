@@ -1,13 +1,12 @@
 <template>
 	<view class="container">
 		<view class="xinzeng" @click="handleAdd">
-			<u-icon  name="plus" color="#FA6400"></u-icon>
+			<u-icon name="plus" color="#FA6400" size="28rpx "></u-icon>
 			<text>新增</text>
 		</view>
 		<view class="user_list">
 			<u-swipe-action>
-				<u-swipe-action-item v-for="item in list" :key="item.id" :options="options1"
-					@click="removeItem(item)">
+				<u-swipe-action-item v-for="item in list" :key="item.id" :options="options1" @click="removeItem(item)">
 					<view class="user flex" @click="handleClick(item)">
 						<view>
 							<text :class="item.status ? 'ren' : 'wei'">认</text>
@@ -75,7 +74,7 @@
 			removeItem(item) {
 				console.log(item)
 				this.$modal.confirm('确定删除改员工吗？').then(() => {
-					this.list=this.list.filter(i => i.id!=item.id)
+					this.list = this.list.filter(i => i.id != item.id)
 				})
 			}
 		}
@@ -96,7 +95,10 @@
 			color: #FA6400;
 
 			text {
+				width: 56rpx;
+				height: 40rpx;
 				padding-left: 12rpx;
+				line-height: 40rpx;
 			}
 		}
 

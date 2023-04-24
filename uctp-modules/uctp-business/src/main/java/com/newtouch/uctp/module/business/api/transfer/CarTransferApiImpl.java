@@ -25,7 +25,7 @@ public class CarTransferApiImpl implements CarTransferApi {
     private CarInfoService carInfoService;
 
     @Override
-    public CommonResult<JSONObject> getTransferInfo(Long carId) {
-        return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId)));
+    public CommonResult<JSONObject> getTransferInfo(Long carId, String procDefKey) {
+        return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId, procDefKey)));
     }
 }

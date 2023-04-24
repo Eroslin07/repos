@@ -11,10 +11,12 @@ import com.newtouch.uctp.module.system.api.dept.PostApi;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.permission.RoleApi;
 import com.newtouch.uctp.module.system.api.sms.SmsSendApi;
+import com.newtouch.uctp.module.system.api.tenant.TenantApi;
 import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 
 @Configuration(proxyBeanMethods = false)
 @EnableFeignClients(clients = {RoleApi.class, DeptApi.class, PostApi.class, AdminUserApi.class,
-        SmsSendApi.class, DictDataApi.class, NoticeApi.class, QysConfigApi.class, CarTransferApi.class})
+        SmsSendApi.class, DictDataApi.class, NoticeApi.class, QysConfigApi.class,
+        CarTransferApi.class, TenantApi.class})
 public class RpcConfiguration {
 }

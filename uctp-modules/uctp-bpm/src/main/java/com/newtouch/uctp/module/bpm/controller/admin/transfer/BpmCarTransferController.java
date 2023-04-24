@@ -33,8 +33,9 @@ public class BpmCarTransferController {
     @PostMapping("/createTransferBpm")
     @Operation(summary = "根据车辆ID发起过户流程")
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
-    public CommonResult<String> createTransferBpm(@RequestParam("carId") Long carId){
-        String businessKey = bpmCarTransferService.createTransferBpm(carId);
+    @Parameter(name = "procDefKey", description = "收车/卖车过户流程标识", required = true, example = "SCGH")
+    public CommonResult<String> createTransferBpm(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey){
+        String businessKey = bpmCarTransferService.createTransferBpm(carId, procDefKey);
         return success(businessKey);
     }
 }

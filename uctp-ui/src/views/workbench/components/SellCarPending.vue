@@ -269,7 +269,7 @@
               <el-col :span="2" class="bg-yell">身份证</el-col>
               <el-col :span="4">
                 <div style="display: flex; align-items: center">
-                  <span class="identify" v-if="identifyShow">
+                  <span class="identify identify-eye" v-if="identifyShow">
                     {{
                       baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
                         0,
@@ -511,10 +511,9 @@ console.log(setDialogTile, props)
 }
 .identify {
   display: inline-block;
-  width: 136px;
+  width: 120px;
 }
-
-.colr159 {
-  color: #1592c9;
+.identify-eye {
+  width: 95px;
 }
 </style>

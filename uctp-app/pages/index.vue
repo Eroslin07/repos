@@ -83,7 +83,8 @@
 <script>
 	import {
 		getHomePageList,
-		getHomeCount
+		getHomeCount,
+		getStatusList
 	} from '@/api/home.js'
 	import cellGroup from "../uni_modules/uview-ui/libs/config/props/cellGroup";
 	export default {
@@ -108,12 +109,13 @@
 				// 统计数据
 				gatherData: [],
 				// 所有子项
-				allChild: []
+				allChild: [],
 
 			}
 		},
 		onLoad: function() {
 			this.getAcount();
+			this.getStatusValue()
 			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
 			/* #endif */
@@ -154,12 +156,20 @@
 							}]
 						})
 					}
-				}).finally(()=>{
+				}).finally(() => {
 					this.$modal.closeLoading()
 					uni.stopPullDownRefresh()
 				})
 			},
-
+			// 获取状态值
+			getStatusValue() {
+				let data = {
+					dictTypes: 'dictTypes=car_status_three,car_status,car_sales_status'
+				}
+				getStatusList(data).then(res => {
+					this.$store.commit('setStatus', res.data)
+				})
+			},
 			// 搜索
 			search(val) {
 				uni.showToast({
@@ -183,13 +193,15 @@
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
 			// 收车中
-			tabCarStatus(item,allChild) {
-				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`)
+			tabCarStatus(item, allChild) {
+				this.$tab.navigateTo(
+					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
+					)
 			},
-			handleTabItem(item, child,allChild) {
+			handleTabItem(item, child, allChild) {
 				this.$tab.navigateTo(
 					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&child=${JSON.stringify(child)}&&allChild=${JSON.stringify(allChild)}`
-					)
+				)
 			},
 
 			// 消息动态-背景图标
