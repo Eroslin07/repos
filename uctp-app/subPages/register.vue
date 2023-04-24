@@ -432,7 +432,7 @@
 								getIdCard({ IDCardUrl: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.error_msg) {
-										_this.$modal.msg("上传模板不正确，请重新上传");
+										_this.$modal.msg("请上传正确且清晰的身份证照照片");
 										_this[`fileList${index}`] = [];
 									} else {
 										if (data.words_result['公民身份号码']) {
@@ -461,7 +461,7 @@
 								getBusinessLicense({ businessLicense: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.error_msg) {
-										_this.$modal.msg("上传模板不正确，请重新上传");
+										_this.$modal.msg("请上传正确且清晰的营业执照照片");
 										_this[`fileList${index}`] = [];
 									} else {
 										if (data.words_result['单位名称']) {
