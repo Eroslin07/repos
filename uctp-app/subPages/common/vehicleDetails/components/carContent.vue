@@ -6,12 +6,12 @@
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
 					<text class="car-upload-title__title">车辆检测报告</text>
-					<text v-if="!carUpload || carInfoAll.carInfo.salesStatus==23"
+					<text v-if="!isShowTest"
 						class="car-upload-title__text">未检测</text>
 					<text v-else class="car-upload-title__text">已检测</text>
 				</view>
 				<view class="upload-content">
-					<view class="upload-text" @click="photograph(1)" v-if="!carUpload">
+					<view class="upload-text" @click="photograph(1)" v-if="!isShowTest">
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
@@ -398,6 +398,10 @@
 			carInfoAll: {
 				type: Object,
 				default: () => {}
+			},
+			isShowTest:{
+				type:Boolean,
+				default:false
 			}
 		},
 		beforeCreate(){
