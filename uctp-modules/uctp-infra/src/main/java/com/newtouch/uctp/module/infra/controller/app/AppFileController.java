@@ -56,6 +56,19 @@ public class AppFileController {
         return success(list);
     }
 
+    @PostMapping("/uploadReport")
+    @Operation(summary = "上传检测报告")
+    @OperateLog(logArgs = false) // 上传文件，没有记录操作日志的必要
+    public CommonResult<List> uploadReport(@RequestParam("file") MultipartFile[] files,@RequestParam("carId") Long carId) throws Exception {
+        System.out.println(files);
+        ArrayList<Object> list = new ArrayList<>();
+        for (MultipartFile file : files) {
+            FileDO fileDO = fileService.uploadReport(file.getOriginalFilename(), "", IoUtil.readBytes(file.getInputStream()),carId);
+            list.add(fileDO);
+        }
+        return success(list);
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "编号", required = true)
