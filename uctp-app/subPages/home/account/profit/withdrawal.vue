@@ -133,7 +133,7 @@
 					invoiceIds: this.fileList1.map((item) => { return {id: item.id, url: item.url} })
 				}
 				getPresent(data).then((res) => {
-					this.$modal.msg("提现成功");
+					this.$modal.msg("利润提现流程发起成功");
 					this.$tab.navigateTo('/subPages/home/account/profit/profit');
 					// this.$tab.navigateTo('/subPages/home/account/profit/progress');
 				})

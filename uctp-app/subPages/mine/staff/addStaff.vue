@@ -65,7 +65,7 @@
 					IDNumber: {
 						type: 'string',
 						required: true,
-						message: '请填写密码',
+						message: '请填写身份证号',
 						trigger: ['blur']
 					},
 					status: {

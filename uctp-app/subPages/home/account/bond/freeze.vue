@@ -1,5 +1,7 @@
 <template>
 	<view class="freeze">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="保证金冻结明细" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<uni-card>
 			<view style="padding: 10px 0;border-bottom: 1px solid #f5f5f5;">
 				<view class="text" style="font-size: 16px;">保证金冻结总额</view>
@@ -60,10 +62,6 @@
 				status2: false
 			}
 		},
-		onBackPress(options) {
-			this.$tab.redirectTo('/subPages/home/account/bond/bond');
-			return true;
-		},
 		onLoad(options) {
 			this.amount = options.amount;
 		},
@@ -92,6 +90,10 @@
 			}, 1000)
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			},
 			// 保证金冻结明细查询
 			getList() {
 				let data = {

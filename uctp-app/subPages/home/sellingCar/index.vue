@@ -1,5 +1,7 @@
 <template>
 	<view>
+		<!-- 自定义导航栏 -->
+		<u-navbar title="我要卖车" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<view class="search_header">
 			<view class="tip-text" style="margin-bottom: 10px;">请选择您要售卖的车辆</view>
 			<u-search v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
@@ -86,11 +88,6 @@
 		mounted() {
 			this.getList(this.formData);
 		},
-		onBackPress(options) {
-			this.$tab.reLaunch('/pages/index');
-			return true;
-		},
-
 		// 下拉刷新
 		onPullDownRefresh() {
 			this.getList(this.formData)
@@ -106,6 +103,10 @@
 			this.getMore(this.formData)
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.reLaunch('/pages/index');
+			},
 			// 获取list
 			getList(obj) {
 				this.tabList = [];
