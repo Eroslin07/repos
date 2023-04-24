@@ -46,7 +46,7 @@
 			<uni-list-item v-if="type=='0'">
 				<template v-slot:body>
 					<view class="list-item">
-						<text>营业执照号{{type}}</text>
+						<text>营业执照号</text>
 						<text class="slot-box slot-text">{{user.name}}</text>
 					</view>
 				</template>

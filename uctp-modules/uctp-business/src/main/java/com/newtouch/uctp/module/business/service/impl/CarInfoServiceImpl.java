@@ -453,9 +453,11 @@ public class CarInfoServiceImpl implements CarInfoService {
         vo.setSellAmount(carInfo.getSellAmount());
         dictDataDTOList.forEach(dto -> {
             if (dto.getValue().equalsIgnoreCase(CAR_TAX_VALUE_ADDED)) {
-                //税费 = 卖车金额 * 税率
-                BigDecimal vat = carInfo.getSellAmount().multiply(new BigDecimal(dto.getLabel()));
-                vo.setVat(vat);
+                if(null!=carInfo.getSellAmount()){
+                    //税费 = 卖车金额 * 税率
+                    BigDecimal vat = carInfo.getSellAmount().multiply(new BigDecimal(dto.getLabel()));
+                    vo.setVat(vat);
+                }
             } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_OPERATION)) {
                 vo.setOperation(new BigDecimal(dto.getLabel()));
             } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_TRANSFER_SELL)) {
@@ -467,15 +469,24 @@ public class CarInfoServiceImpl implements CarInfoService {
         log.info("卖车详情的明细费用", vo);
 
         //费用合计 = 所有服务费+税费
-        vo.setTotal(vo.getVat()
-                .add(vo.getOperation())
-                .add(vo.getTransferBuy())
-                .add(vo.getTransferSell()));
+        if(null!=vo.getVat()){
+            vo.setTotal(vo.getVat()
+                    .add(vo.getOperation())
+                    .add(vo.getTransferBuy())
+                    .add(vo.getTransferSell()));
+        }else{
+            vo.setTotal(new BigDecimal(0));
+        }
+
         //利润=卖车金额-收车金额-税-服务费
         //利润=卖车金额-收车金额-费用合计
-        vo.setProfit(vo.getSellAmount()
-                .subtract(vo.getVehicleReceiptAmount())
-                .subtract(vo.getTotal()));
+        if(null!=vo.getSellAmount()){
+            vo.setProfit(vo.getSellAmount()
+                    .subtract(vo.getVehicleReceiptAmount())
+                    .subtract(vo.getTotal()));
+        }else{
+            vo.setProfit(new BigDecimal(0));
+        }
         return vo;
     }
 
@@ -567,16 +578,43 @@ public class CarInfoServiceImpl implements CarInfoService {
         vo.setCarInfoDetails(carInfoDetails);
         //合同数据
         List<APPContractCardVO> list = new ArrayList<>();
-        APPContractCardVO contractCardVO = new APPContractCardVO();
+        List<APPContractCardVO> listN = new ArrayList<>();
+
         for (ContractDO contractDO:contractList) {//循环合同信息，查询中间表拿到文件url
             List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getId());
-            FileRespDTO fileRespDTO = fileList.get(0);
-            contractCardVO.setContractDO(contractDO);
-            contractCardVO.setPath(fileRespDTO.getPath());
-            contractCardVO.setUrl(fileRespDTO.getUrl());
-            list.add(contractCardVO);
+            if(fileList.size()>0){
+                if(contractDO.getStatus()==2){
+                    APPContractCardVO contractCardVO = new APPContractCardVO();
+                    FileRespDTO fileRespDTO = fileList.get(0);
+                    contractCardVO.setContractDO(contractDO);
+                    contractCardVO.setPath(fileRespDTO.getPath());
+                    contractCardVO.setUrl(fileRespDTO.getUrl());
+                    listN.add(contractCardVO);
+                }else{
+                    APPContractCardVO contractCardVO = new APPContractCardVO();
+                    FileRespDTO fileRespDTO = fileList.get(0);
+                    contractCardVO.setContractDO(contractDO);
+                    contractCardVO.setPath(fileRespDTO.getPath());
+                    contractCardVO.setUrl(fileRespDTO.getUrl());
+                    list.add(contractCardVO);
+                }
+
+            }
         }
         vo.setContractCardVOS(list);
+        vo.setContractCardNOS(listN);
+        //资金信息
+        CommonResult<List<DictDataRespDTO>> dictDataRes = dictDataApi.getDictDataList(DictTypeConstants.CAR_EXPENSE_CONFIG_DEFAULT, null);
+        if (!dictDataRes.getCode().equals(0)) {
+            throw exception(DICT_TYPE_NOT_EXISTS);
+        }
+        List<DictDataRespDTO> dictDataDTOList = dictDataRes.getData();
+        if (CollUtil.isEmpty(dictDataDTOList)) {
+            throw exception(DICT_TYPE_NOT_EXISTS);
+        }
+        AppCarInfoAmountRespVO calculation = calculation(carInfo, dictDataDTOList);
+        calculation.setVehicleReceiptAmount(carInfo.getVehicleReceiptAmount());
+        vo.setAppCarInfoAmountRespVO(calculation);
 
         //车辆图片相关数据
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(carInfo.getId());
@@ -599,6 +637,9 @@ public class CarInfoServiceImpl implements CarInfoService {
                     break;
                 case "5":
                     vo.getFileE().add(new AppSimpleFileVO(file));
+                    break;
+                case "14":
+                    vo.getFileF().add(new AppSimpleFileVO(file));
                     break;
                 default:
                     break;

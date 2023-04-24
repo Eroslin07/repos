@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
@@ -485,7 +486,7 @@ public class AppCarInfoController {
     @GetMapping("/getTransferInfo")
     @Operation(summary = "根据车辆ID获取流程所需的过户信息")
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
-    public CommonResult<CarTransferInfoVO> getTransferInfo(@RequestParam("carId") Long carId){
-        return success(carInfoService.getTransferInfo(carId));
+    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId){
+        return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId)));
     }
 }

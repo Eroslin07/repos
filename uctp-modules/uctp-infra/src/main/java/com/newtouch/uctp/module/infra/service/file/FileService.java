@@ -40,6 +40,8 @@ public interface FileService {
      */
     FileDO createFileNew(String name, String path, byte[] content);
 
+    FileDO uploadReport(String name, String path, byte[] content,Long carId);
+
     /**
      * 删除文件
      *

@@ -87,12 +87,12 @@
 							@click="handleOcr(3, 'business')"></image>
 					</view>
 				</u-form-item>
-				<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom @click="showSex = true">
-					<u--input v-model="registerForm.businessName" disabled disabledColor="#ffffff"
+				<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom>
+					<u--input v-model="registerForm.businessName" disabledColor="#ffffff"
 						placeholder="请输入公司名称" border="none"></u--input>
 				</u-form-item>
-				<u-form-item label="法定代表人" :required="true" prop="legal_representative" borderBottom @click="showSex = true">
-					<u--input v-model="registerForm.legal_representative" disabled disabledColor="#ffffff"
+				<u-form-item label="法定代表人" :required="true" prop="legal_representative" borderBottom>
+					<u--input v-model="registerForm.legal_representative" disabledColor="#ffffff"
 						placeholder="请输入法定代表人" border="none"></u--input>
 				</u-form-item>
 				<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
@@ -426,25 +426,30 @@
 						})
 						if (index == 1 || index == 2) {
 							// 识别身份证
-							_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, _this[`fileList${index}`]];
+							_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ..._this[`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
 								getIdCard({ IDCardUrl: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.words_result['公民身份号码']) {
-										_this.registerForm.idCard = data.words_result['公民身份号码'].words;
-										_this.registerForm.name = data.words_result['姓名'].words;
-									}
-									if (data.words_result['失效日期']) {
-										if (_this.date > data.words_result['失效日期'].words) {
-											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-											  _this.handleCancel();
-												return;
-											})
+									if (data.error_msg) {
+										_this.$modal.msg("上传模板不正确，请重新上传");
+										_this[`fileList${index}`] = [];
+									} else {
+										if (data.words_result['公民身份号码']) {
+											_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+											_this.registerForm.name = data.words_result['姓名'].words;
 										}
-									}
-									if (i == res.tempFilePaths.length - 1) {
-										_this.upload(res, type, index);
+										if (data.words_result['失效日期']) {
+											if (_this.date > data.words_result['失效日期'].words) {
+												showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+												  _this.handleCancel();
+													return;
+												})
+											}
+										}
+										if (i == res.tempFilePaths.length - 1) {
+											_this.upload(res, type, index);
+										}
 									}
 								})
 							}
@@ -455,14 +460,19 @@
 								let str = await urlTobase64(res.tempFilePaths[i]);
 								getBusinessLicense({ businessLicense: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.words_result['单位名称']) {
-										_this.registerForm.businessName = data.words_result['单位名称'].words;
-										_this.registerForm.taxNum = data.words_result['证件编号'].words;
-										_this.registerForm.legal_representative = data.words_result['法人'].words;
-										_this.registerForm.address = data.words_result['地址'].words;
-									}
-									if (i == res.tempFilePaths.length - 1) {
-										_this.upload(res, type, index);
+									if (data.error_msg) {
+										_this.$modal.msg("上传模板不正确，请重新上传");
+										_this[`fileList${index}`] = [];
+									} else {
+										if (data.words_result['单位名称']) {
+											_this.registerForm.businessName = data.words_result['单位名称'].words;
+											_this.registerForm.taxNum = data.words_result['证件编号'].words;
+											_this.registerForm.legal_representative = data.words_result['法人'].words;
+											_this.registerForm.address = data.words_result['地址'].words;
+										}
+										if (i == res.tempFilePaths.length - 1) {
+											_this.upload(res, type, index);
+										}
 									}
 								})
 							}
