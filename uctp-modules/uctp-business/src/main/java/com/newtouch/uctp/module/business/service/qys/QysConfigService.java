@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
@@ -105,7 +106,12 @@ public interface QysConfigService {
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    void send(Long carId,String type);
+    void send(Long carId,String type,Long contractId);
+    /**
+     * 发送契约锁合同
+     * @param carId 车辆Id
+     */
+    QYSContractVO ContractEcho(Long carId, String type);
 
     /**
      * 获取到契约锁单点登录地址
@@ -129,9 +135,11 @@ public interface QysConfigService {
     void userAuth(Long userId);
 
     /**
+     *
      * 企业授权
+     *  @param userId 注册用户id
      */
-    void privilegeUrl();
+    void privilegeUrl(Long userId);
 
     /**
      * 企业授权，获取token
@@ -141,5 +149,5 @@ public interface QysConfigService {
      * @param content   内容
      * @return
      */
-    String privilege(String signature, String timestamp, String content) throws Exception;
+    String callBackPrivilege(String signature, String timestamp, String content) throws Exception;
 }

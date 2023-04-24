@@ -196,7 +196,7 @@
 							iconStyle="font-size: 16px; color: #e26e1f" text="保证金可用余额150000元" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
-						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus != 0">公允价值审核-退回 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'">公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
 						<u-radio-group v-model="sellerForm.payType" placement="row" activeColor="#fd6404">
@@ -669,7 +669,7 @@
 				modelId: null,
 				modelName: null,
 				date: null,
-				fairStatus: 0
+				fairStatus: null
 			}
 		},
 		onBackPress(options) {
@@ -808,50 +808,55 @@
 									vehicleLicense: str
 								}).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.words_result['发动机号码']) {
-										let vin = data.words_result['车辆识别代号'].words;
-										getCarInfo({ VIN: vin }).then((result) => {
-											_this.$modal.closeLoading();
-											if (result.data['1']) {
-												// 数据回显
-												_this.getInfo(result.data['1']);
-												if (result.data['1'].fileB.length == 0) {
+									if (data.error_msg) {
+										_this.$modal.msg("请上传正确且清晰的行驶证照片");
+										_this[`fileList${index}`] = [];
+									} else {
+										if (data.words_result['发动机号码']) {
+											let vin = data.words_result['车辆识别代号'].words;
+											getCarInfo({ VIN: vin }).then((result) => {
+												_this.$modal.closeLoading();
+												if (result.data['1']) {
+													// 数据回显
+													_this.getInfo(result.data['1']);
+													if (result.data['1'].fileB.length == 0) {
+														if (i == res.tempFilePaths.length - 1) {
+															_this.upload(res, index);
+														}
+													}
+												} else if (result.data['2']) {
+													_this.$modal.msg("车辆已存在");
+													_this[`fileList${index}`] = [];
+													_this.carForm.drivingLicenseUrl = [];
+												} else if (result.data['3']) {
+													_this.carForm.vin = vin;
+													_this.carForm.carType = data.words_result['车辆类型'].words;
+													_this.carForm.engineNum = data.words_result['发动机号码'].words;
+													_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
+													_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
+													_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+													if (_this.carForm.model.indexOf('汽车') > -1) {
+														_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
+													}
+													_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+													if (_this.carForm.brand.indexOf('汽车') > -1) {
+														_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
+													}
+													_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
+													let rdate = data.words_result['注册日期'].words;
+													let y = rdate.slice(0, 4);
+													let m = rdate.slice(4, 6);
+													let d = rdate.slice(6);
+													_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
+										
 													if (i == res.tempFilePaths.length - 1) {
 														_this.upload(res, index);
 													}
 												}
-											} else if (result.data['2']) {
-												_this.$modal.msg("车辆已存在");
-												_this[`fileList${index}`] = [];
-												_this.carForm.drivingLicenseUrl = [];
-											} else if (result.data['3']) {
-												_this.carForm.vin = vin;
-												_this.carForm.carType = data.words_result['车辆类型'].words;
-												_this.carForm.engineNum = data.words_result['发动机号码'].words;
-												_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
-												_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
-												_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-												if (_this.carForm.model.indexOf('汽车') > -1) {
-													_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
-												}
-												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-												if (_this.carForm.brand.indexOf('汽车') > -1) {
-													_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
-												}
-												_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
-												let rdate = data.words_result['注册日期'].words;
-												let y = rdate.slice(0, 4);
-												let m = rdate.slice(4, 6);
-												let d = rdate.slice(6);
-												_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
-
-												if (i == res.tempFilePaths.length - 1) {
-													_this.upload(res, index);
-												}
-											}
-											// 根据品牌查询id
-											_this.carBrandList();
-										})
+												// 根据品牌查询id
+												_this.carBrandList();
+											})
+										}
 									}
 								})
 							}
@@ -862,32 +867,38 @@
 						} else if (index == 3) {
 							// 识别机动车登记证书
 							_this.carForm.certificateUrl = _this[`fileList${index}`];
+							// if (data.error_msg) {
+							// 	_this.$modal.msg("上传模板不正确，请重新上传");
+							// 	_this[`fileList${index}`] = [];
+							// }
 							_this.upload(res, index);
 						} else if (index == 4 || index == 8) {
 							// 识别身份证
-							_this.sellerForm.sellerIdCardUrl = [..._this.sellerForm.sellerIdCardUrl, ..._this[
-								`fileList${index}`]];
+							_this.sellerForm.sellerIdCardUrl = [..._this.sellerForm.sellerIdCardUrl, ..._this[`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
-								getIdCard({
-									IDCardUrl: str
-								}).then((ress) => {
+								getIdCard({ IDCardUrl: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.words_result['公民身份号码']) {
-										_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
-										_this.sellerForm.sellerAdder = data.words_result['住址'].words;
-										_this.sellerForm.sellerName = data.words_result['姓名'].words;
-									}
-									if (data.words_result['失效日期']) {
-										if (_this.date > data.words_result['失效日期'].words) {
-											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-												_this.handleCancel();
-												return;
-											})
+									if (data.error_msg) {
+										_this.$modal.msg("请上传正确且清晰的身份证照照片");
+										_this[`fileList${index}`] = [];
+									} else {
+										if (data.words_result['公民身份号码']) {
+											_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
+											_this.sellerForm.sellerAdder = data.words_result['住址'].words;
+											_this.sellerForm.sellerName = data.words_result['姓名'].words;
 										}
-									}
-									if (i == res.tempFilePaths.length - 1) {
-										_this.upload(res, index);
+										if (data.words_result['失效日期']) {
+											if (_this.date > data.words_result['失效日期'].words) {
+												showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+													_this.handleCancel();
+													return;
+												})
+											}
+										}
+										if (i == res.tempFilePaths.length - 1) {
+											_this.upload(res, index);
+										}
 									}
 								})
 							}
@@ -1033,6 +1044,7 @@
 					bankCard: data.carInfoDetails.bankCard,
 					thirdBankCard: data.carInfoDetails.thirdBankCard,
 				}
+				this.fairStatus = data.carInfo.bpmStatus;
 				data.fileD.forEach((item,index) => {
 					if (index == 0) {
 						this.fileList4 = [item];

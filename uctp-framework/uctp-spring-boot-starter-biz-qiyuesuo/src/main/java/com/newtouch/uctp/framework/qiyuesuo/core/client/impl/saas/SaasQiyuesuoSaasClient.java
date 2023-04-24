@@ -21,7 +21,6 @@ import com.qiyuesuo.sdk.v2.response.*;
 
 import java.util.Arrays;
 import java.util.List;
-
 public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     /**
      * 契约锁SaaS模式客户端
@@ -138,7 +137,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setUser(user);
         request.setCompanyId(companyId);
         request.setCreateToken(true);
-        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/certification");
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/privilege");
         //TODO 成功后的地址需要商量
         request.setSuccessUrl("https://fssc.cloud:28000/");
         //目前只授权印章

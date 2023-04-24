@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.business.controller.app.qys;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigRespVO;
@@ -91,11 +92,11 @@ public class QysConfigController {
         return qysConfigService.certification(signature, timestamp, content);
     }
     @PostMapping("/callback/privilege")
-    @Operation(summary = "saas模式契约锁回调-企业认证")
+    @Operation(summary = "saas模式契约锁回调-企业授权")
     public String callbackPrivilege(@RequestParam String signature,
                                         @RequestParam String timestamp,
                                         @RequestParam String content) throws Exception {
-        return qysConfigService.privilege(signature, timestamp, content);
+        return qysConfigService.callBackPrivilege(signature, timestamp, content);
     }
     @PostMapping("/callback/status")
     @Operation(summary = "saas模式契约锁回调-合同状态")
@@ -140,11 +141,18 @@ public class QysConfigController {
 
     @PostMapping("/send")
     @Operation(summary ="发起契约锁合同")
+   // public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId,@RequestParam("type") String type) {
+    public CommonResult<Boolean> send(@Valid @RequestBody QYSContractVO VO) {
+        qysConfigService.send(VO.getCarId(),VO.getType(),VO.getContractId());
+        return success(true);
+    }
+
+    @PostMapping("/ContractEcho")
+    @Operation(summary ="合同回显")
     @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
     @Parameter(name = "type", description = "收车或卖车（1：收车，2：卖车）", required = true, example = "1")
-    public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId,@RequestParam("type") String type) {
-        qysConfigService.send(carId,type);
-        return success(true);
+    public CommonResult<QYSContractVO> ContractEcho(@RequestParam("carId") @NotNull  Long carId, @RequestParam("type") String type) {
+        return success(qysConfigService.ContractEcho(carId,type));
     }
 
     @PostMapping("/user/auth")

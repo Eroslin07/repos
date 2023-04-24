@@ -298,7 +298,9 @@
               <el-form-item label="身份证">
                 <div style="display: flex; flex-direction: column">
                   <div>
-                    <span class="identify" v-if="identifyShow"> 5*****************1</span>
+                    <span class="identify identify-eye" v-if="identifyShow">
+                      5*****************1</span
+                    >
                     <span class="identify" v-else>{{
                       baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
                         .sellerIdCard
@@ -559,6 +561,9 @@ const handleCancel = () => {
 }
 .identify {
   display: inline-block;
-  width: 136px;
+  width: 120px;
+}
+.identify-eye {
+  width: 95px;
 }
 </style>

@@ -14,6 +14,7 @@ import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
+import org.springframework.stereotype.Component;
 
 /**
  * 契约锁客户端的抽象类，提供模板方法，减少子类的冗余代码
@@ -22,6 +23,7 @@ import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
  * @since 2021/2/1 9:28
  */
 //@Slf4j
+ @Component
 public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, QiyuesuoSaasClient {
     /**
      * 契约锁渠道配置
@@ -31,6 +33,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
      * 错误码枚举类
      */
     protected final QiyuesuoCodeMapping codeMapping;
+
 
     public AbstractQiyuesuoClient(QiyuesuoChannelProperties properties, QiyuesuoCodeMapping codeMapping) {
         this.properties = properties;

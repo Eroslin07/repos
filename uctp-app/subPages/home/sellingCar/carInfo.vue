@@ -164,7 +164,7 @@
 						<u--text style="font-size:12px;" prefixIcon="info-circle"
 							iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看
 								></text></view>
@@ -745,7 +745,8 @@
 				draftStatus: 0,
 
 				// 是否是子账户
-				isChildAccount: false
+				isChildAccount: false,
+				fairStatus: null
 			}
 		},
 		beforeCreate() {
@@ -777,6 +778,9 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
+				
+				this.fairStatus = res.data.carInfo.bpmStatus;
+				
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -940,25 +944,28 @@
 							`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
-							getIdCard({
-								IDCardUrl: str
-							}).then((ress) => {
+							getIdCard({ IDCardUrl: str }).then((ress) => {
 								let data = JSON.parse(ress.data);
-								if (data.words_result['公民身份号码']) {
-									_this.sellerForm.buyerAdder = data.words_result['住址'].words;
-									_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
-									_this.sellerForm.buyerName = data.words_result['姓名'].words;
-								}
-								if (data.words_result['失效日期']) {
-									if (_this.date > data.words_result['失效日期'].words) {
-										showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-											_this.handleCancel();
-											return;
-										})
+								if (data.error_msg) {
+									_this.$modal.msg("请上传正确且清晰的身份证照照片 ");
+									_this[`fileList${index}`] = [];
+								} else {
+									if (data.words_result['公民身份号码']) {
+										_this.sellerForm.buyerAdder = data.words_result['住址'].words;
+										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
+										_this.sellerForm.buyerName = data.words_result['姓名'].words;
 									}
-								}
-								if (i == res.tempFilePaths.length - 1) {
-									_this.upload(res, index);
+									if (data.words_result['失效日期']) {
+										if (_this.date > data.words_result['失效日期'].words) {
+											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+												_this.handleCancel();
+												return;
+											})
+										}
+									}
+									if (i == res.tempFilePaths.length - 1) {
+										_this.upload(res, index);
+									}
 								}
 							})
 						}

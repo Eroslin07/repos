@@ -22,8 +22,12 @@ public class AppCarInfoCardRespVO implements Serializable {
     private CarInfoDO carInfo;
     @Schema(description = "车辆副表")
     private CarInfoDetailsDO carInfoDetails;
-    @Schema(description = "合同主表")
+    @Schema(description = "有效合同")
     private List<APPContractCardVO> contractCardVOS;
+    @Schema(description = "无效合同")
+    private List<APPContractCardVO> contractCardNOS;
+    @Schema(description = "资金信息")
+    private AppCarInfoAmountRespVO appCarInfoAmountRespVO;
     @Schema(description = "车辆图片")
     private List<AppSimpleFileVO> fileA = Lists.newArrayList();
     @Schema(description = "车辆行驶证图片")
@@ -34,4 +38,6 @@ public class AppCarInfoCardRespVO implements Serializable {
     private List<AppSimpleFileVO> fileD = Lists.newArrayList();
     @Schema(description = "买家身份证图片(卖车时)")
     private List<AppSimpleFileVO> fileE = Lists.newArrayList();
+    @Schema(description = "检测报告")
+    private List<AppSimpleFileVO> fileF = Lists.newArrayList();
 }
