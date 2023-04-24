@@ -164,7 +164,7 @@
 						<u--text style="font-size:12px;" prefixIcon="info-circle"
 							iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看
 								></text></view>
@@ -745,7 +745,8 @@
 				draftStatus: 0,
 
 				// 是否是子账户
-				isChildAccount: false
+				isChildAccount: false,
+				fairStatus: null
 			}
 		},
 		beforeCreate() {
@@ -777,6 +778,9 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
+				
+				this.fairStatus = res.data.carInfo.bpmStatus;
+				
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
