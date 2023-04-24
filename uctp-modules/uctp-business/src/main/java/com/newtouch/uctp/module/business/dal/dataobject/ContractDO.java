@@ -80,25 +80,25 @@ public class ContractDO extends TenantBaseDO {
     /**
      * 签约时间
      */
-    private LocalDateTime signingData;
+    private LocalDateTime signingDate;
 
-    /**
-     * 创建人
-     */
-    private String creator;
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新人
-     */
-    private String updater;
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
+//    /**
+//     * 创建人
+//     */
+//    private String creator;
+//    /**
+//     * 创建时间
+//     */
+//    private LocalDateTime createTime;
+//
+//    /**
+//     * 更新人
+//     */
+//    private String updater;
+//    /**
+//     * 更新时间
+//     */
+//    private LocalDateTime updateTime;
+//
 
 }

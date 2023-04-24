@@ -8,88 +8,113 @@
 			<u-tabs :current="current" :list="navList" lineColor="#FA6400" @change="handleChange"></u-tabs>
 		</view>
 		<!-- 列表 -->
-
-		<!-- <uni-card v-for="(tab, tabIndex) in 2|| tabList" :key="tabIndex" style="margin-top: 10px;">
-					<uni-row :gutter="30">
-						<uni-col :span="8">
-							<view class="car_left">
-								<view class="car_text cell-car-draft">收车草稿</view>
-								<view style="height: 100px;border: 1px solid #eee;"></view>
-							</view>
-						</uni-col>
-						<uni-col :span="16">
-							<h3>宝马-宝马×12021款 sDrive20Li 时尚型</h3>
-							<view>2021年02月 | 2.9万公里</view>
-							<view style="color: #000;">收车价：151,300元</view>
-							<view>卖车价：<text style="color: #fa6400;font-weight:bold">200,000元</text></view>
-						</uni-col>
-						<uni-col :span="12">
-							<view style="font-size: 10px;">VIN: LE4TG4DB1JL199517</view>
-						</uni-col>
-						<uni-col :span="12">
-							<view style="font-size: 10px;">创建时间:2023-03-1514:10</view>
-						</uni-col>
-					</uni-row>
-				</uni-card> -->
-
 		<view class="" v-if="tabList.length>0">
 			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)">
-				<uni-row :gutter="30">
-					<uni-col :span="9">
-						<view class="car_left">
-							<view
-								:class="{'car_text':true, 'cell-car-forSale':(tab.status==22||tab.status==23||tab.status==13), 'cell-car-draft':(tab.status==11 ||tab.status==31), 'cell-car-contact':(tab.status==12||tab.status==32), 'cell-car-saled':(tab.status==41||tab.status==42||tab.status==43)}">
-								{{tab.name}}
-							</view>
-							<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
-							<!-- <image src="/static/images/car.jpg" class="car-image"></image> -->
-						</view>
-					</uni-col>
-					<uni-col :span="15" class="right-box">
-						<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
-						<!-- <view class="fs12">VIN：{{tab.vin || '暂无'}}</view> -->
-						<view class="right-mile">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
-						<!-- <view class="fs12" style="color: #000;">收车价：
-							<text v-if="tab.eyeIsShow"
-								style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
-							<text v-else style="padding-right:3px;">***元</text>
-							<text style="padding:2px 5px;" v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
-								@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
-							<text v-else style="padding:2px 5px;" class="iconfont icon-close-eye"
-								@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
-						</view>
-						<view class="fs12" style="color: #f60;">卖车价：
-							<text v-if="!tab.eyeIsShow && tab.vehicleReceiptAmount">***元</text>
-							<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
-						</view> -->
-						<view class="right-price">
-							<view class="price-show" v-if="tab.eyeIsShow">
-								<view class="">
-									收：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
+				<view v-if="tab.status != 11">
+					<uni-row :gutter="30">
+						<uni-col :span="9">
+							<view class="car_left">
+								<view
+									:class="{'car_text':true, 'cell-car-forSale':(tab.status==22||tab.status==23||tab.status==13), 'cell-car-draft':(tab.status==11 ||tab.status==31), 'cell-car-contact':(tab.status==12||tab.status==32), 'cell-car-saled':(tab.status==41||tab.status==42||tab.status==43)}">
+									{{tab.name}}
 								</view>
-								<view class="sell-car-price">
-									卖：<text>{{tab.sellAmount | handleMoney}}万元</text>
+								<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
+							</view>
+						</uni-col>
+						<uni-col :span="15" class="right-box">
+							<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+							<!-- <view class="fs12">VIN：{{tab.vin || '暂无'}}</view> -->
+							<view class="right-mile">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
+							<!-- <view class="fs12" style="color: #000;">收车价：
+								<text v-if="tab.eyeIsShow"
+									style="padding-right:3px;">{{tab.vehicleReceiptAmount ||0}}元</text>
+								<text v-else style="padding-right:3px;">***元</text>
+								<text style="padding:2px 5px;" v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
+									@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
+								<text v-else style="padding:2px 5px;" class="iconfont icon-close-eye"
+									@click.stop="tab.eyeIsShow=!tab.eyeIsShow"></text>
+							</view>
+							<view class="fs12" style="color: #f60;">卖车价：
+								<text v-if="!tab.eyeIsShow && tab.vehicleReceiptAmount">***元</text>
+								<text v-else>{{tab.vehicleReceiptAmount || '——'}}元</text>
+							</view> -->
+							<view class="right-price">
+								<view class="price-show" v-if="tab.eyeIsShow">
+									<view class="">
+										收：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
+									</view>
+									<view class="sell-car-price">
+										卖：<text>{{tab.sellAmount | handleMoney}}万元</text>
+									</view>
+								</view>
+								<view class="price-show" v-if="!tab.eyeIsShow">
+									<view class="">
+										收：<text>****万元</text>
+									</view>
+									<view class="sell-car-price">
+										卖：<text>****万元</text>
+									</view>
+								</view>
+								<view class="show-money">
+									<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
+										@click.stop="handleShowMoney(tab,false)"></text>
+									<text v-else class="iconfont icon-close-eye"
+										@click.stop="handleShowMoney(tab,true)"></text>
 								</view>
 							</view>
-							<view class="price-show" v-if="!tab.eyeIsShow">
-								<view class="">
-									收：<text>****万元</text>
-								</view>
-								<view class="sell-car-price">
-									卖：<text>****万元</text>
-								</view>
-							</view>
-							<view class="show-money">
-								<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
-									@click.stop="handleShowMoney(tab,false)"></text>
-								<text v-else class="iconfont icon-close-eye"
-									@click.stop="handleShowMoney(tab,true)"></text>
-							</view>
-						</view>
-
-						<view class="right-time">创建时间：{{ tab.createTime }}</view>
-					</uni-col>
-				</uni-row>
+					
+							<view class="right-time">创建时间：{{ tab.createTime }}</view>
+						</uni-col>
+					</uni-row>
+				</view>
+				<!-- 草稿 -->
+				<view v-if="tab.status == 11">
+					<u-swipe-action>
+						<u-swipe-action-item :options="options1" @click.native.stop="removeItem(tab)">
+							<uni-row :gutter="30">
+								<uni-col :span="9">
+									<view class="car_left">
+										<view
+											:class="{'car_text':true, 'cell-car-forSale':(tab.status==22||tab.status==23||tab.status==13), 'cell-car-draft':(tab.status==11 ||tab.status==31), 'cell-car-contact':(tab.status==12||tab.status==32), 'cell-car-saled':(tab.status==41||tab.status==42||tab.status==43)}">
+											{{tab.name}}
+										</view>
+										<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
+									</view>
+								</uni-col>
+								<uni-col :span="15" class="right-box">
+									<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+									<view class="right-mile">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '暂无'}}万公里</view>
+									<view class="right-price">
+										<view class="price-show" v-if="tab.eyeIsShow">
+											<view class="">
+												收：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
+											</view>
+											<view class="sell-car-price">
+												卖：<text>{{tab.sellAmount | handleMoney}}万元</text>
+											</view>
+										</view>
+										<view class="price-show" v-if="!tab.eyeIsShow">
+											<view class="">
+												收：<text>****万元</text>
+											</view>
+											<view class="sell-car-price">
+												卖：<text>****万元</text>
+											</view>
+										</view>
+										<view class="show-money">
+											<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
+												@click.stop="handleShowMoney(tab,false)"></text>
+											<text v-else class="iconfont icon-close-eye"
+												@click.stop="handleShowMoney(tab,true)"></text>
+										</view>
+									</view>
+							
+									<view class="right-time">创建时间：{{ tab.createTime }}</view>
+								</uni-col>
+							</uni-row>
+						</u-swipe-action-item>
+					</u-swipe-action>
+				</view>
 			</uni-card>
 			<u-loadmore :status="loadStatus" loadingText="努力加载中..." />
 			<view v-if="loadStatus=='nomore'" class="btm-log">
@@ -106,19 +131,23 @@
 
 
 <script>
-	// import DropdownMenu from './JP-dropdown-menu/JP-dropdown-menu.vue';
-	// import DropdownItem from './JP-dropdown-menu/JP-dropdown-item.vue';
 	import {
 		getHomePageList
 	} from '@/api/home.js'
-	// import cellGroup from '../../../uni_modules/uview-ui/libs/config/props/cellGroup'
 	import {
 		parseTime
 	} from '../../../utils/ruoyi'
+	import { delCarInfoWithCollect } from '@/api/home/bycar.js'
 
 	export default {
 		data() {
 			return {
+				options1: [{
+					text: '删除',
+					style: {
+						backgroundColor: '#f56c6c'
+					}
+				}],
 				// tab导航
 				navList: [{
 						name: '全部'
@@ -286,6 +315,14 @@
 			handleShowMoney(tab, flag) {
 				console.log(tab, flag, '6666')
 				tab.eyeIsShow = flag;
+			},
+			// 删除草稿
+			removeItem(item) {
+				console.log(item)
+				delCarInfoWithCollect({ id: item.id}).then((res) => {
+					this.$modal.msg("车辆信息已删除");
+					this.getList(this.formData);
+				})
 			},
 			// 查看详情
 			handleCard(item) {
@@ -458,68 +495,6 @@
 	.paddingr20 {
 		padding-right: 20px;
 	}
-
-	// .cellDraft {
-	// 	padding: 10px;
-	// 	border-bottom: 1px solid #eee;
-	// 	font-size: 12px;
-	// }
-
-	// .cellDraft:hover {
-	// 	background-color: #ccc;
-	// }
-
-	// .tag-box {
-	// 	width: 100vw;
-	// 	height: 50px;
-	// 	line-height: 50px;
-	// 	// padding: 0 15px;
-	// 	margin: 0 15px;
-	// 	margin-right: 15px;
-	// 	overflow-x: scroll;
-
-	// 	.tag-item {
-	// 		padding: 3px 5px;
-	// 		margin-right: 5px;
-	// 		border: 1px solid #ccc;
-	// 		border-radius: 5px;
-	// 	}
-	// }
-
-	// .car_left {
-	// 	position: relative;
-	// 	border-radius: 8px;
-	// 	overflow: hidden;
-
-	// 	.car_text {
-	// 		position: absolute;
-	// 		top: 0;
-	// 		left: 0;
-	// 		font-size: 12px;
-	// 		padding: 0 5px;
-	// 		border-radius: 3px;
-	// 	}
-	// }
-
-	// .cell-car-draft {
-	// 	color: #fff;
-	// 	background-image: linear-gradient(to right, #2A93EC, #88C4F4);
-	// }
-
-	// .car-sold {
-	// 	color: #fff;
-	// 	background-image: linear-gradient(to right, #1D9A6D, #A2EED3);
-	// }
-
-	// .car-sell-entrust {
-	// 	color: #fff;
-	// 	background-image: linear-gradient(to right, #DB6A43, #F2C9BB);
-	// }
-
-	// .car-unsold-untested {
-	// 	color: #fff;
-	// 	background-image: linear-gradient(to right, #C07F1D, #F4DDB9);
-	// }
 
 	.fs12 {
 		font-size: 12px;

@@ -7,7 +7,9 @@ import com.newtouch.uctp.framework.common.util.io.FileUtils;
 import com.newtouch.uctp.framework.file.core.client.FileClient;
 import com.newtouch.uctp.framework.file.core.utils.FileTypeUtils;
 import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
+import com.newtouch.uctp.module.infra.dal.dataobject.file.BusinessFileDO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
+import com.newtouch.uctp.module.infra.dal.mysql.file.BusinessFileMapper;
 import com.newtouch.uctp.module.infra.dal.mysql.file.FileMapper;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,9 @@ public class FileServiceImpl implements FileService {
 
     @Resource
     private FileMapper fileMapper;
+
+    @Resource
+    private BusinessFileMapper businessFileMapper;
 
     @Override
     public PageResult<FileDO> getFilePage(FilePageReqVO pageReqVO) {
@@ -99,6 +104,43 @@ public class FileServiceImpl implements FileService {
         return file;
     }
 
+
+    @Override
+    @SneakyThrows
+    public FileDO uploadReport(String name, String path, byte[] content,Long carId) {
+        // 计算默认的 path 名
+        String type = FileTypeUtils.getMineType(content, name);
+        if (StrUtil.isEmpty(path)) {
+            path = FileUtils.generatePath(content, name);
+        }
+        // 如果 name 为空，则使用 path 填充
+        if (StrUtil.isEmpty(name)) {
+            name = path;
+        }
+
+        // 上传到文件存储器
+        FileClient client = fileConfigService.getMasterFileClient();
+        Assert.notNull(client, "客户端(master) 不能为空");
+        String url = client.upload(content, path, type);
+
+        // 保存到数据库
+        FileDO file = new FileDO();
+        file.setConfigId(client.getId());
+        file.setName(name);
+        file.setPath(path);
+        file.setUrl(url);
+        file.setType(type);
+        file.setSize(content.length);
+        fileMapper.insert(file);
+
+        BusinessFileDO businessFileDO = new BusinessFileDO();
+        businessFileDO.setId(file.getId());
+        businessFileDO.setMainId(carId);
+        businessFileDO.setFileType("14");
+        businessFileMapper.insert(businessFileDO);
+        fileMapper.updateCarInfoStatus("2","23","231",carId);
+        return file;
+    }
 
 
     @Override
