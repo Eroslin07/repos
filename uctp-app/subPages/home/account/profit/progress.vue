@@ -1,5 +1,7 @@
 <template>
 	<view class="progress">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="利润提现" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<uni-card :is-shadow="false" is-full>
 			<u-steps current="1" direction="column" activeColor="#fa6401">
 				<u-steps-item title="发起提现申请">
@@ -33,12 +35,11 @@
 				
 			}
 		},
-		onBackPress(options) {
-			this.$tab.navigateTo('/subPages/home/account/profit/profit');
-			return true;
-		},
 		methods: {
-
+			// 页面返回
+			back() {
+				this.$tab.redirectTo('/subPages/home/account/profit/profit');
+			},
 		}
 	}
 </script>
