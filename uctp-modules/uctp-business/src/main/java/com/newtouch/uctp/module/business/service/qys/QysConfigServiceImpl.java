@@ -55,6 +55,7 @@ import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
+import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
@@ -348,7 +349,8 @@ public class QysConfigServiceImpl implements QysConfigService {
             List<TemplateParam> buyWTtemplate = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "1");
             Long buyWTcontractId = buyWTresult.getData().getId();
             //选模版
-            client.defaultDocumentAddByTemplate(buyWTcontractId,3086496292898148540L,buyWTtemplate,"二手车委托收购协议");
+            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(buyWTcontractId, 3086496292898148540L, buyWTtemplate, "二手车委托收购协议").getCheckedData();
+            Long documentId = documentAddResult.getDocumentId();
             //收车委托合同发起
             client.defaultContractSend(buyWTcontractId);
             //存合同
@@ -481,6 +483,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
+        //获取营业执照图片
         StreamFile streamFile = null;
         if (CollUtil.isNotEmpty(fileList)) {
             FileRespDTO fileRespDTO = fileList.get(0);
