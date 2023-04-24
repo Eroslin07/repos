@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.infra.api.file;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
+import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.infra.convert.file.FileConvert;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
@@ -25,7 +26,7 @@ public class FileApiImpl implements FileApi {
     private FileService fileService;
 
     @Override
-    public CommonResult<String> createFile(FileCreateReqDTO createReqDTO) {
+    public CommonResult<FileDTO> createFile(FileCreateReqDTO createReqDTO) {
         return success(fileService.createFile(createReqDTO.getName(), createReqDTO.getPath(),
                 createReqDTO.getContent()));
     }
@@ -35,5 +36,27 @@ public class FileApiImpl implements FileApi {
         List<FileDO> fileList = fileService.getFileList(ids);
         return success(FileConvert.INSTANCE.convertList(fileList));
     }
+
+    @Override
+    public CommonResult<FileDTO> createFileNew(FileCreateReqDTO createReqDTO) {
+        FileDTO fileDTO=new FileDTO();
+        FileDO fileNew = fileService.createFileNew(createReqDTO.getName(), createReqDTO.getPath(), createReqDTO.getContent());
+        fileDTO.setConfigId(fileNew.getConfigId());
+        fileDTO.setId(fileNew.getId());
+        fileDTO.setCreateTime(fileNew.getCreateTime());
+        fileDTO.setCreator(fileNew.getCreator());
+        fileDTO.setDeleted(fileNew.getDeleted());
+        fileDTO.setName(fileNew.getName());
+        fileDTO.setPath(fileNew.getPath());
+        fileDTO.setSize(fileNew.getSize());
+        fileDTO.setPath(fileNew.getPath());
+        fileDTO.setType(fileNew.getType());
+        fileDTO.setUpdater(fileNew.getUpdater());
+        fileDTO.setUpdateTime(fileNew.getUpdateTime());
+        fileDTO.setUrl(fileNew.getUrl());
+
+        return success(fileDTO);
+    }
+
 
 }
