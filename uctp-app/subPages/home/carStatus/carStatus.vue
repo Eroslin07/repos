@@ -70,7 +70,7 @@
 				<!-- 草稿 -->
 				<view v-if="tab.status == 11">
 					<u-swipe-action>
-						<u-swipe-action-item :options="options1" @click.native.stop="removeItem(tab)">
+						<u-swipe-action-item :options="options1" @click="removeItem(tab, 'del')">
 							<uni-row :gutter="30">
 								<uni-col :span="9">
 									<view class="car_left">
@@ -183,7 +183,8 @@
 				loadStatus: 'loadmore',
 				total: 0,
 				timer: {},
-				defaultUrl: '/static/images/carlistImg.png'
+				defaultUrl: '/static/images/carlistImg.png',
+				type: null
 			}
 		},
 		// components: {
@@ -317,26 +318,39 @@
 				tab.eyeIsShow = flag;
 			},
 			// 删除草稿
-			removeItem(item) {
-				console.log(item)
-				delCarInfoWithCollect({ id: item.id}).then((res) => {
-					this.$modal.msg("车辆信息已删除");
-					this.getList(this.formData);
-				})
+			removeItem(item, type) {
+				this.type = type;
 			},
 			// 查看详情
 			handleCard(item) {
-				console.log(item, 2222)
-				if (item.status === 31) {
-					this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
-					return;
-				} else if (item.status == 11) {
-					this.$tab.navigateTo('/subPages/home/bycar/index?id=' + item.id)
-					return;
+				if (this.type) {
+					let _this = this;
+					uni.showModal({
+						title: '提示',
+						content: '是否确认删除',
+						confirmText: '确认',
+						confirmColor: '#fa6401',
+						success: function(res) {
+							if (res.confirm) {
+								delCarInfoWithCollect({ id: item.id}).then((res) => {
+									_this.$modal.msg("车辆信息已删除");
+									_this.getList(_this.formData);
+									_this.type = null;
+								})
+							}
+						}
+					})
 				} else {
-					this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?item=' + JSON.stringify(item))
+					if (item.status === 31) {
+						this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
+						return;
+					} else if (item.status == 11) {
+						this.$tab.navigateTo('/subPages/home/bycar/index?id=' + item.id)
+						return;
+					} else {
+						this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?item=' + JSON.stringify(item))
+					}
 				}
-
 			}
 		}
 	}
