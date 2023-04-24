@@ -1,5 +1,7 @@
 <template>
 	<view class="progress">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="保证金提现" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<uni-card :is-shadow="false" is-full>
 			<u-steps current="1" direction="column" activeColor="#fa6401">
 				<u-steps-item v-for="(item, index) in data.presentStatusRecords" :title="item.statusText" :desc="item.occurredTime">
@@ -34,12 +36,11 @@
 				title: '保证金提现'
 			});
 		},
-		onBackPress(options) {
-			this.$tab.navigateTo('/subPages/home/account/bond/bond');
-			return true;
-		},
 		methods: {
-
+			// 页面返回
+			back() {
+				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			},
 		}
 	}
 </script>

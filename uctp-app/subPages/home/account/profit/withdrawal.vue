@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>兴业银行（***1167）</view>
+			<view>浦发银行（***1167）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -130,10 +130,10 @@
 					accountNo: this.accountNo,
 					merchantBankId: 2,
 					amount: Number(this.amount * 100),
-					invoiceIds: this.fileList1.map((item) => { return {id: item.id, url: item.url} })
+					invoiceFiles: this.fileList1.map((item) => { return {fileId: item.id, fileUrl: item.url} })
 				}
 				getPresent(data).then((res) => {
-					this.$modal.msg("提现成功");
+					this.$modal.msg("利润提现流程发起成功");
 					this.$tab.navigateTo('/subPages/home/account/profit/profit');
 					// this.$tab.navigateTo('/subPages/home/account/profit/progress');
 				})

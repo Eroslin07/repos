@@ -24,7 +24,7 @@
 					<view class="text1">交易单号</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">兴业银行</view>
+					<view class="text2">浦发银行</view>
 					<view class="text2">{{ data.presentStatusRecords[0].occurredTime }}</view>
 					<view class="text2">{{ data.presentStatusRecords[data.presentStatusRecords.length - 1].occurredTime }}</view>
 					<view class="text2">{{ data.contractNo }}</view>
@@ -32,7 +32,7 @@
 			</view>
 		</view>
 		<view style="padding: 0 20px">
-			<u-album :urls="urls1" keyName="src2" :singleSize="350"></u-album>
+			<u-album :urls="urls" :singleSize="150" :multipleSize="70" maxCount="3" rowCount="3"></u-album>
 		</view>
 	</view>
 </template>
@@ -42,13 +42,15 @@
 		data() {
 			return {
 				data: null,
-				urls1: [{
-					src2: 'https://cdn.uviewui.com/uview/album/1.jpg',
-				}]
+				urls: []
 			}
 		},
 		onLoad(options) {
-			this.data = JSON.parse(decodeURIComponent(options.data))
+			this.data = JSON.parse(decodeURIComponent(options.data));
+			this.urls = [];
+			this.data.invoiceFiles.forEach((item) => {
+				this.urls.push(item.fileUrl);
+			})
 		},
 		methods: {
 

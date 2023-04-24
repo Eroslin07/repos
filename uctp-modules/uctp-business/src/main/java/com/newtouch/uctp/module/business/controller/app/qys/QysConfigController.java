@@ -90,6 +90,13 @@ public class QysConfigController {
                            @RequestParam String content) throws Exception {
         return qysConfigService.certification(signature, timestamp, content);
     }
+    @PostMapping("/callback/privilege")
+    @Operation(summary = "saas模式契约锁回调-企业认证")
+    public String callbackPrivilege(@RequestParam String signature,
+                                        @RequestParam String timestamp,
+                                        @RequestParam String content) throws Exception {
+        return qysConfigService.privilege(signature, timestamp, content);
+    }
     @PostMapping("/callback/status")
     @Operation(summary = "saas模式契约锁回调-合同状态")
     public String callbackStatus(@RequestParam String signature,
@@ -139,6 +146,15 @@ public class QysConfigController {
         qysConfigService.send(carId,type);
         return success(true);
     }
+
+    @PostMapping("/user/auth")
+    @Operation(summary ="个人认证")
+    @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
+    public CommonResult<Boolean> userAuth(@RequestParam("userId") @NotNull  Long userId) {
+        qysConfigService.userAuth(userId);
+        return success(true);
+    }
+
 
     @GetMapping("/test")
     @Operation(summary ="测试Id")

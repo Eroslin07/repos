@@ -377,7 +377,7 @@
 				uni.showModal({
 				  title: '提示',
 					showCancel: false,
-				  content: '提供的兴业银行个人卡号实名认证需与身份证一致。',
+				  content: '提供的浦发银行个人卡号实名认证需与身份证一致。',
 				  confirmText: '知道了',
 					confirmColor: '#fa6401'
 				})

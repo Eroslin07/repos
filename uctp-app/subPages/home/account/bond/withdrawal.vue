@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>兴业银行（***1167）</view>
+			<view>浦发银行（***1167）</view>
 		</uni-card>
 		<uni-card>
 			<view>

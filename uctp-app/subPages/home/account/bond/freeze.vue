@@ -1,12 +1,14 @@
 <template>
 	<view class="freeze">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="保证金冻结明细" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<uni-card>
 			<view style="padding: 10px 0;border-bottom: 1px solid #f5f5f5;">
 				<view class="text" style="font-size: 16px;">保证金冻结总额</view>
 				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(amount || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 			<view style="padding: 10px 0;color: #333333;">
-				<view>保证金提现中：1,000.00元</view>
+				<!-- <view>保证金提现中：1,000.00元</view> -->
 				<view>保证金预扣：{{ $amount.getComdify(amount || 0) }}元</view>
 			</view>
 		</uni-card>
@@ -60,10 +62,6 @@
 				status2: false
 			}
 		},
-		onBackPress(options) {
-			this.$tab.redirectTo('/subPages/home/account/bond/bond');
-			return true;
-		},
 		onLoad(options) {
 			this.amount = options.amount;
 		},
@@ -92,6 +90,10 @@
 			}, 1000)
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			},
 			// 保证金冻结明细查询
 			getList() {
 				let data = {

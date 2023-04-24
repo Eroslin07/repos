@@ -1,7 +1,7 @@
 <template>
 	<view class="by-car">
 		<!-- 自定义导航栏 -->
-		<!-- <u-navbar title="我要收车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
+		<u-navbar title="我要收车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
 			<u-grid-item>
 				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
@@ -704,9 +704,13 @@
 		},
 		methods: {
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				if (this.active == 0) {
+					this.handleSaveCar();
+				} else if (this.active == 1) {
+					this.vehicleInfor = true;
+					this.sellerInfor = false;
+					this.active = 0;
+				}
 			},
 			handelKey(value) {
 				if (value.length != 0) {

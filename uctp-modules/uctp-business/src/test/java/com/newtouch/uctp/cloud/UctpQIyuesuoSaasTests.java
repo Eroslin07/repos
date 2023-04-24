@@ -13,6 +13,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 @SpringBootTest(classes = UctpQIyuesuoSaasTests.class)
 public class UctpQIyuesuoSaasTests {
     private static SaasQiyuesuoSaasClient client;
@@ -54,7 +58,7 @@ public class UctpQIyuesuoSaasTests {
         SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
         QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3086857342332129453L, "17396202169");
         System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(),"0");
+        Assert.equals(result.getCode(),0);
     }
 
 

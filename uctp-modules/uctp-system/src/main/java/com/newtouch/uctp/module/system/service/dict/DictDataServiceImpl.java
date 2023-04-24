@@ -1,6 +1,9 @@
 package com.newtouch.uctp.module.system.service.dict;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapBuilder;
+import cn.hutool.core.map.MapUtil;
+import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
@@ -12,7 +15,6 @@ import com.newtouch.uctp.module.system.convert.dict.DictDataConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dict.DictDataDO;
 import com.newtouch.uctp.module.system.dal.dataobject.dict.DictTypeDO;
 import com.newtouch.uctp.module.system.dal.mysql.dict.DictDataMapper;
-import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -179,6 +181,19 @@ public class DictDataServiceImpl implements DictDataService {
     @Override
     public DictDataDO parseDictData(String dictType, String label) {
         return dictDataMapper.selectByDictTypeAndLabel(dictType, label);
+    }
+
+    @Override
+    public Map<String, String> getDictDataListMap(String[] dictTypes) {
+        List<DictDataDO> dictTypeList = dictDataMapper.selectListByDictTypes(dictTypes);
+        if (CollUtil.isEmpty(dictTypeList)) {
+            return MapUtil.empty();
+        }
+        MapBuilder<String, String> mapBuilder = MapUtil.builder();
+        dictTypeList.forEach(dictDataDO -> {
+            mapBuilder.put(dictDataDO.getValue(), dictDataDO.getLabel());
+        });
+        return mapBuilder.build();
     }
 
 }

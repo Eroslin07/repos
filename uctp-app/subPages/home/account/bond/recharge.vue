@@ -1,5 +1,7 @@
 <template>
 	<view class="recharge">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="保证金充值" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<uni-card>
 			<view>
 				<view>充值金额</view>
@@ -48,14 +50,14 @@
 				revision: 0
 			}
 		},
-		onBackPress(options) {
-			this.$tab.redirectTo('/subPages/home/account/bond/bond');
-			return true;
-		},
 		onLoad(options) {
 			this.revision = options.revision;
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			},
 			// 确定
 			handleDefine() {
 				if (this.amount == '' || !this.amount) {
