@@ -1,14 +1,14 @@
 <template>
 	<view class="container">
 		<view class="xinzeng" @click="handleAdd">
-			<u-icon class="" color="#FA6400" name="plus" style="font-size: 16px;"></u-icon>
+			<u-icon  name="plus" color="#FA6400"></u-icon>
 			<text>新增</text>
 		</view>
 		<view class="user_list">
 			<u-swipe-action>
-				<u-swipe-action-item v-for="(item, index) in list" :key="index" :options="options1"
-					@click="removeItem(item)" >
-					<view class="user flex" @click="handleClick(index)">
+				<u-swipe-action-item v-for="item in list" :key="item.id" :options="options1"
+					@click="removeItem(item)">
+					<view class="user flex" @click="handleClick(item)">
 						<view>
 							<text :class="item.status ? 'ren' : 'wei'">认</text>
 							<text>{{ item.name }}</text>
@@ -39,22 +39,26 @@
 					phone: '15328756761',
 					name: '李四',
 					time: '2023-03-15',
-					status: true
+					status: true,
+					id: '1'
 				}, {
 					phone: '15328756761',
 					name: '李四',
 					time: '2023-03-15',
-					status: true
+					status: true,
+					id: '2'
 				}, {
 					phone: '15328756761',
 					name: '李四',
 					time: '2023-03-15',
-					status: true
+					status: true,
+					id: '3'
 				}, {
 					phone: '15328756761',
 					name: '李四',
 					time: '2023-03-15',
-					status: false
+					status: false,
+					id: '4'
 				}]
 			}
 		},
@@ -68,8 +72,11 @@
 				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit`)
 			},
 			// 删除
-			removeItem(item){
+			removeItem(item) {
 				console.log(item)
+				this.$modal.confirm('确定删除改员工吗？').then(() => {
+					this.list=this.list.filter(i => i.id!=item.id)
+				})
 			}
 		}
 	}
