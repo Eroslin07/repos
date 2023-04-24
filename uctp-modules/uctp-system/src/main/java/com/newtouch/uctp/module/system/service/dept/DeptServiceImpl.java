@@ -1,19 +1,6 @@
 package com.newtouch.uctp.module.system.service.dept;
 
 import cn.hutool.core.collection.CollUtil;
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -28,6 +15,14 @@ import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.system.enums.dept.DeptIdEnum;
 import com.newtouch.uctp.module.system.mq.producer.dept.DeptProducer;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.*;
@@ -339,5 +334,10 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public List<DeptDO> selectByName(String name) {
         return deptMapper.selectByName(name);
+    }
+
+    @Override
+    public DeptDO getDeptByUserId(Long userId) {
+        return deptMapper.selectOne("leader_user_id ",userId);
     }
 }

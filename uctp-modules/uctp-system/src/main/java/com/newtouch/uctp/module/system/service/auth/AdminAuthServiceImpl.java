@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.system.service.auth;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
@@ -18,7 +19,6 @@ import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
-import com.newtouch.uctp.module.system.dal.mysql.user.AdminUserMapper;
 import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
 import com.newtouch.uctp.module.system.enums.logger.LoginResultEnum;
 import com.newtouch.uctp.module.system.enums.oauth2.OAuth2ClientConstants;
@@ -30,11 +30,9 @@ import com.newtouch.uctp.module.system.service.oauth2.OAuth2TokenService;
 import com.newtouch.uctp.module.system.service.social.SocialUserService;
 import com.newtouch.uctp.module.system.service.user.AdminUserService;
 import com.newtouch.uctp.module.system.service.user.UserExtService;
-import com.newtouch.uctp.module.system.util.collection.RASClientUtil;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
 import com.xingyuv.captcha.service.CaptchaService;
-import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -191,7 +189,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             DeptDO deptDO = new DeptDO();
             deptDO.setName(reqVO.getBusinessName());
             deptDO.setParentId(dept.getId());//父级id
-            deptDO.setTax_num(reqVO.getTaxNum());
+            deptDO.setTaxNum(reqVO.getTaxNum());
             deptDO.setAddress(reqVO.getAddress());
             deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
 //            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url

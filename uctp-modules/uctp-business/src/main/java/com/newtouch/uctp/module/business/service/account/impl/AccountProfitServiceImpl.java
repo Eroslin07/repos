@@ -13,8 +13,10 @@ import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRec
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantCashBackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
+import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitInvoiceDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantCashBackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
+import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitInvoiceMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
@@ -32,7 +34,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
@@ -66,6 +67,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Resource
     private MerchantProfitMapper merchantProfitMapper;
+
+    @Resource
+    private MerchantProfitInvoiceMapper merchantProfitInvoiceMapper;
 
     @Resource
     private MerchantCashBackMapper merchantCashBackMapper;
@@ -137,7 +141,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     taxes);
 
             log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
-            if (carSalesAmount.compareTo(profitCalcResult.getCurrentFeeTotalAmount()) <= 0) {
+            if (profitCalcResult.getCurrentProfitAmount().compareTo(0) <= 0) {
                 // 如果本次合同卖车款小于或等于本次总费用（理论上不会出现，但要防止只能报异常处理）
                 log.error("合同：{}卖车款小于或等于总费用", contractNo);
                 throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
@@ -167,7 +171,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 }
 
                 if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(mp.getTradeType()) ||
-                        AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(mp.getTradeType())) {
+                        AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(mp.getTradeType()) ||
+                        AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey().equals(mp.getTradeType())) {
                     // 保证金回填交易
                     backCashList.add(mp);
                 } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(mp.getTradeType())
@@ -248,12 +253,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Override
     @Transactional
     @TenantIgnore
-    public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<String> invoiceIds) {
-        String invoiceIdsStr = null;
-        if (!CollectionUtils.isEmpty(invoiceIds)) {
-            invoiceIdsStr = StringUtils.join(invoiceIds, "#");
-        }
-        log.info("调用利润提现接口，accountNo:{},merchantBankId:{},amount:{},invoiceIds:{}", accountNo, merchantBankId, amount, invoiceIdsStr);
+    public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<ProfitPresentInvoiceReqVO> invoiceFiles) {
+        log.info("调用利润提现接口，accountNo:{},merchantBankId:{},amount:{}", accountNo, merchantBankId, amount);
 
         // 根据银行卡ID查询账户
         MerchantBankDO bank = merchantBankService.getById(merchantBankId);
@@ -303,6 +304,25 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
         // 保存
         merchantProfitMapper.insert(mp);
+
+        if (invoiceFiles != null && !invoiceFiles.isEmpty()) {
+            List<MerchantProfitInvoiceDO> invoices = new ArrayList<>();
+            for (ProfitPresentInvoiceReqVO f : invoiceFiles) {
+                MerchantProfitInvoiceDO mpi = MerchantProfitInvoiceDO.builder()
+                        .profitId(mp.getId())
+                        .fileId(Long.valueOf(f.getFileId()))
+                        .fileUrl(f.getFileUrl())
+                        .uploadTime(LocalDateTime.now())
+                        .build();
+
+                mpi.setDeleted(false);
+
+                invoices.add(mpi);
+            }
+            // 保存
+            merchantProfitInvoiceMapper.insertBatch(invoices);
+        }
+
         // 触发提现申请
         this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.APPLY);
 
@@ -454,25 +474,45 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             respVO.setProfitLossTypeText(p.getProfitLossTypeText());
             respVO.setTradeDate(p.getTradeTime() == null ? "" : DateUtil.format(p.getTradeTime(), NORM_DATETIME_PATTERN));
 
-            // 查一下提现状态记录清单
-            LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
-            presentStatusRecordWrapper.eq(PresentStatusRecordDO::getPresentNo, profitId)
-                            .orderByAsc(PresentStatusRecordDO::getOccurredTime); // 交易状态变更时间升序
+            if (AccountEnum.TRAN_PROFIT_PRESENT.getKey().equals(p.getTradeType())) {
+                // 利润提现交易才查提现状态记录清单
+                LambdaQueryWrapper<PresentStatusRecordDO> presentStatusRecordWrapper = new LambdaQueryWrapper<>();
+                presentStatusRecordWrapper.eq(PresentStatusRecordDO::getPresentNo, profitId)
+                        .orderByAsc(PresentStatusRecordDO::getOccurredTime); // 交易状态变更时间升序
 
-            List<PresentStatusRecordDO> presentStatusRecords = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper);
-            if (presentStatusRecords != null && !presentStatusRecords.isEmpty()) {
-                List<PresentStatusRecordRespVO> presentStatusRespRecords = new ArrayList<>();
-                for (PresentStatusRecordDO psr : presentStatusRecords) {
-                    PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
-                            .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
-                            .status(psr.getStatus())
-                            .statusText(psr.getStatusText())
-                            .build();
+                List<PresentStatusRecordDO> presentStatusRecords = merchantPresentStatusRecordMapper.selectList(presentStatusRecordWrapper);
+                if (presentStatusRecords != null && !presentStatusRecords.isEmpty()) {
+                    List<PresentStatusRecordRespVO> presentStatusRespRecords = new ArrayList<>();
+                    for (PresentStatusRecordDO psr : presentStatusRecords) {
+                        PresentStatusRecordRespVO psrrvo = PresentStatusRecordRespVO.builder()
+                                .occurredTime(DateUtil.format(psr.getOccurredTime(), NORM_DATETIME_PATTERN))
+                                .status(psr.getStatus())
+                                .statusText(psr.getStatusText())
+                                .build();
 
-                    presentStatusRespRecords.add(psrrvo);
+                        presentStatusRespRecords.add(psrrvo);
+                    }
+
+                    respVO.setPresentStatusRecords(presentStatusRespRecords);
                 }
 
-                respVO.setPresentStatusRecords(presentStatusRespRecords);
+                LambdaQueryWrapper<MerchantProfitInvoiceDO> invoiceWrapper = new LambdaQueryWrapper<>();
+                invoiceWrapper.eq(MerchantProfitInvoiceDO::getProfitId, profitId)
+                        .orderByAsc(MerchantProfitInvoiceDO::getUploadTime); // 交易状态上传时间升序
+
+                List<MerchantProfitInvoiceDO> invoiceFiles = merchantProfitInvoiceMapper.selectList(invoiceWrapper);
+                if (invoiceFiles != null && !invoiceFiles.isEmpty()) {
+                    List<ProfitPresentInvoiceRespVO> invoiceRespList = new ArrayList<>();
+                    for (MerchantProfitInvoiceDO mpi : invoiceFiles) {
+                        ProfitPresentInvoiceRespVO ppir = new ProfitPresentInvoiceRespVO();
+                        ppir.setFileId(mpi.getFileId().toString());
+                        ppir.setFileUrl(mpi.getFileUrl());
+
+                        invoiceRespList.add(ppir);
+                    }
+
+                    respVO.setInvoiceFiles(invoiceRespList);
+                }
             }
 
             return respVO;
@@ -567,47 +607,47 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 本次回填保证金=IF(本次收益>0,收车款,卖车款-费用)
         Integer currentBackCashAmount = currentRevenueAmount.compareTo(0) > 0 ? vehicleReceiptAmount : carSalesAmount - currentFeeTotalAmount;
 
-        // 本次使用本次利润抵扣金额=IF(原待回填保证金>0,IF(本次收益>0,IF(本次收益>原待回填保证金,原待回填保证金,本次收益),0),0)
-        Integer useCurrentDeductionBackCashAmount = 0;
+        // 本次使用本次利润抵扣原待回填保证金=IF(原待回填保证金>0,IF(本次收益>0,IF(本次收益>原待回填保证金,原待回填保证金,本次收益),0),0)
+        Integer useCurrentDeductionOriginalBackCashAmount = 0;
         if (originalWaitForBackCashTotalAmount.compareTo(0) > 0) {
             // 原来存在待回填（不可能为负），如果本次有收益，则用本次收益回填一部分
             if (currentRevenueAmount.compareTo(0) > 0) {
-                useCurrentDeductionBackCashAmount = currentRevenueAmount.compareTo(originalWaitForBackCashTotalAmount) > 0
+                useCurrentDeductionOriginalBackCashAmount = currentRevenueAmount.compareTo(originalWaitForBackCashTotalAmount) > 0
                         ? originalWaitForBackCashTotalAmount : currentRevenueAmount;
             }
         }
 
-        // 本次利润=IF(本次收益>0,本次收益,0)
-        Integer currentProfitAmount = currentRevenueAmount.compareTo(0) > 0 ? currentRevenueAmount : 0;
+        // 本次利润=卖车款-费用
+        Integer currentProfitAmount = carSalesAmount - currentFeeTotalAmount;
 
         // 本次待回填保证金=IF(本次收益>0,0,收车款-本次回填保证金)
         Integer currentWaitForBackCashAmount = currentRevenueAmount.compareTo(0) > 0 ? 0 : vehicleReceiptAmount - currentBackCashAmount;
 
-        /*
-         * 本次使用原利润抵扣金额=
-         * IF(原待回填保证金+本次待回填保证金-本次使用本次利润抵扣金额>0,
-         *   IF(原利润余额>0,
-         *     IF(原利润余额>(原待回填保证金+本次待回填保证金-本次使用本次利润抵扣金额),原待回填保证金+本次待回填保证金-本次使用本次利润抵扣金额,原利润余额),
-         *   0),
-         * 0)
-         */
-        Integer useOriginalDeductionBackCashAmount = 0;
-        // 待回填总差额
-        Integer surplusWaitForBackCashAmount = originalWaitForBackCashTotalAmount + currentWaitForBackCashAmount - useCurrentDeductionBackCashAmount;
-        if (surplusWaitForBackCashAmount.compareTo(0) > 0) {
-            if (originalProfitTotalAmount.compareTo(0) > 0) {
-                useOriginalDeductionBackCashAmount = originalProfitTotalAmount.compareTo(surplusWaitForBackCashAmount) > 0
-                        ? surplusWaitForBackCashAmount : originalProfitTotalAmount;
-            }
+        /* 本次使用原利润抵扣原待回填保证金=IF(AND(原利润余额>0,原待回填保证金-本次使用本次利润抵扣金额>0),
+         IF(原利润余额>原待回填保证金-本次使用本次利润抵扣金额,原待回填保证金-本次使用本次利润抵扣金额,原利润余额),0) */
+        Integer useOriginalDeductionOriginalBackCashAmount = 0;
+        if (originalProfitTotalAmount.compareTo(0) > 0 && originalWaitForBackCashTotalAmount.compareTo(useCurrentDeductionOriginalBackCashAmount) > 0) {
+            useOriginalDeductionOriginalBackCashAmount = originalProfitTotalAmount.compareTo(originalWaitForBackCashTotalAmount - useCurrentDeductionOriginalBackCashAmount) > 0
+                    ? originalWaitForBackCashTotalAmount - useCurrentDeductionOriginalBackCashAmount : originalProfitTotalAmount;
         }
 
+        // 本次使用原利润抵扣本次回填保证金=IF(AND(原利润余额>0,本次回填保证金<收车款),IF(原利润余额>收车款-本次回填保证金,收车款-本次回填保证金,原利润余额),0)
+        Integer useOriginalDeductionBackCashAmount = 0;
+        if (originalProfitTotalAmount.compareTo(0) > 0 && currentBackCashAmount.compareTo(vehicleReceiptAmount) < 0) {
+            useOriginalDeductionBackCashAmount = originalProfitTotalAmount.compareTo(vehicleReceiptAmount - currentBackCashAmount) > 0
+                    ? vehicleReceiptAmount - currentBackCashAmount : originalProfitTotalAmount;
+        }
 
-        // 现待回填保证金=原待回填保证金+本次待回填保证金-本次使用本次利润抵扣金额-本次使用原利润抵扣金额
+        // 现待回填保证金=原待回填保证金+本次待回填保证金-使用本次利润抵扣原待回填保证金-使用原利润抵扣原待回填保证金-使用原利润抵扣本次回填保证金
         Integer nowWaitForBackCashTotalAmount = originalWaitForBackCashTotalAmount + currentWaitForBackCashAmount
-                - useCurrentDeductionBackCashAmount - useOriginalDeductionBackCashAmount;
+                - useCurrentDeductionOriginalBackCashAmount - useOriginalDeductionOriginalBackCashAmount - useOriginalDeductionBackCashAmount;
 
-        // 现利润余额=原利润余额+本次利润-本次使用本次利润抵扣金额-本次使用原利润抵扣金额
-        Integer nowProfitTotalAmount = originalProfitTotalAmount + currentProfitAmount - useCurrentDeductionBackCashAmount -useOriginalDeductionBackCashAmount;
+        // 本次利润余额=本次利润-本次回填保证金-本次使用本次利润抵扣原待回填保证金
+        Integer currentProfitBalanceAmount = currentProfitAmount - currentBackCashAmount - useCurrentDeductionOriginalBackCashAmount;
+
+        // 现利润余额=原利润余额-使用原利润抵扣原待回填保证金-使用原利润抵扣本次回填保证金+本次利润余额
+        Integer nowProfitTotalAmount = originalProfitTotalAmount - useOriginalDeductionOriginalBackCashAmount
+                - useOriginalDeductionBackCashAmount + currentProfitBalanceAmount;
 
         ProfitCalcResultDTO result = ProfitCalcResultDTO.builder()
                 // 现待回填保证金
@@ -618,14 +658,20 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .currentBackCashAmount(currentBackCashAmount)
                 // 本次卖车款
                 .currentCarSalesAmount(carSalesAmount)
+                // 本次收车款
+                .currentVehicleReceiptAmount(vehicleReceiptAmount)
                 // 本次待回填保证金
                 .currentWaitForBackCashAmount(currentWaitForBackCashAmount)
-                // 本次使用本次利润抵扣金额
-                .useCurrentDeductionBackCashAmount(useCurrentDeductionBackCashAmount)
-                // 本次使用原有利润抵扣金额
+                // 使用本次利润抵扣原待回填保证金
+                .useCurrentDeductionOriginalBackCashAmount(useCurrentDeductionOriginalBackCashAmount)
+                // 使用原有利润抵扣本次回填保证金
                 .useOriginalDeductionBackCashAmount(useOriginalDeductionBackCashAmount)
-                // 本次利润（纯利）
+                // 使用原有利润抵扣原待回填保证金
+                .useOriginalDeductionOriginalBackCashAmount(useOriginalDeductionOriginalBackCashAmount)
+                // 本次利润
                 .currentProfitAmount(currentProfitAmount)
+                // 本次利润余额
+                .currentProfitBalanceAmount(currentProfitBalanceAmount)
                 // 本次收益
                 .currentRevenueAmount(currentRevenueAmount)
                 // 本次总费用
@@ -758,8 +804,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTo(AccountEnum.TRADE_TO_MY_PROFIT.getKey())
                     .tradeToText(AccountEnum.TRADE_TO_MY_PROFIT.getValue())
                     .presentState(null) // 卖车利润初始写入无提现状态
-                    // 本次正收益时，记录正收益，否则本次利润余额为0
-                    .profitBalance(profitCalcResult.getCurrentProfitAmount())
+                    .profitBalance(profitCalcResult.getCurrentProfitBalanceAmount())
                     .cashBack(profitCalcResult.getCurrentWaitForBackCashAmount())
                     .tradeTime(now)
                     .build();
@@ -769,7 +814,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             profitList.add(profit);
         }
 
-        // 本次回填保证金，不可能为负数
+        // 本次回填保证金（利润-扣减），不可能为负数
         if (profitCalcResult.getCurrentBackCashAmount().compareTo(0) > 0) {
             List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
 
@@ -888,8 +933,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             MerchantProfitDO profit = MerchantProfitDO.builder()
                     .accountNo(accountNo)
                     .contractNo(contractNo)
-                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_INCOME.getKey()) // 记录成收入
-                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_INCOME.getValue())
+                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_IGNORE.getKey()) // 记录成不计入（冗余记录，不算收支）
+                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_IGNORE.getValue())
                     .profit(profitCalcResult.getCurrentProfitAmount())
                     .tradeType(AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey())
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_SALES_PROFIT.getValue())
@@ -901,13 +946,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             profit.setDeleted(false);
             profit.setRevision(0);
 
-            // TODO 利润待确认是否要冗余记录
-            // profitList.add(profit);
+            profitList.add(profit);
         }
 
-        // 本次+原有利润回填
-        if (profitCalcResult.getUseCurrentDeductionBackCashAmount().compareTo(0) > 0
-                || profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0) > 0) {
+        // 本次利润回填原待回填保证金
+        if (profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount().compareTo(0) > 0) {
             List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
 
             PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
@@ -925,9 +968,79 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .contractNo(contractNo)
                     .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
                     .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
-                    .profit((profitCalcResult.getUseCurrentDeductionBackCashAmount() + profitCalcResult.getUseOriginalDeductionBackCashAmount()) * -1) // 回填保证金为支出，记录负数
+                    .profit(profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount() * -1) // 回填保证金为支出，记录负数
                     .tradeType(AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey())
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getValue())
+                    .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
+                    .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
+                    .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
+                    .presentStateText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .presentStatusRecords(presentStatusRecords)
+                    .tradeTime(now)
+                    .build();
+            profit.setDeleted(false);
+            profit.setRevision(0);
+
+            profitList.add(profit);
+        }
+
+        // 原有利润抵扣本次回填保证金
+        if (profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0) > 0) {
+            List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+
+            PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                    .presentType(PRESENT_TYPE_PROFIT)
+                    .occurredTime(now)
+                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey())
+                    .statusText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .build();
+            psr.setDeleted(false);
+
+            presentStatusRecords.add(psr);
+
+            MerchantProfitDO profit = MerchantProfitDO.builder()
+                    .accountNo(accountNo)
+                    .contractNo(contractNo)
+                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
+                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
+                    .profit(profitCalcResult.getUseOriginalDeductionBackCashAmount() * -1) // 回填保证金为支出，记录负数
+                    .tradeType(AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey())
+                    .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getValue())
+                    .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
+                    .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
+                    .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
+                    .presentStateText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .presentStatusRecords(presentStatusRecords)
+                    .tradeTime(now)
+                    .build();
+            profit.setDeleted(false);
+            profit.setRevision(0);
+
+            profitList.add(profit);
+        }
+
+        // 原有利润抵扣原待回填保证金（理论上不会有该情况）
+        if (profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount().compareTo(0) > 0) {
+            List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+
+            PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                    .presentType(PRESENT_TYPE_PROFIT)
+                    .occurredTime(now)
+                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey())
+                    .statusText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .build();
+            psr.setDeleted(false);
+
+            presentStatusRecords.add(psr);
+
+            MerchantProfitDO profit = MerchantProfitDO.builder()
+                    .accountNo(accountNo)
+                    .contractNo(contractNo)
+                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
+                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
+                    .profit(profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount() * -1) // 回填保证金为支出，记录负数
+                    .tradeType(AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey())
+                    .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getValue())
                     .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
                     .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
                     .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
@@ -969,16 +1082,44 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             waitForCashBackList.add(mcb);
         }
 
-        // 本次利润抵扣
-        if (profitCalcResult.getUseCurrentDeductionBackCashAmount().compareTo(0) > 0 ||
-                profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0) > 0) {
+        // 使用利润（本次利润或原利润）抵扣回填保证金
+        if (profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount().compareTo(0) > 0) {
             MerchantCashBackDO mcb = MerchantCashBackDO.builder()
                     .accountNo(accountNo) // 商户账户号
                     .contractNo(contractNo) // 交易合同号
                     .type(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getKey()) // 类型（如：待回填，利润抵扣）
                     .typeText(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getValue()) // 类型中文名称
                     .occurredTime(profitCalcResult.getCalcTime()) // 发生时间
-                    .amount((profitCalcResult.getUseCurrentDeductionBackCashAmount() + profitCalcResult.getUseOriginalDeductionBackCashAmount()) * -1) // 金额
+                    .amount(profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount() * -1) // 金额
+                    .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey())
+                    .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
+                    .build();
+
+            waitForCashBackList.add(mcb);
+        }
+        if (profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0) > 0) {
+            MerchantCashBackDO mcb = MerchantCashBackDO.builder()
+                    .accountNo(accountNo) // 商户账户号
+                    .contractNo(contractNo) // 交易合同号
+                    .type(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getKey()) // 类型（如：待回填，利润抵扣）
+                    .typeText(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getValue()) // 类型中文名称
+                    .occurredTime(profitCalcResult.getCalcTime()) // 发生时间
+                    .amount(profitCalcResult.getUseOriginalDeductionBackCashAmount() * -1) // 金额
+                    .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey())
+                    .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
+                    .build();
+
+            waitForCashBackList.add(mcb);
+        }
+        // 理论上不存在该场景
+        if (profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount().compareTo(0) > 0) {
+            MerchantCashBackDO mcb = MerchantCashBackDO.builder()
+                    .accountNo(accountNo) // 商户账户号
+                    .contractNo(contractNo) // 交易合同号
+                    .type(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getKey()) // 类型（如：待回填，利润抵扣）
+                    .typeText(AccountEnum.CASH_BACK_TYPE_PROFIT_DEDUCTION.getValue()) // 类型中文名称
+                    .occurredTime(profitCalcResult.getCalcTime()) // 发生时间
+                    .amount(profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount() * -1) // 金额
                     .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey())
                     .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
                     .build();
@@ -1016,12 +1157,15 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             }
         }
         if (profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0) > 0 ||
-                profitCalcResult.getUseCurrentDeductionBackCashAmount().compareTo(0) > 0) {
+                profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount().compareTo(0) > 0 ||
+                profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount().compareTo(0) > 0 ) {
             // 回填保证金（使用利润抵扣）
             TransactionRecordReqVO backCashFromProfit = new TransactionRecordReqVO();
             backCashFromProfit.setAccountNo(accountNo);
             backCashFromProfit.setContractNo(contractNo);
-            backCashFromProfit.setTranAmount(profitCalcResult.getUseOriginalDeductionBackCashAmount() + profitCalcResult.getUseCurrentDeductionBackCashAmount());
+            backCashFromProfit.setTranAmount(profitCalcResult.getUseOriginalDeductionBackCashAmount() +
+                    profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount() +
+                    profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount());
             nowAccountRevision = nowAccountRevision + 1;
             backCashFromProfit.setRevision(nowAccountRevision); // 注意版本号
 

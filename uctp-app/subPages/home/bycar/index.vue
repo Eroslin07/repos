@@ -1234,23 +1234,27 @@
 			// 点击交易信息保存
 			handleSubmit(val) {
 				let _this = this;
-				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
-				amount = amount / 10000;
-				if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-					_this.saveSellerInfo(val);
-				} else {
-					uni.showModal({
-						title: '提示',
-						content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
-						confirmText: '是',
-						cancelText: '否',
-						confirmColor: '#fa6401',
-						success(ress) {
-							if (ress.confirm) {
-								_this.saveSellerInfo(val);
+				if (val) {
+					let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
+					amount = amount / 10000;
+					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
+						_this.saveSellerInfo(val);
+					} else {
+						uni.showModal({
+							title: '提示',
+							content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+							confirmText: '是',
+							cancelText: '否',
+							confirmColor: '#fa6401',
+							success(ress) {
+								if (ress.confirm) {
+									_this.saveSellerInfo(val);
+								}
 							}
-						}
-					})
+						})
+					}
+				} else {
+					_this.saveSellerInfo();
 				}
 			},
 			saveSellerInfo(val) {

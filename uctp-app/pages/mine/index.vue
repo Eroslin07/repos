@@ -83,7 +83,7 @@
 			</view>
 		</view>
 		<view class="cu-list menu">
-			<view class="cu-item item-box" style="background-color: #68b4c5;">
+			<view class="cu-item item-box" style="background-color: red;">
 				<view class="content text-center" @click="handleLogout">
 					<text class="text-white">退出登录</text>
 				</view>

@@ -50,11 +50,11 @@ public class UctpQIyuesuoSaasTests {
     }
 
     @Test
-    void PrivilegeUrl() {
+    void privilegeUrl() {
         SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
         QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3086857342332129453L, "17396202169");
         System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(),"0");
+        Assert.equals(result.getCode(),0);
     }
 
 

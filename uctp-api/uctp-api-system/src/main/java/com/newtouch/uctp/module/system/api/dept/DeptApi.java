@@ -1,22 +1,20 @@
 package com.newtouch.uctp.module.system.api.dept;
 
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
+import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
+import com.newtouch.uctp.module.system.enums.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
-import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
-import com.newtouch.uctp.module.system.enums.ApiConstants;
 
 @FeignClient(name = ApiConstants.NAME) // TODO 芋艿：fallbackFactory =
 @Tag(name = "RPC 服务 - 部门")
@@ -54,4 +52,8 @@ public interface DeptApi {
         return CollectionUtils.convertMap(getDeptList(ids).getCheckedData(), DeptRespDTO::getId);
     }
 
+    @GetMapping("/get/userId")
+    @Operation(summary = "根据部门名称获得部门信息")
+    @Parameter(name = "userId", description = "用户Id", required = true, example = "1024")
+    public CommonResult<DeptRespDTO> getDeptByUserId(@RequestParam("name") Long userId);
 }

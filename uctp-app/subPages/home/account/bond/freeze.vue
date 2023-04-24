@@ -6,7 +6,7 @@
 				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(amount || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 			<view style="padding: 10px 0;color: #333333;">
-				<view>保证金提现中：1,000.00元</view>
+				<!-- <view>保证金提现中：1,000.00元</view> -->
 				<view>保证金预扣：{{ $amount.getComdify(amount || 0) }}元</view>
 			</view>
 		</uni-card>

@@ -20,4 +20,6 @@ public class ProfitDetailRespVO extends ProfitRespVO {
     private String contractNo;
     @Schema(description = "提现状态记录（交易类型为提现时返回该值）")
     private List<PresentStatusRecordRespVO> presentStatusRecords;
+    @Schema(description = "提现申请的发票")
+    private List<ProfitPresentInvoiceRespVO> invoiceFiles;
 }

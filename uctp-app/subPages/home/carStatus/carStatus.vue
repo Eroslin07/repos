@@ -68,7 +68,7 @@
 									收：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
 								</view>
 								<view class="sell-car-price">
-									卖：<text>{{tab.vehicleReceiptAmount | handleMoney}}万元</text>
+									卖：<text>{{tab.sellAmount | handleMoney}}万元</text>
 								</view>
 							</view>
 							<view class="price-show" v-if="!tab.eyeIsShow">

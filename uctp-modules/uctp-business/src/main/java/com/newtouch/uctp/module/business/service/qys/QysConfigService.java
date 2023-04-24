@@ -7,6 +7,7 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateRe
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -113,5 +114,23 @@ public interface QysConfigService {
      * @return
      */
     String getSsoUrl(String pageType,Long contractId);
+
+    /**
+     * 企业认证
+     * @param userId 注册用户id
+     * @return
+     */
+    void companyAuth(Long userId) throws FileNotFoundException;
+    /**
+     * 个人认证
+     * @param userId 注册用户id
+     * @return
+     */
+    void userAuth(Long userId);
+
+    /**
+     * 企业授权
+     */
+    void privilegeUrl();
 
 }
