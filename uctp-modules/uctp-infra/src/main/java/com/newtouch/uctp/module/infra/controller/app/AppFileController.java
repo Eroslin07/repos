@@ -80,8 +80,8 @@ public class AppFileController {
     @DeleteMapping("/deleteReport")
     @Operation(summary = "删除检测报告")
     @Parameter(name = "id", description = "编号", required = true)
-    public CommonResult<Boolean> deleteReport(@RequestParam("id") Long id) throws Exception {
-        fileService.deleteReport(id);
+    public CommonResult<Boolean> deleteReport(@RequestParam("id") Long id,@RequestParam Long carId) throws Exception {
+        fileService.deleteReport(id,carId);
         return success(true);
     }
 
