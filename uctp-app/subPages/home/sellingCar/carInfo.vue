@@ -153,7 +153,7 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" border="none" @focus="handleFocus" @blur="handleBlur"
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus" @blur="handleBlur"
 							placeholder="请输入卖车金额">
 							<template slot="suffix">
 								<view>元</view>
