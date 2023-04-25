@@ -7,63 +7,170 @@
       :showFooter="false"
       @close="handleClose"
     > -->
-    <p style="text-align: center; font-weight: bold; font-size: 24px"
-      >卖车合同MCHT202303220001开票待办</p
-    >
+    <!-- <p style="text-align: center; font-weight: bold; font-size: 24px"
+      >收车合同SCHT202303220001开票待办</p
+    > -->
     <!-- 发票单号 -->
-    <div style="overflow: hidden; margin-bottom: 10px">
-      <p style="float: left">单号：MCKP202303220001</p>
+    <div style="font-size: 16px" class="title">
+      <span>单号：{{ baseInfoData.data.serialNo }}</span>
+      <span>商户经办人：{{ '张三' }}</span>
+      <span>商户电话：{{ '13333333333' }}</span>
       <div style="float: right">
         <!-- 操作按钮 -->
         <!-- <el-button type="danger" @click="handleClose">关闭</el-button> -->
-        <el-button type="primary" v-if="type == 'need'" :loading="actionLoading" @click="handlePut"
+        <!-- <el-button type="primary" v-if="type == 'need'" :loading="actionLoading" @click="handlePut"
           >打印/开票</el-button
+        > -->
+      </div>
+    </div>
+    <!-- <el-card class="box-card"> -->
+    <p style="font-weight: bold; margin-bottom: 10px">发票信息</p>
+    <div class="title-bg-box">
+      <icon icon="svg-icon:notice" class="notice"></icon>
+      <div class="title-box">
+        卖车合同
+        <span style="color: #63b0ff">SCHT202303220001</span>
+        已经签约完成并已付款。现需要向卖车方
+        <span style="color: #63b0ff">陈某</span>
+        的开具正向二手车通用发票。开票内容如下，请平台方开具反向二手车统一发票！
+      </div>
+    </div>
+    <div class="content">
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>买车单位/个人</span>
+        </el-col>
+        <el-col :span="8">
+          <span>买方信息的姓名</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>单位代码/身份证号码</span></el-col>
+        <el-col :span="8"><span>买方信息的身份证号</span></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>买车单位/个人住址</span>
+        </el-col>
+        <el-col :span="8">
+          <span>买方信息的联系地址</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>电话</span></el-col>
+        <el-col :span="8"><span>买方信息的联系电话</span></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>卖方单位/个人</span>
+        </el-col>
+        <el-col :span="8">
+          <span>市场名称（平台名称）</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>单位代码/身份证号码</span></el-col>
+        <el-col :span="8"><span>平台开票信息的纳税人识别号</span></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>卖车单位/个人住址</span>
+        </el-col>
+        <el-col :span="8">
+          <span>平台开票信息住址</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>电话</span></el-col>
+        <el-col :span="8"><span>平台开票信息的电话</span></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>车牌号</span>
+        </el-col>
+        <el-col :span="4">
+          <span><span>车辆信息的车牌号</span></span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>登记证书</span></el-col>
+        <el-col :span="4"><span>车辆信息的登记证号</span></el-col>
+        <el-col :span="4" class="bg-blue"><span>车辆类型</span></el-col>
+        <el-col :span="4"><span>车辆信息的车辆类型</span></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>车架号/车辆识别代码</span>
+        </el-col>
+        <el-col :span="4">
+          <span>车辆信息车架号</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>厂牌型号</span></el-col>
+        <el-col :span="4"><span>车辆信息的品牌型号</span></el-col>
+        <el-col :span="4" class="bg-blue"><span>转入地车辆管理所名称</span></el-col>
+        <el-col :span="4"><el-input class="car-input"></el-input></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>车辆价款</span>
+        </el-col>
+        <el-col :span="20">
+          <span>车辆价款及交易方式的收车金额</span>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>二手车市场</span>
+        </el-col>
+        <el-col :span="8">
+          <span>市场名称（平台名称）</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"
+          ><div class="flex-column">
+            <span>纳税人识别号</span>
+            <span>地址</span>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div class="flex-column flex-content">
+            <span>平台开票信息的纳税人识别号</span>
+            <span>平台开票信息的地址</span>
+          </div></el-col
+        >
+      </el-row>
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>开户行账号</span>
+        </el-col>
+        <el-col :span="8">
+          <span>平台开票信息的开户行及账号</span>
+        </el-col>
+        <el-col :span="4" class="bg-blue"><span>电话</span></el-col>
+        <el-col :span="8"><span>平台开票信息的电话</span></el-col>
+      </el-row>
+    </div>
+    <p style="font-weight: bold; margin: 10px 0">增值税通用发票</p>
+    <div class="prompt">
+      <div>
+        <span>个人开票:</span>
+        <span>买方信息的姓名</span>
+      </div>
+      <div>
+        <span
+          >提示：开票的时候请先咨询对方开票抬头，如果个人开票确认下姓名，进行开票，如果公司抬头开票，请线下询问开票内容进行开票。</span
         >
       </div>
     </div>
-    <el-card class="box-card">
-      <p style="font-weight: bold; margin-bottom: 10px">发票信息</p>
-      <p style="margin-bottom: 10px"
-        >卖车合同<span style="color: #63b0ff">SCHT202303220001</span
-        >已经签约完成并已收款。现需要向卖车方<span style="color: #63b0ff">陈某</span
-        >的开具正向二手车统一发票和增值税通用发票。开票内容如下，请平台方开具正向二手车统一发票和增值税通用发票！</p
-      >
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <p>正向二手车统一发票</p>
-          <div class="content">
-            <p>开票内容</p>
-            <p>1、</p>
-            <p>2、</p>
-            <p>3、</p>
-            <p>4、</p>
-          </div>
+    <p style="font-weight: bold; margin: 10px 0">合同信息</p>
+    <div class="content">
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>XXX收车委托合同</span>
+        </el-col>
+        <el-col :span="4">
+          <span><button class="colr159" @click="viewContract">查看</button></span>
+        </el-col>
+        <el-col :span="4" class="bg-blue">
+          <span>XXX收车合同</span>
         </el-col>
         <el-col :span="12">
-          <p>增值税通用发票</p>
-          <div class="content">
-            <p>开票内容</p>
-            <p>1、</p>
-            <p>2、</p>
-            <p>3、</p>
-            <p>4、</p>
-          </div>
+          <span>
+            <button class="colr159" @click="viewContract">查看</button>
+          </span>
         </el-col>
       </el-row>
-      <p style="font-weight: bold; margin-bottom: 10px">合同信息</p>
-      <p style="margin-bottom: 10px"
-        >XXX收车委托合同 <button class="colr159" @click="viewContract">查看</button></p
-      >
-      <p style="margin-bottom: 10px"
-        >XXX收车合同 <button class="colr159" @click="viewContract">查看</button></p
-      >
-      <p style="margin-bottom: 10px"
-        >XXX卖车委托合同 <button class="colr159" @click="viewContract">查看</button></p
-      >
-      <p style="margin-bottom: 10px"
-        >XXX卖车合同 <button class="colr159" @click="viewContract">查看</button></p
-      >
-    </el-card>
+    </div>
+    <!-- </el-card> -->
 
     <!-- 查看合同 -->
     <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel" />
@@ -73,20 +180,22 @@
 
 <script setup lang="ts" name="Reverse">
 import { AgreementFrame } from './index'
-import { propTypes } from '@/utils/propTypes'
+import { baseInfoData } from '@/views/workbench/basInfoValue'
 
-// const emit = defineEmits(['cancelForward'])
+// import { propTypes } from '@/utils/propTypes'
 
-const actionLoading = ref(false) // 遮罩层
-// const dialogTitle = ref('正向二手车统一发票和增值税发票待办') // 弹出层标题
+// const emit = defineEmits(['cancelForm'])
+
+// const actionLoading = ref(false) // 遮罩层
+// const dialogTitle = ref('反向二手车统一发票待办') // 弹出层标题
 
 // 合同弹框
 const contractVisible = ref(false)
 
-const props = defineProps({
-  // visible: propTypes.bool.def(false),
-  type: propTypes.bool.def(undefined)
-})
+// const props = defineProps({
+//   // visible: propTypes.bool.def(false),
+//   type: propTypes.bool.def(undefined)
+// })
 
 // const dialogVisible = computed(() => {
 //   const obj = props.visible
@@ -97,7 +206,7 @@ const props = defineProps({
 const viewContract = () => {
   contractVisible.value = true
 }
-console.log(props)
+
 // 关闭合同弹框
 const handleCancel = () => {
   contractVisible.value = false
@@ -105,16 +214,26 @@ const handleCancel = () => {
 
 // 关闭操作
 // const handleClose = () => {
-//   emit('cancelForward')
+//   emit('cancelForm')
 // }
 
 // 打印操作
-const handlePut = () => {
-  actionLoading.value = true
-}
+// const handlePut = () => {
+//   actionLoading.value = true
+// }
 </script>
 
 <style lang="scss" scoped>
+.reverse {
+  .title {
+    > span {
+      margin-right: 20px;
+      font-weight: 600;
+      color: #333333;
+    }
+    margin-bottom: 16px;
+  }
+}
 p {
   font-size: 16px;
 }
@@ -123,13 +242,78 @@ p {
 //   height: 80vh;
 // }
 
-.content {
-  border: 1px solid #000;
-  padding: 10px;
-  margin: 5px 0 10px 0;
-}
-
 .colr159 {
   color: #1592c9;
+}
+.flex-column {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  span {
+    width: 100%;
+    text-align: right;
+  }
+  > span:nth-child(1) {
+    border-bottom: 1px solid #eaeaea;
+  }
+}
+:deep(.el-col) {
+  box-sizing: border-box;
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  span {
+    padding-left: 15px;
+  }
+}
+.flex-content {
+  padding: 0;
+  span {
+    text-align: left;
+  }
+}
+.content .bg-blue {
+  background: #f5f5f5;
+  display: flex;
+  justify-content: flex-end;
+  span {
+    padding-right: 14px;
+  }
+}
+.content .el-row:first-child {
+  border-top: 1px solid #eaeaea;
+}
+.content .el-row .el-col:nth-child(1) {
+  border-left: 1px solid #eaeaea;
+}
+.title-bg-box {
+  margin: 14px 0 16px;
+  width: 100%;
+  overflow: hidden;
+  height: 34px;
+  background: rgba(250, 100, 0, 0.1);
+  border-radius: 2px;
+  padding-top: 8px;
+  align-items: center;
+  padding-left: 40px;
+  position: relative;
+  .notice {
+    position: absolute;
+    left: 20px;
+    top: 8px;
+  }
+  .title-box {
+    width: 200%;
+    display: flex;
+    color: #fa6400;
+  }
+}
+.car-input {
+  height: 100%;
+}
+.prompt {
+  border: 1px solid #eaeaea;
 }
 </style>
