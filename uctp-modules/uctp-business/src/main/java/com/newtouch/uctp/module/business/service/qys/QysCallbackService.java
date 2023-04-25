@@ -76,6 +76,6 @@ public interface QysCallbackService {
     /**
      * 保存契约锁回调的数据
      */
-    void saveDO(String content, Integer type, Integer status, DeptDO deptDO);
+    void saveDO(String content, Integer type, Long deptId);
 
 }

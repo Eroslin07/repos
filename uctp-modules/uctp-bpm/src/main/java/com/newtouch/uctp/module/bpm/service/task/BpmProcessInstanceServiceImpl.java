@@ -229,6 +229,11 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (userId == null) {
             userId = Long.valueOf(variables.get("startUserId") + "");
         }
+        if (userId == null) {
+
+        }
+
+
         identityService.setAuthenticatedUserId(String.valueOf(userId));
 
         // 1.获得流程定义
@@ -513,7 +518,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
 
         // 补全流程实例的拓展表
         processInstanceExtMapper.updateByProcessInstanceId(new BpmProcessInstanceExtDO().setProcessInstanceId(instance.getId())
-                .setFormVariables(variables));
+                .setFormVariables(new HashMap<>()));
         return instance.getId();
     }
 

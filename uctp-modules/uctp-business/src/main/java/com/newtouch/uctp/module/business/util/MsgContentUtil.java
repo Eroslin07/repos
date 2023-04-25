@@ -60,7 +60,18 @@ public class MsgContentUtil {
                 case "36":
                     result="【二手车交易平台】您的卖车合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
                     break;
-
+                case "40":
+                    result=map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    break;
+                case "41":
+                    result=map.get("name")+"恭喜您已完成企业认证。在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    break;
+                case "42":
+                    result=map.get("userName")+"您已经成为车友通平台【"+map.get("name")+"】的一员，在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    break;
+                case "43":
+                    result=map.get("url");
+                    break;
                 default:
                     result="无匹配模版";
 

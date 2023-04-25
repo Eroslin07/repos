@@ -4,6 +4,7 @@ import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Configuration;
 
+import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.api.transfer.CarTransferApi;

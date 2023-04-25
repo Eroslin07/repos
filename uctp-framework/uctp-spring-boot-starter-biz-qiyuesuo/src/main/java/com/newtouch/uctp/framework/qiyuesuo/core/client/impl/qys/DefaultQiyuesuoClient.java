@@ -9,6 +9,7 @@ import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
+import com.qiyuesuo.sdk.v2.param.SignParam;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 
@@ -38,6 +39,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response, Contract.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract){
         ContractDraftRequest request = new ContractDraftRequest(contract);
         String response = this.client.service(request);
@@ -56,6 +67,11 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
                 , sdkResponse.getMessage()
                 , sdkResponse.getResult()
                 , codeMapping);
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request) throws Throwable {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 
     @Override
@@ -99,10 +115,23 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    public QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(String sealAdminContract, Long companyId, String authDeadline, String remark) {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
+    }
+
+    @Override
     public QiyuesuoCommonResult<DocumentAddResult> defaultDocumentAddByTemplate(Long contractId, Long templateId, List<TemplateParam> params, String title) {
                 DocumentAddByTemplateRequest request =
                         new DocumentAddByTemplateRequest(contractId,templateId,params,title);
         return this.defaultDocumentAddByTemplate(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId) {
+        SignParam param = new SignParam();
+        param.setContractId(2589394742435041330L);
+        ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);
+        return this.defaultCompanysign(request);
     }
 
     @Override

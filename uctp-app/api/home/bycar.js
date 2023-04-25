@@ -106,3 +106,11 @@ export function delCarInfoWithCollect(data) {
 		params: data
 	})
 }
+
+// 查看合同
+export function getContractEcho(data) {
+	return request({
+		url: `/uctp/qys/ContractEcho?${data}`,
+		'method': 'POST',
+	})
+}

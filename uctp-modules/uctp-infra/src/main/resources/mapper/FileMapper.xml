@@ -20,7 +20,7 @@
         delete
         from uctp_business_file
         <where>
-            ID = #{id}
+            ID = #{mainId}
             <if test="fileType != null and fileType != ''">
                 and FILE_TYPE = #{fileType}
             </if>

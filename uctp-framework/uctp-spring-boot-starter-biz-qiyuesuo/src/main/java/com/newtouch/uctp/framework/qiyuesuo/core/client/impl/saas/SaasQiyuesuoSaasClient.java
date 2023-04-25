@@ -8,15 +8,13 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoCli
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultCodeMapping;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SaaSSdkClient;
+import com.qiyuesuo.sdk.v2.bean.Company;
 import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.bean.User;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
-import com.qiyuesuo.sdk.v2.request.DocumentAddByTemplateRequest;
-import com.qiyuesuo.sdk.v2.request.SaaSUserAuthPageRequest;
-import com.qiyuesuo.sdk.v2.request.SaasCompanyAuthPageUrlRequest;
-import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
+import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 
 import java.util.Arrays;
@@ -44,6 +42,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -51,6 +54,16 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     @Override
     protected QiyuesuoCommonResult<DocumentAddResult> doDefaultDocumentAddByTemplate(DocumentAddByTemplateRequest request) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request) throws Throwable {
+        String response = client.service(request);
+        SdkResponse<SaaSSealSignAuthUrlResult> sdkResponse = JSONUtils.toQysResponse(response, SaaSSealSignAuthUrlResult.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
     }
 
     @Override
@@ -147,7 +160,29 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    public QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(String sealAdminContract, Long companyId, String authDeadline, String remark) {
+        Assert.notNull(companyId, "companyId 不能为空");
+        Assert.notBlank(sealAdminContract, "sealAdminContract 不能为空");
+        Assert.notBlank(authDeadline, "authDeadline 不能为空");
+        Assert.notBlank(remark, "remark 不能为空");
+        SaaSSealSignAuthUrlRequest request = new SaaSSealSignAuthUrlRequest();
+        request.setSealAdmin(new User(sealAdminContract, "MOBILE"));
+        request.setCompany(new Company(companyId));
+        request.setAuthDeadline(authDeadline);
+        request.setRemark(remark);
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/privilege");
+//        request.setAppId();
+        request.setReturnUrl("https://fssc.cloud:28000/");
+        return this.saasSealSignAuthUrl(request);
+    }
+
+    @Override
     public QiyuesuoCommonResult<DocumentAddResult> defaultDocumentAddByTemplate(Long contractId, Long templateId, List<TemplateParam> params, String title) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 

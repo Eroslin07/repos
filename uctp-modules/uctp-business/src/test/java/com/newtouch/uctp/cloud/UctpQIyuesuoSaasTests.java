@@ -5,20 +5,23 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
+import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 
-@SpringBootTest(classes = UctpQIyuesuoSaasTests.class)
+@SpringBootTest
 public class UctpQIyuesuoSaasTests {
+
+    @Resource
+    private QysConfigService qysConfigService;
     private static SaasQiyuesuoSaasClient client;
 
     @BeforeAll
@@ -40,10 +43,15 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void companyAuth() {
-        String applicanInfo = "{\"name\":\"阿卡丽\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("拳头科技公司", applicanInfo);
-        System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(),0);
+//        String applicanInfo = "{\"name\":\"阿卡丽\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
+//        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("拳头科技公司", applicanInfo);
+//        System.out.println(result.getData().getPageUrl());
+//        Assert.equals(result.getCode(),0);
+        try {
+            qysConfigService.companyAuth(267L);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -56,7 +64,7 @@ public class UctpQIyuesuoSaasTests {
     @Test
     void privilegeUrl() {
         SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
-        QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3086857342332129453L, "17396202169");
+        QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3088322841008022468L, "17380123816");
         System.out.println(result.getData().getPageUrl());
         Assert.equals(result.getCode(),0);
     }
