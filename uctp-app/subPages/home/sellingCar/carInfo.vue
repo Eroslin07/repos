@@ -765,6 +765,7 @@
 				this.vehicleInfor = true;
 				this.sellerInfor = false;
 				this.active = 0;
+				this.$refs.sellerForm.clearValidate();
 			}
 			return true;
 		},
@@ -1183,6 +1184,7 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.$refs.carForm.clearValidate();
 						uni.pageScrollTo({
 							scrollTop: 0,
 							duration: 300
