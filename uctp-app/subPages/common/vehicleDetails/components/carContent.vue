@@ -11,11 +11,12 @@
 					<text v-else class="car-upload-title__text">已检测</text>
 				</view>
 				<view class="upload-content">
-					<view class="upload-text" @click="photograph(1)" v-if="!isShowTest">
+					<!-- v-if="!isShowTest" -->
+					<view class="upload-text" @click="photograph(1)" >
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
-					<view v-else class="upload-text">
+					<view  class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
 						<text>您已经上传检测报告!</text>
 						<u-icon @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
@@ -329,37 +330,7 @@
 				</view>
 			</view>
 		</view>
-		<!-- 卖家、买家信息 -->
-		<uni-popup ref="popup" background-color="#fff" type="center">
-			<view class="info-box" v-if="infoType==4">
-				<view class="">
-					<text>买家姓名：</text>
-					<text>陈唐宇</text>
-				</view>
-				<view class="">
-					<text>买家身份证：</text>
-					<text>11111111111111</text>
-				</view>
-				<view class="">
-					<text>买家电话：</text>
-					<text>11111111111111</text>
-				</view>
-			</view>
-			<view class="info-box" v-if="infoType==2">
-				<view class="">
-					<text>卖家姓名：</text>
-					<text>陈唐宇</text>
-				</view>
-				<view class="">
-					<text>卖家身份证：</text>
-					<text>11111111111111</text>
-				</view>
-				<view class="">
-					<text>卖家电话：</text>
-					<text>11111111111111</text>
-				</view>
-			</view>
-		</uni-popup>
+		
 	</view>
 </template>
 
@@ -451,7 +422,7 @@
 				let _this = this;
 				for (let i = 0; i < res.tempFilePaths.length; i++) {
 					uni.uploadFile({
-						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						url: config.upLoadTestUrl, // 仅为示例，非真实的接口地址
 						// #ifdef H5
 						file: res.tempFiles[i],
 						// #endif
@@ -462,6 +433,7 @@
 						header: {
 							Authorization: 'Bearer ' + getAccessToken()
 						},
+						formData:{'carId':_this.carInfoAll.carInfo.id},
 						success: (ress) => {
 							setTimeout(() => {
 								let fileListLen = 0;
@@ -539,11 +511,12 @@
 			// 查看买家、卖家信息
 			handleOwnerInfo(type) {
 				this.infoType=type
-				this.$refs.popup.open()
+				this.$tab.navigateTo(`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`)
 			},
 			// 作废
 			handleCancle(id) {
 				console.log(id)
+				this.$tab.navigateTo(`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`)
 			},
 			// 签章
 			handleSignature() {

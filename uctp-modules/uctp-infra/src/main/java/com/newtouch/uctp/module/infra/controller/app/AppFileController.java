@@ -77,6 +77,14 @@ public class AppFileController {
         return success(true);
     }
 
+    @DeleteMapping("/deleteReport")
+    @Operation(summary = "删除检测报告")
+    @Parameter(name = "id", description = "编号", required = true)
+    public CommonResult<Boolean> deleteReport(@RequestParam("id") Long id) throws Exception {
+        fileService.deleteReport(id);
+        return success(true);
+    }
+
     @GetMapping("/{configId}/get/**")
     @PermitAll
     @Operation(summary = "下载文件")
