@@ -1,5 +1,5 @@
 <template>
-	<view class="by-car">
+	<view class="by-car" :class="{popupShow: showModel}">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要收车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
@@ -1402,6 +1402,13 @@
 	.by-car {
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
+	}
+	
+	.popupShow {
+		overflow: hidden;
+		position: fixed;
+		height: 100%;
+		width: 100%;
 	}
 
 	.grid-text {
