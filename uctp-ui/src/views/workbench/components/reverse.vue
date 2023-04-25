@@ -11,25 +11,30 @@
       >收车合同SCHT202303220001开票待办</p
     > -->
     <!-- 发票单号 -->
-    <div class="title">
-      <p>单号：SCKP202303220001</p>
-      <p>商户经办人：XX</p>
-      <p>商户电话：XX</p>
+    <div style="font-size: 16px" class="title">
+      <span>单号：{{ baseInfoData.data.serialNo }}</span>
+      <span>商户经办人：{{ '张三' }}</span>
+      <span>商户电话：{{ '13333333333' }}</span>
       <div style="float: right">
         <!-- 操作按钮 -->
         <!-- <el-button type="danger" @click="handleClose">关闭</el-button> -->
-        <el-button type="primary" v-if="type == 'need'" :loading="actionLoading" @click="handlePut"
+        <!-- <el-button type="primary" v-if="type == 'need'" :loading="actionLoading" @click="handlePut"
           >打印/开票</el-button
-        >
+        > -->
       </div>
     </div>
     <!-- <el-card class="box-card"> -->
     <p style="font-weight: bold; margin-bottom: 10px">发票信息</p>
-    <p
-      >收车合同<span style="color: #63b0ff">SCHT202303220001</span
-      >已经签约完成并已付款。现需要向卖车方<span style="color: #63b0ff">陈某</span
-      >的开具反向二手车通用发票。开票内容如下，请平台方开具反向二手车统一发票！</p
-    >
+    <div class="title-bg-box">
+      <icon icon="svg-icon:notice" class="notice"></icon>
+      <div class="title-box">
+        收车合同
+        <span style="color: #63b0ff">SCHT202303220001</span>
+        已经签约完成并已付款。现需要向卖车方
+        <span style="color: #63b0ff">陈某</span>
+        的开具反向二手车通用发票。开票内容如下，请平台方开具反向二手车统一发票！
+      </div>
+    </div>
     <div class="content">
       <el-row>
         <el-col :span="4" class="bg-blue">
@@ -93,7 +98,7 @@
         <el-col :span="4" class="bg-blue"><span>厂牌型号</span></el-col>
         <el-col :span="4"><span>车辆信息的品牌型号</span></el-col>
         <el-col :span="4" class="bg-blue"><span>转入地车辆管理所名称</span></el-col>
-        <el-col :span="4"><el-input></el-input></el-col>
+        <el-col :span="4"><el-input class="car-input"></el-input></el-col>
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
@@ -117,7 +122,7 @@
           </div></el-col
         >
         <el-col :span="8"
-          ><div class="flex-column">
+          ><div class="flex-column flex-content">
             <span>平台开票信息的纳税人识别号</span>
             <span>平台开票信息的地址</span>
           </div></el-col
@@ -134,13 +139,25 @@
         <el-col :span="8"><span>平台开票信息的电话</span></el-col>
       </el-row>
     </div>
-    <p style="font-weight: bold; margin-bottom: 10px">合同信息</p>
-    <p style="margin-bottom: 10px"
-      >XXX收车委托合同 <button class="colr159" @click="viewContract">查看</button></p
-    >
-    <p style="margin-bottom: 10px"
-      >XXX收车合同 <button class="colr159" @click="viewContract">查看</button></p
-    >
+    <p style="font-weight: bold; margin: 10px 0">合同信息</p>
+    <div class="content">
+      <el-row>
+        <el-col :span="4" class="bg-blue">
+          <span>XXX收车委托合同</span>
+        </el-col>
+        <el-col :span="4">
+          <span><button class="colr159" @click="viewContract">查看</button></span>
+        </el-col>
+        <el-col :span="4" class="bg-blue">
+          <span>XXX收车合同</span>
+        </el-col>
+        <el-col :span="12">
+          <span>
+            <button class="colr159" @click="viewContract">查看</button>
+          </span>
+        </el-col>
+      </el-row>
+    </div>
     <!-- </el-card> -->
 
     <!-- 查看合同 -->
@@ -151,11 +168,13 @@
 
 <script setup lang="ts" name="Reverse">
 import { AgreementFrame } from './index'
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+
 // import { propTypes } from '@/utils/propTypes'
 
 // const emit = defineEmits(['cancelForm'])
 
-const actionLoading = ref(false) // 遮罩层
+// const actionLoading = ref(false) // 遮罩层
 // const dialogTitle = ref('反向二手车统一发票待办') // 弹出层标题
 
 // 合同弹框
@@ -187,21 +206,20 @@ const handleCancel = () => {
 // }
 
 // 打印操作
-const handlePut = () => {
-  actionLoading.value = true
-}
+// const handlePut = () => {
+//   actionLoading.value = true
+// }
 </script>
 
 <style lang="scss" scoped>
 .reverse {
   .title {
-    overflow: hidden;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-around;
-    > p {
-      margin-right: 10px;
+    > span {
+      margin-right: 20px;
+      font-weight: 600;
+      color: #333333;
     }
+    margin-bottom: 16px;
   }
 }
 p {
@@ -219,23 +237,68 @@ p {
   width: 100%;
   display: flex;
   flex-direction: column;
+  span {
+    width: 100%;
+    text-align: right;
+  }
   > span:nth-child(1) {
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #eaeaea;
   }
 }
 :deep(.el-col) {
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
+  box-sizing: border-box;
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
   display: flex;
+  height: 40px;
   align-items: center;
+  span {
+    padding-left: 15px;
+  }
+}
+.flex-content {
+  padding: 0;
+  span {
+    text-align: left;
+  }
 }
 .content .bg-blue {
-  background: #ddebf7;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: flex-end;
+  span {
+    padding-right: 14px;
+  }
 }
 .content .el-row:first-child {
-  border-top: 1px solid #000;
+  border-top: 1px solid #eaeaea;
 }
 .content .el-row .el-col:nth-child(1) {
-  border-left: 1px solid #000;
+  border-left: 1px solid #eaeaea;
+}
+.title-bg-box {
+  margin: 14px 0 16px;
+  width: 100%;
+  overflow: hidden;
+  height: 34px;
+  background: rgba(250, 100, 0, 0.1);
+  border-radius: 2px;
+  padding-top: 8px;
+  align-items: center;
+  padding-left: 40px;
+  position: relative;
+  .notice {
+    position: absolute;
+    left: 20px;
+    top: 8px;
+  }
+  .title-box {
+    width: 200%;
+    display: flex;
+    color: #fa6400;
+  }
+}
+.car-input {
+  height: 100%;
 }
 </style>
