@@ -648,11 +648,11 @@
 								}
 							})
 						}).catch((error) => {
-							this.$modal.msgError("发起流程失败");
+							// this.$modal.msgError(error.msg);
 							this.showOverlay = false;
 						})
 					}).catch((error) => {
-						this.$modal.msgError("提交审核失败");
+						// this.$modal.msgError(error.msg);
 						this.showOverlay = false;
 					})
 				})
