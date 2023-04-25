@@ -8,11 +8,7 @@
     style="height: 100%"
     :zIndex="3000"
   >
-    <iframe
-      src="https://element-plus.org/zh-CN/component/form.html#%E5%85%B8%E5%9E%8B%E8%A1%A8%E5%8D%95"
-      frameborder="0"
-      style="width: 100%; height: 90vh"
-    ></iframe>
+    <iframe :src="src" frameborder="0" style="width: 100%; height: 90vh"></iframe>
   </vxe-modal>
 </template>
 
@@ -21,7 +17,8 @@ import { propTypes } from '@/utils/propTypes'
 const emit = defineEmits(['handleCancel'])
 
 const props = defineProps({
-  visible: propTypes.bool.def(false)
+  visible: propTypes.bool.def(false),
+  src: propTypes.bool.def('')
 })
 
 const contractVisible = computed(() => {
