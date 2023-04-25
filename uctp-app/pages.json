@@ -29,7 +29,9 @@
 			"path": "pages/account/index",
 			"style": {
 				"navigationBarTitleText": "资金管理",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 150
 			}
 		}, {
 			"path": "pages/mine/index",
@@ -344,6 +346,12 @@
 				// "enablePullDownRefresh": false
 			}
 		}, {
+			"path": "common/vehicleDetails/components/clientInfo",
+			"style": {
+				"navigationBarTitleText": "卖家信息"
+				// "enablePullDownRefresh": false
+			}
+		}, {
 			"path": "common/webview/userAgreement",
 			"style": {
 				"navigationBarTitleText": "用户协议"
@@ -356,7 +364,8 @@
 		}, {
 			"path": "home/carStatus/carStatus",
 			"style": {
-				"navigationBarTitleText": "收车中",
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
 				"onReachBottomDistance": 150,
 				"enablePullDownRefresh": true
 			}

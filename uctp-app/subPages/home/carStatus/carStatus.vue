@@ -1,5 +1,8 @@
 <template>
 	<view class="status-container">
+		<!-- 自定义导航栏 -->
+		<u-navbar :title="title" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
+		
 		<u-search class="search" v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 			placeholder="请输入商户/车辆型号/单号">
 		</u-search>
@@ -9,7 +12,7 @@
 		</view>
 		<!-- 列表 -->
 		<view class="" v-if="tabList.length>0">
-			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)">
+			<uni-card v-for="(tab, tabIndex) in tabList" :key="tab.id" @click="handleCard(tab)">
 				<view v-if="tab.status != 11">
 					<uni-row :gutter="30">
 						<uni-col :span="9">
@@ -142,6 +145,7 @@
 	export default {
 		data() {
 			return {
+				title: '',
 				options1: [{
 					text: '删除',
 					style: {
@@ -187,10 +191,6 @@
 				type: null
 			}
 		},
-		// components: {
-		// 	DropdownMenu,
-		// 	DropdownItem
-		// },
 		filters: {
 			handleMoney(val) {
 				let value = parseFloat(val)
@@ -209,6 +209,7 @@
 		onLoad(props) {
 			this.allChild = JSON.parse(props.allChild)
 			this.detailData = JSON.parse(props.item)
+			this.title = this.detailData.label
 			this.childArr = this.detailData.child.map(v => {
 				return {
 					name: v.label,
@@ -245,6 +246,10 @@
 			this.getMore(this.formData)
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.reLaunch('/pages/index');
+			},
 			// 获取list数据
 			getList(params) {
 				this.$modal.loading("数据加载中...");

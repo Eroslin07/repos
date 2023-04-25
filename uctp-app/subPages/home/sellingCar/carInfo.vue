@@ -891,6 +891,10 @@
 					this.vehicleInfor = true;
 					this.sellerInfor = false;
 					this.active = 0;
+					uni.pageScrollTo({
+						scrollTop: 0,
+						duration: 300
+					});
 				}
 			},
 			formatter(type, value) {
@@ -1116,11 +1120,19 @@
 					proceduresAndSpareParts[item] = false;
 				})
 				if (proceduresAndSpareParts['vehicleKey'] == true) {
+					if (this.carForm.key == '' || !this.carForm.key) {
+						this.$modal.msg("请输入钥匙");
+						return
+					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
 					proceduresAndSpareParts['vehicleKey'] = 0;
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
+					if (this.carForm.otherEvent == '' || !this.carForm.otherEvent) {
+						this.$modal.msg("请输入其他内容");
+						return
+					}
 					proceduresAndSpareParts['accidentVehicle'] = this.carForm.otherEvent;
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
@@ -1165,6 +1177,10 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						uni.pageScrollTo({
+							scrollTop: 0,
+							duration: 300
+						});
 						this.showOverlay = false;
 						this.$modal.closeLoading()
 						this.getFairValue();

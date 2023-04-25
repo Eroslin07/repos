@@ -8,7 +8,7 @@
 				placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
 		<!-- status==22 未检测 -->
-		<view style="margin-top: 85px;">
+		<view>
 			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)"
 				style="margin-top: 10px;">
 				<uni-row :gutter="20">
@@ -202,11 +202,6 @@
 	}
 
 	.search_header {
-		position: fixed;
-		top: 44px;
-		/* #ifdef MP-WEIXIN */
-		top: 0;
-		/* #endif */
 		width: 100%;
 		padding: 10px;
 		font-size: 16px;

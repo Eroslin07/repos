@@ -1,5 +1,5 @@
 <template>
-	<view class="by-car">
+	<view class="by-car" :class="{popupShow: showModel}">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要收车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
@@ -102,7 +102,7 @@
 					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="model" borderBottom>
 						<view @click="showModel = true">
-							<u--input v-model="carForm.model" border="none" placeholder="请输入品牌/车系/车型"></u--input>
+							<u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input>
 						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
@@ -165,7 +165,7 @@
 				<!-- 选择登记日期 -->
 				<u-datetime-picker v-if="showDate" :show="showDate" v-model="showDateTime" mode="date"
 					:formatter="formatter" @cancel="showDate = false" @confirm="handleDate"></u-datetime-picker>
-				<u-popup v-if="showModel" :show="showModel" :customStyle="{ 'width': '240px' }" mode="right"
+				<u-popup v-if="showModel" :show="showModel" safeAreaInsetTop :customStyle="{ 'width': '240px' }" mode="right"
 					@close="showModel = false">
 					<view>
 						<model-list :seriesList="seriesList" :title="carForm.brand" @handleClose="handleClose" />
@@ -202,7 +202,7 @@
 						<u-radio-group v-model="sellerForm.payType" placement="row" activeColor="#fd6404">
 							<u-radio shape="circle" label="全款" :name="0"></u-radio>
 							<text style="margin: 0 5px;"></text>
-							<u-radio shape="circle" label="定金+尾款" :name="1"></u-radio>
+							<!-- <u-radio shape="circle" label="定金+尾款" :name="1"></u-radio> -->
 						</u-radio-group>
 					</u-form-item>
 					<!-- <u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
@@ -710,6 +710,10 @@
 					this.vehicleInfor = true;
 					this.sellerInfor = false;
 					this.active = 0;
+					uni.pageScrollTo({
+						scrollTop: 0,
+						duration: 300
+					});
 				}
 			},
 			handelKey(value) {
@@ -969,7 +973,7 @@
 				this.carId = data.carInfoDetails.carId;
 				this.modelId = data.carInfo.modelId;
 				this.carForm = {
-					drivingLicenseUrl: data.fileB.length == 0 ? this[`fileList${index}`] : data.fileB,
+					drivingLicenseUrl: data.fileB,
 					certificateUrl: data.fileC,
 					carUrl: data.fileA,
 					vin: data.carInfo.vin,
@@ -988,7 +992,7 @@
 					brand: data.carInfo.brand,
 					remarks: data.carInfo.remarks,
 					insurance: data.carInfo.insurance,
-					mileage: data.carInfoDetails.mileage.toString(),
+					mileage: data.carInfoDetails.mileage ? data.carInfoDetails.mileage.toString() : '',
 					checkboxValue: [],
 					key: data.carInfoDetails.proceduresAndSpareParts.vehicleKey,
 					other: data.carInfoDetails.proceduresAndSpareParts.accidentVehicle,
@@ -1156,11 +1160,19 @@
 					proceduresAndSpareParts[item] = false;
 				})
 				if (proceduresAndSpareParts['vehicleKey'] == true) {
+					if (this.carForm.key == '' || !this.carForm.key) {
+						this.$modal.msg("请输入钥匙");
+						return
+					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
 					proceduresAndSpareParts['vehicleKey'] = 0;
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
+					if (this.carForm.other == '' || !this.carForm.other) {
+						this.$modal.msg("请输入其他内容");
+						return
+					}
 					proceduresAndSpareParts['accidentVehicle'] = this.carForm.other;
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
@@ -1204,6 +1216,10 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						uni.pageScrollTo({
+							scrollTop: 0,
+							duration: 300
+						});
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
@@ -1386,6 +1402,13 @@
 	.by-car {
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
+	}
+	
+	.popupShow {
+		overflow: hidden;
+		position: fixed;
+		height: 100%;
+		width: 100%;
 	}
 
 	.grid-text {
