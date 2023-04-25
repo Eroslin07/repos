@@ -16,7 +16,7 @@
 		</u-grid>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
-			<view v-if="vehicleInfor">
+			<view v-show="vehicleInfor">
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 					</view>
@@ -135,7 +135,7 @@
 
 			</view>
 			<!-- 买家信息 -->
-			<view v-if="sellerInfor">
+			<view v-show="sellerInfor">
 				<view class="text">买家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
@@ -153,7 +153,7 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" border="none" @focus="handleFocus" @blur="handleBlur"
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus" @blur="handleBlur"
 							placeholder="请输入卖车金额">
 							<template slot="suffix">
 								<view>元</view>
@@ -748,6 +748,12 @@
 				isChildAccount: false,
 				fairStatus: null
 			}
+		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.carForm.setRules(this.carRules)
+			this.$refs.sellerForm.setRules(this.sellerRules)
+			this.$refs.feesForm.setRules(this.feesFormRules)
 		},
 		beforeCreate() {
 			that = this;

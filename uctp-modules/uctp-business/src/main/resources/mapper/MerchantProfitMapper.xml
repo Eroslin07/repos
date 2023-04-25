@@ -3,6 +3,7 @@
 <mapper namespace="com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper">
 
     <resultMap id="ProfitPresentResultMap" type="com.newtouch.uctp.module.business.service.account.dto.ProfitPresentFormDTO">
+        <result column="ID" property="profitId" />
         <result column="MERCHANT_ID" property="merchantId" />
         <result column="MERCHANT_NAME" property="merchantName" />
         <result column="TEL_NO" property="telNo" />
@@ -76,7 +77,12 @@
     <select id="selectProfitDetail" resultType="com.newtouch.uctp.module.business.service.account.dto.ProfitPresentFormDetailDTO">
         select
             @rownum := @rownum + 1 as idx,
-            tmp2.*
+            tmp2.category,
+            tmp2.vehicle_receipt_amount,
+            tmp2.car_sales_amount,
+            tmp2.fee_total_amount,
+            tmp2.amount,
+            date_format(tmp2.trade_time, '%Y-%m-%d %H:%I:%S')  as trade_time
         from
             (
             select
@@ -108,7 +114,11 @@
                 (
                 select
                     p.contract_no,
-                    null as vehicle_receipt_amount,
+                    case
+                        when p.trade_type = '10101001' then
+                p.vehicle_receipt_amount
+                        else 0
+                    end as vehicle_receipt_amount,
                     case
                         when p.trade_type = '10101001' then
                 p.profit

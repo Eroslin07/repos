@@ -347,6 +347,10 @@
 				date: null,
 			}
 		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.valiForm.setRules(this.rules)
+		},
 		onLoad() {
 			this.showModal = true;
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
@@ -530,6 +534,13 @@
 				deleteImage({ id: event.file.id }).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
+					if (event.name == 3) {
+						this.registerForm.businessLicense = [];
+						this.registerForm.businessName = '';
+						this.registerForm.taxNum = '';
+						this.registerForm.legal_representative = '';
+						this.registerForm.address = '';
+					}
 				})
 			},
 			// 选择框确定

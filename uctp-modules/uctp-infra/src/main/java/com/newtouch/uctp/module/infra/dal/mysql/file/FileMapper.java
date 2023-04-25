@@ -28,4 +28,5 @@ public interface FileMapper extends BaseMapperX<FileDO> {
                                 @Param("status") Integer status,@Param("statusThree") Integer statusThree,
                             @Param("carId") Long carId);
 
+    int deleteByMainIdAndType(@Param("mainId") Long id, @Param("fileType") String fileType);
 }

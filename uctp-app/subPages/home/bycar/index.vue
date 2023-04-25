@@ -1,5 +1,5 @@
 <template>
-	<view class="by-car">
+	<view class="by-car" :class="{popupShow: showModel}">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要收车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
@@ -16,7 +16,7 @@
 		</u-grid>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
-			<view v-if="vehicleInfor">
+			<view v-show="vehicleInfor">
 				<u--form labelPosition="left" :model="carForm" :rules="carRules" ref="carForm" labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
@@ -173,7 +173,7 @@
 				</u-popup>
 			</view>
 			<!-- 卖家信息 -->
-			<view v-if="sellerInfor">
+			<view v-show="sellerInfor">
 				<view class="text">卖家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
@@ -184,7 +184,7 @@
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额"
+						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none" placeholder="请输入收车金额"
 							@blur="handleBlur" @focus="handleFocus">
 							<template slot="suffix">
 								<view>元</view>
@@ -672,6 +672,11 @@
 				fairStatus: null
 			}
 		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.carForm.setRules(this.carRules)
+			this.$refs.sellerForm.setRules(this.sellerRules)
+		},
 		onBackPress(options) {
 			if (this.active == 0) {
 				this.handleSaveCar();
@@ -961,11 +966,20 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({
-					id: event.file.id
-				}).then((res) => {
+				deleteImage({ id: event.file.id }).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
+					if (event.name == 1) {
+						this.carForm.vin = '';
+						this.carForm.carType = '';
+						this.carForm.engineNum = '';
+						this.carForm.licensePlateNum = '';
+						this.carForm.natureOfOperat = '';
+						this.carForm.model = '';
+						this.carForm.brand = '';
+						this.carForm.brandType = '';
+						this.carForm.firstRegistDate = dateTime;
+					}
 				})
 			},
 			// 数据回显
@@ -1402,6 +1416,13 @@
 	.by-car {
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
+	}
+	
+	.popupShow {
+		overflow: hidden;
+		position: fixed;
+		height: 100%;
+		width: 100%;
 	}
 
 	.grid-text {

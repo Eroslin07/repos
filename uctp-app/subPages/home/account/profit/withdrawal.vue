@@ -10,9 +10,11 @@
 				<u-input
 					border="none"
 					v-model="amount"
-					type="number"
+					type="digit"
+					:focus="true"
 					clearable
 					:customStyle="{'height': '50px'}"
+					@input="handleInput"
 					fontSize="24px"
 				>
 					<u--text
@@ -67,6 +69,18 @@
 			this.allAmount = options.amount;
 		},
 		methods: {
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 删除图片
 			deletePic(event) {
 				deleteImage({ id: event.file.id }).then((res) => {

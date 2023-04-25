@@ -30,19 +30,19 @@ public class AccountProfitServiceTest {
     private RedissonClient redissonClient;
 
     private String accountNo = "666";
-    private String contractNo = "23002";
+    private String contractNo = "25001";
 
     @Test
     public void testRecorded() {
-        Integer vehicleReceiptAmount = 100;
-        Integer carSalesAmount = 200;
+        Long vehicleReceiptAmount = 100L;
+        Long carSalesAmount = 200L;
         List<CostDTO> costs = new ArrayList<>();
         CostDTO c = new CostDTO();
-        c.setAmount(1);
+        c.setAmount(1L);
         c.setType("FEE_1");
         costs.add(c);
         CostDTO c2 = new CostDTO();
-        c2.setAmount(2);
+        c2.setAmount(2L);
         c2.setType("FEE_2");
         c2.setPromptPayment(true);
         c2.setBankNo("622000000");
@@ -115,7 +115,7 @@ public class AccountProfitServiceTest {
         invoiceFiles.add(invoiceReqVO1);
         invoiceFiles.add(invoiceReqVO2);
 
-        Long id = accountProfitService.profitPresent(accountNo, 3L, 1, invoiceFiles);
+        Long id = accountProfitService.profitPresent(accountNo, 3L, 1L, invoiceFiles);
         Assertions.assertNotNull(id);
     }
 

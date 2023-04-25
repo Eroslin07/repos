@@ -19,7 +19,7 @@ public class ProfitPresentReqVO {
     @Schema(description = "提现金额（单位为：分）")
     @NotNull(message = "提现金额不能为空")
     @Min(value = 1, message = "提现金额必须大于0")
-    private Integer amount;
+    private Long amount;
     @Schema(description = "发票文件清单")
     @NotNull(message = "发票不能为空")
     private List<ProfitPresentInvoiceReqVO> invoiceFiles;

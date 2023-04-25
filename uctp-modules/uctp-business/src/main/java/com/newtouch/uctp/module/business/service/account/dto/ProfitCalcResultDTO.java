@@ -12,31 +12,31 @@ import java.util.List;
 @ToString
 public class ProfitCalcResultDTO {
     // 现待回填保证金
-    private Integer nowWaitForBackCashTotalAmount;
+    private Long nowWaitForBackCashTotalAmount;
     // 现利润余额
-    private Integer nowProfitTotalAmount;
+    private Long nowProfitTotalAmount;
     // 本次回填保证金（不含本次利润扣补回填保证金）
-    private Integer currentBackCashAmount;
+    private Long currentBackCashAmount;
     // 本次卖车款
-    private Integer currentCarSalesAmount;
+    private Long currentCarSalesAmount;
     // 本次待回填保证金
-    private Integer currentWaitForBackCashAmount;
+    private Long currentWaitForBackCashAmount;
     // 使用本次利润抵扣原待回填保证金
-    private Integer useCurrentDeductionOriginalBackCashAmount;
+    private Long useCurrentDeductionOriginalBackCashAmount;
     // 使用原有利润抵扣原待回填保证金
-    private Integer useOriginalDeductionOriginalBackCashAmount;
+    private Long useOriginalDeductionOriginalBackCashAmount;
     // 使用原有利润抵扣本次回填保证金
-    private Integer useOriginalDeductionBackCashAmount;
+    private Long useOriginalDeductionBackCashAmount;
     // 本次利润
-    private Integer currentProfitAmount;
+    private Long currentProfitAmount;
     // 本次利润余额
-    private Integer currentProfitBalanceAmount;
+    private Long currentProfitBalanceAmount;
     // 本次收车款
-    private Integer currentVehicleReceiptAmount;
+    private Long currentVehicleReceiptAmount;
     // 本次收益
-    private Integer currentRevenueAmount;
+    private Long currentRevenueAmount;
     // 本次总费用
-    private Integer currentFeeTotalAmount;
+    private Long currentFeeTotalAmount;
     // 本次费用明细
     private List<CostDTO> currentCosts;
     // 本次税收明细
