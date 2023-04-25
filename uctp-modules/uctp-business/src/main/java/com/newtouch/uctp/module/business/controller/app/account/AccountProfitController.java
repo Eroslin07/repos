@@ -70,21 +70,19 @@ public class AccountProfitController {
     @PostMapping("/presentAudit")
     @Operation(summary = "审核利润提取")
     public CommonResult<String> profitPresentAudit(@RequestBody ProfitPresentAuditReqVO auditReq) {
-        String profitId = auditReq.getProfitId();
-        log.info("审核利润提取{}，意见{}", profitId, auditReq.getAuditOpinion());
+        String businessKey = auditReq.getBusinessKey();
+        log.info("审核利润提取{}，意见{}", businessKey, auditReq.getAuditOpinion());
         ProfitPressentAuditOpinion auditOpinion = null;
         if (auditReq.getAuditOpinion() == 1) {
-            auditOpinion = ProfitPressentAuditOpinion.AUDIT_PROCESSING;
-        } else if (auditReq.getAuditOpinion() == 2) {
             auditOpinion = ProfitPressentAuditOpinion.AUDIT_APPROVED;
-        } else if (auditReq.getAuditOpinion() == 3) {
+        } else if (auditReq.getAuditOpinion() == 2) {
             auditOpinion = ProfitPressentAuditOpinion.AUDIT_REJECT;
         } else {
             log.error("利润提现审核意见有误");
             throw exception(ACC_PRESENT_ERROR);
         }
 
-        accountProfitService.auditProfitPressent(Long.valueOf(profitId), auditOpinion);
+        accountProfitService.auditProfitPressent(businessKey, auditOpinion);
 
         return success("OK");
     }

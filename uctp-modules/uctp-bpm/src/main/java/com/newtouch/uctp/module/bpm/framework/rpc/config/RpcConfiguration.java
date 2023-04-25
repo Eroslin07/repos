@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.bpm.framework.rpc.config;
 
+import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Configuration;
 
