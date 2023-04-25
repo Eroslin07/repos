@@ -356,7 +356,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void test(Long id,Integer type) throws Exception {
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1650772257324167170L);
-//        QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
+        QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
 //        qiyuesuoClient.defaultDraftSend(null);
 //        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
         if (type.equals(0)) {
@@ -364,8 +364,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else if (type.equals(1)) {
             this.userAuth(id);
         } else if (type.equals(2)) {
+            DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 12);
+            SaaSSealSignAuthUrlResult checkedData = saasClient.saasSealSignAuthUrl("17380123816", 3088322841008022468L, DateUtil.formatDate(authDeadline), "授权静默签章").getCheckedData();
+            System.out.println(checkedData.getPageUrl());
         }else if (type.equals(3)) {
             Object checkedData = client.defaultCompanysign(3088393275632066703L).getCheckedData();
+            System.out.println(checkedData);
+        }else if (type.equals(4)) {
+            SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816").getCheckedData();
             System.out.println(checkedData);
         }
 
@@ -758,7 +764,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 streamFile);
         SaaSCompanyAuthPageResult checkedData = result.getCheckedData();
         log.info("企业认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
-        //TODO 发送短信提醒操作人认证
         Map<String, String> map = MapUtil
                 .builder("title", "企业认证")
                 .put("contentType", "40")
@@ -780,7 +785,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
         log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
-        //TODO 发送短信提醒操作人认证
         Map<String, String> map = MapUtil
                 .builder("title", "企业认证")
                 .put("contentType", "42")
@@ -836,7 +840,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
             if (CollUtil.isNotEmpty(userRespDTOS)) {
                 AdminUserRespDTO userRespDTO = userRespDTOS.get(0);
-                DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 6);
+                DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 12);
                 SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
                         companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
                 log.info("企业印章自动签授权,用户【{}】,授权地址【{}】",userRespDTO.getNickname(),authUrlResult.getPageUrl());

@@ -129,7 +129,7 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     @Override
     public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId) {
         SignParam param = new SignParam();
-        param.setContractId(2589394742435041330L);
+        param.setContractId(contractId);
         ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);
         return this.defaultCompanysign(request);
     }

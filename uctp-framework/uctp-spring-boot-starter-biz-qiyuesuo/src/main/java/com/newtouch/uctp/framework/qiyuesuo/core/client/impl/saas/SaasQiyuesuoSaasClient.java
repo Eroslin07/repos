@@ -154,7 +154,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         //TODO 成功后的地址需要商量
         request.setSuccessUrl("https://fssc.cloud:28000/");
         //目前只授权印章
-        List<String> privilegeModules = Arrays.asList("SEAL");
+        List<String> privilegeModules = Arrays.asList("SEAL","CONTRACT");
         request.setPrivilegeModules(privilegeModules);
         return this.saasPrivilegeUrl(request);
     }
