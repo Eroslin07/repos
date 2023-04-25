@@ -36,7 +36,7 @@ public class CashDetailRespVO {
     private String tranRecordNo;
 
     @Schema(description = "支付金额")
-    private Integer payAmount;
+    private Long payAmount;
 
     @Schema(description = "交易类型")
     private String tradeType;
@@ -54,7 +54,7 @@ public class CashDetailRespVO {
     private String contractNo;
 
     @Schema(description = "账户余额")
-    private Integer accountBalance;
+    private Long accountBalance;
 
     @Schema(description = "提现状态")
     private String presentState;

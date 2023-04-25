@@ -23,7 +23,7 @@ public class MerchantCashBackDO extends BaseDO {
     private String type; // 类型（如：待回填，利润抵扣）
     private String typeText; // 类型中文名称
     private LocalDateTime occurredTime; // 发生时间
-    private Integer amount; // 金额
+    private Long amount; // 金额
     private String tradeTo; // 交易去向
     private String tradeToText; // 交易去向中文名称
 }

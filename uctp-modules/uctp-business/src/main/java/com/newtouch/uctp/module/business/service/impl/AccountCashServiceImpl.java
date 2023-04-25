@@ -123,7 +123,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Transactional
     public AccountCashRespVO recharge(TransactionRecordReqVO transactionRecordReqVO) {
         String accountNo = transactionRecordReqVO.getAccountNo();
-        Integer tranAmount = transactionRecordReqVO.getTranAmount();
+        Long tranAmount = transactionRecordReqVO.getTranAmount();
         //增加保证金金额，版本号加1
         int count = merchantAccountService.updateCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), 1);
         if (count <= 0) {
@@ -151,7 +151,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Transactional
     public AccountCashRespVO withdraw(TransactionRecordReqVO transactionRecordReqVO) {
         String accountNo = transactionRecordReqVO.getAccountNo();
-        Integer tranAmount = transactionRecordReqVO.getTranAmount();
+        Long tranAmount = transactionRecordReqVO.getTranAmount();
         //扣除保证金金额，版本号加1
         merchantAccountService.changeCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), AccountConstants.TRADE_TYPE_WITHDRAW);
 
@@ -214,14 +214,14 @@ public class AccountCashServiceImpl implements AccountCashService {
     //待回填保证金
     @Override
     @Transactional
-    public Integer difference(TransactionRecordReqVO transactionRecordReqVO) {
+    public Long difference(TransactionRecordReqVO transactionRecordReqVO) {
         //待回填保证金 = 保证金 - 冻结 - 可用；
-        int amount = 0;
+        Long amount = 0L;
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
         if (merchantAccountDO != null && merchantAccountDO.getCash() != null) {
-            Integer cash = merchantAccountDO.getCash();
-            Integer availableCash = 0;
-            Integer freezeCash = 0;
+            Long cash = merchantAccountDO.getCash();
+            Long availableCash = 0L;
+            Long freezeCash = 0L;
             if (merchantAccountDO.getAvailableCash() != null) {
                 availableCash = merchantAccountDO.getAvailableCash();
             }
@@ -276,7 +276,7 @@ public class AccountCashServiceImpl implements AccountCashService {
             throw new ServiceException(AccountConstants.ERROR_CODE_CONTRACT_NO_NOT_FOUND, AccountConstants.ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND);
         }
         String accountNo = merchantCashDO.getAccountNo();
-        Integer payAmount = merchantCashDO.getPayAmount();
+        Long payAmount = merchantCashDO.getPayAmount();
         //冻结解冻，版本号+1
         int count = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_RELEASE);
 
