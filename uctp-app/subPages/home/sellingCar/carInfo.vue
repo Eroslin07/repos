@@ -786,7 +786,7 @@
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
 				
-				this.fairStatus = res.data.carInfo.bpmStatus;
+				this.fairStatus = res.data.bpmStatus;
 				
 				let obj;
 				if (this.draftStatus == 31) {
@@ -1111,7 +1111,6 @@
 			// 保存车辆信息草稿
 			handleDraft(val) {
 				if (!this.carForm.checkboxValue.length) return this.$modal.msgError('车辆手续及备件不能为空！')
-				this.showOverlay = true;
 				// 车辆手续及备件
 				let proceduresAndSpareParts = {};
 				let list = [];
@@ -1177,6 +1176,7 @@
 					other: this.carForm.other //其他
 				}
 
+				this.showOverlay = true;
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellCarInfo(data).then((res) => {
 					if (val == 'step') {
