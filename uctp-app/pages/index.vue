@@ -3,9 +3,11 @@
 		<!-- 自定义导航栏 -->
 		<u-navbar title="车友通">
 			<view class="u-nav-slot" slot="left">
-				<image @click="handleMsg" style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png"
-					class="form-image">
-				</image>
+				<uni-badge class="uni-badge-left-margin" :text="value" absolute="rightTop" size="small">
+					<image @click="handleMsg" style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png"
+						class="form-image">
+					</image>
+				</uni-badge>
 			</view>
 		</u-navbar>
 		<!-- 解决窗体沉浸，内容被导航栏遮盖问题 -->
@@ -92,6 +94,8 @@
 			return {
 				// 导航栏高度
 				navigateBarHeight: 0,
+				// 消息数字角标
+				value: 100,
 				// 轮播
 				swiperList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
