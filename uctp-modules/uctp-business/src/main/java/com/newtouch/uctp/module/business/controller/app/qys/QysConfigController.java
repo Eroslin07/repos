@@ -170,8 +170,10 @@ public class QysConfigController {
     @GetMapping("/test")
     @Operation(summary ="测试Id")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<Long> testId(@RequestParam("id") @NotNull Long id) {
-        qysConfigService.test();
+    @Parameter(name = "type", description = "类型", required = true, example = "1024")
+    public CommonResult<Long> testId(@RequestParam("id") @NotNull Long id,
+                                     @RequestParam("type") @NotNull Integer type) throws Exception {
+        qysConfigService.test(id,type);
         return success(id);
     }
 

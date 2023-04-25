@@ -5,17 +5,21 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
+import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 
-@SpringBootTest(classes = UctpBusinessApplicationTests.class)
+@SpringBootTest
 class UctpBusinessApplicationTests {
-
+    @Resource
+    private QysConfigService qysConfigService;
     private static DefaultQiyuesuoClient client;
     @BeforeAll
     public static void before() {

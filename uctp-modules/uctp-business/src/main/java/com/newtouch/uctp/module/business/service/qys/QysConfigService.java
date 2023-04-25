@@ -100,7 +100,7 @@ public interface QysConfigService {
      */
     String login(String signature, String timestamp, String content) throws Exception;
 
-    void test();
+    void test(Long id,Integer type) throws Exception;
 
     /**
      * 发送契约锁合同
@@ -150,4 +150,6 @@ public interface QysConfigService {
      * @return
      */
     String callBackPrivilege(String signature, String timestamp, String content) throws Exception;
+
+
 }

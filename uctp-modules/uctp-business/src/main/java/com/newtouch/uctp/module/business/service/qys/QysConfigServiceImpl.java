@@ -22,15 +22,19 @@ import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelPropert
 import com.newtouch.uctp.framework.security.core.LoginUser;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
+import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
+import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.CompanyAuthDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
-import com.newtouch.uctp.module.business.dal.dataobject.*;
+import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
-import com.newtouch.uctp.module.business.dal.dataobject.file.FileDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
@@ -39,7 +43,6 @@ import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
 import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
-import com.newtouch.uctp.module.business.dal.mysql.file.FileMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
@@ -74,11 +77,13 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
+import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.REQUEST_ATTRIBUTE_LOGIN_USER_ID;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 import static com.newtouch.uctp.module.business.enums.QysConstants.SECRET;
 
@@ -225,34 +230,78 @@ public class QysConfigServiceImpl implements QysConfigService {
         //通过营业执照，和公司名称找到公司数据
         DeptDO deptDO = deptMapper.selectOne("name", companyName, "tax_num", registerNo);
         if (ObjectUtil.isNotNull(deptDO)) {
-            //如果回调数据为认证成功，保存公司id
-            if ("1".equals(status) && StrUtil.isNotBlank(companyId)) {
-                QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
-                if (ObjectUtil.isNull(configDO)) {
-                    configDO = new QysConfigDO();
+//            this.configurationSystemVariable(deptDO);
+            //fengin接口回调，如果要用feign 那么这里必须卸载回调里，不然报错没传参数 tenant-id
+            TenantUtils.execute(deptDO.getTenantId(), () -> {
+                WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,deptDO.getTenantId());
+                //设置当前登录人信息，免得保存报错
+                List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
+                if (CollUtil.isEmpty(adminUserRespDTOs)) {
+                    //是在找不到
+                    WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
+                }else {
+                    WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
                 }
-                configDO.setCompanyId(Long.valueOf(companyId));
-                configDO.setBusinessId(deptDO.getId());
-                configDO.setBusinessName(deptDO.getName());
-                qysConfigMapper.insert(configDO);
-            }
-            deptMapper.updateById(deptDO);
-            //继续做企业授权
-            List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
-            if (CollUtil.isNotEmpty(checkedData)) {
-                //此时只会存在一条当前部门下的用户数据
-                AdminUserRespDTO userRespDTO = checkedData.get(0);
-                this.privilegeUrl(userRespDTO.getId());
-            }else {
-                log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
-            }
+                //如果回调数据为认证成功，保存公司id
+                if ("1".equals(status) && StrUtil.isNotBlank(companyId)) {
+                    QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
+                    if (ObjectUtil.isNull(configDO)) {
+                        configDO = new QysConfigDO();
+                    }
+                    configDO.setCompanyId(Long.valueOf(companyId));
+                    configDO.setBusinessId(deptDO.getId());
+                    configDO.setBusinessName(deptDO.getName());
+                    qysConfigMapper.insert(configDO);
+                    deptDO.setAuth(Integer.valueOf(status));
+                    deptMapper.updateById(deptDO);
+                    //继续做企业授权
+                    List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
+                    if (CollUtil.isNotEmpty(checkedData)) {
+                        //此时只会存在一条当前部门下的用户数据
+                        AdminUserRespDTO userRespDTO = checkedData.get(0);
+//                    this.privilegeUrl(userRespDTO.getId());
+                        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
+                        SaaSPrivilegeUrlResult privilegeUrlResult = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
+                        log.info("企业授权【{}】,授权地址【{}】",deptDO.getName(),privilegeUrlResult.getPageUrl());
+                        Map<String, String> map = MapUtil
+                                .builder("title", "企业认证")
+                                .put("contentType", "40")
+                                .put("name", deptDO.getName())
+                                .put("url", privilegeUrlResult.getPageUrl())
+                                .put("phone", userRespDTO.getMobile())
+                                .put("businessId", deptDO.getId().toString())
+                                .put("type", "1").build();
+                        noticeService.saveNotice(map);
+                    }else {
+                        log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
+                    }
+                }
+                //保存回调信息
+                qysCallbackService.saveDO(json,
+                        QysCallBackType.COMPANY_AUTH.value(),
+                        Integer.valueOf(status),deptDO);
+            });
         }else {
             log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
         }
-        qysCallbackService.saveDO(json,
-                QysCallBackType.COMPANY_AUTH.value(),
-                Integer.valueOf(status),deptDO);
         return "success";
+    }
+
+    private void configurationSystemVariable(DeptDO deptDO){
+        //设置租户
+        TenantUtils.execute(deptDO.getTenantId(), () -> {
+            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,deptDO.getTenantId());
+            //设置当前登录人信息，免得保存报错
+            List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
+            if (CollUtil.isEmpty(adminUserRespDTOs)) {
+                //是在找不到
+                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
+            }else {
+                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
+            }
+        });
+
+
     }
 
     @Override
@@ -304,11 +353,19 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public void test() {
-        QiyuesuoClient qiyuesuoClient = qiyuesuoClientFactory.getQiyuesuoClient(1648231591874347009L);
-        QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
-        qiyuesuoClient.defaultDraftSend(null);
-        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
+    public void test(Long id,Integer type) throws Exception {
+//        QiyuesuoClient qiyuesuoClient = qiyuesuoClientFactory.getQiyuesuoClient(1648231591874347009L);
+//        QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
+//        qiyuesuoClient.defaultDraftSend(null);
+//        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
+        if (type.equals(0)) {
+            this.companyAuth(id);
+        } else if (type.equals(1)) {
+            this.userAuth(id);
+        } else if (type.equals(2)) {
+            this.privilegeUrl(id);
+        }
+
     }
 
     @Override
@@ -674,8 +731,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void companyAuth(Long userId) throws FileNotFoundException {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
-        DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
+        DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
+        QysConfigDO configDO = qysConfigMapper.selectById(1);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
         //获取营业执照图片
@@ -699,8 +756,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         log.info("企业认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
         //TODO 发送短信提醒操作人认证
         Map<String, String> map = MapUtil
-                .builder("title", "")
-                .put("contentType", "")
+                .builder("title", "企业认证")
+                .put("contentType", "40")
+                .put("name", deptRespDTO.getName())
+                .put("url", checkedData.getPageUrl())
                 .put("phone", userRespDTO.getMobile())
                 .put("businessId", deptRespDTO.getId().toString())
                 .put("type", "1").build();
@@ -712,15 +771,18 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void userAuth(Long userId){
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
-        DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
+        DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
+        QysConfigDO configDO = qysConfigMapper.selectById(1);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
         log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
         //TODO 发送短信提醒操作人认证
         Map<String, String> map = MapUtil
-                .builder("title", "")
-                .put("contentType", "")
+                .builder("title", "企业认证")
+                .put("contentType", "42")
+                .put("name", deptRespDTO.getName())
+                .put("userName", userRespDTO.getNickname())
+                .put("url", checkedData.getAuthUrl())
                 .put("phone", userRespDTO.getMobile())
                 .put("businessId", deptRespDTO.getId().toString())
                 .put("type", "1").build();
@@ -731,8 +793,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void privilegeUrl(Long userId) {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
-        DeptRespDTO deptRespDTO = deptApi.getDeptByUserId(userId).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", deptRespDTO.getId());
+        DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
+        QysConfigDO configDO = qysConfigMapper.selectById(1);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
         log.info("企业授权【{}】,授权地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
