@@ -76,7 +76,7 @@ public interface QysConfigService {
      * @param content 内容
      * @return
      */
-    String certification(String signature, String timestamp, String content) throws Exception;
+    String callbackCertification(String signature, String timestamp, String content) throws Exception;
     /**
      * 电子签回调接口->6）合同状态回调地址：跟踪企业签约文件的签署状态和进度；
      * @param signature 签名
@@ -134,15 +134,9 @@ public interface QysConfigService {
      */
     void userAuth(Long userId);
 
-    /**
-     *
-     * 企业授权
-     *  @param userId 注册用户id
-     */
-    void privilegeUrl(Long userId);
 
     /**
-     * 企业授权，获取token
+     * 企业授权
      *
      * @param signature 签名
      * @param timestamp 时间戳
@@ -150,6 +144,15 @@ public interface QysConfigService {
      * @return
      */
     String callBackPrivilege(String signature, String timestamp, String content) throws Exception;
+    /**
+     * 印章授权静默签
+     *
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content   内容
+     * @return
+     */
+    String callBackSealSignAuth(String signature, String timestamp, String content) throws Exception;
 
 
 }

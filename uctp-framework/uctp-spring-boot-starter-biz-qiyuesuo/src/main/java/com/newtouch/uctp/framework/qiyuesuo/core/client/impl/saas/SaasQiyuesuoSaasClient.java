@@ -170,9 +170,9 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setCompany(new Company(companyId));
         request.setAuthDeadline(authDeadline);
         request.setRemark(remark);
-        request.setCallbackUrl("");
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/privilege");
 //        request.setAppId();
-        request.setReturnUrl("");
+        request.setReturnUrl("https://fssc.cloud:28000/");
         return this.saasSealSignAuthUrl(request);
     }
 
