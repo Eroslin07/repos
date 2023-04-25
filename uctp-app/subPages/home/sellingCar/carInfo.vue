@@ -786,7 +786,7 @@
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
 				
-				this.fairStatus = res.data.carInfo.bpmStatus;
+				this.fairStatus = res.data.bpmStatus;
 				
 				let obj;
 				if (this.draftStatus == 31) {
