@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class ProfitPresentFormDTO {
+    private String profitId; // 利润提现id
     private String merchantId; // 商户标识
     private String merchantName; // 商户名称
     private String telNo; // 电话号码
