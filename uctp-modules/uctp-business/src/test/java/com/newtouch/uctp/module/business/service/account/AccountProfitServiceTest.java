@@ -30,7 +30,7 @@ public class AccountProfitServiceTest {
     private RedissonClient redissonClient;
 
     private String accountNo = "666";
-    private String contractNo = "23002";
+    private String contractNo = "25001";
 
     @Test
     public void testRecorded() {

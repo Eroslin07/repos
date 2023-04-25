@@ -341,6 +341,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
         // 触发提现申请
         this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.APPLY);
+        // 提现申请后，立即变为审核中
+        this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.MARKET_AUDIT_PROCESSING);
 
         // 发起流程
         this.createProfitPresentProcess(accountNo, mp.getId());
@@ -825,6 +827,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .presentState(null) // 卖车利润初始写入无提现状态
                     .profitBalance(profitCalcResult.getCurrentProfitBalanceAmount())
                     .cashBack(profitCalcResult.getCurrentWaitForBackCashAmount())
+                    .vehicleReceiptAmount(profitCalcResult.getCurrentVehicleReceiptAmount())
                     .tradeTime(now)
                     .build();
             profit.setDeleted(false);

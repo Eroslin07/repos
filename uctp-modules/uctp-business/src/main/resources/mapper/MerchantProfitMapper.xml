@@ -114,7 +114,11 @@
                 (
                 select
                     p.contract_no,
-                    null as vehicle_receipt_amount,
+                    case
+                        when p.trade_type = '10101001' then
+                p.vehicle_receipt_amount
+                        else 0
+                    end as vehicle_receipt_amount,
                     case
                         when p.trade_type = '10101001' then
                 p.profit

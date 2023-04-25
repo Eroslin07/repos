@@ -22,9 +22,9 @@
 						</view>
 					</uni-col>
 					<uni-col :span="15">
-						<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<h3 class="right-title">{{tab.model || '暂无'}}</h3>
 						<!-- <view class="fs12">VIN：{{tab.vin}}</view> -->
-						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || 0}} 万公里</view>
+						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || '——'}} 万公里</view>
 						<view class="right-price">收车价：
 							<text v-if="tab.isSHowMoney">{{tab.vehicleReceiptAmount | handleMoney}} 万元</text>
 							<text v-else>***元</text>

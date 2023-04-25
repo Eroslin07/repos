@@ -34,6 +34,7 @@ public class MerchantProfitDO extends BaseDO {
     private Long profit; // 利润
     private Long profitBalance; // 利润余额
     private Long cashBack; // 待回填保证金额度
+    private Long vehicleReceiptAmount; // 收车款
     private String bankNo; // 提现银行卡号
     private String bankName;// 提现银行名称
     private String presentState;// 提现状态
