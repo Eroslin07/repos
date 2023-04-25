@@ -1,6 +1,6 @@
 <template>
 	<view class="car-info">
-		<uni-card :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		<uni-card v-if="!isShowError" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
 				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
@@ -63,6 +63,10 @@
 			<!-- 卡片信息 -->
 			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest"></ca-content>
 		</uni-card>
+		<!-- 系统错误 -->
+		<uni-card v-else  :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+			<image class="img-error" src="/static/images/error.png" mode=""></image>
+		</uni-card>
 	</view>
 </template>
 
@@ -85,6 +89,8 @@
 				carInfoAll: {
 					carInfo: {},
 					carInfoDetails: {},
+					contractCardVOS:[],
+					contractCardNOS:[]
 				},
 				currentNum: 0,
 				carUpload: true,
@@ -148,6 +154,9 @@
 
 				// 父组件传过来的值
 				fatherProps: null,
+				
+				// 是否展示系统异常
+				isShowError:false,
 			};
 		},
 
@@ -203,6 +212,8 @@
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
 						.createTime))
+				}).catch(()=>{
+					this.isShowError=true;
 				})
 			},
 			// 切换tab
@@ -254,6 +265,13 @@
 <style lang="scss" scoped>
 	.car-info {
 		overflow: hidden;
+		.img-error{
+			width:246rpx;
+			height:208rpx;
+			margin-top:514rpx;
+			margin-left:50%;
+			transform: translateX(-50%);
+		}
 	}
 
 	.header-text {
