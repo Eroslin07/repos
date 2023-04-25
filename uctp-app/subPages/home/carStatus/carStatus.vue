@@ -9,7 +9,7 @@
 		</view>
 		<!-- 列表 -->
 		<view class="" v-if="tabList.length>0">
-			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)">
+			<uni-card v-for="(tab, tabIndex) in tabList" :key="tab.id" @click="handleCard(tab)">
 				<view v-if="tab.status != 11">
 					<uni-row :gutter="30">
 						<uni-col :span="9">
