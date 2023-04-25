@@ -29,7 +29,8 @@
 				<text>行驶证</text>
 			</view>
 			<view v-if="carInfoAll.fileB && carInfoAll.fileB.length" class="driving-image">
-				<image :src="carInfoAll.fileB[0].url" mode="" style="width: 232rpx;height: 166rpx;"></image>
+				<!-- <image :src="carInfoAll.fileB[0].url" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
+				<u-album :urls="carInfoAll.fileB" :singleSize="rpxToPx(232)" keyName="url" ></u-album>
 			</view>
 			<view v-else class="driving-image">
 				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
@@ -62,8 +63,9 @@
 				</view>
 				<text>机动车登记证书</text>
 			</view>
-			<view v-if="carInfoAll.fileC && carInfoAll.fileC.length" class="driving-image">
-				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
+			<view id="carRegister" v-if="carInfoAll.fileC && carInfoAll.fileC.length" class="driving-image">
+				<!-- <image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
+				<u-album :urls="carInfoAll.fileC" :singleSize="rpxToPx(232)" keyName="url" singleModex="scaleToFill" ></u-album>
 			</view>
 			<view v-else class="driving-image">
 				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
@@ -532,6 +534,11 @@
 			// 签章
 			handleSignature() {
 				this.$tab.navigateTo('/subPages/home/sellingCar/agreement')
+			},
+			// rpx转px
+			rpxToPx(rpx) {
+			  const screenWidth = uni.getSystemInfoSync().screenWidth
+			  return (screenWidth * Number.parseInt(rpx)) / 750
 			}
 		}
 	}

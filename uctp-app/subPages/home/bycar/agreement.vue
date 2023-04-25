@@ -6,7 +6,7 @@
 				<view style="margin-top: 20px;" @click="handleLook">
 					<image src="../../../static/images/bycar/hetong1.png" class="form-image"
 						style="width: 16pt;height: 16pt;"></image>
-					<text>《2021年03月20日收车合同》</text>
+					<text @click="handleViewContract">《2021年03月20日收车合同》</text>
 				</view>
 			</view>
 			<!-- 底部按钮 -->
@@ -20,7 +20,8 @@
 <script>
 	import {
 		getQiyuesuo,
-		getCancelContract
+		getCancelContract,
+		getContractEcho
 	} from '@/api/home/bycar.js'
 	export default {
 		data() {
@@ -36,7 +37,7 @@
 		methods: {
 			// 查看
 			handleLook() {
-				this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
+				// this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
 			},
 			// 合同签章
 			handleAffirm() {
@@ -57,7 +58,29 @@
 			// 关闭
 			handleClose() {
 				this.$tab.reLaunch('/pages/index');
-			}
+			},
+			handleViewContract() {
+				let data=`carId=${this.carId}&&type=1`
+				getContractEcho(data).then(res => {
+					console.log(res.data)
+						uni.downloadFile({
+						  url: res.data.url,
+						  success: function (res) {
+						    var filePath = res.tempFilePath;
+						    uni.openDocument({
+						      filePath: filePath,
+						      showMenu: false,
+						      success: function (res) {
+						        console.log('打开文档成功');
+						      }
+						    });
+						  }
+						});
+				}).catch(err=>{
+					this.$modal.msg('打开文档失败')
+				})
+			},
+
 		}
 	}
 </script>
