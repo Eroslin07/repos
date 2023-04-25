@@ -886,7 +886,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         //正向二手车发票信息
         CarInvoiceDetailVO invoiceDetail = getForwardInvoiceDetail(contractId);
         carInvoiceInfoVO.setCarInvoiceDetailVO(invoiceDetail);
-        ContractDO contractDO = contractMapper.selectById(contractId);
+        ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         Long carId = contractDO.getCarId();
         // 收车过户
         List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
@@ -909,7 +909,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         //反向二手车发票信息
         CarInvoiceDetailVO invoiceDetail = getReverseInvoiceDetail(contractId);
         carInvoiceInfoVO.setCarInvoiceDetailVO(invoiceDetail);
-        ContractDO contractDO = contractMapper.selectById(contractId);
+        ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);;
         Long carId = contractDO.getCarId();
         // 收车过户
         List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
@@ -932,7 +932,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     private CarInvoiceDetailVO getForwardInvoiceDetail(Long contractId){
         CarInvoiceDetailVO invoiceDetailVO = new CarInvoiceDetailVO();
         //根据合同id拿到车辆id，获取买卖信息
-        ContractDO contractDO = contractMapper.selectById(contractId);
+        ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         Long carId = contractDO.getCarId();
         // 1.根据车辆ID获取车辆主信息
         CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
@@ -971,7 +971,7 @@ public class CarInfoServiceImpl implements CarInfoService {
     private CarInvoiceDetailVO getReverseInvoiceDetail(Long contractId){
         CarInvoiceDetailVO invoiceDetailVO = new CarInvoiceDetailVO();
         //根据合同id拿到车辆id，获取买卖信息
-        ContractDO contractDO = contractMapper.selectById(contractId);
+        ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         Long carId = contractDO.getCarId();
         // 1.根据车辆ID获取车辆主信息
         CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
