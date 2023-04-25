@@ -6,14 +6,8 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.bean.Contract;
-import com.qiyuesuo.sdk.v2.request.DocumentAddByTemplateRequest;
-import com.qiyuesuo.sdk.v2.request.SaaSUserAuthPageRequest;
-import com.qiyuesuo.sdk.v2.request.SaasCompanyAuthPageUrlRequest;
-import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
-import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
+import com.qiyuesuo.sdk.v2.request.*;
+import com.qiyuesuo.sdk.v2.response.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -122,6 +116,23 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<Object> defaultCompanysign(ContractSignCompanyRequest request) {
+        QiyuesuoCommonResult<Object> result;
+        try {
+            result = doDefaultCompanysign(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request)
+            throws Throwable;
     protected abstract QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId)
             throws Throwable;
     protected abstract QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract)
@@ -176,6 +187,24 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         }
         return result;
     }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request) {
+        QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> result;
+        try {
+            result = doSaasSealSignAuthUrl(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request)
+            throws Throwable;
 
     protected abstract QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doSaasPrivilegeUrl(SaasPrivilegeUrlRequest request)
             throws Throwable;

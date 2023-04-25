@@ -56,7 +56,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="car-status">
+			<view class="car-status" id="carStatus">
 				<u-tabs :list="tabsData" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
@@ -279,7 +279,7 @@
 	}
 
 	.header-text {
-		width: 334rpx;
+		// width: 334rpx;
 		height: 52rpx;
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 28rpx;
@@ -498,5 +498,8 @@
 
 	::v-deep .uni-card--border {
 		border-bottom: none;
+	}
+	::v-deep #carStatus .u-tabs__wrapper__nav__item{
+		padding:0 !important;
 	}
 </style>
