@@ -49,5 +49,7 @@ public interface ErrorCodeConstants {
 
     ErrorCode FILL_ERROR = new ErrorCode(1005000216, "系统文件表对应信息不存在");
 
+    ErrorCode BUSINESS_ERROR = new ErrorCode(1005000216, "合同回显时，合同信息未保存成功");
+
 
 }

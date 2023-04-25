@@ -29,4 +29,7 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
                 .eqIfPresent(ContractDO::getCarId,carID)
         );
     };
+
+    ContractDO getContractOneBuyType(@Param("carId") Long carId,
+                             @Param("contractType") String contractType);
 }

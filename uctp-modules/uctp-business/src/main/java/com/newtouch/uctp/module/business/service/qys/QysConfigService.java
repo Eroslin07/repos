@@ -106,12 +106,12 @@ public interface QysConfigService {
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    void send(Long carId,String type,Long contractId);
+    void send(Long carId,String type,Long contractId,String contractType);
     /**
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    QYSContractVO ContractEcho(Long carId, String type);
+    List<QYSContractVO> ContractEcho(Long carId, String type);
 
     /**
      * 获取到契约锁单点登录地址
