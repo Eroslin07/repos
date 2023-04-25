@@ -2,24 +2,22 @@
 	<view class=" info-box">
 		<!-- 车辆信息 -->
 		<view v-if="tabCar==0" class="car-info-box">
-			<view class="car-upload">
+			<view  class="car-upload">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
 					<text class="car-upload-title__title">车辆检测报告</text>
-					<text v-if="!isShowTest"
-						class="car-upload-title__text">未检测</text>
+					<text v-if="!isShowTest" class="car-upload-title__text">未检测</text>
 					<text v-else class="car-upload-title__text">已检测</text>
 				</view>
-				<view class="upload-content">
-					<!-- v-if="!isShowTest" -->
-					<view class="upload-text" @click="photograph(1)" >
+				<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status>21" class="upload-content">
+					<view v-if="!isShowTest" class="upload-text" @click="photograph(1)">
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
-					<view  class="upload-text">
+					<view v-else class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
 						<text>您已经上传检测报告!</text>
-						<u-icon @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
+						<u-icon v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30" @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
 						</u-icon>
 					</view>
 				</view>
@@ -260,7 +258,8 @@
 					<view class="flex">
 						<view class="flex">
 							<text>收车款</text>
-							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vehicleReceiptAmount | transMoney}}元</text>
+							<text
+								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vehicleReceiptAmount | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
 							<view class="flex">
 								<text>公允价值-通过</text>
@@ -287,7 +286,8 @@
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>服务费</text>
-							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.transferSell | transMoney}}元</text>
+							<text
+								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.transferSell | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
@@ -330,7 +330,7 @@
 				</view>
 			</view>
 		</view>
-		
+
 	</view>
 </template>
 
@@ -344,7 +344,7 @@
 		getAccessToken
 	} from '@/utils/auth'
 	import {
-		deleteImage
+		deleteTestImage
 	} from '@/api/register'
 	export default {
 		data() {
@@ -353,12 +353,15 @@
 				eyeIsShow: false,
 				// 检测报告
 				fileList1: [],
+				// 检测报告ID
+				testFileId: 0,
 				// 银行电子回单
 				fileList2: [],
 				// 行驶证 机动车登记证 默认
 				drivingImg: '/static/images/home/driving-license.svg',
 				// 信息类型
-				infoType:null,
+				infoType: null,
+
 			}
 		},
 		props: {
@@ -370,17 +373,17 @@
 				type: Object,
 				default: () => {}
 			},
-			isShowTest:{
-				type:Boolean,
-				default:false
+			isShowTest: {
+				type: Boolean,
+				default: false
 			}
 		},
-		beforeCreate(){
-			that=this;
+		beforeCreate() {
+			that = this;
 		},
-		filters:{
-			transMoney(val){
-				console.log(that.$amount.getComdify(val),888)
+		filters: {
+			transMoney(val) {
+				console.log(that.$amount.getComdify(val), 888)
 				return that.$amount.getComdify(val)
 			}
 		},
@@ -433,7 +436,9 @@
 						header: {
 							Authorization: 'Bearer ' + getAccessToken()
 						},
-						formData:{'carId':_this.carInfoAll.carInfo.id},
+						formData: {
+							'carId': _this.carInfoAll.carInfo.id
+						},
 						success: (ress) => {
 							setTimeout(() => {
 								let fileListLen = 0;
@@ -480,12 +485,14 @@
 				// let _this=this
 				showConfirm('删除检测报告后，您的车辆将无法发起卖车业务，若需要继续卖车请重新上传新的检测报告').then(res => {
 					if (res.confirm) {
-						deleteImage({
-							id: this.fileList1[0].id
+						deleteTestImage({
+							id: this.fileList1[0]?.id || this.carInfoAll.fileF[0].id
 						}).then((res) => {
 							this.$modal.msg("删除成功");
 							this.carUpload = false
 							this.$emit('changeTest', this.carUpload)
+						}).catch(err => {
+							this.$modal.msgError('删除失败')
 						})
 					}
 				})
@@ -510,13 +517,17 @@
 			},
 			// 查看买家、卖家信息
 			handleOwnerInfo(type) {
-				this.infoType=type
-				this.$tab.navigateTo(`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`)
+				this.infoType = type
+				this.$tab.navigateTo(
+					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
+					)
 			},
 			// 作废
 			handleCancle(id) {
 				console.log(id)
-				this.$tab.navigateTo(`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`)
+				this.$tab.navigateTo(
+					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
+					)
 			},
 			// 签章
 			handleSignature() {
@@ -936,9 +947,10 @@
 				}
 			}
 		}
-		.info-box{
-			padding:15px;
-			line-height:40rpx;
+
+		.info-box {
+			padding: 15px;
+			line-height: 40rpx;
 		}
 	}
 </style>

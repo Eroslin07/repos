@@ -50,7 +50,7 @@ public interface FileService {
      */
     void deleteFile(Long id) throws Exception;
 
-    void deleteReport(Long id) throws Exception;
+    void deleteReport(Long id,Long carId) throws Exception;
 
     /**
      * 获得文件内容
