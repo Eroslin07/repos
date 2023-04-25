@@ -102,7 +102,7 @@
 					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="model" borderBottom>
 						<view @click="showModel = true">
-							<u--input v-model="carForm.model" border="none" placeholder="请输入品牌/车系/车型"></u--input>
+							<u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input>
 						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
@@ -165,7 +165,7 @@
 				<!-- 选择登记日期 -->
 				<u-datetime-picker v-if="showDate" :show="showDate" v-model="showDateTime" mode="date"
 					:formatter="formatter" @cancel="showDate = false" @confirm="handleDate"></u-datetime-picker>
-				<u-popup v-if="showModel" :show="showModel" :customStyle="{ 'width': '240px' }" mode="right"
+				<u-popup v-if="showModel" :show="showModel" safeAreaInsetTop :customStyle="{ 'width': '240px' }" mode="right"
 					@close="showModel = false">
 					<view>
 						<model-list :seriesList="seriesList" :title="carForm.brand" @handleClose="handleClose" />
@@ -973,7 +973,7 @@
 				this.carId = data.carInfoDetails.carId;
 				this.modelId = data.carInfo.modelId;
 				this.carForm = {
-					drivingLicenseUrl: data.fileB.length == 0 ? this[`fileList${index}`] : data.fileB,
+					drivingLicenseUrl: data.fileB,
 					certificateUrl: data.fileC,
 					carUrl: data.fileA,
 					vin: data.carInfo.vin,
@@ -992,7 +992,7 @@
 					brand: data.carInfo.brand,
 					remarks: data.carInfo.remarks,
 					insurance: data.carInfo.insurance,
-					mileage: data.carInfoDetails.mileage.toString(),
+					mileage: data.carInfoDetails.mileage ? data.carInfoDetails.mileage.toString() : '',
 					checkboxValue: [],
 					key: data.carInfoDetails.proceduresAndSpareParts.vehicleKey,
 					other: data.carInfoDetails.proceduresAndSpareParts.accidentVehicle,
