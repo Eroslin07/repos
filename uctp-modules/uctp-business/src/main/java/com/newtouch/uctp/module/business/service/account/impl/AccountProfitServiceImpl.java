@@ -825,6 +825,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .presentState(null) // 卖车利润初始写入无提现状态
                     .profitBalance(profitCalcResult.getCurrentProfitBalanceAmount())
                     .cashBack(profitCalcResult.getCurrentWaitForBackCashAmount())
+                    .vehicleReceiptAmount(profitCalcResult.getCurrentVehicleReceiptAmount())
                     .tradeTime(now)
                     .build();
             profit.setDeleted(false);
