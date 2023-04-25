@@ -346,6 +346,12 @@
 				// "enablePullDownRefresh": false
 			}
 		}, {
+			"path": "common/vehicleDetails/components/clientInfo",
+			"style": {
+				"navigationBarTitleText": "卖家信息"
+				// "enablePullDownRefresh": false
+			}
+		}, {
 			"path": "common/webview/userAgreement",
 			"style": {
 				"navigationBarTitleText": "用户协议"
