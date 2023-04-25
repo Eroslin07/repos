@@ -91,7 +91,9 @@ public class BpmGlobalHandleListener {
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.ZHSQ.name())) {
             if ("pass".equals(approvalType)) {
                 // 更新用户状态
-                userService.updateUserStatus(bpmFormMainVO.getStartUserId());
+                JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
+                AdminUserDO adminUserDO = userMapper.selectOne("phone", jsonObject.get("phone"));
+                userService.updateUserStatus(adminUserDO.getId());
                 // 公司认证
                 qysConfigApi.companyAuth(bpmFormMainVO.getStartUserId());
                 // 注册成功
