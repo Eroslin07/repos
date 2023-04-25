@@ -229,6 +229,11 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (userId == null) {
             userId = Long.valueOf(variables.get("startUserId") + "");
         }
+        if (userId == null) {
+
+        }
+
+
         identityService.setAuthenticatedUserId(String.valueOf(userId));
 
         // 1.获得流程定义
