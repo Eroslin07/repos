@@ -202,7 +202,7 @@
 						<u-radio-group v-model="sellerForm.payType" placement="row" activeColor="#fd6404">
 							<u-radio shape="circle" label="全款" :name="0"></u-radio>
 							<text style="margin: 0 5px;"></text>
-							<u-radio shape="circle" label="定金+尾款" :name="1"></u-radio>
+							<!-- <u-radio shape="circle" label="定金+尾款" :name="1"></u-radio> -->
 						</u-radio-group>
 					</u-form-item>
 					<!-- <u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
@@ -710,6 +710,10 @@
 					this.vehicleInfor = true;
 					this.sellerInfor = false;
 					this.active = 0;
+					uni.pageScrollTo({
+						scrollTop: 0,
+						duration: 300
+					});
 				}
 			},
 			handelKey(value) {
@@ -1156,11 +1160,19 @@
 					proceduresAndSpareParts[item] = false;
 				})
 				if (proceduresAndSpareParts['vehicleKey'] == true) {
+					if (this.carForm.key == '' || !this.carForm.key) {
+						this.$modal.msg("请输入钥匙");
+						return
+					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
 					proceduresAndSpareParts['vehicleKey'] = 0;
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
+					if (this.carForm.other == '' || !this.carForm.other) {
+						this.$modal.msg("请输入其他内容");
+						return
+					}
 					proceduresAndSpareParts['accidentVehicle'] = this.carForm.other;
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
@@ -1204,6 +1216,10 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						uni.pageScrollTo({
+							scrollTop: 0,
+							duration: 300
+						});
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
