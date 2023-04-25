@@ -345,7 +345,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.MARKET_AUDIT_PROCESSING);
 
         // 发起流程
-        this.createProfitPresentProcess(accountNo, mp.getId());
+        String businessKey = this.createProfitPresentProcess(accountNo, mp.getId());
+
+        // 把流程业务ID记录到利润提现中
+        mp.setBusinessKey(businessKey);
+        this.merchantProfitMapper.updateById(mp);
 
         return mp.getId();
     }
@@ -353,8 +357,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     @Override
     @TenantIgnore
     @Transactional
-    public void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditOpinion) {
-        if (id == null) {
+    public void auditProfitPressent(String businessKey, ProfitPressentAuditOpinion auditOpinion) {
+        if (businessKey == null) {
             log.error("利润提现审核参数为空");
             throw exception(ACC_PRESENT_ERROR);
         }
@@ -362,30 +366,46 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             log.error("利润提现审核参数为空");
             throw exception(ACC_PRESENT_ERROR);
         }
-        log.info("提现审核，参数：{}，审核意见：{}", id, auditOpinion);
+        log.info("提现审核，参数：{}，审核意见：{}", businessKey, auditOpinion);
+
+        MerchantProfitDO mp = this.merchantProfitMapper.selectOne(MerchantProfitDO::getBusinessKey, businessKey);
+        if (mp == null) {
+            log.error("根据业务key查询利润为空");
+            throw exception(ACC_PRESENT_ERROR);
+        }
 
         // 触发事件
-        this.publishProfitPressentStatusChangeEvent(id, auditOpinion.getEvent());
+        this.publishProfitPressentStatusChangeEvent(mp.getId(), auditOpinion.getEvent());
 
-        // 审核退回
+        MerchantAccountDO ma = this.merchantAccountService.queryByAccountNo(mp.getAccountNo());
+        if (ma == null) {
+            log.error("商户账户不存在");
+            throw exception(ACC_PRESENT_ERROR);
+        }
+
         if (auditOpinion == ProfitPressentAuditOpinion.AUDIT_REJECT) {
             // 审核退回要解除冻结
-            MerchantProfitDO mp = this.merchantProfitMapper.selectById(id);
-            if (mp != null) {
-                MerchantAccountDO ma = this.merchantAccountService.queryByAccountNo(mp.getAccountNo());
-                if (ma != null) {
-                    Long profit = ma.getProfit() == null ? 0L : ma.getProfit();
-                    Long freezeProfit = ma.getFreezeProfit() == null ? 0L : ma.getFreezeProfit();
-                    ma.setProfit(profit + mp.getProfit() * -1);
-                    ma.setFreezeProfit(freezeProfit - mp.getProfit() * -1);
+            Long profit = ma.getProfit() == null ? 0L : ma.getProfit();
+            Long freezeProfit = ma.getFreezeProfit() == null ? 0L : ma.getFreezeProfit();
+            ma.setProfit(profit + mp.getProfit() * -1);
+            ma.setFreezeProfit(freezeProfit - mp.getProfit() * -1);
 
-                    int rows = this.merchantAccountService.updateByLock(ma);
-                    if (rows != 1) {
-                        log.error("处理利润{}审核退回时，账户有变动，处理失败", id);
-                        // 出现并发问题
-                        throw exception(ACC_PRESENT_ERROR);
-                    }
-                }
+            int rows = this.merchantAccountService.updateByLock(ma);
+            if (rows != 1) {
+                log.error("处理利润{}审核退回时，账户有变动，处理失败", businessKey);
+                // 出现并发问题
+                throw exception(ACC_PRESENT_ERROR);
+            }
+        } else if (auditOpinion == ProfitPressentAuditOpinion.AUDIT_APPROVED) {
+            // 审核通过要更新冻结金额
+            Long freezeProfit = ma.getFreezeProfit() == null ? 0L : ma.getFreezeProfit();
+            ma.setFreezeProfit(freezeProfit - mp.getProfit() * -1);
+
+            int rows = this.merchantAccountService.updateByLock(ma);
+            if (rows != 1) {
+                log.error("处理利润{}审核退回时，账户有变动，处理失败", businessKey);
+                // 出现并发问题
+                throw exception(ACC_PRESENT_ERROR);
             }
         }
     }
@@ -1217,6 +1237,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 处理数据
         if (profitPresentFormDTO != null) {
             profitPresentFormDTO.setTelNo("122222");
+            profitPresentFormDTO.setMerchantName("XX商户");
+            profitPresentFormDTO.setBankOfDeposit("XX开户行");
             List<ProfitPresentFormDetailDTO> details = profitPresentFormDTO.getProfitDetails();
             if (details != null && !details.isEmpty()) {
                 details.parallelStream().forEach(e -> {

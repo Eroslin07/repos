@@ -226,13 +226,18 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 0) {
             throw exception(PROCESS_BUSI_RUNING);
         }
-        if (userId == null) {
-            userId = Long.valueOf(variables.get("startUserId") + "");
+        if (ObjectUtil.isNull(userId) && ObjectUtil.isNotNull(variables.get("startUserId"))) {
+            userId = Long.valueOf(variables.get("startUserId").toString());
         }
-        if (userId == null) {
-
+        if (ObjectUtil.isNull(userId)) {
+            throw  new ServiceException(1009003003, "流程发起人不能为空。");
         }
-
+        Map<String, Object> userMap = bpmFormMainMapper.findUserByIdToMap(userId);
+        if (CollectionUtils.isEmpty(userMap)) {
+            throw  new ServiceException(1009003003, "流程发起人不能为空。");
+        }
+        variables.put("startUserName", userMap.get("nickname"));
+        variables.put("startUserMobile", userMap.get("mobile"));
 
         identityService.setAuthenticatedUserId(String.valueOf(userId));
 
@@ -518,7 +523,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
 
         // 补全流程实例的拓展表
         processInstanceExtMapper.updateByProcessInstanceId(new BpmProcessInstanceExtDO().setProcessInstanceId(instance.getId())
-                .setFormVariables(variables));
+                .setFormVariables(new HashMap<>()));
         return instance.getId();
     }
 

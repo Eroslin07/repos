@@ -2,13 +2,14 @@
 	<view class="status-container">
 		<!-- 自定义导航栏 -->
 		<u-navbar :title="title" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
-		
+
 		<u-search class="search" v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 			placeholder="请输入商户/车辆型号/单号">
 		</u-search>
 		<!-- tab导航 -->
 		<view class="" style="margin: 0 auto">
-			<u-tabs :current="current" :list="navList" lineColor="#FA6400" @change="handleChange"></u-tabs>
+			<u-tabs :current="current" :list="navList" keyName="label" lineColor="#FA6400" @change="handleChange">
+			</u-tabs>
 		</view>
 		<!-- 列表 -->
 		<view class="" v-if="tabList.length>0">
@@ -65,7 +66,7 @@
 										@click.stop="handleShowMoney(tab,true)"></text>
 								</view>
 							</view>
-					
+
 							<view class="right-time">创建时间：{{ tab.createTime }}</view>
 						</uni-col>
 					</uni-row>
@@ -86,7 +87,8 @@
 								</uni-col>
 								<uni-col :span="15" class="right-box">
 									<h3 class="right-title">{{tab.model || '暂无'}}</h3>
-									<view class="right-mile">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '——'}}万公里</view>
+									<view class="right-mile">{{tab.firstRegistDate||'暂无'}} | {{tab.mileage || '——'}}万公里
+									</view>
 									<view class="right-price">
 										<view class="price-show" v-if="tab.eyeIsShow">
 											<view class="">
@@ -111,7 +113,7 @@
 												@click.stop="handleShowMoney(tab,true)"></text>
 										</view>
 									</view>
-							
+
 									<view class="right-time">创建时间：{{ tab.createTime }}</view>
 								</uni-col>
 							</uni-row>
@@ -125,9 +127,16 @@
 				<text>经纪转经销</text>
 			</view>
 		</view>
-		<view v-else class="empty-page">
+		<view v-if="noData" class="empty-page">
 			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
 			<text class="empty-text">暂无数据</text>
+		</view>
+
+		<view v-if="loadingInfo" class="loading-box">
+			<image src="/static/images/home/car-loading2.gif" mode=""></image>
+			<view class="loading-text">
+				加载中...
+			</view>
 		</view>
 	</view>
 </template>
@@ -140,7 +149,9 @@
 	import {
 		parseTime
 	} from '../../../utils/ruoyi'
-	import { delCarInfoWithCollect } from '@/api/home/bycar.js'
+	import {
+		delCarInfoWithCollect
+	} from '@/api/home/bycar.js'
 
 	export default {
 		data() {
@@ -153,19 +164,7 @@
 					}
 				}],
 				// tab导航
-				navList: [{
-						name: '全部'
-					},
-					{
-						name: '草稿'
-					},
-					{
-						name: '合同已发起'
-					},
-					{
-						name: '支付失败'
-					}
-				],
+				navList: [],
 				current: 0,
 				// 列表
 				tabList: [],
@@ -188,7 +187,11 @@
 				total: 0,
 				timer: {},
 				defaultUrl: '/static/images/carlistImg.png',
-				type: null
+				type: null,
+				// 加载中
+				loadingInfo: false,
+				// 暂无数据
+				noData: false,
 			}
 		},
 		filters: {
@@ -207,29 +210,22 @@
 			this.getList(this.formData)
 		},
 		onLoad(props) {
+			// console.log(props)
 			this.allChild = JSON.parse(props.allChild)
 			this.detailData = JSON.parse(props.item)
+			// 导航栏标题
 			this.title = this.detailData.label
-			this.childArr = this.detailData.child.map(v => {
-				return {
-					name: v.label,
-					...v
-				}
-			})
+			// tab
 			this.navList = [{
-				name: '全部',
+				label: '全部',
 				status: ''
-			}, ...this.childArr]
-			uni.setNavigationBarTitle({
-				title: this.detailData.label,
-			})
+			}, ...this.detailData.child]
 			this.formData.salesStatus = this.detailData.status
-			if (props.child) {
-				this.childData = JSON.parse(props.child)
-				this.formData.status = this.childData.status
-				this.current = this.detailData.child.findIndex((val) => val.status == this.formData.status) + 1
+			if (props.childStatus) {
+				this.formData.status = props.childStatus;
+				this.current = this.detailData.child.findIndex((val) => val.status == props.childStatus) + 1;
 			}
-			uni.startPullDownRefresh();
+
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
@@ -252,8 +248,11 @@
 			},
 			// 获取list数据
 			getList(params) {
-				this.$modal.loading("数据加载中...");
+				this.tabList = []
+				// this.$modal.loading("数据加载中...");
+				this.loadingInfo = true;
 				getHomePageList(params).then(res => {
+					this.loadingInfo = false;
 					this.tabList = res.data.list.map(item => {
 						let label = this.allChild.find(v => v.status == item.status)?.label
 						this.$set(item, 'eyeIsShow', false)
@@ -264,6 +263,11 @@
 						}
 					})
 					this.total = res.data.total;
+					if (!this.total) {
+						this.noData = true;
+					} else {
+						this.noData = false;
+					}
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
 					} else {
@@ -272,7 +276,7 @@
 				}).catch((error) => {
 					this.loadStatus = 'nomore'
 				}).finally(() => {
-					this.$modal.closeLoading()
+					// this.$modal.closeLoading()
 					uni.stopPullDownRefresh()
 				})
 			},
@@ -306,7 +310,7 @@
 			},
 			// tab导航
 			handleChange(val) {
-				this.formData.status = this.detailData.child.find(item => item.status == val.status)?.status || ''
+				this.formData.status = val.status;
 				this.getList(this.formData)
 			},
 			// 清除
@@ -319,7 +323,6 @@
 			},
 			// 显示隐藏金额
 			handleShowMoney(tab, flag) {
-				console.log(tab, flag, '6666')
 				tab.eyeIsShow = flag;
 			},
 			// 删除草稿
@@ -337,7 +340,9 @@
 						confirmColor: '#fa6401',
 						success: function(res) {
 							if (res.confirm) {
-								delCarInfoWithCollect({ id: item.id}).then((res) => {
+								delCarInfoWithCollect({
+									id: item.id
+								}).then((res) => {
 									_this.$modal.msg("车辆信息已删除");
 									_this.getList(_this.formData);
 									_this.type = null;
@@ -382,6 +387,14 @@
 			flex-grow: 1 !important;
 		}
 
+		/* #ifdef H5 */
+		/deep/ view[data-v-48634e29],
+		scroll-view[data-v-48634e29],
+		swiper-item[data-v-48634e29] {
+			flex-grow: 1 !important;
+		}
+
+		/* #endif */
 		/deep/ .uni-card {
 			padding: 0 !important;
 			margin: 10px 0 0 !important;
@@ -455,7 +468,7 @@
 		}
 
 		.show-money {
-			padding:0 10rpx 5rpx;
+			padding: 0 10rpx 5rpx;
 			position: absolute;
 			right: 5rpx;
 			top: 0;
@@ -503,6 +516,25 @@
 			}
 
 			.empty-text {}
+		}
+
+		.loading-box {
+			width: 100%;
+			height: 100vh;
+
+			image {
+				width: 228rpx;
+				height: 228rpx;
+				margin-top: 218rpx;
+				margin-left: 50%;
+				transform: translateX(-50%);
+			}
+
+			.loading-text {
+				text-align: center;
+				font-size: 28rpx;
+				color: #999;
+			}
 		}
 	}
 
