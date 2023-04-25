@@ -579,6 +579,10 @@
 						bankName: this.registerForm.bankName,
 						bondBankAccount: this.registerForm.bondBankAccount,
 					}
+					if (data.idCardUrl.length != 2) {
+						this.$modal.msg("需要上传两张图片");
+						return
+					}
 					this.$modal.loading("提交中，请耐心等待...")
 					this.showOverlay = true;
 					register(data).then((res) => {
