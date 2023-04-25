@@ -672,6 +672,11 @@
 				fairStatus: null
 			}
 		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.carForm.setRules(this.carRules)
+			this.$refs.sellerForm.setRules(this.sellerRules)
+		},
 		onBackPress(options) {
 			if (this.active == 0) {
 				this.handleSaveCar();

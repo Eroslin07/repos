@@ -56,7 +56,7 @@ public class AccountProfitControllerTest {
     public void testProfitPresent() {
         ProfitPresentReqVO req = new ProfitPresentReqVO();
         req.setAccountNo(accountNo);
-        req.setAmount(1);
+        req.setAmount(1L);
         req.setMerchantBankId("2");
         List<ProfitPresentInvoiceReqVO> invoiceFiles = new ArrayList<>();
         ProfitPresentInvoiceReqVO f1 = new ProfitPresentInvoiceReqVO();

@@ -347,6 +347,10 @@
 				date: null,
 			}
 		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.valiForm.setRules(this.rules)
+		},
 		onLoad() {
 			this.showModal = true;
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');

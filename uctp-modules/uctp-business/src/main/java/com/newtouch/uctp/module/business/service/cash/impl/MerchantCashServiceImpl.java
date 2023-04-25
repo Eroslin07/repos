@@ -37,7 +37,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
 
     @Override
     @Transactional
-    public MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo) {
+    public MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Long tranAmount, String type, String tradeRecordNo, String contractNo) {
         MerchantCashDO merchantCashDO = new MerchantCashDO();
 
         merchantCashDO.setAccountBalance(merchantAccountDO.getCash() + merchantAccountDO.getProfit());
