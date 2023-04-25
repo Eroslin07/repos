@@ -16,7 +16,7 @@
 		</u-grid>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
-			<view v-if="vehicleInfor">
+			<view v-show="vehicleInfor">
 				<u--form labelPosition="left" :model="carForm" :rules="carRules" ref="carForm" labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
@@ -173,7 +173,7 @@
 				</u-popup>
 			</view>
 			<!-- 卖家信息 -->
-			<view v-if="sellerInfor">
+			<view v-show="sellerInfor">
 				<view class="text">卖家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
@@ -966,11 +966,20 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({
-					id: event.file.id
-				}).then((res) => {
+				deleteImage({ id: event.file.id }).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
+					if (event.name == 1) {
+						this.carForm.vin = '';
+						this.carForm.carType = '';
+						this.carForm.engineNum = '';
+						this.carForm.licensePlateNum = '';
+						this.carForm.natureOfOperat = '';
+						this.carForm.model = '';
+						this.carForm.brand = '';
+						this.carForm.brandType = '';
+						this.carForm.firstRegistDate = dateTime;
+					}
 				})
 			},
 			// 数据回显
