@@ -72,10 +72,10 @@ public interface AccountProfitService {
 
     /**
      * 审核利润提现
-     * @param id 利润ID
+     * @param businessKey 业务KEY
      * @param auditOpinion 审核意见
      */
-    void auditProfitPressent(Long id, ProfitPressentAuditOpinion auditOpinion);
+    void auditProfitPressent(String businessKey, ProfitPressentAuditOpinion auditOpinion);
 
     /**
      * 查询某季度每月费用汇总信息

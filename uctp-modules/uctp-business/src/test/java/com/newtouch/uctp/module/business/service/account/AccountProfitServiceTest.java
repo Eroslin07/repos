@@ -121,16 +121,14 @@ public class AccountProfitServiceTest {
 
     @Test
     public void testAuditProfitPressentReject() throws InterruptedException {
-        accountProfitService.auditProfitPressent(1647853199840743426L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
-        accountProfitService.auditProfitPressent(1647853199840743426L, ProfitPressentAuditOpinion.AUDIT_REJECT);
+        accountProfitService.auditProfitPressent("1647853199840743426", ProfitPressentAuditOpinion.AUDIT_REJECT);
     }
 
     @Test
     public void testAuditProfitPressentApproved() throws InterruptedException {
-        accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
-        accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
+        accountProfitService.auditProfitPressent("1647855387535155202", ProfitPressentAuditOpinion.AUDIT_APPROVED);
     }
 
     @Test
