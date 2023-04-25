@@ -2,15 +2,9 @@ package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-
-import javax.annotation.Resource;
-
-import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
@@ -19,9 +13,17 @@ import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
+import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
+import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
+import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * 流程引擎全局业务处理器
@@ -42,6 +44,8 @@ public class BpmGlobalHandleListener {
     private CarInfoMapper carInfoMapper;
     @Resource
     private QysConfigApi qysConfigApi;
+    @Resource
+    private AccountProfitApi accountProfitApi;
 
     /**
      * 流程创建时处理
@@ -148,6 +152,36 @@ public class BpmGlobalHandleListener {
      * @param event
      */
     public void taskCompleted(FlowableEngineEntityEvent event) {
+        String procDefKey = null; // 需要补充获取
+        String taskNode = null; // 需要获得任务节点
+        Task task = (Task) event.getEntity();
+        if (BpmDefTypeEnum.LRTX.name().equals(procDefKey) && "提现审批".equals(taskNode)) {
+            // 当前流程是“利润提现流程”且当前任务是“提现审批”
+
+            // 获得“利润提现申请的业务ID”
+            String businessKey = null; // 需要获得业务ID
+            Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId(); // 租户ID
+            String token = null; // 需要获得token
+
+            String approvalType = StrUtil.toStringOrNull(task.getTaskLocalVariables().get("approvalType")); // 审批结果
+
+            if ("pass".equals(approvalType)) {
+                // 审批通过
+                ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
+                a.setBusinessKey(businessKey);
+                a.setAuditOpinion(1);
+
+                accountProfitApi.presentAudit(tenantId, token, a);
+            } else if ("disagree".equals(approvalType)) {
+                // 审批不通过
+                ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
+                a.setBusinessKey(businessKey);
+                a.setAuditOpinion(2);
+
+                accountProfitApi.presentAudit(tenantId, token, a);
+            }
+        }
+
         System.out.println(event);
     }
 
