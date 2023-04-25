@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.dal.mysql.qys;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -7,6 +8,8 @@ import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -38,4 +41,9 @@ public interface QysConfigMapper extends BaseMapperX<QysConfigDO> {
                 .isNotNull("ACCESS_KEY")
                 .isNotNull("ACCESS_SECRET"));
     }
+
+    @InterceptorIgnore(tenantLine = "true")
+    @Select("select * from uctp_qys_config where COMPANY_ID=#{companyId} and DELETED = 0")
+    QysConfigDO selectByCompanyId(@Param("companyId") Long companyId);
+
 }

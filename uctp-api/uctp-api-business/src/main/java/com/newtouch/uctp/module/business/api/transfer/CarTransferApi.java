@@ -33,7 +33,7 @@ public interface CarTransferApi {
     public CommonResult<JSONObject> getForwardInvoiceInfo(@RequestParam("contractId") Long contractId);
 
 
-    @GetMapping(PREFIX + "/getForwardInvoiceInfo")
+    @GetMapping(PREFIX + "/getReverseInvoiceInfo")
     @Operation(summary = "根据合同ID获取流程所需的反向二手车发票信息")
     @Parameter(name = "contractId", description = "合同ID", required = true, example = "22344553")
     public CommonResult<JSONObject> getReverseInvoiceInfo(@RequestParam("contractId") Long contractId);

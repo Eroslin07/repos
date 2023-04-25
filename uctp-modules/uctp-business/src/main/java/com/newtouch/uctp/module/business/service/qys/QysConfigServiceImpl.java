@@ -2,6 +2,9 @@ package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -62,10 +65,7 @@ import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
-import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
+import com.qiyuesuo.sdk.v2.response.*;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -214,7 +214,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     @GlobalTransactional
     @Override
     @Transactional
-    public String certification(String signature, String timestamp, String content) throws Exception {
+    public String callbackCertification(String signature, String timestamp, String content) throws Exception {
         log.info("[certification]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
         //验证签名
         if (!this.verificationSignature(signature,timestamp)) {
@@ -228,7 +228,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         String companyId = jsonObject.getString("companyId");
         String registerNo = jsonObject.getString("registerNo");
         //通过营业执照，和公司名称找到公司数据
-        DeptDO deptDO = deptMapper.selectOne("name", companyName, "tax_num", registerNo);
+//        DeptDO deptDO = deptMapper.selectOne("name", companyName, "tax_num", registerNo);
+        DeptDO deptDO = deptMapper.findByNameAndTaxNum(companyName,registerNo);
         if (ObjectUtil.isNotNull(deptDO)) {
 //            this.configurationSystemVariable(deptDO);
             //fengin接口回调，如果要用feign 那么这里必须卸载回调里，不然报错没传参数 tenant-id
@@ -254,6 +255,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                     qysConfigMapper.insert(configDO);
                     deptDO.setAuth(Integer.valueOf(status));
                     deptMapper.updateById(deptDO);
+                    //保存回调信息
+                    qysCallbackService.saveDO(json,
+                            QysCallBackType.COMPANY_AUTH.value(),deptDO.getId());
                     //继续做企业授权
                     List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
                     if (CollUtil.isNotEmpty(checkedData)) {
@@ -276,10 +280,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                         log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
                     }
                 }
-                //保存回调信息
-                qysCallbackService.saveDO(json,
-                        QysCallBackType.COMPANY_AUTH.value(),
-                        Integer.valueOf(status),deptDO);
             });
         }else {
             log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
@@ -314,6 +314,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         //解密消息
         String json = this.decryptMessage(content);
         //TODO 处理业务
+
         return "success";
     }
 
@@ -354,7 +355,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public void test(Long id,Integer type) throws Exception {
-//        QiyuesuoClient qiyuesuoClient = qiyuesuoClientFactory.getQiyuesuoClient(1648231591874347009L);
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1650772257324167170L);
 //        QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1648231591874347009L);
 //        qiyuesuoClient.defaultDraftSend(null);
 //        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
@@ -363,8 +364,11 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else if (type.equals(1)) {
             this.userAuth(id);
         } else if (type.equals(2)) {
-            this.privilegeUrl(id);
+        }else if (type.equals(3)) {
+            Object checkedData = client.defaultCompanysign(3088393275632066703L).getCheckedData();
+            System.out.println(checkedData);
         }
+
 
     }
 
@@ -788,25 +792,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("type", "1").build();
         noticeService.saveNotice(map);
     }
-    @GlobalTransactional
-    @Transactional
-    @Override
-    public void privilegeUrl(Long userId) {
-        AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
-        DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectById(1);
-        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
-        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
-        log.info("企业授权【{}】,授权地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
-        //TODO 发送短信提醒企业授权
-        Map<String, String> map = MapUtil
-                .builder("title", "")
-                .put("contentType", "")
-                .put("phone", userRespDTO.getMobile())
-                .put("businessId", deptRespDTO.getId().toString())
-                .put("type", "1").build();
-        noticeService.saveNotice(map);
-    }
     @Transactional
     @Override
     public String callBackPrivilege(String signature, String timestamp, String content) throws Exception {
@@ -819,19 +804,77 @@ public class QysConfigServiceImpl implements QysConfigService {
         String json = this.decryptMessage(content);
         JSONObject jsonObject = JSON.parseObject(json);
         Long companyId = jsonObject.getLong("companyId");
-        String accessToken = jsonObject.getString("accessToken");
-        String accessSecret = jsonObject.getString("accessSecret");
-        QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
+//        QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
+        QysConfigDO configDO = qysConfigMapper.selectByCompanyId(companyId);
         if (ObjectUtil.isNull(configDO)) {
             log.warn("[privilege]电子签回调出错，找不到对应公司【{}】",jsonObject);
             return "fail";
         }
-        configDO.setCode("default");
-        configDO.setServerUrl("https://openapi.qiyuesuo.cn");
-        configDO.setAccessKey(accessToken);
-        configDO.setAccessSecret(accessSecret);
-        qysConfigMapper.updateById(configDO);
+        String accessToken = jsonObject.getString("accessToken");
+        String accessSecret = jsonObject.getString("accessSecret");
+
+        TenantUtils.execute(configDO.getTenantId(), () -> {
+            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,configDO.getTenantId());
+            //设置当前登录人信息，免得保存报错
+            List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
+            if (CollUtil.isEmpty(adminUserRespDTOs)) {
+                //是在找不到
+                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
+            }else {
+                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
+            }
+            //保存回调信息
+            qysCallbackService.saveDO(json,
+                    QysCallBackType.COMPANY_AUTH.value(),configDO.getBusinessId());
+            configDO.setCode("default");
+//            configDO.setServerUrl("https://openapi.qiyuesuo.cn");
+            configDO.setAccessKey(accessToken);
+            configDO.setAccessSecret(accessSecret);
+            qysConfigMapper.updateById(configDO);
+            //获取企业印章自动签授权链接
+            QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
+            List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
+            if (CollUtil.isNotEmpty(userRespDTOS)) {
+                AdminUserRespDTO userRespDTO = userRespDTOS.get(0);
+                DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 6);
+                SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
+                        companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
+                log.info("企业印章自动签授权,用户【{}】,授权地址【{}】",userRespDTO.getNickname(),authUrlResult.getPageUrl());
+                //发送短信
+                Map<String, String> map = MapUtil
+                        .builder("title", "企业印章自动签授权")
+                        .put("contentType", "43")
+                        .put("url", authUrlResult.getPageUrl())
+                        .put("phone", userRespDTO.getMobile())
+                        .put("businessId", configDO.getBusinessId().toString())
+                        .put("type", "1").build();
+                noticeService.saveNotice(map);
+            }
+        });
         return "success";
+    }
+
+    @Transactional
+    @Override
+    public String callBackSealSignAuth(String signature, String timestamp, String content) throws Exception {
+        log.info("[SealSignAuth]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】",signature,timestamp,content);
+        //验证签名
+        if (!this.verificationSignature(signature,timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        String json = this.decryptMessage(content);
+        JSONObject jsonObject = JSON.parseObject(json);
+        Long companyId = jsonObject.getLong("companyId");
+        QysConfigDO configDO = qysConfigMapper.selectByCompanyId(companyId);
+        TenantUtils.execute(configDO.getTenantId(), () -> {
+            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, configDO.getTenantId());
+            String creator = configDO.getCreator();
+            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(creator));
+            qysCallbackService.saveDO(json,
+                    QysCallBackType.COMPANY_AUTH.value(), configDO.getBusinessId());
+        });
+        return null;
     }
 
 

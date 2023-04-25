@@ -64,8 +64,11 @@
 			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest"></ca-content>
 		</uni-card>
 		<!-- 系统错误 -->
-		<uni-card v-else  :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		<uni-card v-else :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<image class="img-error" src="/static/images/error.png" mode=""></image>
+			<view class="error-tip">
+				系统异常
+			</view>
 		</uni-card>
 	</view>
 </template>
@@ -165,17 +168,26 @@
 			console.log(props, 'this.fatherProps.id')
 			// this.getCarDetails('1650072138860851201')
 			// this.getCarDetails('1650085024672796674')
-			this.getCarDetails('1649971320732094466')
+			this.getCarDetails('1648534562174574594')
 			
 		},
 		computed: {
 			firstStatus() {
 				let statusValue = store.state.allStatus.statusValue
-				return statusValue[this.carInfoAll.carInfo.salesStatus]
+				if(statusValue[this.carInfoAll.carInfo.salesStatus]){
+					return statusValue[this.carInfoAll.carInfo.salesStatus]
+				}else{
+					return '暂无'
+				}
 			},
 			secondStatus() {
 				let statusValue = store.state.allStatus.statusValue
-				return statusValue[this.carInfoAll.carInfo.status]
+				if(statusValue[this.carInfoAll.carInfo.status]){
+					return statusValue[this.carInfoAll.carInfo.status]
+				}else{
+					return '暂无'
+				}
+				
 			},
 			isShowTest() {
 				if (this.carInfoAll.fileF.length>0 || this.carUpload) {
@@ -276,11 +288,18 @@
 			margin-left:50%;
 			transform: translateX(-50%);
 		}
+		.error-tip{
+			padding-top:18rpx;
+			text-align:center;
+			font-size:24rpx;
+			color:#999;
+		}
 	}
 
 	.header-text {
 		// width: 334rpx;
-		height: 52rpx;
+		// height: 52rpx;
+		padding:6rpx 8rpx;
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 28rpx;
 		display: flex;
@@ -305,6 +324,7 @@
 		>text:last-child {
 			width: 40rpx;
 			height: 40rpx;
+			margin-left:10rpx;
 			text-align: center;
 			border-radius: 50%;
 			background: rgba(109, 114, 120, 0.6)

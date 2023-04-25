@@ -126,14 +126,16 @@
 			}
 		},
 		onLoad: function() {
-			this.getAcount();
-			this.getStatusValue()
-			this.getListData()
 			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
 			/* #endif */
 			uni.startPullDownRefresh();
 
+		},
+		onShow(){
+			this.getAcount();
+			this.getStatusValue()
+			this.getListData()	
 		},
 		// 下拉刷新
 		onPullDownRefresh() {

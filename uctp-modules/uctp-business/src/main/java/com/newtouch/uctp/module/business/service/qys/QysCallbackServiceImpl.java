@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackPageReqVO;
@@ -109,14 +110,13 @@ public class QysCallbackServiceImpl implements QysCallbackService {
     }
 
     @Override
-    public void saveDO(String content, Integer type,Integer status,DeptDO deptDO) {
+    public void saveDO(String content, Integer type,Long deptId) {
         QysCallbackDO qysCallbackDO = new QysCallbackDO();
         qysCallbackDO.setContent(content);
         //目前根据saas文档来的
         qysCallbackDO.setType(type);
-        if (ObjectUtil.isNotNull(deptDO)) {
-            qysCallbackDO.setMainId(deptDO.getId());
-            deptDO.setAuth(status);
+        if (ObjectUtil.isNotNull(deptId)) {
+            qysCallbackDO.setMainId(deptId);
         }
         qysCallbackMapper.insert(qysCallbackDO);
     }
