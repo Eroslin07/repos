@@ -2,6 +2,8 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -80,6 +82,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Resource
     private ContractMapper contractMapper;
+
+    @Resource
+    private UserMapper userMapper;
 
     @Override
     public Long createCarInfo(AppCarInfoCreateReqVO createReqVO) {
@@ -420,7 +425,15 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     public AppCarInfoCardRespVO getCardByID(Long id) {
         CarInfoDO carInfo = this.getCarInfo(id);
+        if (ObjectUtil.isNull(carInfo)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
+        AdminUserDO adminUserDO = userMapper.selectById(carInfo.getCreator());
+        carInfo.setCreator(adminUserDO.getNickname());
         CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
+        if (ObjectUtil.isNull(carInfoDetailsDO)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
         List<ContractDO> contractDOS = contractService.getContractListByCarId(id);
         AppCarInfoCardRespVO appCarInfoCardRespVO = this.buildCardVO(carInfo, carInfoDetailsDO,contractDOS);
         return appCarInfoCardRespVO;

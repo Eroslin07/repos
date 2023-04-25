@@ -1,10 +1,7 @@
 package com.newtouch.uctp.module.business.service.account;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummaryRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -108,7 +105,17 @@ public class AccountProfitServiceTest {
 
     @Test
     public void testProfitPresent() {
-        Long id = accountProfitService.profitPresent(accountNo, 1L, 5, null);
+        List<ProfitPresentInvoiceReqVO> invoiceFiles = new ArrayList<>();
+        ProfitPresentInvoiceReqVO invoiceReqVO1 = new ProfitPresentInvoiceReqVO();
+        invoiceReqVO1.setFileId("1");
+        invoiceReqVO1.setFileUrl("http://127.0.0.1/1.jpg");
+        ProfitPresentInvoiceReqVO invoiceReqVO2 = new ProfitPresentInvoiceReqVO();
+        invoiceReqVO2.setFileId("2");
+        invoiceReqVO2.setFileUrl("http://127.0.0.1/2.jpg");
+        invoiceFiles.add(invoiceReqVO1);
+        invoiceFiles.add(invoiceReqVO2);
+
+        Long id = accountProfitService.profitPresent(accountNo, 3L, 1, invoiceFiles);
         Assertions.assertNotNull(id);
     }
 

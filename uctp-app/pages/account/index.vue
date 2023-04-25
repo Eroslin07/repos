@@ -10,7 +10,12 @@
 		<view style="position: relative;">
 			<view class="cost_image"></view>
 			<view class="notice">
-				<u-notice-bar :text="text" bgColor="#f8c089" color="#fa6805"></u-notice-bar>
+				<view class="zijin">
+					<view style="float: left;margin-right: 5px;padding-top: 2px;">
+						<u-icon name="error-circle" color="#FA6400"></u-icon>
+					</view>
+					<view>{{ text }}</view>
+				</view>
 			</view>
 			<view class="statistics">
 				<view style="margin-bottom: 10px;">资产总额</view>
@@ -24,7 +29,7 @@
 					<u-grid-item>
 						<view @click="handleClick(1)" style="text-align: center;">
 							<view>保证金 ></view>
-							<view>{{ $amount.getComdify(data.cash / 10000 || 0) }}万元</view>
+							<view>{{ $amount.getComdify(data.cash / 100 || 0) }}元</view>
 						</view>
 					</u-grid-item>
 					<u-grid-item>
@@ -82,6 +87,10 @@
 				},
 			}
 		},
+		// 下拉刷新
+		onPullDownRefresh() {
+			this.getList();
+		},
 		mounted() {
 			this.getList();
 		},
@@ -89,6 +98,7 @@
 			getList() {
 				getAccount().then((res) => {
 					this.data = res.data;
+					uni.stopPullDownRefresh();
 					this.getServerData();
 				})
 			},
@@ -136,6 +146,14 @@
 			// #ifdef MP-WEIXIN
 			top: 88px;
 			// #endif
+			width: 100%;
+			
+			.zijin {
+				padding: 5px;
+				color: #fa6805;
+				background-color: #f8c089;
+				overflow: hidden;
+			}
 		}
 		
 		.statistics {

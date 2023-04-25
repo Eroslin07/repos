@@ -147,7 +147,7 @@ public class FileServiceImpl implements FileService {
         businessFileDO.setMainId(carId);
         businessFileDO.setFileType("14");
         businessFileMapper.insert(businessFileDO);
-        fileMapper.updateCarInfoStatus("2","23","231",carId);
+        fileMapper.updateCarInfoStatus(2,23,231,carId);
         return file;
     }
 

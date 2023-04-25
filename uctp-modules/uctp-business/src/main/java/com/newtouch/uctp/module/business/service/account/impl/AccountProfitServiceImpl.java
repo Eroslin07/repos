@@ -4,7 +4,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.security.config.SecurityProperties;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
@@ -21,13 +24,13 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
+import com.newtouch.uctp.module.business.service.account.BpmService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
-import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
-import com.newtouch.uctp.module.business.service.account.dto.ProfitCalcResultDTO;
-import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
+import com.newtouch.uctp.module.business.service.account.dto.*;
 import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
@@ -37,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -79,6 +83,15 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Resource
     private RedissonClient redissonClient;
+
+    @Resource
+    private HttpServletRequest request;
+
+    @Resource
+    private BpmService bpmService;
+
+    @Resource
+    private SecurityProperties securityProperties;
 
     @Override
     @Transactional
@@ -251,6 +264,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     }
 
     @Override
+    @GlobalTransactional
     @Transactional
     @TenantIgnore
     public Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<ProfitPresentInvoiceReqVO> invoiceFiles) {
@@ -286,6 +300,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             throw exception(ACC_PRESENT_ERROR);
         }
 
+        LocalDateTime now = LocalDateTime.now();
         MerchantProfitDO mp = MerchantProfitDO.builder()
                 .tradeType(AccountEnum.TRAN_PROFIT_PRESENT.getKey())
                 .tradeTypeText(AccountEnum.TRAN_PROFIT_PRESENT.getValue())
@@ -298,6 +313,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
                 .bankName(bank.getBankName())
                 .bankNo(bank.getBankNo())
+                .tradeTime(now)
                 .build();
         mp.setDeleted(false);
         mp.setRevision(0);
@@ -312,7 +328,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         .profitId(mp.getId())
                         .fileId(Long.valueOf(f.getFileId()))
                         .fileUrl(f.getFileUrl())
-                        .uploadTime(LocalDateTime.now())
+                        .uploadTime(now)
                         .build();
 
                 mpi.setDeleted(false);
@@ -325,6 +341,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
         // 触发提现申请
         this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.APPLY);
+
+        // 发起流程
+        this.createProfitPresentProcess(accountNo, mp.getId());
 
         return mp.getId();
     }
@@ -1176,6 +1195,56 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
             }
         }
+    }
+
+    /**
+     * 发起提现流程
+     * @param accountNo 账户
+     * @param profitId 提现id
+     * @return
+     */
+    private String createProfitPresentProcess(String accountNo, Long profitId) {
+        String token = SecurityFrameworkUtils.obtainAuthorization(request, securityProperties.getTokenHeader());
+        Map<String, Object> requestBody = new HashMap<>();
+        Map<String, Object> variables = new HashMap<>();
+        Map<String, Object> formDataJson = new HashMap<>();
+        Map<String, Object> formMain = new HashMap<>();
+
+        ProfitPresentFormDTO profitPresentFormDTO = this.merchantProfitMapper.selectProfitById(profitId);
+        // 处理数据
+        if (profitPresentFormDTO != null) {
+            profitPresentFormDTO.setTelNo("122222");
+            List<ProfitPresentFormDetailDTO> details = profitPresentFormDTO.getProfitDetails();
+            if (details != null && !details.isEmpty()) {
+                details.parallelStream().forEach(e -> {
+                    e.setMerchantName(profitPresentFormDTO.getMerchantName());
+                    e.setTelNo(profitPresentFormDTO.getTelNo());
+                    e.setBalanceAmount(profitPresentFormDTO.getBalanceAmount());
+                });
+            }
+        }
+
+        formMain.put("merchantId", SecurityFrameworkUtils.getLoginUser().getTenantId());
+        formMain.put("formDataJson", profitPresentFormDTO);
+
+        formDataJson.put("formMain", formMain);
+
+        variables.put("marketName", "");
+        variables.put("merchantName", "");
+        variables.put("startUserId", SecurityFrameworkUtils.getLoginUser().getId());
+        variables.put("formDataJson", formDataJson);
+
+        requestBody.put("procDefKey", "LRTX");
+        requestBody.put("variables", variables);
+
+        log.info("开始调用发起流程接口，利润提现ID: {}", profitId);
+        CommonResult<String> r = bpmService.create(SecurityFrameworkUtils.getLoginUser().getTenantId(), token, requestBody);
+        log.info("利润提现ID{}， 创建利润提现流程结果：{}", profitId, r);
+        if (r.isError()) {
+            log.error("账户：{}，利润提现流程创建失败", accountNo);
+            throw exception(ACC_PRESENT_ERROR);
+        }
+        return r.getData();
     }
 
     /**

@@ -24,8 +24,8 @@ public interface FileMapper extends BaseMapperX<FileDO> {
                 .orderByDesc(FileDO::getId));
     }
 
-    int updateCarInfoStatus(@Param("salesStatus") String salesStatus,
-                                @Param("status") String status,@Param("statusThree") String statusThree,
+    int updateCarInfoStatus(@Param("salesStatus") Integer salesStatus,
+                                @Param("status") Integer status,@Param("statusThree") Integer statusThree,
                             @Param("carId") Long carId);
 
 }
