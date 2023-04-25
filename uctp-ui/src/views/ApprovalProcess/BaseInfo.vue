@@ -15,7 +15,7 @@
     <!-- 卖车价格超公允值待办 -->
     <SellCarPending v-if="status == 'MGYZ'" :type="'need'" />
     <!-- 利润提取代办 -->
-    <Profit v-if="status == 'LRTQ'" :type="'need'" />
+    <Profit v-if="status == 'LRTX'" :type="'need'" />
     <!-- 车辆是否已过户至买家 -->
     <VehicleTransferBuyer v-if="status == 'MCGH'" :type="need" />
   </div>

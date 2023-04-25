@@ -1,74 +1,60 @@
 <template>
   <ContentWrap>
-    <!-- <XModal
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      :fullscreen="true"
-      :showFooter="false"
-      @close="closeDialog"
-    > -->
     <el-container>
-      <el-header class="header">山西万国市场商户张三利润提取待办</el-header>
       <el-main>
-        <div style="overflow: hidden; margin-bottom: 10px">
-          <p style="float: left">单号：LRTQ202303220001</p>
-          <div class="btn">
-            <!-- 操作按钮 -->
-            <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
-            <!-- <el-button type="primary" v-if="type == 'need'" @click="passBtn">在线转账</el-button>
-            <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button> -->
+        <div>
+          <div style="font-size: 16px" class="title">
+            <span>单号：{{ baseInfoData.data.serialNo }}</span>
+            <span>商户经办人：{{ mainValue.formDataJson.merchantName }}</span>
+            <span>商户电话：{{ mainValue.formDataJson.telNo }}</span>
           </div>
         </div>
-        <el-card class="content-box">
-          <h3 style="font-weight: bold">利润提取信息</h3>
-          <el-form>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="商户：">
-                  <div> 张三</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="手机号：">
-                  <div> 15328756760</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="提取金额：">
-                  <div style="color: #3dacdc"> 5,000.00元</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="剩余金额：">
-                  <div> 0.00元</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-form-item label="收款账号：">
-                <div>66XXXXXXXXXXXXXXX</div>
-              </el-form-item>
-            </el-row>
-            <el-row>
-              <el-form-item label="发票照片：">
-                <el-image
-                  style="width: 200px; height: 100px; margin-right: 10px"
-                  v-for="url in srcList"
-                  :key="url"
-                  :src="url"
-                  :zoom-rate="1.2"
-                  :preview-src-list="srcList"
-                  fit="cover"
-                  :initial-index="0"
-                />
-              </el-form-item>
-            </el-row>
-          </el-form>
-          <el-button type="primary">利润明细</el-button>
-        </el-card>
+        <div class="xinxi">利润提取信息</div>
+        <div class="content-box">
+          <el-row>
+            <el-col :span="2" class="bg-yell">商户：</el-col>
+            <el-col :span="4"> {{ mainValue.formDataJson.merchantName || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">手机号：</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.telNo || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">提取金额： </el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.amount || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">剩余金额： </el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.balanceAmount || '暂无数据' }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">收款账号： </el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.bankNo || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">开户行： </el-col>
+            <el-col :span="16">{{ mainValue.formDataJson.bankName || '暂无数据' }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell" style="height: 100px">发票照片： </el-col>
+            <el-col :span="22" style="height: 100px">
+              <el-image
+                v-for="item in mainValue.formDataJson.invoiceFiles"
+                :key="item.fileId"
+                style="width: 200px; height: 100px; margin-right: 10px"
+                :src="item.fileUrl"
+                :zoom-rate="1.2"
+                :preview-src-list="idcardUrlArr"
+                fit="cover"
+                :initial-index="0"
+              />
+            </el-col>
+          </el-row>
+        </div>
+        <div class="xinxi" style="margin-top: 16px">利润明细</div>
+        <el-table :data="mainValue.formDataJson.profitDetails" style="width: 100%" height="250">
+          <el-table-column prop="idx" label="序号" width="60" />
+          <el-table-column prop="merchantName" label="商户名称" min-width="180" />
+          <el-table-column prop="category" label="分类" min-width="180" />
+          <el-table-column prop="telNo" label="商户手机号" min-width="180" />
+          <el-table-column prop="carSalesAmount" label="收车金额（元）" min-width="180" />
+          <el-table-column prop="vehicleReceiptAmount" label="卖车金额（元）" min-width="180" />
+          <el-table-column prop="feeTotalAmount" label="各项费用合计（元）" min-width="180" />
+        </el-table>
       </el-main>
     </el-container>
-    <!-- </XModal> -->
   </ContentWrap>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
@@ -76,16 +62,16 @@ import { allSchemas } from '../toDoList/toDoList.data'
 import { defineProps } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+
 const [] = useXTable({
   allSchemas: allSchemas
 })
 
 // 预览图片
-const srcList = [
-  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-  'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
-]
-// const dialogTitle = ref('利润提取待办') // 弹出层标题
+const idcardUrlArr = computed(() => {
+  return mainValue.formDataJson.invoiceFiles.map((item) => item.fileUrl)
+})
 
 // const emit = defineEmits(['cancelForm'])
 const props = defineProps({
@@ -93,50 +79,72 @@ const props = defineProps({
   type: propTypes.bool.def(undefined)
 })
 console.log(props)
-// const dialogVisible = computed(() => {
-//   return props.visible
-// })
+// 详情
+let mainValue = reactive({
+  formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
+})
 
-// 关闭弹框
-// const closeDialog = () => {
-//   emit('cancelForm')
-// }
-
-// 通过
-// const passBtn = () => {
-//   emit('cancelForm')
-// }
-
-// 退回
-// const returnBtn = () => {
-//   emit('cancelForm')
-// }
+nextTick(() => {
+  mainValue.formDataJson = { ...baseInfoData.data.variables.formDataJson.formMain.formDataJson }
+})
 </script>
 <style lang="scss" scoped>
+.title {
+  > span {
+    margin-right: 20px;
+    font-weight: 600;
+    color: #333333;
+  }
+  margin-bottom: 16px;
+}
+.xinxi {
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  padding-left: 10px;
+  border-left: 4px solid #fa6400;
+}
 .header {
   font-size: 24px;
   font-weight: bold;
   text-align: center;
 }
-
-p {
-  font-size: 16px;
-}
-
 .btn {
-  float: right;
+  text-align: right;
 }
-
 .content-box {
-  line-height: 36px;
+  color: #606266;
+  .bg-yell {
+    background: #f5f5f5;
+    display: flex;
+    text-align: right;
+    justify-content: flex-end;
+    padding-right: 5px;
+  }
 }
-.carInfo {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+:deep(.el-main) {
+  padding: 0;
 }
-.identify {
-  display: inline-block;
-  width: 136px;
+:deep(.el-col) {
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  height: 40px;
+  align-items: center;
+}
+.content-box .el-row:first-child {
+  border-top: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(1) {
+  border-left: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(even) {
+  padding-left: 15px;
+}
+.image {
+  padding: 16px 0 20px 18px;
+  border-left: 1px solid #eaeaea;
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
 }
 </style>
