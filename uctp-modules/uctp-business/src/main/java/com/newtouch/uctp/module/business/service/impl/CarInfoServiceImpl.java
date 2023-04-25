@@ -2,10 +2,6 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.newtouch.uctp.module.business.dal.dataobject.*;
-import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.business.dal.mysql.*;
-import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -27,8 +23,16 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.*;
+import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
+import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
+import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
+import com.newtouch.uctp.module.business.dal.mysql.InvoiceTitleMapper;
+import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
@@ -851,7 +855,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         // 3.处理车辆的图片信息
         this.buildBmpVO(carInfoDO,infoDetails);
         // 4.处理合同   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
-        if (ObjectUtil.equals("SCGH", procDefKey)) {
+        if (ObjectUtil.equals(BpmDefTypeEnum.SCGH.name(), procDefKey)) {
             // 收车过户
             List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
             contractList.add(this.getContractApprovalShowInfo(carId, 1));
@@ -859,7 +863,9 @@ public class CarInfoServiceImpl implements CarInfoService {
             String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
             carTransferInfoVO.setContractCode(contractCode);
             carTransferInfoVO.setContractList(contractList);
-        } else if (ObjectUtil.equals("MCGH", procDefKey)) {
+            CarInvoiceInfoVO carInvoiceInfo = this.getReverseInvoiceInfo(Long.valueOf(contractCode));
+            carTransferInfoVO.setCarInvoiceInfoVO(carInvoiceInfo);
+        } else if (ObjectUtil.equals(BpmDefTypeEnum.MCGH.name(), procDefKey)) {
             // 卖车过户
             List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
             contractList.add(this.getContractApprovalShowInfo(carId, 3));
@@ -867,6 +873,8 @@ public class CarInfoServiceImpl implements CarInfoService {
             String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
             carTransferInfoVO.setContractCode(contractCode);
             carTransferInfoVO.setContractList(contractList);
+            CarInvoiceInfoVO carInvoiceInfo = this.getForwardInvoiceInfo(Long.valueOf(contractCode));
+            carTransferInfoVO.setCarInvoiceInfoVO(carInvoiceInfo);
         }
 
         return carTransferInfoVO;
