@@ -58,7 +58,9 @@
               </el-checkbox>
             </el-col>
             <el-col :span="12" :offset="6">
-              <el-link type="primary" style="float: right">{{ t('login.forgetPassword') }}</el-link>
+              <el-link type="primary" style="float: right; color: #fa6400">{{
+                t('login.forgetPassword')
+              }}</el-link>
             </el-col>
           </el-row>
         </el-form-item>
@@ -81,7 +83,7 @@
         :imgSize="{ width: '400px', height: '200px' }"
         @success="handleLogin"
       />
-      <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
+      <!-- <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
         <el-form-item>
           <el-row justify="space-between" style="width: 100%" :gutter="5">
             <el-col :span="8">
@@ -123,13 +125,13 @@
             />
           </div>
         </el-form-item>
-      </el-col>
+      </el-col> -->
     </el-row>
   </el-form>
 </template>
 <script setup lang="ts">
 import { ElLoading } from 'element-plus'
-import LoginFormTitle from './LoginFormTitle.vue'
+// import LoginFormTitle from './LoginFormTitle.vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 import { useIcon } from '@/hooks/web/useIcon'
@@ -140,13 +142,13 @@ import * as LoginApi from '@/api/login'
 import { LoginStateEnum, useLoginState, useFormValid } from './useLogin'
 
 const { t } = useI18n()
-const message = useMessage()
+// const message = useMessage()
 const iconHouse = useIcon({ icon: 'ep:house' })
 const iconAvatar = useIcon({ icon: 'ep:avatar' })
 const iconLock = useIcon({ icon: 'ep:lock' })
 const formLogin = ref()
 const { validForm } = useFormValid(formLogin)
-const { setLoginState, getLoginState } = useLoginState()
+const { getLoginState } = useLoginState()
 const { currentRoute, push } = useRouter()
 const permissionStore = usePermissionStore()
 const redirect = ref<string>('')
@@ -174,12 +176,12 @@ const loginData = reactive({
   }
 })
 
-const socialList = [
-  { icon: 'ant-design:github-filled', type: 0 },
-  { icon: 'ant-design:wechat-filled', type: 30 },
-  { icon: 'ant-design:alipay-circle-filled', type: 0 },
-  { icon: 'ant-design:dingtalk-circle-filled', type: 20 }
-]
+// const socialList = [
+//   { icon: 'ant-design:github-filled', type: 0 },
+//   { icon: 'ant-design:wechat-filled', type: 30 },
+//   { icon: 'ant-design:alipay-circle-filled', type: 0 },
+//   { icon: 'ant-design:dingtalk-circle-filled', type: 20 }
+// ]
 
 // 获取验证码
 const getCode = async () => {
@@ -252,25 +254,25 @@ const handleLogin = async (params) => {
 }
 
 // 社交登录
-const doSocialLogin = async (type: number) => {
-  if (type === 0) {
-    message.error('此方式未配置')
-  } else {
-    loginLoading.value = true
-    if (loginData.tenantEnable === 'true') {
-      await message.prompt('请输入租户名称', t('common.reminder')).then(async ({ value }) => {
-        const res = await LoginApi.getTenantIdByNameApi(value)
-        authUtil.setTenantId(res)
-      })
-    }
-    // 计算 redirectUri
-    const redirectUri =
-      location.origin + '/social-login?type=' + type + '&redirect=' + (redirect.value || '/')
-    // 进行跳转
-    const res = await LoginApi.socialAuthRedirectApi(type, encodeURIComponent(redirectUri))
-    window.location.href = res
-  }
-}
+// const doSocialLogin = async (type: number) => {
+//   if (type === 0) {
+//     message.error('此方式未配置')
+//   } else {
+//     loginLoading.value = true
+//     if (loginData.tenantEnable === 'true') {
+//       await message.prompt('请输入租户名称', t('common.reminder')).then(async ({ value }) => {
+//         const res = await LoginApi.getTenantIdByNameApi(value)
+//         authUtil.setTenantId(res)
+//       })
+//     }
+//     // 计算 redirectUri
+//     const redirectUri =
+//       location.origin + '/social-login?type=' + type + '&redirect=' + (redirect.value || '/')
+//     // 进行跳转
+//     const res = await LoginApi.socialAuthRedirectApi(type, encodeURIComponent(redirectUri))
+//     window.location.href = res
+//   }
+// }
 watch(
   () => currentRoute.value,
   (route: RouteLocationNormalizedLoaded) => {
@@ -303,5 +305,9 @@ onMounted(() => {
     height: auto;
     vertical-align: middle;
   }
+}
+:deep(.el-button--primary) {
+  background: #fa6400;
+  border: none;
 }
 </style>
