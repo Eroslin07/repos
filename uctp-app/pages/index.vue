@@ -376,7 +376,7 @@
 					border-bottom-left-radius: 12rpx;
 					overflow: hidden;
 					text-align: center;
-					font-size: 20rpx;
+					font-size: 28rpx;
 					// background: url('/static/images/bc.jpg') no-repeat;
 					// background-size: 100% 100%;
 					// background-color: #2A93EC;

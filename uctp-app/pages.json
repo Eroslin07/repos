@@ -29,7 +29,9 @@
 			"path": "pages/account/index",
 			"style": {
 				"navigationBarTitleText": "资金管理",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 150
 			}
 		}, {
 			"path": "pages/mine/index",
