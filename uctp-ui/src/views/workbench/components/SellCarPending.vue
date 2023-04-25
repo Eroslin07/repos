@@ -266,8 +266,8 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="2" class="bg-yell">身份证</el-col>
-              <el-col :span="4">
+              <el-col :span="2" class="bg-yell">身份证：</el-col>
+              <el-col :span="10">
                 <div style="display: flex; align-items: center">
                   <span class="identify identify-eye" v-if="identifyShow">
                     {{
@@ -288,13 +288,13 @@
                       .sellerIdCard
                   }}</span>
                   <Icon
-                    style="margin-right: 3px"
+                    style="margin-right: 5px"
                     icon="ep:view"
                     v-if="identifyShow"
                     @click="identifyShow = !identifyShow"
                   />
                   <Icon
-                    style="margin-right: 3px"
+                    style="margin-right: 5px"
                     icon="ep:hide"
                     v-else
                     @click="identifyShow = !identifyShow"
@@ -326,8 +326,10 @@
                     .sellerAdder
                 }}</div>
               </el-col>
+            </el-row>
+            <el-row>
               <el-col :span="2" class="bg-yell">联系电话：</el-col>
-              <el-col :span="4">
+              <el-col :span="22">
                 <div>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
                     .sellerTel
@@ -511,9 +513,6 @@ console.log(setDialogTile, props)
 }
 .identify {
   display: inline-block;
-  width: 120px;
-}
-.identify-eye {
-  width: 95px;
+  width: 140px;
 }
 </style>

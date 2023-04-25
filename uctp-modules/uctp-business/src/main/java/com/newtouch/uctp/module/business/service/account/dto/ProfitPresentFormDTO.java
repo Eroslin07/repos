@@ -11,8 +11,8 @@ public class ProfitPresentFormDTO {
     private String merchantId; // 商户标识
     private String merchantName; // 商户名称
     private String telNo; // 电话号码
-    private Integer amount; // 提取金额
-    private Integer balanceAmount; // 剩余金额
+    private Long amount; // 提取金额
+    private Long balanceAmount; // 剩余金额
     private String bankNo; // 银行卡号
     private String bankName; // 开户名称
     private String bankOfDeposit; // 开户行

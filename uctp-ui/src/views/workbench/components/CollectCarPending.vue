@@ -277,8 +277,8 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="2" class="bg-yell">身份证</el-col>
-              <el-col :span="4">
+              <el-col :span="2" class="bg-yell">身份证：</el-col>
+              <el-col :span="10">
                 <div style="display: flex; align-items: center">
                   <span class="identify identify-eye" v-if="identifyShow">
                     {{
@@ -299,13 +299,13 @@
                       .sellerIdCard
                   }}</span>
                   <Icon
-                    style="margin-right: 3px"
+                    style="margin-right: 5px"
                     icon="ep:view"
                     v-if="identifyShow"
                     @click="identifyShow = !identifyShow"
                   />
                   <Icon
-                    style="margin-right: 3px"
+                    style="margin-right: 5px"
                     icon="ep:hide"
                     v-else
                     @click="identifyShow = !identifyShow"
@@ -337,6 +337,8 @@
                     .sellerAdder
                 }}</div>
               </el-col>
+            </el-row>
+            <el-row>
               <el-col :span="2" class="bg-yell">联系电话：</el-col>
               <el-col :span="4">
                 <div>{{
@@ -344,8 +346,6 @@
                     .sellerTel
                 }}</div>
               </el-col>
-            </el-row>
-            <el-row>
               <el-col :span="2" class="bg-yell">收款方式：</el-col>
               <el-col :span="4">
                 <div>{{
@@ -370,7 +370,7 @@
                 >银行卡号：</el-col
               >
               <el-col
-                :span="10"
+                :span="4"
                 v-if="
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
                     .collection == '0'
@@ -402,6 +402,8 @@
                     .thirdSellerName
                 }}</div>
               </el-col>
+            </el-row>
+            <el-row>
               <el-col
                 :span="2"
                 class="bg-yell"
@@ -412,7 +414,7 @@
                 >第三方银行卡号：</el-col
               >
               <el-col
-                :span="4"
+                :span="22"
                 v-if="
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
                     .collection == '1'
@@ -575,9 +577,6 @@ console.log(setDialogTile, props)
 }
 .identify {
   display: inline-block;
-  width: 120px;
-}
-.identify-eye {
-  width: 95px;
+  width: 140px;
 }
 </style>

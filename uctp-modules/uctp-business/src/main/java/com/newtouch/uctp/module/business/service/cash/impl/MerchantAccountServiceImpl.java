@@ -32,13 +32,13 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
 
     @Override
     @Transactional
-    public int updateCash(String accountNo, Integer tranAmount, Integer revision, int type) {
+    public int updateCash(String accountNo, Long tranAmount, Integer revision, int type) {
         return merchantAccountMapper.updateCash(accountNo, tranAmount, revision, type);
     }
 
     @Override
     @Transactional
-    public int changeCash(String accountNo, Integer tranAmount, Integer revision, String tradeType) {
+    public int changeCash(String accountNo, Long tranAmount, Integer revision, String tradeType) {
 
         MerchantAccountDO merchantAccountDO = merchantAccountMapper.selectForUpdateByAccountNo(accountNo);
 

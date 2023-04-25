@@ -32,8 +32,8 @@ public interface AccountProfitService {
      */
     List<MerchantProfitDO> recorded(String accountNo,
                                     String contractNo,
-                                    Integer vehicleReceiptAmount,
-                                    Integer carSalesAmount,
+                                    Long vehicleReceiptAmount,
+                                    Long carSalesAmount,
                                     List<CostDTO> costs,
                                     List<TaxDTO> taxes);
 
@@ -52,7 +52,7 @@ public interface AccountProfitService {
      * @param invoiceFiles 发票清单
      * @return 利润提现记录ID（后续市场审核通过后通过此ID通知银行转账）
      */
-    Long profitPresent(String accountNo, Long merchantBankId, Integer amount, List<ProfitPresentInvoiceReqVO> invoiceFiles);
+    Long profitPresent(String accountNo, Long merchantBankId, Long amount, List<ProfitPresentInvoiceReqVO> invoiceFiles);
 
     /**
      * 利润分页查询

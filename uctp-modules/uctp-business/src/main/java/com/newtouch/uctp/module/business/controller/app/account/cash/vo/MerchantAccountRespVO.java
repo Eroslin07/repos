@@ -15,10 +15,10 @@ public class MerchantAccountRespVO {
     private String accountNo;
 
     @Schema(description = "保证金")
-    private Integer cash;
+    private Long cash;
 
     @Schema(description = "利润")
-    private Integer profit;
+    private Long profit;
 
     @Schema(description = "商户标识")
     private Long merchantId;
@@ -30,7 +30,7 @@ public class MerchantAccountRespVO {
             respVO.setMobile(accountDO.getMobile());
             respVO.setAccountNo(accountDO.getAccountNo());
             respVO.setCash(accountDO.getCash());
-            int profit = 0;
+            Long profit = 0L;
             if (accountDO.getProfit() != null) {
                 profit += accountDO.getProfit();
             }

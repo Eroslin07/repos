@@ -64,7 +64,7 @@ public interface AccountCashService {
      * @param transactionRecordReqVO 账户号
      * @return 待回填保证金金额，单位-分
      */
-    Integer difference(TransactionRecordReqVO transactionRecordReqVO);
+    Long difference(TransactionRecordReqVO transactionRecordReqVO);
 
     /**
      * 保证金回填

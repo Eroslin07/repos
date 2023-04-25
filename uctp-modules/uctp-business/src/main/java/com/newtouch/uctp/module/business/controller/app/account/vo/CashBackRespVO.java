@@ -27,7 +27,7 @@ public class CashBackRespVO {
     @Schema(description = "交易合同号")
     private String contractNo;
     @Schema(description = "金额")
-    private Integer amount;
+    private Long amount;
     @Schema(description = "发生时间")
     private String occurredTime;
 }
