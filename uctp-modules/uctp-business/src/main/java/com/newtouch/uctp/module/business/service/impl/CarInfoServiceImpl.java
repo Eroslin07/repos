@@ -2,7 +2,9 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.newtouch.uctp.module.business.dal.dataobject.*;
 import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.business.dal.mysql.*;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,13 +29,6 @@ import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
-import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
-import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
-import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
-import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
-import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
@@ -85,6 +80,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private InvoiceTitleMapper invoiceTitleMapper;
 
     @Override
     public Long createCarInfo(AppCarInfoCreateReqVO createReqVO) {
@@ -874,6 +872,127 @@ public class CarInfoServiceImpl implements CarInfoService {
         return carTransferInfoVO;
     }
 
+    @Override
+    public CarInvoiceInfoVO getForwardInvoiceInfo(Long contractId) {
+        CarInvoiceInfoVO carInvoiceInfoVO = new CarInvoiceInfoVO();
+        //正向二手车发票信息
+        CarInvoiceDetailVO invoiceDetail = getForwardInvoiceDetail(contractId);
+        carInvoiceInfoVO.setCarInvoiceDetailVO(invoiceDetail);
+        ContractDO contractDO = contractMapper.selectById(contractId);
+        Long carId = contractDO.getCarId();
+        // 收车过户
+        List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
+        contractList.add(this.getContractApprovalShowInfo(carId, 1));
+        contractList.add(this.getContractApprovalShowInfo(carId, 2));
+        // 卖车过户
+        contractList.add(this.getContractApprovalShowInfo(carId, 3));
+        contractList.add(this.getContractApprovalShowInfo(carId, 4));
+        String contractCode = ObjectUtil.isNotNull(contractList.get(3).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+        //正向给买方开具
+        carInvoiceInfoVO.setBuyerName(invoiceDetail.getBuyerName());
+        carInvoiceInfoVO.setContractCode(contractCode);
+        carInvoiceInfoVO.setContractList(contractList);
+        return carInvoiceInfoVO;
+    }
+
+    @Override
+    public CarInvoiceInfoVO getReverseInvoiceInfo(Long contractId) {
+        CarInvoiceInfoVO carInvoiceInfoVO = new CarInvoiceInfoVO();
+        //反向二手车发票信息
+        CarInvoiceDetailVO invoiceDetail = getReverseInvoiceDetail(contractId);
+        carInvoiceInfoVO.setCarInvoiceDetailVO(invoiceDetail);
+        ContractDO contractDO = contractMapper.selectById(contractId);
+        Long carId = contractDO.getCarId();
+        // 收车过户
+        List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
+        contractList.add(this.getContractApprovalShowInfo(carId, 1));
+        contractList.add(this.getContractApprovalShowInfo(carId, 2));
+        String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+        //反向给卖方开具
+        carInvoiceInfoVO.setSellerName(invoiceDetail.getSellerName());
+        carInvoiceInfoVO.setContractCode(contractCode);
+        carInvoiceInfoVO.setContractList(contractList);
+        return carInvoiceInfoVO;
+    }
+
+
+    /**
+     * 获得正向二手车发票信息
+     * @param contractId
+     * @return
+     */
+    private CarInvoiceDetailVO getForwardInvoiceDetail(Long contractId){
+        CarInvoiceDetailVO invoiceDetailVO = new CarInvoiceDetailVO();
+        //根据合同id拿到车辆id，获取买卖信息
+        ContractDO contractDO = contractMapper.selectById(contractId);
+        Long carId = contractDO.getCarId();
+        // 1.根据车辆ID获取车辆主信息
+        CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
+        // 2.根据车辆ID获取车辆扩展子表明细信息
+        CarInfoDetailsDO infoDetails = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, carId);
+        //3.根据tenantId拿到发票抬头
+        InvoiceTitleDO titleDO = invoiceTitleMapper.selectOne(InvoiceTitleDO::getTenantId, carInfoDO.getTenantId());
+        invoiceDetailVO.setBuyerName(infoDetails.getBuyerName());
+        invoiceDetailVO.setBuyerIdCard(infoDetails.getBuyerIdCard());
+        invoiceDetailVO.setBuyerAddress(infoDetails.getBuyerAdder());
+        invoiceDetailVO.setBuyerTel(infoDetails.getBuyerTel());
+        invoiceDetailVO.setSellerName(titleDO.getName());
+        invoiceDetailVO.setSellerIdCard(titleDO.getBankAccount());
+        invoiceDetailVO.setSellerAddress(titleDO.getAddress());
+        invoiceDetailVO.setSellerTel(titleDO.getTel());
+        invoiceDetailVO.setPlateNum(carInfoDO.getPlateNum());
+        invoiceDetailVO.setCertificateNo(infoDetails.getCertificateNo());
+        invoiceDetailVO.setCarType(carInfoDO.getCarType());
+        invoiceDetailVO.setVin(carInfoDO.getVin());
+        invoiceDetailVO.setModel(carInfoDO.getModel());
+        invoiceDetailVO.setTransManageName(infoDetails.getTransManageName());
+        invoiceDetailVO.setSellAmount(carInfoDO.getSellAmount());
+        invoiceDetailVO.setMarketName(titleDO.getName());
+        invoiceDetailVO.setTaxNum(titleDO.getTaxNum());
+        invoiceDetailVO.setMarketAddress(titleDO.getAddress());
+        invoiceDetailVO.setMarketBankNum(titleDO.getBank()+titleDO.getBankAccount());
+        invoiceDetailVO.setMarketTel(titleDO.getTel());
+        return invoiceDetailVO;
+    }
+
+    /**
+     * 获得反向二手车发票信息
+     * @param contractId
+     * @return
+     */
+    private CarInvoiceDetailVO getReverseInvoiceDetail(Long contractId){
+        CarInvoiceDetailVO invoiceDetailVO = new CarInvoiceDetailVO();
+        //根据合同id拿到车辆id，获取买卖信息
+        ContractDO contractDO = contractMapper.selectById(contractId);
+        Long carId = contractDO.getCarId();
+        // 1.根据车辆ID获取车辆主信息
+        CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
+        // 2.根据车辆ID获取车辆扩展子表明细信息
+        CarInfoDetailsDO infoDetails = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, carId);
+        //3.根据tenantId拿到发票抬头
+        InvoiceTitleDO titleDO = invoiceTitleMapper.selectOne(InvoiceTitleDO::getTenantId, carInfoDO.getTenantId());
+        invoiceDetailVO.setBuyerName(titleDO.getName());
+        invoiceDetailVO.setBuyerIdCard(titleDO.getBankAccount());
+        invoiceDetailVO.setBuyerAddress(titleDO.getAddress());
+        invoiceDetailVO.setBuyerTel(titleDO.getTel());
+        invoiceDetailVO.setSellerName(infoDetails.getSellerName());
+        invoiceDetailVO.setSellerIdCard(infoDetails.getSellerIdCard());
+        invoiceDetailVO.setSellerAddress(infoDetails.getSellerAdder());
+        invoiceDetailVO.setSellerTel(infoDetails.getSellerTel());
+        invoiceDetailVO.setPlateNum(carInfoDO.getPlateNum());
+        invoiceDetailVO.setCertificateNo(infoDetails.getCertificateNo());
+        invoiceDetailVO.setCarType(carInfoDO.getCarType());
+        invoiceDetailVO.setVin(carInfoDO.getVin());
+        invoiceDetailVO.setModel(carInfoDO.getModel());
+        invoiceDetailVO.setTransManageName(infoDetails.getTransManageName());
+        invoiceDetailVO.setSellAmount(carInfoDO.getSellAmount());
+        invoiceDetailVO.setMarketName(titleDO.getName());
+        invoiceDetailVO.setTaxNum(titleDO.getTaxNum());
+        invoiceDetailVO.setMarketAddress(titleDO.getAddress());
+        invoiceDetailVO.setMarketBankNum(titleDO.getBank()+titleDO.getBankAccount());
+        invoiceDetailVO.setMarketTel(titleDO.getTel());
+        return invoiceDetailVO;
+    }
     /**
      * 根据车辆ID和合同类型查询合同附件信息
      * @param carId  车辆ID

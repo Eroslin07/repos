@@ -28,4 +28,14 @@ public class CarTransferApiImpl implements CarTransferApi {
     public CommonResult<JSONObject> getTransferInfo(Long carId, String procDefKey) {
         return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId, procDefKey)));
     }
+
+    @Override
+    public CommonResult<JSONObject> getForwardInvoiceInfo(Long contractId) {
+        return success((JSONObject) JSONObject.toJSON(carInfoService.getForwardInvoiceInfo(contractId)));
+    }
+
+    @Override
+    public CommonResult<JSONObject> getReverseInvoiceInfo(Long contractId) {
+        return success((JSONObject) JSONObject.toJSON(carInfoService.getReverseInvoiceInfo(contractId)));
+    }
 }
