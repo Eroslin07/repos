@@ -72,3 +72,15 @@ export function deleteImage(id) {
 		params: id
 	})
 }
+
+// 删除卡片详情检测报告
+export function deleteTestImage(id) {
+	return request({
+		url: '/infra/file/deleteReport',
+		headers: {
+			isToken: false
+		},
+		'method': 'DELETE',
+		params: id
+	})
+}

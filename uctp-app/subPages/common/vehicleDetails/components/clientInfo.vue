@@ -105,6 +105,9 @@
 			if (prop.infoType == 4) {
 				this.clientTitle = '买家信息'
 			}
+			uni.setNavigationBarTitle({
+				title: this.clientTitle,
+			})
 		},
 	}
 </script>

@@ -25,34 +25,34 @@
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>{{ carInfoAll.carInfoDetails.remitType}}</text>
+						<text>{{ carInfoAll.carInfoDetails.remitType || '暂无'}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>{{carInfoAll.carInfo.paymentType}}</text>
+						<text>{{carInfoAll.carInfo.paymentType || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>在库时长</text>
-						<text>{{carInfoAll.carInfoDetails.days }}天</text>
+						<text>{{carInfoAll.carInfoDetails.days || 0 }}天</text>
 					</view>
 					<view class="car-item">
 						<text>首次上牌</text>
-						<text>{{carInfoAll.carInfoDetails.firstRegistDate}}</text>
+						<text>{{carInfoAll.carInfoDetails.firstRegistDate || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>{{carInfoAll.carInfoDetails.mileage}}万公里</text>
+						<text>{{carInfoAll.carInfoDetails.mileage || 0}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>{{carInfoAll.carInfoDetails.creator}}</text>
+						<text>{{carInfoAll.carInfoDetails.creator || '暂无'}}</text>
 					</view>
 				</view>
 			</view>
@@ -90,7 +90,8 @@
 					carInfo: {},
 					carInfoDetails: {},
 					contractCardVOS:[],
-					contractCardNOS:[]
+					contractCardNOS:[],
+					fileF:[],
 				},
 				currentNum: 0,
 				carUpload: true,
@@ -162,7 +163,10 @@
 
 		onLoad(props) {
 			console.log(props, 'this.fatherProps.id')
-			this.getCarDetails('1650072138860851201')
+			// this.getCarDetails('1650072138860851201')
+			// this.getCarDetails('1650085024672796674')
+			this.getCarDetails('1649971320732094466')
+			
 		},
 		computed: {
 			firstStatus() {
@@ -174,7 +178,7 @@
 				return statusValue[this.carInfoAll.carInfo.status]
 			},
 			isShowTest() {
-				if (this.carInfoAll.carInfo.status > 22 || this.carUpload) {
+				if (this.carInfoAll.fileF.length>0 || this.carUpload) {
 					return true
 				} else {
 					return false

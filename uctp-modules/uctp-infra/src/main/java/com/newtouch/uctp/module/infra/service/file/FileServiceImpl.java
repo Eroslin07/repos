@@ -167,7 +167,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void deleteReport(Long id) throws Exception {
+    public void deleteReport(Long id,Long carId) throws Exception {
         // 校验存在
         FileDO file = validateFileExists(id);
 
@@ -178,7 +178,10 @@ public class FileServiceImpl implements FileService {
 
         // 删除记录
         fileMapper.deleteById(id);
+        //删除business中间表
         fileMapper.deleteByMainIdAndType(id,"14");
+        //状态回退到未检测
+        fileMapper.updateCarInfoStatus(2,22,221,carId);
     }
 
 

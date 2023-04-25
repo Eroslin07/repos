@@ -3,7 +3,7 @@
 		<!-- 自定义导航栏 -->
 		<u-navbar title="车友通">
 			<view class="u-nav-slot" slot="left">
-				<uni-badge class="uni-badge-left-margin" :text="value" absolute="rightTop" size="small">
+				<uni-badge class="uni-badge-left-margin" :text="msgsValue" absolute="rightTop" size="small">
 					<image @click="handleMsg" style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png"
 						class="form-image">
 					</image>
@@ -88,14 +88,20 @@
 		getHomeCount,
 		getStatusList
 	} from '@/api/home.js'
-	import cellGroup from "../uni_modules/uview-ui/libs/config/props/cellGroup";
+	import {
+		getNoticesApi,
+	} from '@/api/work/message.js'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
 	export default {
 		data() {
 			return {
+				businessId: this.$store.state.user.deptId,
 				// 导航栏高度
 				navigateBarHeight: 0,
 				// 消息数字角标
-				value: 100,
+				msgsValue: 0,
 				// 轮播
 				swiperList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -114,22 +120,50 @@
 				gatherData: [],
 				// 所有子项
 				allChild: [],
+				// 消息
+				listData: []
 
 			}
 		},
 		onLoad: function() {
 			this.getAcount();
 			this.getStatusValue()
+			this.getListData()
 			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
 			/* #endif */
 			uni.startPullDownRefresh();
+
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
 			this.getAcount();
+			this.getStatusValue();
+			this.getListData();
 		},
 		methods: {
+			// 获取消息列表数据
+			getListData() {
+				let options = [{
+					text: '删除',
+					style: {
+						backgroundColor: '#f56c6c'
+					}
+				}]
+				getNoticesApi(this.businessId).then(res => {
+					if (res.data.length) {
+						this.listData = res.data.map(item => {
+							this.$set(item, 'options', options);
+							this.$set(item, 'swipeShow', false);
+							item.createTime = parseTime(item.createTime);
+							return item
+						})
+						this.msgsValue = res.data.filter(v => v.status === '0').length
+					}
+				}).catch(err => {
+					console.log(err, 'err')
+				})
+			},
 			//获取统计数据
 			getAcount() {
 				this.$modal.loading("数据加载中...");
@@ -200,7 +234,7 @@
 			tabCarStatus(item, allChild) {
 				this.$tab.navigateTo(
 					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
-					)
+				)
 			},
 			handleTabItem(item, child, allChild) {
 				this.$tab.navigateTo(
@@ -208,7 +242,7 @@
 				)
 			},
 
-			// 消息动态-背景图标
+			// 交易动态-背景图标
 			leftImgSrc(item) {
 				let urlArr = [{
 					status: 1,
@@ -228,7 +262,7 @@
 
 			// 消息
 			handleMsg() {
-				this.$tab.navigateTo('/subPages/work/index')
+				this.$tab.navigateTo(`/subPages/work/index?listData=` + encodeURIComponent(JSON.stringify(this.listData)))
 			},
 			// 获取顶部导航栏的高度
 			getnavigateBarHeight() {

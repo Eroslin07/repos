@@ -184,7 +184,7 @@
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额"
+						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none" placeholder="请输入收车金额"
 							@blur="handleBlur" @focus="handleFocus">
 							<template slot="suffix">
 								<view>元</view>
@@ -684,6 +684,7 @@
 				this.vehicleInfor = true;
 				this.sellerInfor = false;
 				this.active = 0;
+				this.$refs.sellerForm.clearValidate();
 			}
 			return true;
 		},
@@ -1230,6 +1231,7 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.$refs.carForm.clearValidate();
 						uni.pageScrollTo({
 							scrollTop: 0,
 							duration: 300

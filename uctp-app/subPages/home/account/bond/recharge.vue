@@ -5,7 +5,7 @@
 		<uni-card>
 			<view>
 				<view>充值金额</view>
-				<u-input border="none" v-model="amount" type="number" clearable :customStyle="{'height': '50px'}" fontSize="24px">
+				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable :customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
@@ -57,6 +57,18 @@
 			// 页面返回
 			back() {
 				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			},
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
 			},
 			// 确定
 			handleDefine() {
