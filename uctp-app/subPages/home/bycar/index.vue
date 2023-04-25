@@ -684,6 +684,7 @@
 				this.vehicleInfor = true;
 				this.sellerInfor = false;
 				this.active = 0;
+				this.$refs.sellerForm.clearValidate();
 			}
 			return true;
 		},
@@ -1158,7 +1159,6 @@
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
-				this.showOverlay = true;
 				// 车辆手续及备件
 				let proceduresAndSpareParts = {};
 				let list1 = [];
@@ -1220,6 +1220,7 @@
 					remarks: this.carForm.remarks,
 					proceduresAndSpareParts
 				}
+				this.showOverlay = true;
 				this.$modal.loading("提交中，请耐心等待...")
 				setCarInfo(data).then((res) => {
 					this.$modal.closeLoading()
@@ -1230,6 +1231,7 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.$refs.carForm.clearValidate();
 						uni.pageScrollTo({
 							scrollTop: 0,
 							duration: 300

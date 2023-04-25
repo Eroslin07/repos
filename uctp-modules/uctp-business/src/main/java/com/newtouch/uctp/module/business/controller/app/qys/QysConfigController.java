@@ -142,8 +142,11 @@ public class QysConfigController {
     @PostMapping("/send")
     @Operation(summary ="发起契约锁合同")
    // public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId,@RequestParam("type") String type) {
-    public CommonResult<Boolean> send(@Valid @RequestBody QYSContractVO VO) {
-        qysConfigService.send(VO.getCarId(),VO.getType(),VO.getContractId());
+    public CommonResult<Boolean> send(@Valid @RequestBody List<QYSContractVO> VO) {
+        for (QYSContractVO qysContractVO : VO) {
+            qysConfigService.send(qysContractVO.getCarId(),qysContractVO.getType(),qysContractVO.getContractId(),qysContractVO.getContractType());
+        }
+
         return success(true);
     }
 
@@ -151,7 +154,7 @@ public class QysConfigController {
     @Operation(summary ="合同回显")
     @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
     @Parameter(name = "type", description = "收车或卖车（1：收车，2：卖车）", required = true, example = "1")
-    public CommonResult<QYSContractVO> ContractEcho(@RequestParam("carId") @NotNull  Long carId, @RequestParam("type") String type) {
+    public CommonResult<List<QYSContractVO>> ContractEcho(@RequestParam("carId") @NotNull  Long carId, @RequestParam("type") String type) {
         return success(qysConfigService.ContractEcho(carId,type));
     }
 

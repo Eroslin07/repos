@@ -233,6 +233,7 @@ const handleCancel = () => {
     }
     margin-bottom: 16px;
   }
+  padding-bottom: 50px;
 }
 p {
   font-size: 16px;
@@ -315,5 +316,12 @@ p {
 }
 .prompt {
   border: 1px solid #eaeaea;
+  padding: 20px;
+  > div:first-child {
+    margin-bottom: 20px;
+  }
+  > div:last-child {
+    color: #f59a23;
+  }
 }
 </style>

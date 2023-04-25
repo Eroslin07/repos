@@ -221,6 +221,7 @@ const handleCancel = () => {
     }
     margin-bottom: 16px;
   }
+  padding-bottom: 50px;
 }
 p {
   font-size: 16px;
