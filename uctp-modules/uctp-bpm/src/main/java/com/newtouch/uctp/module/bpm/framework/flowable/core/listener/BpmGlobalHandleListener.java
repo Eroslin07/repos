@@ -8,8 +8,10 @@ import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
+import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
+import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
@@ -46,6 +48,8 @@ public class BpmGlobalHandleListener {
     private QysConfigApi qysConfigApi;
     @Resource
     private AccountProfitApi accountProfitApi;
+    @Resource
+    private UserMapper userMapper;
 
     /**
      * 流程创建时处理
@@ -94,7 +98,9 @@ public class BpmGlobalHandleListener {
                 noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
             }else if ("disagree".equals(approvalType)){
                 // 删除用户
-                userService.deleteUser(bpmFormMainVO.getStartUserId());
+                JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
+                AdminUserDO adminUserDO = userMapper.selectOne("phone", jsonObject.get("phone"));
+                userService.deleteUser(adminUserDO.getId());
                 // 注册失败
                 noticeService.saveTaskNotice("1", "11", reason, bpmFormMainVO);
             }
