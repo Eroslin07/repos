@@ -57,14 +57,14 @@ public interface QiyuesuoClient {
     QiyuesuoCommonResult<Object> defaultContractSend(Long contractId);
 
     /**
-     * 企业签字
+     * 静默签章
      * @param contractId 合同Id
      * @return
      */
     QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId);
 
     /**
-     * 企业签字
+     * 静默签章
      * @param request 契约锁需要的参数
      * @return
      */

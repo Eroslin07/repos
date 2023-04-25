@@ -518,7 +518,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
 
         // 补全流程实例的拓展表
         processInstanceExtMapper.updateByProcessInstanceId(new BpmProcessInstanceExtDO().setProcessInstanceId(instance.getId())
-                .setFormVariables(variables));
+                .setFormVariables(new HashMap<>()));
         return instance.getId();
     }
 

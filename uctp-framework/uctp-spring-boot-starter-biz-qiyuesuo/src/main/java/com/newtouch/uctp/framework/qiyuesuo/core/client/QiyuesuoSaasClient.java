@@ -97,13 +97,13 @@ public interface QiyuesuoSaasClient {
     /**
      * 企业签字授权
      *
-     * @param sealAdminContract 印章管理员
+     * @param sealAdminContract 印章管理员电话
      * @param companyId 待授权印章自动签署的公司id
      * @param authDeadline 授权截止日期，格式yyyy-MM-dd
      * @param remark 授权使用范围，500字以内
      * @return
      */
-    QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(String sealAdminContract, Long companyId, String authDeadline, String remark) throws Throwable;
+    QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(String sealAdminContract, Long companyId, String authDeadline, String remark);
     /**
      * 企业签字授权
      *

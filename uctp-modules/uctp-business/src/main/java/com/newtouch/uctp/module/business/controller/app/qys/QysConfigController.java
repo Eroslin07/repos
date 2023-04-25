@@ -89,7 +89,7 @@ public class QysConfigController {
     public String callbackCertification(@RequestParam String signature,
                            @RequestParam String timestamp,
                            @RequestParam String content) throws Exception {
-        return qysConfigService.certification(signature, timestamp, content);
+        return qysConfigService.callbackCertification(signature, timestamp, content);
     }
     @PostMapping("/callback/privilege")
     @Operation(summary = "saas模式契约锁回调-企业授权")

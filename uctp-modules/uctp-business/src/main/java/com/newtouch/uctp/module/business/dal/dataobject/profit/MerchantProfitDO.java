@@ -21,6 +21,7 @@ public class MerchantProfitDO extends BaseDO {
 
     @TableId
     private Long id; // 主键标识
+    private String businessKey; // 业务id
     private Long accountId; // 账户标识（暂不写值）
     private String accountNo; // 商户账户号
     private String profitLossType; // 损益类型

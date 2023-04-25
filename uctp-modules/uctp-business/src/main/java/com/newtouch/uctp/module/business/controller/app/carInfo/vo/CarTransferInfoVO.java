@@ -38,5 +38,7 @@ public class CarTransferInfoVO implements Serializable {
     private String contractCode;
     @Schema(description = "收车/卖车合同及合同附件简要信息")
     private List<ContractApprovalShowVO> contractList = Lists.newArrayList();
+    @Schema(description = "收车/卖车发票信息")
+    private CarInvoiceInfoVO carInvoiceInfoVO;
 
 }

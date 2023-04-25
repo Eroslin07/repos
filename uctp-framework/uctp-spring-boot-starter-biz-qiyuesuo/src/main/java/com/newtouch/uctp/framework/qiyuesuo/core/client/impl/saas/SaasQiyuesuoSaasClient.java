@@ -154,7 +154,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         //TODO 成功后的地址需要商量
         request.setSuccessUrl("https://fssc.cloud:28000/");
         //目前只授权印章
-        List<String> privilegeModules = Arrays.asList("SEAL");
+        List<String> privilegeModules = Arrays.asList("SEAL","CONTRACT");
         request.setPrivilegeModules(privilegeModules);
         return this.saasPrivilegeUrl(request);
     }
@@ -170,9 +170,9 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setCompany(new Company(companyId));
         request.setAuthDeadline(authDeadline);
         request.setRemark(remark);
-        request.setCallbackUrl("");
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/privilege");
 //        request.setAppId();
-        request.setReturnUrl("");
+        request.setReturnUrl("https://fssc.cloud:28000/");
         return this.saasSealSignAuthUrl(request);
     }
 
