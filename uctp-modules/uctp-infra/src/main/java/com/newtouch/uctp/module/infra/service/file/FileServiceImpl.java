@@ -166,6 +166,22 @@ public class FileServiceImpl implements FileService {
         fileMapper.deleteById(id);
     }
 
+    @Override
+    public void deleteReport(Long id) throws Exception {
+        // 校验存在
+        FileDO file = validateFileExists(id);
+
+        // 从文件存储器中删除
+        FileClient client = fileConfigService.getFileClient(file.getConfigId());
+        Assert.notNull(client, "客户端({}) 不能为空", file.getConfigId());
+        client.delete(file.getPath());
+
+        // 删除记录
+        fileMapper.deleteById(id);
+        fileMapper.deleteByMainIdAndType(id,"14");
+    }
+
+
     private FileDO validateFileExists(Long id) {
         FileDO fileDO = fileMapper.selectById(id);
         if (fileDO == null) {

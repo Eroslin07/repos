@@ -16,6 +16,16 @@
         where ID=#{carId}
     </update>
 
+    <delete id="deleteByMainIdAndType">
+        delete
+        from uctp_business_file
+        <where>
+            ID = #{id}
+            <if test="fileType != null and fileType != ''">
+                and FILE_TYPE = #{fileType}
+            </if>
+        </where>
+    </delete>
 
 
 </mapper>
