@@ -61,7 +61,7 @@
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" @changeTest="changeTest"></ca-content>
+			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest"></ca-content>
 		</uni-card>
 	</view>
 </template>
@@ -162,7 +162,6 @@
 			},
 			secondStatus() {
 				let statusValue = store.state.allStatus.statusValue
-				console.log(store.state,statusValue[this.carInfoAll.carInfo.status])
 				return statusValue[this.carInfoAll.carInfo.status]
 			},
 			isShowTest() {
@@ -200,6 +199,7 @@
 					this.carInfoAll.carInfo.scrapDate = parseTime(scrapDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.insuranceEndData=parseTime(insuranceEndData,'{y}-{m}-{d}')
+					this.carsList=this.carInfoAll.fileA.map(v=>v.url);
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
 						.createTime))

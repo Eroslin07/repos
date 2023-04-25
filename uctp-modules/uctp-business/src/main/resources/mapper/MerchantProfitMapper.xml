@@ -2,6 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper">
 
+    <resultMap id="ProfitPresentResultMap" type="com.newtouch.uctp.module.business.service.account.dto.ProfitPresentFormDTO">
+        <result column="MERCHANT_ID" property="merchantId" />
+        <result column="MERCHANT_NAME" property="merchantName" />
+        <result column="TEL_NO" property="telNo" />
+        <result column="AMOUNT" property="amount" />
+        <result column="BALANCE_AMOUNT" property="balanceAmount" />
+        <result column="BANK_NO" property="bankNo" />
+        <result column="BANK_NAME" property="bankName" />
+        <result column="BANK_OF_DEPOSIT" property="bankOfDeposit" />
+        <collection property="invoiceFiles" select="selectProfitInvoice"
+                    ofType="com.newtouch.uctp.module.business.controller.app.account.vo.ProfitPresentInvoiceRespVO"
+                    column="ID" />
+        <collection property="profitDetails" select="selectProfitDetail"
+                    ofType="com.newtouch.uctp.module.business.service.account.dto.ProfitPresentFormDetailDTO"
+                    column="ACCOUNT_NO" />
+    </resultMap>
+
     <select id="selectMonthCosts"
             resultType="com.newtouch.uctp.module.business.controller.app.account.vo.ProfitCostMonthRespVO">
         select tmp.month, sum(costTotalAmount) as costTotalAmount, sum(taxTotalAmount) as taxTotalAmount from (
@@ -26,5 +43,96 @@
                 and #{endTime}
         ) tmp
         group by tmp.month
+    </select>
+
+    <select id="selectProfitById" resultMap="ProfitPresentResultMap">
+        select
+            ID,
+            ACCOUNT_NO,
+            null as merchant_id,
+            null as merchant_name,
+            null as tel_no,
+            p.profit * -1 as amount,
+            (
+            select
+                a.profit
+            from
+                uctp_merchant_account a
+            where
+                a.account_no = p.account_no) as balance_amount,
+            p.bank_no,
+            p.bank_name,
+            null as bank_of_deposit
+        from
+            uctp_merchant_profit p
+        where
+            p.id = #{id}
+    </select>
+
+    <select id="selectProfitInvoice" resultType="com.newtouch.uctp.module.business.controller.app.account.vo.ProfitPresentInvoiceRespVO">
+        select t.file_id as fileId, t.file_url as fileUrl from uctp_merchant_profit_invoice t where t.profit_id = #{profitId}
+    </select>
+
+    <select id="selectProfitDetail" resultType="com.newtouch.uctp.module.business.service.account.dto.ProfitPresentFormDetailDTO">
+        select
+            @rownum := @rownum + 1 as idx,
+            tmp2.*
+        from
+            (
+            select
+                @rownum := 0) nt,
+            (
+            select
+                p.contract_no,
+                '利润提取' as category,
+                null as vehicle_receipt_amount,
+                null as car_sales_amount,
+                null as fee_total_amount,
+                p.profit as amount,
+                p.trade_time as trade_time
+            from
+                uctp_merchant_profit p
+            where
+                p.account_no = #{accountNo}
+                and p.trade_type = '10101002'
+        union all
+            select
+                tmp.contract_no,
+                '利润划入' as category,
+                sum(tmp.vehicle_receipt_amount) as vehicle_receipt_amount,
+                sum(tmp.car_sales_amount) as car_sales_amount,
+                sum(tmp.fee_total_amount) as fee_total_amount,
+                sum(tmp.amount) as amount,
+                min(tmp.trade_time) as trade_time
+            from
+                (
+                select
+                    p.contract_no,
+                    null as vehicle_receipt_amount,
+                    case
+                        when p.trade_type = '10101001' then
+                p.profit
+                        else 0
+                    end as car_sales_amount,
+                    case
+                        when p.trade_type in ('10101004', '10101005') then
+                p.profit
+                        else 0
+                    end as fee_total_amount,
+                    case
+                        when p.trade_type = '10101001' then
+                p.profit_balance
+                        else 0
+                    end as amount,
+                    p.trade_time as trade_time
+                from
+                    uctp_merchant_profit p
+                where
+                    p.account_no = #{accountNo}
+                    and p.trade_type != '10101002') tmp
+            group by
+                tmp.contract_no) tmp2
+        order by
+            tmp2.trade_time desc
     </select>
 </mapper>

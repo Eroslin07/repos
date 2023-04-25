@@ -1,7 +1,8 @@
 package com.newtouch.uctp.module.business.controller.app.account;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
+import com.newtouch.uctp.framework.security.core.LoginUser;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -28,8 +29,12 @@ public class AccountProfitControllerTest {
 
     @BeforeEach
     public void before() {
-        // 模拟登录
-        WebFrameworkUtils.setLoginUserId(mockHttpServletRequest, 211L);
+        LoginUser loginUser = new LoginUser();
+        loginUser.setId(211L);
+        loginUser.setTenantId(150L);
+        SecurityFrameworkUtils.setLoginUser(loginUser, mockHttpServletRequest);
+
+
     }
 
     @Test

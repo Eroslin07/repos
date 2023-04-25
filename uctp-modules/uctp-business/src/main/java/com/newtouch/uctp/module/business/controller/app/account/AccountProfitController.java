@@ -6,6 +6,7 @@ import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
+import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ import java.util.List;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.ACC_MERCHANT_ACCOUNT_NOT_EXISTS;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.ACC_PRESENT_ERROR;
 
 @Tag(name = "商户利润")
 @RestController
@@ -63,6 +65,28 @@ public class AccountProfitController {
         }
 
         return success(profitIdStr);
+    }
+
+    @PostMapping("/presentAudit")
+    @Operation(summary = "审核利润提取")
+    public CommonResult<String> profitPresentAudit(@RequestBody ProfitPresentAuditReqVO auditReq) {
+        String profitId = auditReq.getProfitId();
+        log.info("审核利润提取{}，意见{}", profitId, auditReq.getAuditOpinion());
+        ProfitPressentAuditOpinion auditOpinion = null;
+        if (auditReq.getAuditOpinion() == 1) {
+            auditOpinion = ProfitPressentAuditOpinion.AUDIT_PROCESSING;
+        } else if (auditReq.getAuditOpinion() == 2) {
+            auditOpinion = ProfitPressentAuditOpinion.AUDIT_APPROVED;
+        } else if (auditReq.getAuditOpinion() == 3) {
+            auditOpinion = ProfitPressentAuditOpinion.AUDIT_REJECT;
+        } else {
+            log.error("利润提现审核意见有误");
+            throw exception(ACC_PRESENT_ERROR);
+        }
+
+        accountProfitService.auditProfitPressent(Long.valueOf(profitId), auditOpinion);
+
+        return success("OK");
     }
 
     @GetMapping("/list")
