@@ -28,7 +28,7 @@
 							</u-list-item>
 						</u-list>
 						
-						<u-loadmore :status="status" loadingText="努力加载中..." />
+						<u-loadmore :status="status[index]" loadingText="努力加载中..." />
 					</view>
 					<view v-else  class="empty-page">
 						<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
@@ -60,7 +60,11 @@
 					'1': [],
 					'2': []
 				},
-				status: 'loadmore',
+				status: {
+					'0': 'loadmore',
+					'1': 'loadmore',
+					'2': 'loadmore'
+				},
 				timer: null,
 				tabCur: 0,
 				tab: {
@@ -104,10 +108,10 @@
 				clearTimeout(this.timer)
 			}
 			if (this.indexList[this.tabCur].length == this.tab[this.tabCur].total) {
-				this.status = 'nomore';
+				this.status[this.tabCur] = 'nomore';
 				return
 			}
-			this.status = 'loading';
+			this.status[this.tabCur] = 'loading';
 			this.timer = setTimeout(() => {
 				this.tab[this.tabCur].pageNo += 1;
 				this.status2 = false;
@@ -154,14 +158,14 @@
 					this.indexList[this.tabCur] = res.data.list;
 					this.tab[this.tabCur].total = res.data.total;
 					if (this.tab[this.tabCur].total > 10) {
-						this.status = 'loadmore'
+						this.status[this.tabCur] = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
 					this.$modal.closeLoading();
 				}).catch((error) => {
-					this.status = 'nomore'
+					this.status[this.tabCur] = 'nomore'
 					this.status2 = true;
 					this.$modal.closeLoading();
 				})
@@ -177,9 +181,9 @@
 					this.indexList[this.tabCur] = [...this.indexList[this.tabCur], ...res.data.list];
 					this.tab[this.tabCur].total = res.data.total;
 					if (this.tab[this.tabCur].total > this.indexList[this.tabCur].length) {
-						this.status = 'loadmore'
+						this.status[this.tabCur] = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
 				})
@@ -196,15 +200,15 @@
 					this.indexList[this.tabCur] = res.data.list;
 					this.tab[this.tabCur].total = res.data.total;
 					if (this.tab[this.tabCur].total > 10) {
-						this.status = 'loadmore'
+						this.status[this.tabCur] = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
 				}).catch((error) => {
-					this.status = 'nomore'
+					this.status[this.tabCur] = 'nomore'
 					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
