@@ -64,7 +64,7 @@
 				<view class="right-content">
 					<u-row style="height:68px;">
 						<u-col span="4" v-for="child in item.child" :key="child.status"
-							@click="handleTabItem(item,child,allChild)">
+							@click="handleTabItem(item,child.status,allChild)">
 							<view class="align-center">
 								<text>{{child.label}}</text>
 								<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
@@ -232,15 +232,16 @@
 			sellingCar() {
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			},
-			// 收车中
+			// 收车状态
 			tabCarStatus(item, allChild) {
 				this.$tab.navigateTo(
 					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
 				)
 			},
-			handleTabItem(item, child, allChild) {
+			// 收车状态子项
+			handleTabItem(item, childStatus, allChild) {
 				this.$tab.navigateTo(
-					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&child=${JSON.stringify(child)}&&allChild=${JSON.stringify(allChild)}`
+					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&childStatus=${childStatus}&&allChild=${JSON.stringify(allChild)}`
 				)
 			},
 
