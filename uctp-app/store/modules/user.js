@@ -13,7 +13,7 @@ const user = {
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
     permissions: storage.get(constant.permissions),
-    phone: uni.getStorageSync('PHONE'),
+    phone: uni.getStorageSync('PHONE') || storage.get(constant.phone),
     deptId: uni.getStorageSync('DEPT_ID') || storage.get(constant.deptId),
     tenantId: uni.getStorageSync('TENANT_ID') || storage.get(constant.tenantId),
     deptName: uni.getStorageSync('SET_DEPTNAME') || storage.get(constant.deptName),
@@ -145,11 +145,6 @@ const user = {
           reject(error)
         })
       })
-    },
-
-    // 保存手机号
-    GetPhone({ commit, state }) {
-      commit('SET_PHONE', state)
     }
   }
 }
