@@ -294,7 +294,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
                 userDO.setNickname(reqVO.getName());
-                userDO.setStatus(1);
+                userDO.setStatus(0);
                 userDO.setDeptId(reqVO.getDeptId());
                 userDO.setTenantId(reqVO.getTenantId());
                 userService.insertUser(userDO);
@@ -315,16 +315,14 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 AdminUserDO user = userService.getUser(reqVO.getId());
                 UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
                 user.setNickname(reqVO.getName());
+                user.setStatus(Integer.valueOf(reqVO.getStatus()));
                 //如果身份证变更，修改为未激活（未认证）
                 if(!userExtDOS.getIdCard().equals(reqVO.getIdCard())){
-                    String idCard = reqVO.getIdCard();
-                    user.setStatus(1);
                     userExtDOS.setIdCard(reqVO.getIdCard());
                     userExtDOS.setStatus(1);
                 }
                 //如果手机号变更，修改为状态为未激活（未认证）
                 if(user.getMobile().equals(reqVO.getPhone())){
-                    user.setStatus(1);
                     user.setUsername(reqVO.getPhone());
                     user.setMobile(reqVO.getPhone());
                     userExtDOS.setStatus(1);

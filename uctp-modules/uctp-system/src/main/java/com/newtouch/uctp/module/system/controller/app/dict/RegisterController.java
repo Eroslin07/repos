@@ -1,6 +1,8 @@
 package com.newtouch.uctp.module.system.controller.app.dict;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
 import com.newtouch.uctp.framework.security.config.SecurityProperties;
@@ -30,6 +32,10 @@ import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +88,52 @@ public class RegisterController {
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public CommonResult<AuthLoginRespVO> wxLogin(@RequestBody @Valid AuthWxLoginReqVO reqVO) {
         return success(authService.wxLogin(reqVO));
+    }
+
+    @GetMapping("/wxToken")
+    @Operation(summary = "获取微信token")
+    public CommonResult<String> wxToken() {
+        String authHost = "https://api.weixin.qq.com/cgi-bin/token?";
+        String appId="wx9decec45b7374b90";
+        String secret="45323149c53d4340dfad4a304803eeaf";
+        String getAccessTokenUrl = authHost
+                // 1. grant_type为固定参数
+                + "grant_type=client_credential"
+                // 2. 官网获取的 API Key
+                + "&appid=" + appId
+                // 3. 官网获取的 Secret Key
+                + "&secret=" + secret;
+        String access_token="";
+        try {
+            URL realUrl = new URL(getAccessTokenUrl);
+            // 打开和URL之间的连接
+            HttpURLConnection connection = (HttpURLConnection) realUrl.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            // 获取所有响应头字段
+            Map<String, List<String>> map = connection.getHeaderFields();
+            // 遍历所有的响应头字段
+            for (String key : map.keySet()) {
+                System.err.println(key + "--->" + map.get(key));
+            }
+            // 定义 BufferedReader输入流来读取URL的响应
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String result = "";
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+            /**
+             * 返回结果示例
+             */
+            System.err.println("result:" + result);
+            JSONObject jsonObject = JSON.parseObject(result);
+            access_token = jsonObject.getString("access_token");
+        } catch (Exception e) {
+            System.err.printf("获取token失败！");
+            e.printStackTrace(System.err);
+        }
+        return success(access_token);
     }
 
 
