@@ -1,29 +1,11 @@
 <template>
   <div class="reverse">
-    <!-- <XModal
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      :fullscreen="true"
-      :showFooter="false"
-      @close="handleClose"
-    > -->
-    <!-- <p style="text-align: center; font-weight: bold; font-size: 24px"
-      >收车合同SCHT202303220001开票待办</p
-    > -->
-    <!-- 发票单号 -->
     <div style="font-size: 16px" class="title">
       <span>单号：{{ baseInfoData.data.serialNo }}</span>
       <span>商户经办人：{{ '张三' }}</span>
       <span>商户电话：{{ '13333333333' }}</span>
-      <div style="float: right">
-        <!-- 操作按钮 -->
-        <!-- <el-button type="danger" @click="handleClose">关闭</el-button> -->
-        <!-- <el-button type="primary" v-if="type == 'need'" :loading="actionLoading" @click="handlePut"
-          >打印/开票</el-button
-        > -->
-      </div>
+      <div style="float: right"> </div>
     </div>
-    <!-- <el-card class="box-card"> -->
     <p style="font-weight: bold; margin-bottom: 10px">发票信息</p>
     <div class="title-bg-box">
       <icon icon="svg-icon:notice" class="notice"></icon>
@@ -170,38 +152,15 @@
         </el-col>
       </el-row>
     </div>
-    <!-- </el-card> -->
-
-    <!-- 查看合同 -->
     <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel" />
-    <!-- </XModal> -->
   </div>
 </template>
 
 <script setup lang="ts" name="Reverse">
 import { AgreementFrame } from './index'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
-
-// import { propTypes } from '@/utils/propTypes'
-
-// const emit = defineEmits(['cancelForm'])
-
-// const actionLoading = ref(false) // 遮罩层
-// const dialogTitle = ref('反向二手车统一发票待办') // 弹出层标题
-
 // 合同弹框
 const contractVisible = ref(false)
-
-// const props = defineProps({
-//   // visible: propTypes.bool.def(false),
-//   type: propTypes.bool.def(undefined)
-// })
-
-// const dialogVisible = computed(() => {
-//   const obj = props.visible
-//   return obj
-// })
-
 // 查看合同
 const viewContract = () => {
   contractVisible.value = true
@@ -211,16 +170,6 @@ const viewContract = () => {
 const handleCancel = () => {
   contractVisible.value = false
 }
-
-// 关闭操作
-// const handleClose = () => {
-//   emit('cancelForm')
-// }
-
-// 打印操作
-// const handlePut = () => {
-//   actionLoading.value = true
-// }
 </script>
 
 <style lang="scss" scoped>

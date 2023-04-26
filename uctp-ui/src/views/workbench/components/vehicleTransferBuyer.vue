@@ -400,7 +400,7 @@
               <span
                 ><span>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                    .carInvoiceDetailVO.palteNum
+                    .carInvoiceDetailVO.plateNum
                 }}</span></span
               >
             </el-col>
@@ -532,18 +532,9 @@
   </div>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
-import { allSchemas } from '../toDoList/toDoList.data'
-import { defineProps } from 'vue'
-import { propTypes } from '@/utils/propTypes'
 import { AgreementFrame } from './index'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
 
-// import type { FormExpose } from '@/components/Form'
-const { t } = useI18n() // 国际化
-// const message = useMessage() // 消息弹窗
-const [] = useXTable({
-  allSchemas: allSchemas
-})
 //时间戳转日期
 const formatDate = (time: string) => {
   let date = ''
@@ -557,17 +548,7 @@ const formatDate = (time: string) => {
     return ''
   }
 }
-const actionType = ref('detail') // 操作按钮的类型
-// const dialogVisible = ref(true) // 是否显示弹出层
-const dialogTitle = ref('卖车价格超公允值待办') // 弹出层标题
-// const formRef = ref<FormExpose>() // 表单 Ref
 
-// 设置标题
-const setDialogTile = (type: string) => {
-  dialogTitle.value = t('action.' + type)
-  actionType.value = type
-  // dialogVisible.value = true
-}
 const fileB = computed(() => {
   return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.map(
     (item) => item.url
@@ -589,32 +570,20 @@ const fileD = computed(() => {
   )
 })
 const identifyShow = ref(true)
-// const idCardShow = ref(false)
 
 // 合同弹框
 const contractVisible = ref(false)
 const contractFileUrl = ref('')
-// const emit = defineEmits(['cancleSellCar'])
-const props = defineProps({
-  // visible: propTypes.bool.def(false),
-  type: propTypes.bool.def(undefined)
-})
 
-// const visible = computed(() => {
-//   return props.visible
-// })
-
-console.log(setDialogTile, props)
-
-// 查看身份证
-// const viewIdCard = () => {
-//   idCardShow.value = !idCardShow.value
-// }
-
+const message = useMessage() // 消息弹窗
 // 查看合同
 const viewContract = (item: any) => {
-  contractFileUrl.value = item.contractFileUrl
-  contractVisible.value = true
+  if (item.contractFileUrl) {
+    contractFileUrl.value = item.contractFileUrl
+    contractVisible.value = true
+  } else {
+    message.error('改合同暂无预览')
+  }
 }
 
 // 关闭合同弹框

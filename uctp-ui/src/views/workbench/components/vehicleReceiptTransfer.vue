@@ -486,7 +486,7 @@
               <span
                 ><span>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                    .carInvoiceDetailVO.palteNum
+                    .carInvoiceDetailVO.plateNum
                 }}</span></span
               >
             </el-col>
@@ -697,11 +697,16 @@ const props = defineProps({
 // })
 // 查看合同
 // 合同弹框
+const message = useMessage() // 消息弹窗
 const contractVisible = ref(false)
 const contractFileUrl = ref('')
 const viewContract = (item: any) => {
-  contractFileUrl.value = item.contractFileUrl
-  contractVisible.value = true
+  if (item.contractFileUrl) {
+    contractFileUrl.value = item.contractFileUrl
+    contractVisible.value = true
+  } else {
+    message.error('改合同暂无预览')
+  }
 }
 // 关闭合同弹框
 const handleCancel = () => {
