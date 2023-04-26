@@ -8,14 +8,15 @@
 		</u-navbar>
 		
 		<view class="logo-content align-center justify-center flex">
-			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;margin-top: 20%;">结算中心</h2>
+			<h2 class="title" style="color: #333;font-weight: bold;font-style: normal;margin-top: 15%;font-size: 28px;">车友通结算中心</h2>
 		</view>
 		<view class="logo-content align-center justify-center flex">
-			<h3 class="title" style="margin-right: 50%;">助力车商</h3>
+			<view class="weitu"></view>
+			<!-- <h3 class="title" style="margin-right: 50%;">助力车商</h3> -->
 		</view>
-		<view class="logo-content align-center justify-center flex">
+		<!-- <view class="logo-content align-center justify-center flex">
 			<h3 class="fxnw">经纪转经销</h3>
-		</view>
+		</view> -->
 		
 		<view class="action-btn">
 			<u-checkbox-group v-model="value">
@@ -181,6 +182,18 @@
 			width: 100%;
 			font-size: 21px;
 			text-align: center;
+			
+			.weitu {
+				margin-top: 20%;
+				/* #ifdef MP-WEIXIN */
+				margin-top: 28%;
+				/* #endif */
+				width: 296rpx;
+				height: 172rpx;
+				background-image: url('../static/images/weitu.png');
+				background-repeat: no-repeat;
+				background-size: 100% 100%;
+			}
 
 			.title {
 				padding-top: 10%;
@@ -205,7 +218,7 @@
 	
 	.action-btn {
 		padding: 20px;
-		margin-top: 50%;
+		margin-top: 30%;
 		height: 200px;
 	}
 	

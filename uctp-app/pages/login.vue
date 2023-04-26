@@ -10,14 +10,15 @@
 		</u-navbar>
 		
 		<view class="logo-content align-center justify-center flex">
-			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;">结算中心</h2>
+			<h2 class="title" style="color: #333;font-weight: normal;font-style: normal;">车友通结算中心</h2>
 		</view>
 		<view class="logo-content align-center justify-center flex">
-			<h3 class="title" style="margin-right: 50%;">助力车商</h3>
+			<view class="weitu"></view>
+			<!-- <h3 class="title" style="margin-right: 50%;">助力车商</h3> -->
 		</view>
-		<view class="logo-content align-center justify-center flex">
+		<!-- <view class="logo-content align-center justify-center flex">
 			<h3 class="fxnw">经纪转经销</h3>
-		</view>
+		</view> -->
 		<view class="login-form-content">
 			<view class="input-item flex align-center">
 				<view class="title">手机号：</view>
@@ -203,6 +204,18 @@
 			width: 100%;
 			font-size: 21px;
 			text-align: center;
+			
+			.weitu {
+				margin-top: 20%;
+				/* #ifdef MP-WEIXIN */
+				margin-top: 12%;
+				/* #endif */
+				width: 296rpx;
+				height: 172rpx;
+				background-image: url('../static/images/weitu.png');
+				background-repeat: no-repeat;
+				background-size: 100% 100%;
+			}
 
 			.title {
 				padding-top: 10%;
