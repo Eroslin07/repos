@@ -263,20 +263,20 @@
 							<text
 								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vehicleReceiptAmount | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
-							<view class="flex">
+							<!-- <view class="flex">
 								<text>公允价值-通过</text>
 								<u-icon name="arrow-right" style="width: 28rpx;height: 28rpx;" color="#FA6400"></u-icon>
-							</view>
+							</view> -->
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>卖车款</text>
 							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.sellAmount | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
-							<view class="flex">
+							<!-- <view class="flex">
 								<text>公允价值-通过</text>
 								<u-icon name="arrow-right" style="width: 28rpx;height: 28rpx;" color="#FA6400"></u-icon>
-							</view>
+							</view> -->
 						</view>
 					</view>
 					<view class="flex">
@@ -545,12 +545,12 @@
 </script>
 
 <style lang="scss" scoped>
+	
 	.flex {
 		display: flex;
 	}
 
 	.info-box {
-
 		.car-info-box,
 		.car-fund {
 			padding: 24rpx 26rpx 160rpx;
@@ -798,7 +798,7 @@
 		.car-fund {
 			.car-fund-info {
 				margin-top: 26rpx;
-				width: 698rpx;
+				width: 100%;
 				height: 810rpx;
 				background: rgba(249, 249, 249, 0.02);
 				border-radius: 8rpx;
@@ -863,7 +863,7 @@
 				}
 
 				.car-fund-info-content {
-					height: calc(100% - 78rpx);
+					height: calc(100% - 192rpx);
 					flex-direction: column;
 					justify-content: space-evenly;
 					padding: 0 30rpx;

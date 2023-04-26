@@ -1,6 +1,6 @@
 <template>
 	<view class="car-info">
-		<uni-card v-if="!isShowError" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		<uni-card  v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
 				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
@@ -63,13 +63,8 @@
 			<!-- 卡片信息 -->
 			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest"></ca-content>
 		</uni-card>
-		<!-- 系统错误 -->
-		<uni-card v-else :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
-			<image class="img-error" src="/static/images/error/error.png" mode=""></image>
-			<view class="error-tip">
-				系统异常
-			</view>
-		</uni-card>
+		<!-- 提示信息 -->
+		<AbnormalPage v-else :isSHowTip="isSHowTip"/>
 	</view>
 </template>
 
@@ -82,9 +77,11 @@
 		parseTime
 	} from '@/utils/ruoyi.js'
 	import store from '@/store/index.js'
+	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		components: {
-			caContent
+			caContent,
+			AbnormalPage
 		},
 		data() {
 			return {
@@ -160,7 +157,7 @@
 				fatherProps: null,
 				
 				// 是否展示系统异常
-				isShowError:false,
+				isSHowTip: '',
 			};
 		},
 
@@ -209,10 +206,17 @@
 		methods: {
 			// 获取数据
 			getCarDetails(id) {
+				this.isSHowTip='onLoading'
 				let data = {
 					ID: id
 				}
 				getCarInfoById(data).then(res => {
+					
+					if(res.data.length>0){
+						this.isSHowTip=''
+					}else{
+						this.isSHowTip='noData'
+					}
 					this.carInfoAll = res.data
 					let {
 						carInfo: {
@@ -228,8 +232,13 @@
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
 						.createTime))
-				}).catch(()=>{
-					this.isShowError=true;
+				}).catch((err)=>{
+					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+						this.isSHowTip = 'webError'
+					} else {
+						console.log(222)
+						this.isSHowTip = 'sysError'
+					}
 				})
 			},
 			// 切换tab
@@ -280,7 +289,7 @@
 
 <style lang="scss" scoped>
 	.car-info {
-		overflow: hidden;
+		height:100%;
 		.img-error{
 			width:246rpx;
 			height:208rpx;

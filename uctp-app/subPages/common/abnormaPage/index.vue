@@ -10,15 +10,15 @@
 		</view>
 		<view v-if="isSHowTip=='noMsg'" class="tips">
 			<image src="/static/images/error/noMsg.png" mode=""></image>
-			<text>暂无消息</text>
+			<view>暂无消息</view>
 		</view>
 		<view v-if="isSHowTip=='webError'" class="tips">
 			<image src="/static/images/error/webError.png" mode=""></image>
-			<text>网络异常</text>
+			<view>网络异常</view>
 		</view>
 		<view v-if="isSHowTip=='sysError'" class="tips">
 			<image src="/static/images/error/error.png" mode=""></image>
-			<text>系统异常</text>
+			<view>系统异常</view>
 		</view>
 	</view>
 </template>
@@ -38,11 +38,10 @@
 	.abnormal{
 		width:100%;
 		height:100%;
-		position:relative;
 		.tips{
-			position:absolute;
-			top:30%;
-			left:50%;
+			margin-top:40%;
+			margin-left:50%;
+			text-align: center;
 			transform: translateX(-50%);
 			image{
 				width: 224rpx;
@@ -52,7 +51,6 @@
 				font-size: 24rpx;
 				color: #999999;
 				line-height: 40rpx;
-				text-align: center;
 			}
 		}
 	}	
