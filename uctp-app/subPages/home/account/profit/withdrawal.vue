@@ -136,7 +136,7 @@
 					this.$modal.msg("请上传利润发票");
 					return
 				}
-				if (this.amount > this.allAmount / 100) {
+				if (parseFloat(this.amount) > parseFloat(this.allAmount / 100)) {
 					this.$modal.msg("提现金额大于可用利润余额，请重新输入提现金额");
 					return
 				}

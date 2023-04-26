@@ -72,8 +72,8 @@
 					this.$modal.msg("请输入需要提现的金额");
 					return
 				}
-				if (this.amount > this.$amount.getDelcommafy(this.allAmount)) {
-					this.$modal.msg("提现金额大于可用利润余额，请重新输入提现金额");
+				if (parseFloat(this.amount) > parseFloat(this.$amount.getDelcommafy(this.allAmount))) {
+					this.$modal.msg("提现金额大于可用保证金余额，请重新输入提现金额");
 					return
 				}
 				let data = {
