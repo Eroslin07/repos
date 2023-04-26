@@ -135,15 +135,20 @@
             }}</span></el-col
           >
           <el-col :span="4" class="bg-blue"><span>转入地车辆管理所名称</span></el-col>
-          <el-col :span="4"
-            ><el-input
+          <el-col :span="4">
+            <el-input
+              v-if="!completedVisible"
               v-model="
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
                   .transManageName
               "
               class="car-input"
-            ></el-input
-          ></el-col>
+            ></el-input>
+            <span v-else>{{
+              baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+                .transManageName
+            }}</span>
+          </el-col>
         </el-row>
         <el-row>
           <el-col :span="4" class="bg-blue">
@@ -244,7 +249,7 @@
 
 <script setup lang="ts" name="forwardDirection">
 import { AgreementFrame } from './index'
-import { baseInfoData } from '@/views/workbench/basInfoValue'
+import { baseInfoData, completedVisible } from '@/views/workbench/basInfoValue'
 // 合同弹框
 const contractVisible = ref(false)
 const contractFileUrl = ref('')
