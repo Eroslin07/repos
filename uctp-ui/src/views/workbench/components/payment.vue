@@ -144,10 +144,12 @@ const handleCancel = () => {
 .content-box .el-row .el-col:nth-child(even) {
   padding-left: 15px;
 }
-.image {
-  padding: 16px 0 20px 18px;
-  border-left: 1px solid #eaeaea;
-  border-right: 1px solid #eaeaea;
-  border-bottom: 1px solid #eaeaea;
+.content {
+  .el-row:first-child {
+    border-top: none;
+    .el-col {
+      border-top: 1px solid #eaeaea;
+    }
+  }
 }
 </style>
