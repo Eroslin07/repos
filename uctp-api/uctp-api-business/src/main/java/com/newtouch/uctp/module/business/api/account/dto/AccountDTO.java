@@ -17,6 +17,14 @@ public class AccountDTO {
     @NotNull(message = "商户ID不能为空")
     private Long merchantId;
 
+    @Schema(description = "商户公司名称")
+    @NotNull(message = "商户名称不能为空")
+    private String merchantCompanyName;
+
+    @Schema(description = "商户用户姓名")
+    @NotNull(message = "商户用户姓名不能为空")
+    private String merchantName;
+
     @Schema(description = "开户行名称")
     @NotNull(message = "开户行名称不能为空")
     private String bankName;

@@ -21,6 +21,8 @@ public class MerchantAccountDO extends BaseDO {
 
     private String accountNo;//账户号
 
+    private Long tenantId;//租户标识
+
     private Integer cash;//保证金
 
     private Integer profit;//利润

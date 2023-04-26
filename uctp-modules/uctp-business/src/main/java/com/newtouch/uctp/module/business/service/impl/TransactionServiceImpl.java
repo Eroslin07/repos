@@ -1,39 +1,44 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.newtouch.uctp.module.business.api.account.dto.TransferAccountDTO;
 import com.newtouch.uctp.module.business.service.TransactionService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @Validated
 public class TransactionServiceImpl implements TransactionService {
 
 
+    private final static String X_SPDB_CLIENT_ID = "0010d65a-1a3e-4a82-8b32-47a7cd2783dc";
+    private final static String X_SPDB_CLIENT_SECRET = "MTPhMC00NzA3LTg1MTctZWVzZDAzNmJjOWJ3MC43MDP0NTM0MzczNDUxMjQ4MC45";
+
+    @Resource
+    private RestTemplate restTemplate;
+
     @Override
     public void transactionStatus(String tranNo) {
         // 查询银行交易状态是否成功
     }
 
-    @Override
-    public void transferAccount(TransferAccountDTO transferAccountDTO) {
-        // 交易流水标识生成
-
-        // 生成银行端请求报文
-
-        // 异步任务处理结果
-    }
+//    @Override
+//    public void transferAccount(TransferAccountDTO transferAccountDTO) {
+//        // 交易流水标识生成
+//
+//        // 生成银行端请求报文
+//
+//        // 异步任务处理结果
+//    }
 
     @Override
     public void payStatus() {
-
+        
     }
 
     @Override
@@ -49,6 +54,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public String tranNoByContractNo() {
+        return null;
+    }
+
+    @Override
+    public String bankAccountOpen() {
         return null;
     }
 

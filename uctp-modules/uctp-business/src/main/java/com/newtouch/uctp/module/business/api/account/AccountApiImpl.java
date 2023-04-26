@@ -2,7 +2,7 @@ package com.newtouch.uctp.module.business.api.account;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
-import com.newtouch.uctp.module.business.service.BusinessFileService;
+import com.newtouch.uctp.module.business.service.account.AccountService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,10 +18,11 @@ import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
 public class AccountApiImpl implements AccountApi {
 
     @Resource
-    private BusinessFileService businessFileService;
+    private AccountService accountService;
 
     @Override
     public CommonResult<String> merchantAccountOpen(AccountDTO accountVO) {
+        accountService.openAccount(accountVO);
 
         return success("提交成功");
     }
