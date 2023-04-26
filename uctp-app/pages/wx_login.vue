@@ -1,7 +1,7 @@
 <template>
 	<view class="normal-login-container">
 		<!-- 自定义导航栏 -->
-		<u-navbar>
+		<u-navbar safeAreaInsetTop fixed placeholder>
 			<view class="u-nav-slot" slot="left">
 				<view class="bank-logo"></view>
 			</view>
@@ -37,7 +37,7 @@
 			return {
 				showModel: false,
 				content: '您的手机号尚未在平台注册，是否要注册?',
-				value: [],
+				value: [''],
 				show: true,
 				// 小程序ID
 				appId: 'wx9decec45b7374b90',
@@ -57,7 +57,7 @@
 			})
 			const params = {
 				appId: _this.appId,
-				secret: '2cb430095c143228a44488a87350f974', // 小程序秘钥
+				secret: '45323149c53d4340dfad4a304803eeaf', // 小程序秘钥
 				grant_type: 'client_credential',
 				js_code: _this.wxcode
 			}
@@ -125,8 +125,6 @@
 						return
 					}
 					_this.phone = res[1].data.phone_info.phoneNumber;
-					console.log(_this.phone)
-					return
 					_this.$store.dispatch('GetPhone', _this.phone);
 					_this.phoneLogin();
 				})
@@ -156,7 +154,7 @@
 			// 确认
 			handleConfirm() {
 				this.showModel = false;
-				this.$tab.navigateTo('/subPages/register');
+				this.$tab.navigateTo('/subPages/registerNotice');
 			}
 		}
 	}

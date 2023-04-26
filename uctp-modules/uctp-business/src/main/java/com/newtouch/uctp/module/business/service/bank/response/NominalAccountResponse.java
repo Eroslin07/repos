@@ -1,9 +1,12 @@
-package com.newtouch.uctp.module.business.service.account.dto;
+package com.newtouch.uctp.module.business.service.bank.response;
 
 import lombok.Data;
 
+/**
+ * 银行虚拟账号生成响应报文
+ */
 @Data
-public class BankAccountOpenResponse {
+public class NominalAccountResponse {
 
     /**
      * 返回

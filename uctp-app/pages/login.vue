@@ -107,7 +107,7 @@
 			},
 			// 点击用户注册
 			userRegister() {
-				this.$tab.navigateTo('/subPages/register');
+				this.$tab.navigateTo('/subPages/registerNotice');
 			},
 			// 点击忘记密码
 			retrievePassword() {
