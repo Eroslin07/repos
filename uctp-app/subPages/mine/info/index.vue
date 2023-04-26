@@ -17,7 +17,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>姓名</text>
-						<text class="slot-box slot-text">{{user.name}}</text>
+						<text class="slot-box slot-text">{{user.nickname}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -25,7 +25,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>身份证号码</text>
-						<text>{{!eyeIsShow1?'32*****************1':user.name}}</text>
+						<text>{{!eyeIsShow1 ? user.idCard.replace(/^(.{2})(?:\d+)(.{1})$/, "$1**********$2") : user.idCard}}</text>
 					</view>
 				</template>
 				<template v-slot:footer>
@@ -39,7 +39,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>手机号</text>
-						<text class="slot-box slot-text">{{user.name}}</text>
+						<text class="slot-box slot-text">{{user.phone}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -47,7 +47,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>营业执照号</text>
-						<text class="slot-box slot-text">{{user.name}}</text>
+						<text class="slot-box slot-text">{{user.taxNum}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -55,7 +55,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>公司名称</text>
-						<text class="slot-box slot-text">{{user.name}}</text>
+						<text class="slot-box slot-text">{{user.deptName}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -63,7 +63,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>法定代表人</text>
-						<text class="slot-box slot-text">{{user.name}}</text>
+						<text class="slot-box slot-text">{{user.legalRepresentative}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -71,7 +71,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>市场所在地</text>
-						<text class="slot-box slot-text">{{user.name}}</text>
+						<text class="slot-box slot-text">{{user.tenantName}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -79,7 +79,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>开户行</text>
-						<text>{{user.name}}</text>
+						<text>{{user.bankName}}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -87,7 +87,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>对公银行账号</text>
-						<text>{{!eyeIsShow2?'****9855':user.name}}</text>
+						<text>{{!eyeIsShow2?user.bankAccount.replace(/^(.{4})(?:\d+)(.{4})$/, "$1 **** **** $2"):user.bankAccount}}</text>
 					</view>
 				</template>
 				<template v-slot:footer>
@@ -101,7 +101,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>保证金充值卡</text>
-						<text class="slot-box slot-text">{{!eyeIsShow3?'****9855':user.name}}</text>
+						<text class="slot-box slot-text">{{!eyeIsShow3?user.bondBankAccount.replace(/^(.{4})(?:\d+)(.{4})$/, "$1 **** **** $2"):user.bondBankAccount}}</text>
 					</view>
 				</template>
 				<template v-slot:footer>
@@ -115,7 +115,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>联系地址</text>
-						<text class="slot-box slot-text">太原市惠城区河南岸街道冷水坑村委会 楼下</text>
+						<text class="slot-box slot-text">{{ user.address }}</text>
 					</view>
 				</template>
 			</uni-list-item>
@@ -124,16 +124,11 @@
 </template>
 
 <script>
-	import {
-		getUserProfile
-	} from "@/api/system/user"
-
+	import { getUserInfo } from "@/api/system/mine"
 	export default {
 		data() {
 			return {
 				user: {},
-				roleGroup: "",
-				postGroup: "",
 				eyeIsShow1: false,
 				eyeIsShow2: false,
 				eyeIsShow3: false,
@@ -146,16 +141,13 @@
 			}
 		},
 		onLoad(options) {
-			console.log(options.type == '0')
 			this.type = options.type
-			this.user = this.$store.state.user
+			this.getUser()
 		},
 		methods: {
 			getUser() {
-				getUserProfile().then(response => {
+				getUserInfo({ id: this.$store.state.user.id }).then(response => {
 					this.user = response.data
-					this.roleGroup = response.roleGroup
-					this.postGroup = response.postGroup
 				})
 			},
 			// 修改头像

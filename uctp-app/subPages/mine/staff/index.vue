@@ -9,12 +9,12 @@
 				<u-swipe-action-item v-for="item in list" :key="item.id" :options="options1" @click="removeItem(item)">
 					<view class="user flex" @click="handleClick(item)">
 						<view>
-							<text :class="item.status ? 'ren' : 'wei'">认</text>
+							<text :class="item.registStatus == 0 ? 'ren' : 'wei'">认</text>
 							<text>{{ item.name }}</text>
 							<text>{{ item.phone }}</text>
 						</view>
 						<view>
-							<text v-if="item.status" class="zhengchang">正常</text>
+							<text v-if="item.status == 0" class="zhengchang">正常</text>
 							<text v-else class="tingyong">停用</text>
 						</view>
 					</view>
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+	import { getAccountList, deleteAccount } from "@/api/system/mine"
 	export default {
 		data() {
 			return {
@@ -34,47 +35,35 @@
 						backgroundColor: '#f56c6c'
 					}
 				}],
-				list: [{
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: true,
-					id: '1'
-				}, {
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: true,
-					id: '2'
-				}, {
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: true,
-					id: '3'
-				}, {
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: false,
-					id: '4'
-				}]
+				list: []
 			}
 		},
+		mounted() {
+			this.getList();
+		},
 		methods: {
+			// 获取子账户列表
+			getList() {
+				getAccountList({ deptId: this.$store.state.user.deptId }).then((res) => {
+					this.list = res.data
+				})
+			},
 			handleAdd() {
 				// 新增员工
 				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=add`)
 			},
-			handleClick(i) {
+			handleClick(item) {
 				// 修改员工
-				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit`)
+				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit&data=`+encodeURIComponent(JSON.stringify(item)))
 			},
 			// 删除
 			removeItem(item) {
 				console.log(item)
 				this.$modal.confirm('确定删除改员工吗？').then(() => {
-					this.list = this.list.filter(i => i.id != item.id)
+					deleteAccount({ userId: item.id }).then((res) => {
+						this.$tab.msg("删除成功")
+						this.getList();
+					})
 				})
 			}
 		}
