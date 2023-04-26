@@ -15,4 +15,12 @@ public enum ClearingType {
         this.code = code;
         this.value = value;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

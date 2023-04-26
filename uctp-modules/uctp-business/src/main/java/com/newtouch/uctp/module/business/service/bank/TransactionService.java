@@ -63,5 +63,5 @@ public interface TransactionService {
     /**
      * 不明入金清分
      */
-    String unKnowClearing();
+    String unKnowClearing(String contractNo);
 }

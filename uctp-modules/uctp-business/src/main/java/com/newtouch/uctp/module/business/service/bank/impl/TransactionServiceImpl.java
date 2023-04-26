@@ -5,10 +5,14 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
+import com.newtouch.uctp.module.business.enums.bank.ClearingType;
+import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.request.UnKnowClearingRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 @Validated
 public class TransactionServiceImpl implements TransactionService {
 
+    @Resource
+    private AccountProfitService accountProfitService;
 
     @Override
     public void noticePaymentResult() {
@@ -49,7 +55,30 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String unKnowClearing() {
+    public String unKnowClearing(String contractNo) {
+        LocalDateTime now = LocalDateTime.now();
+
+        UnKnowClearingRequest request = new UnKnowClearingRequest();
+        request.setTranDate(now.format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
+        request.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
+        request.setAreaCode(BankConstants.AREA_CODE);
+        request.setSettleAcctNo(BankConstants.ACCT_NO);
+        request.setChannelSeqNo(this.generaTranNo());
+
+        request.setYlkTranSeqNo(null); // 还不确定该值从哪来
+        request.setOrgTranSeqNo(null);
+
+        if (true) { // 存在该笔交易，则
+            request.setClrgTp(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getCode());
+            request.setClrgRsltDsc(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getValue());
+        } else { // 不存在该笔交易，则原路退回
+            request.setClrgTp(ClearingType.ORIGINAL_WAY_BACK.getCode());
+            request.setClrgRsltDsc(ClearingType.ORIGINAL_WAY_BACK.getValue());
+        }
+        request.setRsrvFld(null);
+        request.setRsrvFld1(null);
+        request.setRsrvFld2(null);
+
         return null;
     }
 
