@@ -1142,13 +1142,14 @@
 			},
 			// 点击车辆信息保存
 			handleSaveCar() {
+				let _this = this;
 				uni.showActionSheet({
 					itemList: ['保存草稿', '放弃编辑'],
 					success: (res) => {
 						if (res.tapIndex == 0) {
-							this.handleDraft()
+							_this.handleDraft()
 						} else {
-							this.handleGive()
+							_this.handleGive()
 						}
 					}
 				})
