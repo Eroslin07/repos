@@ -34,7 +34,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String nominalAccountCreate() {
+    public String nominalAccountGenerate() {
         return null;
     }
 
