@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.business.dal.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TransactionLogDO implements Serializable {
 
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     private String tranId;

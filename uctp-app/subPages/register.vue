@@ -360,6 +360,12 @@
 		onLoad() {
 			// this.showModal = true;
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
+			// 获取手机号
+			// #ifdef MP-WEIXIN
+			if (this.$store.state.user.phone) {
+				this.registerForm.phone = this.$store.state.user.phone;
+			}
+			// #endif
 			// 查询市场所在地
 			getTenantlist().then((res) => {
 				this.range.push(res.data)

@@ -2,6 +2,14 @@ package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+
+import javax.annotation.Resource;
+
+import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
+import org.springframework.stereotype.Component;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
@@ -20,12 +28,6 @@ import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
-import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * 流程引擎全局业务处理器
@@ -92,10 +94,10 @@ public class BpmGlobalHandleListener {
             if ("pass".equals(approvalType)) {
                 // 更新用户状态
                 JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
-                AdminUserDO adminUserDO = userMapper.selectOne("phone", jsonObject.get("phone"));
+                AdminUserDO adminUserDO = userMapper.selectOne("mobile", jsonObject.get("phone"));
                 userService.updateUserStatus(adminUserDO.getId());
                 // 公司认证
-                qysConfigApi.companyAuth(bpmFormMainVO.getStartUserId());
+                Boolean flag = qysConfigApi.companyAuth(bpmFormMainVO.getStartUserId()).getCheckedData();
                 // 注册成功
                 noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
             }else if ("disagree".equals(approvalType)){

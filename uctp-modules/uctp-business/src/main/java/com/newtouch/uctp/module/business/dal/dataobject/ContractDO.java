@@ -82,6 +82,12 @@ public class ContractDO extends TenantBaseDO {
      */
     private LocalDateTime signingDate;
 
+
+    /**
+     * 合同编码
+     */
+    private String code;
+
 //    /**
 //     * 创建人
 //     */

@@ -18,47 +18,47 @@ public class MsgContentUtil {
         if ("1".equals(map.get("type"))) {
             switch (map.get("contentType")) {
                 case "11":
-                    result="【二手车交易平台】您在二手车交易平台的账号注册流程因"+map.get("reason")+"原因审批未通过，请及时与市场方进行沟通。";
+                    result="【翼龙科技】您在二手车交易平台的账号注册流程因"+map.get("reason")+"原因审批未通过，请及时与市场方进行沟通。";
                     break;
                 case "12":
-                    result="【二手车交易平台】恭喜您已经成为二手车交易平台的一员，请登录二手车交易小程序进行使用";
+                    result="【翼龙科技】恭喜您已经成为二手车交易平台的一员，请登录二手车交易小程序进行使用";
                     break;
                 case "21":
-                    result="【二手车交易平台】您的收车价格"+map.get("vehicleReceiptAmount")+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
+                    result="【翼龙科技】您的收车价格"+map.get("vehicleReceiptAmount")+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
                     break;
                 case "22":
-                    result="【二手车交易平台】收车合同卖家签章【契约锁触发】";
+                    result="【翼龙科技】收车合同卖家签章【契约锁触发】";
                     break;
                 case "23":
-                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，收车款"+map.get("vehicleReceiptAmount")+"元已成功支付给卖家，请关注。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，收车款"+map.get("vehicleReceiptAmount")+"元已成功支付给卖家，请关注。";
                     break;
                 case "24":
-                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
                     break;
                 case "25":
-                    result="【二手车交易平台】因"+map.get("reason")+"错误导致您的买车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
+                    result="【翼龙科技】因"+map.get("reason")+"错误导致您的买车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "26":
-                    result="【二手车交易平台】您的收车合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
+                    result="【翼龙科技】您的收车合同编号"+map.get("contractId")+"，金额"+map.get("vehicleReceiptAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
                     break;
 
                 case "31":
-                    result="【二手车交易平台】您的卖车价格"+map.get("sellAmount")+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
+                    result="【翼龙科技】您的卖车价格"+map.get("sellAmount")+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
                     break;
                 case "32":
-                    result="【二手车交易平台】收车合同买家签章【契约锁触发】";
+                    result="【翼龙科技】收车合同买家签章【契约锁触发】";
                     break;
                 case "33":
-                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，卖车款"+map.get("sellAmount")+"元已成功支付给卖家，请关注。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，卖车款"+map.get("sellAmount")+"元已成功支付给卖家，请关注。";
                     break;
                 case "34":
-                    result="【二手车交易平台】您的合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
                     break;
                 case "35":
-                    result="【二手车交易平台】因"+map.get("reason")+"错误导致您的卖车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
+                    result="【翼龙科技】因"+map.get("reason")+"错误导致您的卖车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "36":
-                    result="【二手车交易平台】您的卖车合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
+                    result="【翼龙科技】您的卖车合同编号"+map.get("contractId")+"，金额"+map.get("sellAmount")+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
                     break;
                 case "40":
                     result=map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");
