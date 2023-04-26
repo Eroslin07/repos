@@ -41,8 +41,6 @@
 				content: '您的手机号尚未在平台注册，是否要注册?',
 				value: [''],
 				show: true,
-				// 小程序ID
-				appId: 'wx9decec45b7374b90',
 				wxcode: '',
 				phone: null
 			}
@@ -89,12 +87,6 @@
 						})
 						return;
 					}
-				}
-				const params = {
-					appId: _this.appId,
-					secret: '45323149c53d4340dfad4a304803eeaf', // 小程序秘钥
-					grant_type: 'client_credential',
-					js_code: _this.wxcode
 				}
 				getWxToken().then((res) => {
 					uni.request({
