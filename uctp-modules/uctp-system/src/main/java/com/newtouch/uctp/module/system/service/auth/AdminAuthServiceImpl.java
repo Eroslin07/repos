@@ -1,6 +1,22 @@
 package com.newtouch.uctp.module.system.service.auth;
 
 import cn.hutool.core.util.ObjectUtil;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.Resource;
+import javax.validation.Validator;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
@@ -33,18 +49,6 @@ import com.newtouch.uctp.module.system.service.user.UserExtService;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
 import com.xingyuv.captcha.service.CaptchaService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import javax.validation.Validator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.servlet.ServletUtils.getClientIP;
@@ -140,7 +144,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
-    @Transactional
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public Map registerAccount(AuthRegisterReqVO reqVO) {
         //查询是否有未注册数据，有则删除
         List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 2);

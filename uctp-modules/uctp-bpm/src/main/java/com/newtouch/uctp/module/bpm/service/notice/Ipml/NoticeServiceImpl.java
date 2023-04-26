@@ -1,6 +1,18 @@
 package com.newtouch.uctp.module.bpm.service.notice.Ipml;
 
 
+import io.seata.spring.annotation.GlobalTransactional;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
@@ -11,14 +23,6 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.notice.NoticeInfoDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.notice.NoticeMapper;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.util.MsgContentUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 
 /**
@@ -36,6 +40,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
+    @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map

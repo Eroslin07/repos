@@ -736,9 +736,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         return ssoUrl;
     }
 
-    @GlobalTransactional
-    @Transactional
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public void companyAuth(Long userId) throws FileNotFoundException {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
@@ -747,10 +747,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
         //获取营业执照图片
         StreamFile streamFile = null;
-        if (CollUtil.isNotEmpty(fileList)) {
+        /*if (CollUtil.isNotEmpty(fileList)) {
             FileRespDTO fileRespDTO = fileList.get(0);
             streamFile = new StreamFile(fileRespDTO.getName(), new FileInputStream(fileRespDTO.getUrl()));
-        }
+        }*/
 //        {"name":"aaa","contact": "15100000000","contactType": "MOBILE"}
         Map<String, String> applicantInfo = MapUtil
                 .builder("name", userRespDTO.getNickname())
