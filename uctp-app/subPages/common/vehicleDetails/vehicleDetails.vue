@@ -165,7 +165,8 @@
 			console.log(props, 'this.fatherProps.id')
 			// this.getCarDetails('1650072138860851201')
 			// this.getCarDetails('1650085024672796674')
-			this.getCarDetails('1648534562174574594')
+			let params=JSON.parse(props.item)
+			this.getCarDetails(params.id)
 			
 		},
 		computed: {
@@ -212,7 +213,7 @@
 				}
 				getCarInfoById(data).then(res => {
 					
-					if(res.data.length>0){
+					if(Object.keys(res.data)?.length){
 						this.isSHowTip=''
 					}else{
 						this.isSHowTip='noData'
