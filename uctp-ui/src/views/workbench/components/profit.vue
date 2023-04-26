@@ -33,7 +33,7 @@
               <el-image
                 v-for="item in mainValue.formDataJson.invoiceFiles"
                 :key="item.fileId"
-                style="width: 200px; height: 100px; margin-right: 10px"
+                style="width: 200px; height: 90px; margin-right: 10px"
                 :src="item.fileUrl"
                 :zoom-rate="1.2"
                 :preview-src-list="idcardUrlArr"
@@ -45,13 +45,28 @@
         </div>
         <div class="xinxi" style="margin-top: 16px">利润明细</div>
         <el-table :data="mainValue.formDataJson.profitDetails" style="width: 100%" height="250">
-          <el-table-column prop="idx" label="序号" width="60" />
-          <el-table-column prop="merchantName" label="商户名称" min-width="180" />
-          <el-table-column prop="category" label="分类" min-width="180" />
-          <el-table-column prop="telNo" label="商户手机号" min-width="180" />
-          <el-table-column prop="carSalesAmount" label="收车金额（元）" min-width="180" />
-          <el-table-column prop="vehicleReceiptAmount" label="卖车金额（元）" min-width="180" />
-          <el-table-column prop="feeTotalAmount" label="各项费用合计（元）" min-width="180" />
+          <el-table-column prop="idx" label="序号" align="center" width="60" />
+          <el-table-column prop="merchantName" label="商户名称" align="center" min-width="180" />
+          <el-table-column prop="category" label="分类" align="center" min-width="180" />
+          <el-table-column prop="telNo" label="商户手机号" align="center" min-width="180" />
+          <el-table-column
+            prop="carSalesAmount"
+            label="收车金额（元）"
+            align="center"
+            min-width="180"
+          />
+          <el-table-column
+            prop="vehicleReceiptAmount"
+            label="卖车金额（元）"
+            align="center"
+            min-width="180"
+          />
+          <el-table-column
+            prop="feeTotalAmount"
+            label="各项费用合计（元）"
+            align="center"
+            min-width="180"
+          />
         </el-table>
       </el-main>
     </el-container>

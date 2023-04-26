@@ -358,8 +358,14 @@
 			this.$refs.valiForm.setRules(this.rules)
 		},
 		onLoad() {
-			this.showModal = true;
+			// this.showModal = true;
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
+			// 查询市场所在地
+			getTenantlist().then((res) => {
+				this.range.push(res.data)
+				this.registerForm.marketLocation = res.data[0].id;
+				this.registerForm.marketLocationValue = res.data[0].name;
+			})
 		},
 		methods: {
 			back() {
@@ -369,11 +375,6 @@
 			},
 			handleConfirm() {
 				this.showModal = false;
-				getTenantlist().then((res) => {
-					this.range.push(res.data)
-					this.registerForm.marketLocation = res.data[0].id;
-					this.registerForm.marketLocationValue = res.data[0].name;
-				})
 			},
 			handleChange(data) {
 				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')

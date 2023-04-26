@@ -9,7 +9,7 @@
     <!-- 车辆是否已过户至平台 -->
     <VehicleReceiptTransfer v-if="status == 'SCGH'" />
     <!-- 支付失败待办 -->
-    <Payment v-if="status == 'SCKZH'" />
+    <Payment v-if="status == 'SKZH'" />
     <!-- 正向二手车统一发票和增值税发票待办 -->
     <ForwardDirection v-if="status == 'MCKP'" />
     <!-- 卖车价格超公允值待办 -->
