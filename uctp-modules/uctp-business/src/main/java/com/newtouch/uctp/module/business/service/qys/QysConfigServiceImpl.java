@@ -14,7 +14,6 @@ import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
@@ -27,8 +26,10 @@ import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
-import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
+import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.CompanyAuthDTO;
+import com.newtouch.uctp.module.business.controller.app.qys.dto.ContractStatusDTO;
+import com.newtouch.uctp.module.business.controller.app.qys.dto.DoServiceDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
@@ -48,7 +49,9 @@ import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
+import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.enums.QysCallBackType;
+import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
 import com.newtouch.uctp.module.business.util.ContractUtil;
@@ -75,13 +78,12 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
-import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.REQUEST_ATTRIBUTE_LOGIN_USER_ID;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 import static com.newtouch.uctp.module.business.enums.QysConstants.SECRET;
 
@@ -111,6 +113,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     private RedisTemplate<String,String> redisTemplate;
     @Resource
     private UserMapper userMapper;
+
     @Resource
     private ContractService contractService;
 
@@ -237,12 +240,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,deptDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
-                if (CollUtil.isEmpty(adminUserRespDTOs)) {
-                    //是在找不到
-                    WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
-                }else {
-                    WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
-                }
+                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(adminUserRespDTOs.get(0).getId()));
                 //如果回调数据为认证成功，保存公司id
                 if ("1".equals(status) && StrUtil.isNotBlank(companyId)) {
                     QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
@@ -292,13 +290,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         TenantUtils.execute(deptDO.getTenantId(), () -> {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,deptDO.getTenantId());
             //设置当前登录人信息，免得保存报错
-            List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
-            if (CollUtil.isEmpty(adminUserRespDTOs)) {
-                //是在找不到
-                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
-            }else {
-                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
-            }
+//            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(contractDO.getCreator()));
         });
 
 
@@ -313,9 +305,176 @@ public class QysConfigServiceImpl implements QysConfigService {
         }
         //解密消息
         String json = this.decryptMessage(content);
-        //TODO 处理业务
-
+        ContractStatusDTO contractStatusDTO = JSONObject.parseObject(json, ContractStatusDTO.class);
+        ContractDO contractDO = contractMapper.findByContractId(contractStatusDTO.getContractId());
+        if (ObjectUtil.isNull(contractDO)) {
+            log.warn("[status]电子签回调,未获取到合同contractId:{}",contractStatusDTO.getContractId());
+            return "fail";
+        }
+        TenantUtils.execute(contractDO.getTenantId(), () -> {
+            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,contractDO.getTenantId());
+            //设置当前登录人信息，免得保存报错
+            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(contractDO.getCreator()));
+            DoServiceDTO doServiceDTO = new DoServiceDTO();
+            CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
+            if (contractDO.getContractType().equals(1)) {
+                //1收车委托合同
+                switch (QysContractStatus.toType(contractStatusDTO.getContractStatus())){
+                    case COMPLETE:
+                        //A 收车委托已完成->
+                        //A-1 合同已完成
+                        //A-2 车辆状态合同发起
+                        //A-3 发起收车合同，
+                        this.doService(contractDO,carInfo,1
+                                ,CarStatus.COLLECT.value(),
+                                CarStatus.COLLECT_A_B.value(),
+                                CarStatus.COLLECT_A_B.value(),
+                                Boolean.TRUE,
+                                Boolean.FALSE);
+                        break;
+                    case INVALIDED:
+                        //B 收车委托作废->
+                        //B-1 合同作废
+                        //B-2 车辆状态
+                        this.doService(contractDO,carInfo,2
+                                ,CarStatus.COLLECT.value(),
+                                CarStatus.COLLECT_A.value(),
+                                CarStatus.COLLECT_A_A.value(),
+                                Boolean.FALSE,
+                                Boolean.FALSE);
+                        break;
+                }
+            } else if (contractDO.getContractType().equals(2)) {
+                //2收车合同
+                switch (QysContractStatus.toType(contractStatusDTO.getContractStatus())){
+                    case COMPLETE:
+                        //C 收车合同已完成->
+                        //C-1 合同已完成，
+                        //C-2 车辆状态待支付
+                        this.doService(contractDO,carInfo,1
+                                ,CarStatus.COLLECT.value(),
+                                CarStatus.COLLECT_A_B.value(),
+                                CarStatus.COLLECT_A_B_D.value(),
+                                Boolean.FALSE,
+                                Boolean.TRUE);
+                        break;
+                    case INVALIDED:
+                        //D 收车合同作废->
+                        //D-1 合同作废
+                        //D-2 车辆状态
+                        this.doService(contractDO,carInfo,1
+                                ,CarStatus.COLLECT.value(),
+                                CarStatus.COLLECT_A_B.value(),
+                                CarStatus.COLLECT_A_B_B.value(),
+                                Boolean.FALSE,
+                                Boolean.FALSE);
+                        break;
+                }
+            } else if (contractDO.getContractType().equals(3)) {
+             //3卖车委托合同
+                switch (QysContractStatus.toType(contractStatusDTO.getContractStatus())){
+                    case COMPLETE:
+                        //E 卖车委托已完成->
+                        //E-1 合同已完成
+                        //E-2 车辆状态合同已发起
+                        //E-3 发起卖车合同
+                        this.doService(contractDO,carInfo,1
+                                ,CarStatus.SELL.value(),
+                                CarStatus.SELL_B.value(),
+                                CarStatus.SELL_B_C.value(),
+                                Boolean.TRUE,
+                                Boolean.FALSE);
+                        break;
+                    case INVALIDED:
+                        //F 卖车委托合同作废->
+                        //F-1 合同作废
+                        //F-2 车辆状态
+                        this.doService(contractDO,carInfo,2
+                                ,CarStatus.SELL.value(),
+                                CarStatus.SELL_A.value(),
+                                CarStatus.SELL_A_A.value(),
+                                Boolean.FALSE,
+                                Boolean.FALSE);
+                        break;
+                }
+            } else if (contractDO.getContractType().equals(4)) {
+             //4卖车合同
+                switch (QysContractStatus.toType(contractStatusDTO.getContractStatus())){
+                    case COMPLETE:
+                        //G 卖车合同已完成->
+                        //G-1 合同已完成
+                        //G-2 车辆状态合同已发起
+                        this.doService(contractDO,carInfo,1
+                                ,CarStatus.SELL.value(),
+                                CarStatus.SELL_B.value(),
+                                CarStatus.SELL_B_D.value(),
+                                Boolean.FALSE,
+                                Boolean.TRUE);
+                        break;
+                    case INVALIDED:
+                        //H 卖车合同作废->
+                        //H-1 合同作废
+                        //H-2 车辆状态
+                        this.doService(contractDO,carInfo,2
+                                ,CarStatus.SELL.value(),
+                                CarStatus.SELL_A.value(),
+                                CarStatus.SELL_A_A.value(),
+                                Boolean.FALSE,
+                                Boolean.TRUE);
+                        break;
+                }
+            }
+        });
         return "success";
+    }
+
+    /**
+     * 合同状态回调业务处理
+     * @param contractDO 合同
+     * @param carInfo 车辆
+     * @param contratStatus 合同状态
+     * @param salesStatus 车辆一级状态
+     * @param status 车辆二级状态
+     * @param statusThree 车辆三级状态
+     * @param send 是否发起合同
+     * @param pay 是否调用支付
+     */
+    private void doService(ContractDO contractDO, CarInfoDO carInfo,
+                           Integer contratStatus,
+                           Integer salesStatus,
+                           Integer status,
+                           Integer statusThree,
+                           Boolean send,
+                           Boolean pay
+                           ){
+        //合同已完成
+        contractDO.setStatus(contratStatus);
+        if (ObjectUtil.equals(contratStatus, 1)) {
+            //表示合同完成，签署时间
+            contractDO.setSigningDate(LocalDateTime.now());
+        }
+        //车辆状态
+        carInfo.setSalesStatus(salesStatus);
+        carInfo.setStatus(status);
+        carInfo.setStatusThree(statusThree);
+        // 发起合同
+        if (send) {
+            ContractDO collectContractDO  = contractService.getCollectDraft(carInfo.getId(), contractDO.getContractType(), contractDO.getTenantId());
+            if (ObjectUtil.isNotNull(collectContractDO)) {
+                QysConfigDO configDO = getByDeptId(contractDO.getBusinessId());
+                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+                client.defaultContractSend(collectContractDO.getContractId()).getCheckedData();
+            }else {
+                log.error("数据异常，未找到合同数据，carId:{},contractType:{},tenantId:{}",carInfo.getId(),contractDO.getContractType(),contractDO.getTenantId());
+            }
+        }
+        contractService.update(contractDO);
+        carInfoService.update(carInfo);
+        //TODO 调用支付接口
+        if (pay) {
+
+        }
+
     }
 
     @Override
@@ -374,8 +533,6 @@ public class QysConfigServiceImpl implements QysConfigService {
             SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816").getCheckedData();
             System.out.println(checkedData);
         }
-
-
     }
 
     @Override
@@ -816,12 +973,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,configDO.getTenantId());
             //设置当前登录人信息，免得保存报错
             List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
-            if (CollUtil.isEmpty(adminUserRespDTOs)) {
-                //是在找不到
-                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
-            }else {
-                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
-            }
+            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(configDO.getCreator()));
+//            if (CollUtil.isEmpty(adminUserRespDTOs)) {
+//                //是在找不到
+//                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
+//            }else {
+//                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
+//            }
             //保存回调信息
             qysCallbackService.saveDO(json,
                     QysCallBackType.COMPANY_AUTH.value(),configDO.getBusinessId());
@@ -874,6 +1032,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                     QysCallBackType.COMPANY_AUTH.value(), configDO.getBusinessId());
         });
         return null;
+    }
+
+
+    @Override
+    public QysConfigDO getByDeptId(Long businessId) {
+        return qysConfigMapper.selectOne("BUSINESS_ID", businessId);
     }
 
 

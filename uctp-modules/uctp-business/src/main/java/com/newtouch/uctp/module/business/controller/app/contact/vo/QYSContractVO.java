@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.controller.app.contact;
+package com.newtouch.uctp.module.business.controller.app.contact.vo;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
