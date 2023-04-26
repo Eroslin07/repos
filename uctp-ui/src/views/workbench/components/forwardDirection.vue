@@ -158,7 +158,8 @@
             <span>
               {{
                 moneyFormat(
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.sellAmount
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+                    .sellAmount
                 )
               }}元
             </span>
