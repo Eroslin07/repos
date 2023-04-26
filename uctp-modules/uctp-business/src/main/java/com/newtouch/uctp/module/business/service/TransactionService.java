@@ -1,7 +1,5 @@
 package com.newtouch.uctp.module.business.service;
 
-import com.newtouch.uctp.module.business.api.account.dto.TransferAccountDTO;
-
 /**
  * 交易服务
  */
@@ -19,7 +17,7 @@ public interface TransactionService {
      * 利润-提现 to 企业账户 行内转装或他行账户 具体看银行处理时间
      * 收车款-转账 to 卖车方 行内转装或他行账户 具体看银行处理时间
      */
-    void transferAccount(TransferAccountDTO transferAccountDTO);
+    //void transferAccount(TransferAccountDTO transferAccountDTO);
 
     /**
      * 支付状态查询 ToDO 待确认支付渠道具体再确认参数
@@ -39,4 +37,11 @@ public interface TransactionService {
      * @return
      */
     String tranNoByContractNo();
+
+    /**
+     * 银行虚拟账户创建
+     *
+     * @return
+     */
+    String bankAccountOpen();
 }
