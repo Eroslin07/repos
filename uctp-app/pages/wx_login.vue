@@ -125,8 +125,6 @@
 						return
 					}
 					_this.phone = res[1].data.phone_info.phoneNumber;
-					console.log(_this.phone)
-					return
 					_this.$store.dispatch('GetPhone', _this.phone);
 					_this.phoneLogin();
 				})

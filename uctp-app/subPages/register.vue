@@ -369,7 +369,13 @@
 		},
 		methods: {
 			back() {
-				this.$tab.navigateTo('/pages/login');
+				// #ifndef MP-WEIXIN
+				clearInterval(this.timer);
+				this.$tab.reLaunch('/pages/login')
+				// #endif
+				// #ifdef MP-WEIXIN
+				this.$tab.reLaunch('/pages/wx_login')
+				// #endif
 			},
 			handleConfirm() {
 				this.showModal = false;

@@ -27,7 +27,12 @@
 		methods: {
 			// 不同意
 			handleDisagree() {
-				this.$tab.navigateTo('/pages/login')
+				// #ifndef MP-WEIXIN
+				this.$tab.reLaunch('/pages/login')
+				// #endif
+				// #ifdef MP-WEIXIN
+				this.$tab.reLaunch('/pages/wx_login')
+				// #endif
 			},
 			// 同意并注册
 			handleAgree(){
