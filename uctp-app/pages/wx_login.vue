@@ -33,6 +33,7 @@
 </template>
 
 <script>
+	import { getWxToken } from '@/api/login'
 	export default {
 		data() {
 			return {
@@ -43,7 +44,6 @@
 				// 小程序ID
 				appId: 'wx9decec45b7374b90',
 				wxcode: '',
-				sessionKey: null,
 				phone: null
 			}
 		},
@@ -96,22 +96,10 @@
 					grant_type: 'client_credential',
 					js_code: _this.wxcode
 				}
-				uni.request({
-					method: 'GET',
-					url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${params.appId}&secret=${params.secret}`,
-				}).then((res) => {
-					if (res.errcode) {
-						uni.showToast({
-							title: '获取用户信息失败',
-							icon: 'none',
-							duration: 2000
-						});
-						return
-					}
-					_this.sessionKey = res[1].data.access_token
+				getWxToken().then((res) => {
 					uni.request({
 						method: 'POST',
-						url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${_this.sessionKey}`,
+						url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${res.data}`,
 						data: {
 							code: e.detail.code
 						}
