@@ -1,11 +1,13 @@
 package com.newtouch.uctp.module.business.util.bank;
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class SPDBSMSignature {
 
     /*ClientID和密钥：X-SPDB-ClientID、X-SPDB-ClientID-Secret
@@ -140,6 +142,47 @@ public class SPDBSMSignature {
         return request;
     }
 
+    /**
+     * 调用银行接口方法
+     * @param requestMethod 请求方法（get/post/...）
+     * @param url 请求url
+     * @param requestMessage 请求报文（json）
+     * @return 响应报文(json)
+     * @throws Exception
+     */
+    public static String call(String requestMethod, String url, String requestMessage) throws Exception {
+        /**
+         * 获取防重放参数
+         */
+        String newBodyData = getNonceParam(false, requestMessage);
+        /**
+         * 获取签名
+         */
+        String signature = getSign(newBodyData,false,false);
+
+        //发送HTTP请求
+        Request request = createRequest(requestMethod, url, requestMessage, signature);
+        Response response = client.newCall(request).execute();
+
+        String resBody = new String(response.body().bytes(), "UTF-8");
+        log.info("响应报文：" + resBody);
+
+        String sg = new String(response.header("X-SPDB-SIGNATURE").getBytes(), "UTF-8");
+
+        String digest = SHA1.digest(resBody);
+        byte[] bytes = digest.getBytes(charset);
+
+        byte[] signatureBytes = ByteUtils.fromHexString(new String(DatatypeConverter.parseBase64Binary(sg)));
+        SM2Sign sm2Sign = SM2SignVerify.validateSign(ByteUtils.fromHexString(spdbPublicKey), bytes, signatureBytes);
+
+        boolean validateSign = sm2Sign.isVerify();
+        log.info("验签结果：" + validateSign);
+        if (!validateSign) {
+            throw new RuntimeException("银行响应报文验签失败");
+        }
+
+        return resBody;
+    }
 
     public static void main(String[] args) throws Exception {
 
