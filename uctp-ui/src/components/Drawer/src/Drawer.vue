@@ -98,7 +98,7 @@ const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])
 // const emit = defineEmits(['handleUpdataList'])
 const activeName = ref('BaseInfo')
-const statusList = ['SCKP', 'MCGH', 'SCKP', 'MCKP']
+const statusList = ['SCKP', 'MCGH', 'SCKP', 'SKZH', 'MCKP']
 const comps = shallowRef([
   {
     label: '基本信息',
