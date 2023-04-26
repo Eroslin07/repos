@@ -35,6 +35,7 @@
 		onLoad(options) {
 			console.log((options))
 			this.carId = options.carId
+			// 1650784037801914369
 			this.getContractUrl()
 		},
 		methods: {
@@ -44,10 +45,12 @@
 			},
 			// 合同签章
 			handleAffirm() {
-				const data = {
+				let  data = []
+				let obj={
 					...this.contractDtail.find(v=>v.contractType=='1'),
 					type:'1'
 				}
+				data.push(obj)
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
 				})
