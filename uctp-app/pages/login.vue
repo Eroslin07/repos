@@ -10,7 +10,7 @@
 		</u-navbar>
 		
 		<view class="logo-content align-center justify-center flex">
-			<h2 class="title" style="color: #333;font-weight: normal;font-style: normal;">车友通结算中心</h2>
+			<h2 class="title" style="color: #333;font-weight: normal;font-style: normal;margin-top: 15%;">车友通结算中心</h2>
 		</view>
 		<view class="logo-content align-center justify-center flex">
 			<view class="weitu"></view>
