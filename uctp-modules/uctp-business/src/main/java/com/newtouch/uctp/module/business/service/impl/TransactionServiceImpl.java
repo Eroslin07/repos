@@ -19,9 +19,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final static String X_SPDB_CLIENT_ID = "0010d65a-1a3e-4a82-8b32-47a7cd2783dc";
     private final static String X_SPDB_CLIENT_SECRET = "MTPhMC00NzA3LTg1MTctZWVzZDAzNmJjOWJ3MC43MDP0NTM0MzczNDUxMjQ4MC45";
 
-    @Resource
-    private RestTemplate restTemplate;
-
     @Override
     public void transactionStatus(String tranNo) {
         // 查询银行交易状态是否成功
