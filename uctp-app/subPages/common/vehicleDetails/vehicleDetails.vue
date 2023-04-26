@@ -65,7 +65,7 @@
 		</uni-card>
 		<!-- 系统错误 -->
 		<uni-card v-else :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
-			<image class="img-error" src="/static/images/error.png" mode=""></image>
+			<image class="img-error" src="/static/images/error/error.png" mode=""></image>
 			<view class="error-tip">
 				系统异常
 			</view>

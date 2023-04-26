@@ -120,9 +120,6 @@
 				gatherData: [],
 				// 所有子项
 				allChild: [],
-				// 消息
-				listData: []
-
 			}
 		},
 		onLoad: function() {
@@ -146,20 +143,8 @@
 		methods: {
 			// 获取消息列表数据
 			getListData() {
-				let options = [{
-					text: '删除',
-					style: {
-						backgroundColor: '#f56c6c'
-					}
-				}]
 				getNoticesApi(this.businessId).then(res => {
 					if (res.data.length) {
-						this.listData = res.data.map(item => {
-							this.$set(item, 'options', options);
-							this.$set(item, 'swipeShow', false);
-							item.createTime = parseTime(item.createTime);
-							return item
-						})
 						this.msgsValue = res.data.filter(v => v.status === '0').length
 					}
 				}).catch(err => {
@@ -265,7 +250,7 @@
 
 			// 消息
 			handleMsg() {
-				this.$tab.navigateTo(`/subPages/work/index?listData=` + encodeURIComponent(JSON.stringify(this.listData)))
+				this.$tab.navigateTo(`/subPages/work/index`)
 			},
 			// 获取顶部导航栏的高度
 			getnavigateBarHeight() {
