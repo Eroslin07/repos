@@ -141,16 +141,17 @@ public class QysConfigController {
 
     @PostMapping("/send")
     @Operation(summary ="发起契约锁合同")
-   // public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId,@RequestParam("type") String type) {
-    public CommonResult<Boolean> send(@Valid @RequestBody List<QYSContractVO> VO) {
+   // public CommonResult<String> send(@Valid @RequestBody QYSContractVO qysContractVO) {
+    public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {
+        String result="";
         for (QYSContractVO qysContractVO : VO) {
             //这里只发起委托合同
             if(qysContractVO.getContractType().equals("1")) {
-                qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+                result= qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
             }
         }
 
-        return success(true);
+        return success(result);
     }
 
     @PostMapping("/ContractEcho")

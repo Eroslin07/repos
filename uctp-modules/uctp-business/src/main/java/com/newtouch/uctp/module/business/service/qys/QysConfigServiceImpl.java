@@ -380,46 +380,27 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void send(Long carId,String type,Long contractId,String contractType)  {
+    public String send(Long carId,String type,Long contractId,String contractType)  {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
 
         AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
         //AdminUserDO usersDO = usersMapper.selectById(294);
-       /* CarInfoDO carInfo = carInfoService.getCarInfo(carId);
-        CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(carId);
-
-        if (ObjectUtil.isNull(carInfo)) {
-            throw exception(CAR_INFO_NOT_EXISTS);
-        }
-        if (ObjectUtil.isNull(carInfoDetailsDO)) {
-            throw exception(CAR_INFO_DETAILS_NOT_EXISTS);
-        }
-        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-
-        AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
-        if (ObjectUtil.isNull(usersDO)) {
-            throw exception(USERS_INFO_ERROR);
-        }
-        UserExtDO userExtDO= userExtMapper.selectOne("USER_ID",usersDO.getId());
-        DeptDO userDept=deptMapper.selectById(usersDO.getDeptId());
-        if (ObjectUtil.isNull(userDept)) {
-            throw exception(DEPT_INFO_ERROR);
-        }
-        DeptDO pDept=deptMapper.selectOne("id",userDept.getParentId());
-        DeptDO platformDept=deptMapper.selectOne("parent_id",pDept.getParentId(),"attr",1);
-        if (ObjectUtil.isNull(platformDept)) {
-            throw exception(DEPT_INFO_ERROR);
-        }
-
-        BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractId);
-        */
        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
         // QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", 184);
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
         //合同发起
         client.defaultContractSend(contractId);
 
-        //保存在那里需要确认
+        ContractDO buyContrsctDo = contractMapper.selectOne("CONTRACT_ID",contractId);
+        //合同发起后修改状态为已发起
+        buyContrsctDo.setStatus(1);
+        //存合同草稿合同到表
+        contractMapper.insert(buyContrsctDo);
+
+        String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
+        return ssoUrl;
+
+
     }
 
     @Override

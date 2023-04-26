@@ -106,7 +106,7 @@ public interface QysConfigService {
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    void send(Long carId,String type,Long contractId,String contractType);
+    String send(Long carId,String type,Long contractId,String contractType);
     /**
      * 发送契约锁合同
      * @param carId 车辆Id
