@@ -220,10 +220,14 @@
           <el-row>
             <el-col :span="2" class="bg-yell">收车金额：</el-col>
             <el-col :span="4">
-              <div>{{
-                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                  .vehicleReceiptAmount
-              }}</div>
+              <div
+                >{{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                      .vehicleReceiptAmount
+                  )
+                }}元</div
+              >
             </el-col>
             <el-col :span="2" class="bg-yell">公允值范围：</el-col>
             <el-col :span="4">
@@ -549,10 +553,14 @@
               <span>车辆价款</span>
             </el-col>
             <el-col :span="20">
-              <span>{{
-                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                  .carInvoiceDetailVO.sellAmount
-              }}</span>
+              <span
+                >{{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                      .carInvoiceDetailVO.sellAmount
+                  )
+                }}元</span
+              >
             </el-col>
           </el-row>
           <el-row>
@@ -565,13 +573,13 @@
                   .carInvoiceDetailVO.marketName
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"
+            <el-col :span="4" class="bg-yell padding-0"
               ><div class="flex-column">
                 <span>纳税人识别号</span>
                 <span>地址</span>
               </div></el-col
             >
-            <el-col :span="8"
+            <el-col :span="8" class="padding-0"
               ><div class="flex-column flex-content">
                 <span>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -657,6 +665,13 @@ const fileC = computed(() => {
     (item) => item.url
   )
 })
+
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 const fileA = computed(() => {
   return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileA.map(
     (item) => item.url
@@ -708,6 +723,9 @@ const handleCancel = () => {
     padding-right: 5px;
     justify-content: flex-end;
   }
+  .padding-0 {
+    padding: 0;
+  }
 }
 :deep(.el-main) {
   padding: 0;
@@ -718,6 +736,28 @@ const handleCancel = () => {
   display: flex;
   height: 40px;
   align-items: center;
+  .flex-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    span {
+      padding-right: 5px;
+      width: 100%;
+      text-align: right;
+    }
+    > span:nth-child(1) {
+      border-bottom: 1px solid #eaeaea;
+    }
+  }
+  .flex-content {
+    span {
+      padding: 0;
+      padding-left: 15px;
+      height: 20px;
+      text-align: left;
+    }
+  }
 }
 .content-box .el-row:first-child {
   border-top: 1px solid #eaeaea;
@@ -727,6 +767,9 @@ const handleCancel = () => {
 }
 .content-box .el-row .el-col:nth-child(even) {
   padding-left: 15px;
+  &.padding-0 {
+    padding: 0;
+  }
 }
 .carInfo {
   overflow: hidden;

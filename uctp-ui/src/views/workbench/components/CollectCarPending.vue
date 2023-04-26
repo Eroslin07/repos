@@ -222,10 +222,14 @@
             <el-row>
               <el-col :span="2" class="bg-yell">收车金额：</el-col>
               <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                    .vehicleReceiptAmount
-                }}</div>
+                <div
+                  >{{
+                    moneyFormat(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                        .vehicleReceiptAmount
+                    )
+                  }}元</div
+                >
               </el-col>
               <el-col :span="2" class="bg-yell">公允值范围：</el-col>
               <el-col :span="4">
@@ -456,6 +460,12 @@ const formatDate = (time: string) => {
   } else {
     return ''
   }
+}
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
 }
 // 详情
 let mainValue = reactive({

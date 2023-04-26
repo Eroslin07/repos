@@ -216,16 +216,25 @@
           <el-row>
             <el-col :span="2" class="bg-yell">收车金额：</el-col>
             <el-col :span="4">
-              <div>{{
-                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                  .vehicleReceiptAmount
-              }}</div>
+              <div
+                >{{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                      .vehicleReceiptAmount
+                  )
+                }}元</div
+              >
             </el-col>
             <el-col :span="2" class="bg-yell">卖车金额：</el-col>
             <el-col :span="4">
-              <div>{{
-                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.sellAmount
-              }}</div>
+              <div>
+                {{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                      .sellAmount
+                  )
+                }}元
+              </div>
             </el-col>
             <el-col :span="2" class="bg-yell">公允值范围：</el-col>
             <el-col :span="4">
@@ -342,7 +351,7 @@
                   .carInvoiceDetailVO.buyerName
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>单位代码/身份证号码</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>单位代码/身份证号码：</span></el-col>
             <el-col :span="8"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -352,7 +361,7 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>买车单位/个人住址</span>
+              <span>买车单位/个人住址：</span>
             </el-col>
             <el-col :span="8">
               <span>{{
@@ -360,7 +369,7 @@
                   .carInvoiceDetailVO.buyerAddress
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>电话</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>电话：</span></el-col>
             <el-col :span="8"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -370,7 +379,7 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>卖方单位/个人</span>
+              <span>卖方单位/个人：</span>
             </el-col>
             <el-col :span="8">
               <span>{{
@@ -378,7 +387,7 @@
                   .carInvoiceDetailVO.sellerName
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>单位代码/身份证号码</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>单位代码/身份证号码：</span></el-col>
             <el-col :span="8"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -388,7 +397,7 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>卖车单位/个人住址</span>
+              <span>卖车单位/个人住址：</span>
             </el-col>
             <el-col :span="8">
               <span>{{
@@ -396,7 +405,7 @@
                   .carInvoiceDetailVO.sellerAddress
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>电话</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>电话：</span></el-col>
             <el-col :span="8"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -406,7 +415,7 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>车牌号</span>
+              <span>车牌号：</span>
             </el-col>
             <el-col :span="4"
               ><span>{{
@@ -414,14 +423,14 @@
                   .carInvoiceDetailVO.plateNum
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>登记证书</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>登记证书：</span></el-col>
             <el-col :span="4"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
                   .carInvoiceDetailVO.certificateNo
               }}</span></el-col
             >
-            <el-col :span="4" class="bg-yell"><span>车辆类型</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>车辆类型：</span></el-col>
             <el-col :span="4"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -431,7 +440,7 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>车架号/车辆识别代码</span>
+              <span>车架号/车辆识别代码：</span>
             </el-col>
             <el-col :span="4">
               <span>{{
@@ -439,14 +448,14 @@
                   .carInvoiceDetailVO.vin
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>厂牌型号</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>厂牌型号：</span></el-col>
             <el-col :span="4"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
                   .carInvoiceDetailVO.model
               }}</span></el-col
             >
-            <el-col :span="4" class="bg-yell"><span>转入地车辆管理所名称</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>转入地车辆管理所名称：</span></el-col>
             <el-col :span="4">
               <span>
                 {{
@@ -458,18 +467,22 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>车辆价款</span>
+              <span>车辆价款：</span>
             </el-col>
             <el-col :span="20">
-              <span>{{
-                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                  .carInvoiceDetailVO.sellAmount
-              }}</span>
+              <span>
+                {{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                      .sellAmount
+                  )
+                }}元
+              </span>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>二手车市场</span>
+              <span>二手车市场：</span>
             </el-col>
             <el-col :span="8">
               <span>{{
@@ -477,13 +490,13 @@
                   .carInvoiceDetailVO.marketName
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"
+            <el-col :span="4" class="bg-yell padding-0"
               ><div class="flex-column">
-                <span>纳税人识别号</span>
-                <span>地址</span>
+                <span>纳税人识别号：</span>
+                <span>地址：</span>
               </div></el-col
             >
-            <el-col :span="8"
+            <el-col :span="8" class="padding-0"
               ><div class="flex-column flex-content">
                 <span>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -498,7 +511,7 @@
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
-              <span>开户行账号</span>
+              <span>开户行账号：</span>
             </el-col>
             <el-col :span="8">
               <span>{{
@@ -506,7 +519,7 @@
                   .carInvoiceDetailVO.marketBankNum
               }}</span>
             </el-col>
-            <el-col :span="4" class="bg-yell"><span>电话</span></el-col>
+            <el-col :span="4" class="bg-yell"><span>电话：</span></el-col>
             <el-col :span="8"
               ><span>{{
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
@@ -558,7 +571,12 @@ const formatDate = (time: string) => {
     return ''
   }
 }
-
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 const fileB = computed(() => {
   return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.map(
     (item) => item.url
@@ -625,6 +643,9 @@ const handleCancel = () => {
     padding-right: 5px;
     justify-content: flex-end;
   }
+  .padding-0 {
+    padding: 0;
+  }
 }
 :deep(.el-main) {
   padding: 0;
@@ -635,6 +656,28 @@ const handleCancel = () => {
   display: flex;
   height: 40px;
   align-items: center;
+  .flex-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    span {
+      padding-right: 5px;
+      width: 100%;
+      text-align: right;
+    }
+    > span:nth-child(1) {
+      border-bottom: 1px solid #eaeaea;
+    }
+  }
+  .flex-content {
+    span {
+      padding: 0;
+      padding-left: 15px;
+      height: 20px;
+      text-align: left;
+    }
+  }
 }
 .content-box .el-row:first-child {
   border-top: 1px solid #eaeaea;
@@ -644,6 +687,9 @@ const handleCancel = () => {
 }
 .content-box .el-row .el-col:nth-child(even) {
   padding-left: 15px;
+  &.padding-0 {
+    padding: 0;
+  }
 }
 .carInfo {
   overflow: hidden;

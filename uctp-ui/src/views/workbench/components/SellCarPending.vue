@@ -218,16 +218,25 @@
             <el-row>
               <el-col :span="2" class="bg-yell">收车金额：</el-col>
               <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                    .vehicleReceiptAmount
-                }}</div>
+                <div
+                  >{{
+                    moneyFormat(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                        .vehicleReceiptAmount
+                    )
+                  }}元</div
+                >
               </el-col>
               <el-col :span="2" class="bg-yell">卖车金额：</el-col>
               <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.sellAmount
-                }}</div>
+                <div>
+                  {{
+                    moneyFormat(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                        .sellAmount
+                    )
+                  }}元
+                </div>
               </el-col>
               <el-col :span="2" class="bg-yell">公允值范围：</el-col>
               <el-col :span="4">
@@ -366,7 +375,12 @@ const formatDate = (time: string) => {
 }
 const actionType = ref('detail') // 操作按钮的类型
 const dialogTitle = ref('卖车价格超公允值待办') // 弹出层标题
-
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 // 设置标题
 const setDialogTile = (type: string) => {
   dialogTitle.value = t('action.' + type)
