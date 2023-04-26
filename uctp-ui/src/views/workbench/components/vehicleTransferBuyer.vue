@@ -437,15 +437,14 @@
               }}</span></el-col
             >
             <el-col :span="4" class="bg-yell"><span>转入地车辆管理所名称</span></el-col>
-            <el-col :span="4"
-              ><el-input
-                v-model="
+            <el-col :span="4">
+              <span>
+                {{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
                     .carInvoiceDetailVO.transManageName
-                "
-                class="car-input"
-              ></el-input
-            ></el-col>
+                }}
+              </span>
+            </el-col>
           </el-row>
           <el-row>
             <el-col :span="4" class="bg-yell">
