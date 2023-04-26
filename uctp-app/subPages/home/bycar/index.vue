@@ -889,7 +889,7 @@
 								let str = await urlTobase64(res.tempFilePaths[i]);
 								getIdCard({ IDCardUrl: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.error_msg) {
+									if (data.idcard_number_type == -1) {
 										_this.$modal.msg("请上传正确且清晰的身份证照照片");
 										_this[`fileList${index}`] = [];
 									} else {
