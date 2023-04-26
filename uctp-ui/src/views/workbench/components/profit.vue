@@ -5,8 +5,8 @@
         <div>
           <div style="font-size: 16px" class="title">
             <span>单号：{{ baseInfoData.data.serialNo }}</span>
-            <span>商户经办人：{{ mainValue.formDataJson.merchantName }}</span>
-            <span>商户电话：{{ mainValue.formDataJson.telNo }}</span>
+            <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+            <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
           </div>
         </div>
         <div class="xinxi">利润提取信息</div>

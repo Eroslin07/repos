@@ -4,8 +4,8 @@
       <div>
         <div style="font-size: 16px" class="title">
           <span>单号：{{ baseInfoData.data.serialNo }}</span>
-          <span>商户经办人：{{ '张三' }}</span>
-          <span>商户电话：{{ '13333333333' }}</span>
+          <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+          <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
         </div>
       </div>
       <div class="content-box">
@@ -618,32 +618,10 @@
   </div>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
-import { allSchemas } from '../toDoList/toDoList.data'
 import { AgreementFrame } from './index'
-import { defineProps } from 'vue'
-import { propTypes } from '@/utils/propTypes'
-// import type { FormExpose } from '@/components/Form'
-// const { t } = useI18n() // 国际化
-// const message = useMessage() // 消息弹窗
-
 // 详情
 import { baseInfoData } from '@/views/workbench/basInfoValue'
 
-const [] = useXTable({
-  allSchemas: allSchemas
-})
-
-const actionType = ref('detail') // 操作按钮的类型
-// const dialogVisible = ref(true) // 是否显示弹出层
-// const dialogTitle = ref('收车价格超公允值待办') // 弹出层标题
-// const formRef = ref<FormExpose>() // 表单 Ref
-
-// 设置标题
-const setDialogTile = (type: string) => {
-  // dialogTitle.value = t('action.' + type)
-  actionType.value = type
-  // dialogVisible.value = true
-}
 //时间戳转日期
 const formatDate = (time: string) => {
   let date = ''
@@ -657,13 +635,6 @@ const formatDate = (time: string) => {
     return ''
   }
 }
-// 详情
-let mainValue = reactive({
-  formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
-})
-nextTick(() => {
-  mainValue.formDataJson = { ...baseInfoData.data.variables.formDataJson.formMain.formDataJson }
-})
 const fileB = computed(() => {
   return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.map(
     (item) => item.url
@@ -686,15 +657,6 @@ const fileD = computed(() => {
 })
 const identifyShow = ref(true)
 
-// const emit = defineEmits(['closeCarDialog'])
-const props = defineProps({
-  // carVisible: propTypes.bool.def(false),
-  type: propTypes.bool.def(undefined)
-})
-
-// const carVisible = computed(() => {
-//   return props.carVisible
-// })
 // 查看合同
 // 合同弹框
 const message = useMessage() // 消息弹窗
@@ -712,22 +674,6 @@ const viewContract = (item: any) => {
 const handleCancel = () => {
   contractVisible.value = false
 }
-console.log(setDialogTile, props)
-
-// 关闭弹框
-// const closeDialog = () => {
-//   emit('closeCarDialog')
-// }
-
-// 通过
-// const passBtn = () => {
-//   emit('closeCarDialog')
-// }
-
-// 退回
-// const returnBtn = () => {
-//   emit('closeCarDialog')
-// }
 </script>
 <style lang="scss" scoped>
 .title {
@@ -786,5 +732,8 @@ console.log(setDialogTile, props)
       border-top: 1px solid #eaeaea;
     }
   }
+}
+.colr159 {
+  color: #1592c9;
 }
 </style>

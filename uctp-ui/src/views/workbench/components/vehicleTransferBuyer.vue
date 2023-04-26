@@ -3,8 +3,8 @@
     <el-card>
       <div style="font-size: 16px" class="title">
         <span>单号：{{ baseInfoData.data.serialNo }}</span>
-        <span>商户经办人：{{ '张三' }}</span>
-        <span>商户电话：{{ '13333333333' }}</span>
+        <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+        <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
       </div>
       <div class="content-box">
         <h3 style="font-weight: bold; color: #333333; line-height: 36px">车辆基础信息</h3>
@@ -396,13 +396,11 @@
             <el-col :span="4" class="bg-yell">
               <span>车牌号</span>
             </el-col>
-            <el-col :span="4">
-              <span
-                ><span>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                    .carInvoiceDetailVO.plateNum
-                }}</span></span
-              >
+            <el-col :span="4"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.plateNum
+              }}</span>
             </el-col>
             <el-col :span="4" class="bg-yell"><span>登记证书</span></el-col>
             <el-col :span="4"
@@ -590,21 +588,6 @@ const viewContract = (item: any) => {
 const handleCancel = () => {
   contractVisible.value = false
 }
-
-// 关闭弹框
-// const closeDialog = () => {
-//   emit('cancleSellCar')
-// }
-
-// 通过
-// const passBtn = () => {
-//   emit('cancleSellCar')
-// }
-
-// 退回
-// const returnBtn = () => {
-//   emit('cancleSellCar')
-// }
 </script>
 <style lang="scss" scoped>
 .title {
@@ -666,5 +649,8 @@ const handleCancel = () => {
       border-top: 1px solid #eaeaea;
     }
   }
+}
+.colr159 {
+  color: #1592c9;
 }
 </style>

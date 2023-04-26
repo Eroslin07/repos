@@ -2,9 +2,8 @@
   <div class="reverse">
     <div style="font-size: 16px" class="title">
       <span>单号：{{ baseInfoData.data.serialNo }}</span>
-      <span>商户经办人：{{ '张三' }}</span>
-      <span>商户电话：{{ '13333333333' }}</span>
-      <div style="float: right"> </div>
+      <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+      <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
     </div>
     <p style="font-weight: bold; margin-bottom: 10px">发票信息</p>
     <div class="title-bg-box">
@@ -23,71 +22,135 @@
           <span>买车单位/个人</span>
         </el-col>
         <el-col :span="8">
-          <span>买方信息的姓名</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.buyerName
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>单位代码/身份证号码</span></el-col>
-        <el-col :span="8"><span>买方信息的身份证号</span></el-col>
+        <el-col :span="8"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.buyerIdCard
+          }}</span></el-col
+        >
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
           <span>买车单位/个人住址</span>
         </el-col>
         <el-col :span="8">
-          <span>买方信息的联系地址</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.buyerAddress
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>电话</span></el-col>
-        <el-col :span="8"><span>买方信息的联系电话</span></el-col>
+        <el-col :span="8"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.buyerTel
+          }}</span></el-col
+        >
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
           <span>卖方单位/个人</span>
         </el-col>
         <el-col :span="8">
-          <span>市场名称（平台名称）</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.sellerName
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>单位代码/身份证号码</span></el-col>
-        <el-col :span="8"><span>平台开票信息的纳税人识别号</span></el-col>
+        <el-col :span="8"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.sellerIdCard
+          }}</span></el-col
+        >
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
           <span>卖车单位/个人住址</span>
         </el-col>
         <el-col :span="8">
-          <span>平台开票信息住址</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.sellerAddress
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>电话</span></el-col>
-        <el-col :span="8"><span>平台开票信息的电话</span></el-col>
+        <el-col :span="8"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.sellerTel
+          }}</span></el-col
+        >
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
           <span>车牌号</span>
         </el-col>
         <el-col :span="4">
-          <span><span>车辆信息的车牌号</span></span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.plateNum
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>登记证书</span></el-col>
-        <el-col :span="4"><span>车辆信息的登记证号</span></el-col>
+        <el-col :span="4"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.certificateNo
+          }}</span></el-col
+        >
         <el-col :span="4" class="bg-blue"><span>车辆类型</span></el-col>
-        <el-col :span="4"><span>车辆信息的车辆类型</span></el-col>
+        <el-col :span="4"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.carType
+          }}</span></el-col
+        >
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
           <span>车架号/车辆识别代码</span>
         </el-col>
         <el-col :span="4">
-          <span>车辆信息车架号</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.vin
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>厂牌型号</span></el-col>
-        <el-col :span="4"><span>车辆信息的品牌型号</span></el-col>
+        <el-col :span="4"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.model
+          }}</span></el-col
+        >
         <el-col :span="4" class="bg-blue"><span>转入地车辆管理所名称</span></el-col>
-        <el-col :span="4"><el-input class="car-input"></el-input></el-col>
+        <el-col :span="4"
+          ><el-input
+            v-model="
+              baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                .carInvoiceDetailVO.transManageName
+            "
+            class="car-input"
+          ></el-input
+        ></el-col>
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">
           <span>车辆价款</span>
         </el-col>
         <el-col :span="20">
-          <span>车辆价款及交易方式的收车金额</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.sellAmount
+          }}</span>
         </el-col>
       </el-row>
       <el-row>
@@ -95,7 +158,10 @@
           <span>二手车市场</span>
         </el-col>
         <el-col :span="8">
-          <span>市场名称（平台名称）</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.marketName
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"
           ><div class="flex-column">
@@ -105,8 +171,14 @@
         >
         <el-col :span="8"
           ><div class="flex-column flex-content">
-            <span>平台开票信息的纳税人识别号</span>
-            <span>平台开票信息的地址</span>
+            <span>{{
+              baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                .carInvoiceDetailVO.taxNum
+            }}</span>
+            <span>{{
+              baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                .carInvoiceDetailVO.marketAdress
+            }}</span>
           </div></el-col
         >
       </el-row>
@@ -115,10 +187,18 @@
           <span>开户行账号</span>
         </el-col>
         <el-col :span="8">
-          <span>平台开票信息的开户行及账号</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.marketBankNum
+          }}</span>
         </el-col>
         <el-col :span="4" class="bg-blue"><span>电话</span></el-col>
-        <el-col :span="8"><span>平台开票信息的电话</span></el-col>
+        <el-col :span="8"
+          ><span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+              .carInvoiceDetailVO.marketTel
+          }}</span></el-col
+        >
       </el-row>
     </div>
     <p style="font-weight: bold; margin: 10px 0">增值税通用发票</p>
@@ -134,25 +214,27 @@
       </div>
     </div>
     <p style="font-weight: bold; margin: 10px 0">合同信息</p>
-    <div class="content">
+    <div class="content content-box">
       <el-row>
-        <el-col :span="4" class="bg-blue">
-          <span>XXX收车委托合同</span>
-        </el-col>
-        <el-col :span="4">
-          <span><button class="colr159" @click="viewContract">查看</button></span>
-        </el-col>
-        <el-col :span="4" class="bg-blue">
-          <span>XXX收车合同</span>
-        </el-col>
-        <el-col :span="12">
-          <span>
-            <button class="colr159" @click="viewContract">查看</button>
-          </span>
-        </el-col>
+        <template
+          v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
+            .carInvoiceInfoVO.contractList"
+          :key="item.contractFileId"
+        >
+          <el-col :span="4" class="bg-blue">
+            <span>{{ item.contractName }}</span>
+          </el-col>
+          <el-col :span="4">
+            <span><button class="colr159" @click="viewContract(item)">查看</button></span>
+          </el-col>
+        </template>
       </el-row>
     </div>
-    <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel" />
+    <AgreementFrame
+      :visible="contractVisible"
+      :src="contractFileUrl"
+      @handle-cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -161,9 +243,16 @@ import { AgreementFrame } from './index'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
 // 合同弹框
 const contractVisible = ref(false)
+const contractFileUrl = ref('')
+const message = useMessage() // 消息弹窗
 // 查看合同
-const viewContract = () => {
-  contractVisible.value = true
+const viewContract = (item: any) => {
+  if (item.contractFileUrl) {
+    contractFileUrl.value = item.contractFileUrl
+    contractVisible.value = true
+  } else {
+    message.error('改合同暂无预览')
+  }
 }
 
 // 关闭合同弹框
@@ -187,10 +276,6 @@ const handleCancel = () => {
 p {
   font-size: 16px;
 }
-
-// .box-card {
-//   height: 80vh;
-// }
 
 .colr159 {
   color: #1592c9;
@@ -271,6 +356,14 @@ p {
   }
   > div:last-child {
     color: #f59a23;
+  }
+}
+.content-box {
+  .el-row:first-child {
+    border-top: none;
+    .el-col {
+      border-top: 1px solid #eaeaea;
+    }
   }
 }
 </style>
