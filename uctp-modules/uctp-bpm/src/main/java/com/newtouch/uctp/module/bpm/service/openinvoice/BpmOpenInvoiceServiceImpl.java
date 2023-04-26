@@ -53,7 +53,7 @@ public class BpmOpenInvoiceServiceImpl implements BpmOpenInvoiceService {
     private BpmProcessInstanceService processInstanceService;
     @Resource
     private ContractMapper contractMapper;
-    
+
     @Override
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
