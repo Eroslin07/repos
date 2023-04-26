@@ -10,7 +10,8 @@ const loginPage = "/pages/wx_login"
 
 // 页面白名单
 const whiteList = [
-  '/pages/login', '/pages/wx_login', '/subPages/common/webview/index', '/subPages/retrievePassword', '/subPages/register'
+  '/pages/login', '/pages/wx_login', '/subPages/common/webview/index', '/subPages/retrievePassword', '/subPages/register', 
+  '/subPages/registerNotice','/subPages/common/webview/userAgreement','/subPages/common/webview/privacyAgreement'
 ]
 
 // 检查地址白名单

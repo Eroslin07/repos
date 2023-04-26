@@ -56,6 +56,12 @@
 				// "navigationStyle": "custom"
 			}
 		}, {
+			"path": "registerNotice",
+			"style": {
+				"navigationBarTitleText": "用户协议及隐私"
+				// "navigationStyle": "custom"
+			}
+		}, {
 			"path": "home/bycar/index",
 			"style": {
 				"navigationBarTitleText": "我要收车",

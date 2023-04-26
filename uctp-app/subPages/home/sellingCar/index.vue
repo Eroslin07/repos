@@ -128,6 +128,7 @@
 					this.loadStatus = 'nomore'
 				}).finally(() => {
 					this.$modal.closeLoading()
+					uni.stopPullDownRefresh()
 				})
 
 			},
