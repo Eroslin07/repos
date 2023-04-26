@@ -395,7 +395,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         //合同发起后修改状态为已发起
         buyContrsctDo.setStatus(1);
         //存合同草稿合同到表
-        contractMapper.insert(buyContrsctDo);
+        contractMapper.updateBatch(buyContrsctDo);
 
         String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
         return ssoUrl;
@@ -454,12 +454,28 @@ public class QysConfigServiceImpl implements QysConfigService {
             //这里要考虑作废合同时，这里是否再写入合同  TODO
             ContractDO buyWTContract = contractMapper.getContractOneBuyType( carId,"1");
             //判断收车委托合同是否存在，不存在则存入草稿
+            QYSContractVO qysContractVO1 =new QYSContractVO();
             if (buyWTContract==null){
-                QYSContractVO qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1");
+                 qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1");
+                qysContractVOList.add(qysContractVO1);
+            }else {
+
+                contractId = buyWTContract.getContractId();
+                qysContractVO1.setType("1");
+                qysContractVO1.setContractType("1");
+                qysContractVO1.setCarId(carId);
+                qysContractVO1.setContractId(contractId);
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractId);
+                List<Long> contractIds = new ArrayList<>();
+                contractIds.add(businessFileDO.getId());
+                CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+                if (listCommonResult.getData() != null) {
+                    qysContractVO1.setUrl(listCommonResult.getData().get(0).getUrl());
+                }
                 qysContractVOList.add(qysContractVO1);
             }
 
-            ContractDO buyContract = contractMapper.getContractOneBuyType( carId,"2");
+                ContractDO buyContract = contractMapper.getContractOneBuyType( carId,"2");
             //收车合同构建
             contract = this.buildBuyContract(carInfo, carInfoDetailsDO, userDept, platformDept);
             Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
@@ -510,8 +526,10 @@ public class QysConfigServiceImpl implements QysConfigService {
             }else {
 
                 contractId=buyContract.getContractId();
+
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractId);
                 List<Long> contractIds=new ArrayList<>();
-                contractIds.add(contractId);
+                contractIds.add(businessFileDO.getId());
                 CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
                 if (listCommonResult.getData()!=null) {
                     qysContractVO.setUrl(listCommonResult.getData().get(0).getUrl());
@@ -586,16 +604,16 @@ public class QysConfigServiceImpl implements QysConfigService {
                 }
             }
 
-
+        qysContractVO.setType("1");
         qysContractVO.setContractType("2");
         qysContractVO.setCarId(carId);
         qysContractVO.setContractId(contractId);
         //正常合同放入
         qysContractVOList.add(qysContractVO);
 
-        for (QYSContractVO contractVO : qysContractVOList) {
+       /* for (QYSContractVO contractVO : qysContractVOList) {
             send(carId,type,contractVO.getContractId(),contractVO.getContractType());
-        }
+        }*/
 
 
         return qysContractVOList;
