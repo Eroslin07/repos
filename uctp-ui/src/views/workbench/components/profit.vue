@@ -33,7 +33,7 @@
               <el-image
                 v-for="item in mainValue.formDataJson.invoiceFiles"
                 :key="item.fileId"
-                style="width: 200px; height: 100px; margin-right: 10px"
+                style="width: 200px; height: 90px; margin-right: 10px"
                 :src="item.fileUrl"
                 :zoom-rate="1.2"
                 :preview-src-list="idcardUrlArr"
