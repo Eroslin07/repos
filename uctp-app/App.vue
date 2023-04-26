@@ -30,5 +30,10 @@
 </script>
 
 <style lang="scss">
+	page{
+	    height: 100%;
+	}
   @import '@/static/scss/index.scss'
 </style>
+
+

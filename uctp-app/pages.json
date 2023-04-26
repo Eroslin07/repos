@@ -92,7 +92,8 @@
 		}, {
 			"path": "work/index",
 			"style": {
-				"navigationBarTitleText": "消息"
+				"navigationBarTitleText": "消息",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "work/infoDetail",
