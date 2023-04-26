@@ -21,16 +21,13 @@
 		</view> -->
 		<view class="login-form-content">
 			<view class="input-item flex align-center">
-				<view class="title">手机号：</view>
-				<input v-model="loginForm.username" class="input" type="text" placeholder="请输入手机号" maxlength="30" />
+				<u--input v-model="loginForm.username" border="bottom" type="text" placeholder="请输入手机号" maxlength="30" />
 			</view>
 			<view class="input-item flex align-center" v-if="changing">
-				<view class="title">密码：</view>
-				<input v-model="loginForm.password" type="password" class="input" placeholder="请输入密码" maxlength="32" />
+				<u--input v-model="loginForm.password" border="bottom" type="password" placeholder="请输入密码" maxlength="32" />
 			</view>
 			<view class="input-item flex align-center" style="width: 74%;margin: 0px;" v-if="captchaEnabled">
-				<view class="title">验证码：</view>
-				<input v-model="loginForm.code" type="number" class="input" placeholder="请输入验证码" maxlength="4"
+				<u--input v-model="loginForm.code" border="bottom" type="number" placeholder="请输入验证码" maxlength="4"
 					style="width: 89%;" />
 				<view class="login-code">
 					<view @click="getVerification" class="login-code-img" v-if="getTime">获取验证码</view>
