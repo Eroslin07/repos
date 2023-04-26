@@ -9,7 +9,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
     user,
-	allStatus
+    allStatus
   },
   getters
 })
