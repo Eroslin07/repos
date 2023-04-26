@@ -33,10 +33,7 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateRe
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
-import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
-import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
+import com.newtouch.uctp.module.business.dal.dataobject.*;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
@@ -44,6 +41,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.UserExtDO;
 import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
 import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
+import com.newtouch.uctp.module.business.dal.mysql.InvoiceTitleMapper;
 import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
@@ -141,6 +139,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     private BusinessFileService businessFileService;
     @Resource
     private NoticeService noticeService;
+    @Resource
+    private InvoiceTitleMapper invoiceTitleMapper;
 
     @PostConstruct
     @Override
@@ -384,7 +384,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
 
         AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
-        // AdminUserDO usersDO = usersMapper.selectById(211);
+        //AdminUserDO usersDO = usersMapper.selectById(294);
        /* CarInfoDO carInfo = carInfoService.getCarInfo(carId);
         CarInfoDetailsDO carInfoDetailsDO =carInfoDetailsService.getCarInfoDetailsByCarId(carId);
 
@@ -413,7 +413,8 @@ public class QysConfigServiceImpl implements QysConfigService {
 
         BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractId);
         */
-        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
+       QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
+        // QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", 184);
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
         //合同发起
         client.defaultContractSend(contractId);
@@ -422,6 +423,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
+    @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public List<QYSContractVO> ContractEcho(Long carId, String type) {
         List<QYSContractVO> qysContractVOList = new ArrayList<>();
@@ -437,11 +439,12 @@ public class QysConfigServiceImpl implements QysConfigService {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
 
         AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
-        //AdminUserDO usersDO = usersMapper.selectById(211);
+        //AdminUserDO usersDO = usersMapper.selectById(294);
         if (ObjectUtil.isNull(usersDO)) {
             throw exception(USERS_INFO_ERROR);
         }
         UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", usersDO.getId());
+
         DeptDO userDept = deptMapper.selectById(usersDO.getDeptId());
         if (ObjectUtil.isNull(userDept)) {
             throw exception(DEPT_INFO_ERROR);
@@ -451,7 +454,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.isNull(platformDept)) {
             throw exception(DEPT_INFO_ERROR);
         }
+        //平台方发票抬头信息
+        InvoiceTitleDO invoiceTitleDO = invoiceTitleMapper.selectOne("dept_id", platformDept.getId());
         QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
+        //QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", 184);
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
         Contract contract = new Contract();
         //模版参数
@@ -461,27 +467,23 @@ public class QysConfigServiceImpl implements QysConfigService {
         BusinessFileDO businessFile = new BusinessFileDO();
         String contractName = "二手车收购协议.pdf";
         QYSContractVO qysContractVO = new QYSContractVO();
-        //这里要考虑作废合同时，这里是否再写入合同  TODO
-        ContractDO buyWTContract = contractMapper.getContractOneBuyType( carId,"1");
-        //判断收车委托合同是否存在，不存在则存入草稿
-        if (buyWTContract==null){
-            QYSContractVO qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1");
-            qysContractVOList.add(qysContractVO1);
-        }
-        ContractDO sellWTContract = contractMapper.getContractOneBuyType(carId,"3");
-        //判断卖车委托合同是否存在，不存在则存入草稿
-        if (sellWTContract==null){
-            QYSContractVO qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "2");
-            qysContractVOList.add(qysContractVO1);
-        }
+
+
         if (type.equals("1")) {
+            //这里要考虑作废合同时，这里是否再写入合同  TODO
+            ContractDO buyWTContract = contractMapper.getContractOneBuyType( carId,"1");
+            //判断收车委托合同是否存在，不存在则存入草稿
+            if (buyWTContract==null){
+                QYSContractVO qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1");
+                qysContractVOList.add(qysContractVO1);
+            }
 
             ContractDO buyContract = contractMapper.getContractOneBuyType( carId,"2");
             //收车合同构建
             contract = this.buildBuyContract(carInfo, carInfoDetailsDO, userDept, platformDept);
             Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
             //收车合同模版参数
-            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "3");
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "3");
             contractId = checkContract.getId();
             //选模版
             DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3086576123044233944L, template, "二手车收购协议").getData();
@@ -538,11 +540,18 @@ public class QysConfigServiceImpl implements QysConfigService {
 
         }
         else if (type.equals("2")) {
+
+            ContractDO sellWTContract = contractMapper.getContractOneBuyType(carId,"3");
+            //判断卖车委托合同是否存在，不存在则存入草稿
+            if (sellWTContract==null){
+                QYSContractVO qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "2");
+                qysContractVOList.add(qysContractVO1);
+            }
             //卖车
             contract = this.buildSellContract(carInfo, carInfoDetailsDO, userDept, platformDept);
             Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
             //模版参数
-            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "4");
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "4");
             contractId = checkContract.getId();
             //选模版
             DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3086576170024633076L, template, "二手车代销售协议").getData();
@@ -603,7 +612,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         //正常合同放入
         qysContractVOList.add(qysContractVO);
 
-        //send(carId,type,qysContractVOList.get(0).getContractId(),"1");
+        for (QYSContractVO contractVO : qysContractVOList) {
+            send(carId,type,contractVO.getContractId(),contractVO.getContractType());
+        }
+
 
         return qysContractVOList;
     }
@@ -612,6 +624,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     private QYSContractVO ContractWTSave(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept,AdminUserDO usersDO,UserExtDO userExtDO,String type){
         QYSContractVO qysContractVO=new QYSContractVO();
         QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", usersDO.getDeptId());
+        // QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", 184);
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
         Contract contract =  new Contract();
         //模版参数
@@ -625,10 +638,10 @@ public class QysConfigServiceImpl implements QysConfigService {
             contract =  this.buildBuyWTContract(userDept,platformDept);
             Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
             //模版参数
-            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "1");
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "1");
             contractId = checkContract.getId();
             //选模版
-            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3086496292898148540L, template, "二手车委托收购协议").getData();
+            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3088683424274190651L, template, "二手车委托收购协议").getData();
             documentId = documentAddResult.getDocumentId();
             businessFile.setFileType("10");//收车委托合同类型
 
@@ -648,16 +661,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         }else if(type.equals("2")){
             //卖车委托
             contract =  this.buildSellWTContract(userDept,platformDept);
+            Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
             //草稿
-            QiyuesuoCommonResult<Contract> sellResult = client.defaultDraftSend(contract);
+            /*QiyuesuoCommonResult<Contract> sellResult = client.defaultDraftSend(contract);
             if (!sellResult.getCode().equals(0)) {
                 throw new ServiceException(sellResult.getCode(), sellResult.getApiMsg());
-            }
+            }*/
             //模版参数
-            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, userExtDO, "4");
-            contractId = sellResult.getData().getId();
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "4");
+            contractId = checkContract.getId();
             //选模版
-            DocumentAddResult documentAddResult =  client.defaultDocumentAddByTemplate(contractId,3086576170024633076L,template,"二手车委托代销售协议").getData();
+            DocumentAddResult documentAddResult =  client.defaultDocumentAddByTemplate(contractId,3088683482805772326L,template,"二手车委托代销售协议").getData();
             documentId = documentAddResult.getDocumentId();
             businessFile.setFileType("12");//卖车委托合同类型
             contractName="二手车委托代销售协议.pdf";
@@ -937,7 +951,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         draftContract.addSignatory(persoanlSignatory);
         //模板参数
         draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置`
-        draftContract.setSend(true); //发起合同
+        draftContract.setSend(false); //发起合同
         return draftContract;
     }
 
@@ -966,6 +980,14 @@ public class QysConfigServiceImpl implements QysConfigService {
 //        initiator2.setReceiver(new User(userDept.getPhone(), "MOBILE"));
 //        draftContract.addSignatory(initiator2);
 
+   /*     Signatory initiator2 = new Signatory();
+        initiator2.setTenantType("PERSONAL");
+        initiator2.setTenantName(carInfoDetailsDO.getBuyerName());
+        initiator2.setReceiver(new User(carInfoDetailsDO.getBuyerTel(), "MOBILE"));
+        // initiator2.setTenantName("阿卡丽");
+        //initiator2.setReceiver(new User("17396202169", "MOBILE"));
+        draftContract.addSignatory(initiator2);
+
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
         // platformSignatory.setTenantName(platformDept.getName());
@@ -981,19 +1003,36 @@ public class QysConfigServiceImpl implements QysConfigService {
 //        persoanlSignatory.setTenantName(userDept.getName());
 //        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
+
+*/
+
+
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("PERSONAL");
+        persoanlSignatory.setTenantName(carInfoDetailsDO.getBuyerName());
+        persoanlSignatory.setReceiver(new User(carInfoDetailsDO.getBuyerTel(), "MOBILE"));
+        // persoanlSignatory.setTenantName("阿卡丽");
+        //persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+        draftContract.addSignatory(persoanlSignatory);
+        // 乙方平台
+        Signatory platformSignatory = new Signatory();
+        platformSignatory.setTenantType("COMPANY");
+        platformSignatory.setTenantName("广东光耀汽车公司");
+        platformSignatory.setReceiver(new User( "17380123816", "MOBILE"));
+        draftContract.addSignatory(platformSignatory);
+        //丙方
         Signatory initiator2 = new Signatory();
-        initiator2.setTenantType("PERSONAL");
-        initiator2.setTenantName(carInfoDetailsDO.getBuyerName());
-        initiator2.setReceiver(new User(carInfoDetailsDO.getBuyerTel(), "MOBILE"));
-       // initiator2.setTenantName("阿卡丽");
-        //initiator2.setReceiver(new User("17396202169", "MOBILE"));
+        initiator2.setTenantType("COMPANY");
+        initiator2.setTenantName("平头哥二手车");
+        initiator2.setReceiver(new User("17311271898", "MOBILE"));
         draftContract.addSignatory(initiator2);
+
 
         //模板参数
         //收车
 
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
-        draftContract.setSend(true); //发起合同
+        draftContract.setSend(false); //发起合同
         return draftContract;
     }
 
@@ -1024,20 +1063,22 @@ public class QysConfigServiceImpl implements QysConfigService {
         //模板参数
         //卖车
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
-        draftContract.setSend(true); //发起合同
+        draftContract.setSend(false); //发起合同
         return draftContract;
     }
 
 
     //模板参数
-    private List<TemplateParam>  buildTemplateParam(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept,UserExtDO userDo,String type) {
+    private List<TemplateParam>  buildTemplateParam(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept,String type) {
+        InvoiceTitleDO invoiceTitleDO=invoiceTitleMapper.selectOne("dept_id",platformDept.getId());
         List<TemplateParam> params =new ArrayList<>();
         //收车委托合同
         if ("1".equals(type)) {
             params.add(new TemplateParam("受托人", platformDept.getName()));
             params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
             params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("甲方联系电话", platformDept.getPhone()));
+            //params.add(new TemplateParam("甲方联系电话", platformDept.getPhone()));
+            params.add(new TemplateParam("甲方联系电话", "18942820000"));
             params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
 
             params.add(new TemplateParam("委托人", userDept.getName()));
@@ -1055,14 +1096,15 @@ public class QysConfigServiceImpl implements QysConfigService {
             params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
             params.add(new TemplateParam("车架号码", carInfo.getVin()));
             params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            params.add(new TemplateParam("使用年限", carInfo.getScrapDate().toString()));
+            //params.add(new TemplateParam("使用年限", carInfo.getScrapDate().toString()));
             params.add(new TemplateParam("年检签证有效期", carInfo.getAnnualInspectionDate().toString()));
             params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
             params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
             params.add(new TemplateParam("收车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
             params.add(new TemplateParam("收车金额小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("甲方收款银行",userDo.getBankName()));
-            params.add(new TemplateParam("甲方收款账号",userDo.getBondBankAccount()));
+            params.add(new TemplateParam("甲方收款银行",invoiceTitleDO.getBank()));
+            params.add(new TemplateParam("甲方收款账号",invoiceTitleDO.getBankAccount()));
+            params.add(new TemplateParam("甲方收款名称",invoiceTitleDO.getCompanyName()));
             //params.add(new TemplateParam("甲方收款银行", "工商"));
             //params.add(new TemplateParam("甲方收款账号", "6228 4804 8172 3886 810"));
         }else if ("2".equals(type)){
@@ -1088,7 +1130,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             params.add(new TemplateParam("发动机号码",carInfo.getEngineNum()));
             params.add(new TemplateParam("车架号码",carInfo.getVin()));
             params.add(new TemplateParam("行驶里程",carInfoDetailsDO.getMileage().toString()));
-            params.add(new TemplateParam("使用年限",carInfo.getScrapDate().toString()));
+           // params.add(new TemplateParam("使用年限",carInfo.getScrapDate().toString()));
             params.add(new TemplateParam("年检签证有效期",carInfo.getAnnualInspectionDate().toString()));
             params.add(new TemplateParam("保险险种",carInfo.getInsurance()));
             params.add(new TemplateParam("保险有效期",carInfo.getInsuranceEndData()));

@@ -23,6 +23,8 @@ import java.util.Date;
 public class InvoiceTitleDO extends TenantBaseDO {
 
 
+
+
     /**
      * ID
      */
@@ -58,6 +60,38 @@ public class InvoiceTitleDO extends TenantBaseDO {
      *银行账号
      */
     private String bankAccount;
+
+    /**
+     *  公司名称
+     */
+    private String companyName;
+
+    /**
+     *法定代表人
+     */
+    private String represent;
+
+
+
+    /**
+     *开户行及账号
+     */
+    private String opening;
+
+
+
+    /**
+     *部门Id
+     */
+    private Long deptId;
+
+
+
+
+
+
+
+
 
 
 

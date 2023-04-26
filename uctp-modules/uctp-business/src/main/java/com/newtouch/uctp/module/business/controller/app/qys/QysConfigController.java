@@ -144,7 +144,10 @@ public class QysConfigController {
    // public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId,@RequestParam("type") String type) {
     public CommonResult<Boolean> send(@Valid @RequestBody List<QYSContractVO> VO) {
         for (QYSContractVO qysContractVO : VO) {
-            qysConfigService.send(qysContractVO.getCarId(),qysContractVO.getType(),qysContractVO.getContractId(),qysContractVO.getContractType());
+            //这里只发起委托合同
+            if(qysContractVO.getContractType().equals("1")) {
+                qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+            }
         }
 
         return success(true);
