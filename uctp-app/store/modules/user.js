@@ -3,6 +3,7 @@ import storage from '@/utils/storage'
 import constant from '@/utils/constant'
 import { login, wxLogin, logout, getInfo } from '@/api/login'
 import { setToken, removeToken } from '@/utils/auth'
+import tarBarUserType from '@/utils/tabBar.js';
 
 const baseUrl = config.baseUrl
 
@@ -125,6 +126,15 @@ const user = {
           commit('SET_TENANTID', tenantId)
           commit('SET_TENANTNAME', user.tenantName)
           commit('SET_ID', user.id)
+          // 判断是否为主账户/子账户
+          tarBarUserType['member'].forEach((item) => {
+            if (user.getStaffType == 2) {
+              if (item.index == 1 || item.index == 2) {
+                item.visible = false;
+              }
+            }
+            uni.setTabBarItem(item)
+          })
           resolve(res)
         }).catch(error => {
           reject(error)
