@@ -5,7 +5,6 @@
     width="60%"
     :showFooter="false"
     @close="closeDialog"
-    style="height: 100%"
     :zIndex="3000"
   >
     <iframe :src="src" frameborder="0" style="width: 100%; height: 90vh"></iframe>
@@ -13,12 +12,17 @@
 </template>
 
 <script setup lang="ts" name="AgreementFrame">
-import { propTypes } from '@/utils/propTypes'
 const emit = defineEmits(['handleCancel'])
 
 const props = defineProps({
-  visible: propTypes.bool.def(false),
-  src: propTypes.bool.def('')
+  visible: {
+    type: Boolean,
+    default: false
+  },
+  src: {
+    type: String,
+    default: ''
+  }
 })
 
 const contractVisible = computed(() => {

@@ -83,7 +83,12 @@ public enum AccountEnum {
 
     // 待回填保证金：明细类型
     CASH_BACK_TYPE_WAIT("10121001", "待回填保证金"),
-    CASH_BACK_TYPE_PROFIT_DEDUCTION("10121002", "利润抵扣额度");
+    CASH_BACK_TYPE_PROFIT_DEDUCTION("10121002", "利润抵扣额度"),
+
+    // 银行卡业务类型
+    BANK_NO_CASH("1", "保证金充值银行卡"),
+    BANK_NO_PROFIT("2", "利润提现对公银行卡");
+
 
     private String key;
     private String value;
@@ -109,7 +114,7 @@ public enum AccountEnum {
     }
 
     public static String getName(String key) {
-        if (key == null || key.trim().equals("")){
+        if (key == null || key.trim().equals("")) {
             return null;
         }
 

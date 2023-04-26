@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.business.controller.app.account;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;
+import com.newtouch.uctp.module.business.service.account.AccountService;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,12 +25,6 @@ public class AccountController {
 
     @Resource
     private MerchantAccountService merchantAccountService;
-
-    @PostMapping("/open")
-    @Operation(summary = "商户账户开户")
-    public CommonResult<String> accountOpen() {
-        return success("OK");
-    }
 
     @GetMapping("/get")
     @Operation(summary = "查询商户虚拟账户资产详情")
