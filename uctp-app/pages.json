@@ -1,13 +1,11 @@
 {
-	"pages": [
-		// 	{
-		// 	"path": "pages/wx_login",
-		// 	"style": {
-		// 		"navigationBarTitleText": "登录",
-		// 		"navigationStyle": "custom"
-		// 	}
-		// },
-		{
+	"pages": [{
+			"path": "pages/wx_login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		}, {
 			"path": "pages/login",
 			"style": {
 				"navigationBarTitleText": "登录",
@@ -52,8 +50,8 @@
 		}, {
 			"path": "register",
 			"style": {
-				"navigationBarTitleText": "注册账号"
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "注册账号",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "registerNotice",

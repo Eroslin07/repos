@@ -1,7 +1,7 @@
 <template>
 	<view class="register">
 		<!-- 自定义导航栏 -->
-		<!-- <uni-nav-bar :fixed="true" shadow left-icon="left" left-text="返回" :title="title" @clickLeft="back" /> -->
+		<u-navbar title="注册账号" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-modal :show="showModal" :content='content' showCancelButton @confirm="handleConfirm" @cancel="handleCancel"></u-modal>
 		<!-- 信息填写 -->
 		<view>
@@ -369,9 +369,7 @@
 		},
 		methods: {
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				this.$tab.navigateTo('/pages/login');
 			},
 			handleConfirm() {
 				this.showModal = false;
