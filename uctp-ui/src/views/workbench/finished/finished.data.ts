@@ -28,14 +28,14 @@ const crudSchemas = reactive<VxeCrudSchema>({
       isSearch: true,
       dictClass: 'number',
       table: {
-        minWidth: 180
+        minWidth: 500
       }
     },
     {
       title: '商户',
       field: 'merchantName',
       table: {
-        minWidth: 180
+        minWidth: 220
       }
     },
     {
@@ -43,7 +43,14 @@ const crudSchemas = reactive<VxeCrudSchema>({
       field: 'startUserName',
       isSearch: true,
       table: {
-        minWidth: 180
+        minWidth: 140
+      }
+    },
+    {
+      title: '审批人',
+      field: 'assigneeUserName',
+      table: {
+        minWidth: 140
       }
     },
     {
@@ -59,13 +66,6 @@ const crudSchemas = reactive<VxeCrudSchema>({
       title: '到达时间',
       field: 'arrivalTime',
       formatter: 'formatDate',
-      table: {
-        minWidth: 180
-      }
-    },
-    {
-      title: '审批人',
-      field: 'assigneeUserName',
       table: {
         minWidth: 180
       }

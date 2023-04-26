@@ -100,8 +100,7 @@ const handleApplication = (row) => {
       completedVisible.value = false
       baseInfoData.data = { ...response }
       loadingInstance.close()
-      console.log(baseInfoData.data)
-      // ZHSQ SGYZ SCKP SCKZH MCHT MCKP LRTQ
+      // ZHSQ SGYZ SCKP SCGH SKZH MCKP MGYZ MCKP LRTX MCGH
       status.value = response.busiType
       drawerVisible.value = true //打开抽屉
     })

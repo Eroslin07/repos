@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class AccountDTO {
 
+    @Schema(description = "身份证号", required = true, example = "513021")
+    private String idCard;
+
     @Schema(description = "租户ID")
     @NotNull(message = "租户ID不能为空")
     private Long tenantId;
@@ -17,13 +20,14 @@ public class AccountDTO {
     @NotNull(message = "商户ID不能为空")
     private Long merchantId;
 
-    @Schema(description = "商户公司名称")
-    @NotNull(message = "商户名称不能为空")
-    private String merchantCompanyName;
+    @Schema(description = "公司名称", required = true, example = "XX车行")
+    private String businessName;
 
-    @Schema(description = "商户用户姓名")
-    @NotNull(message = "商户用户姓名不能为空")
-    private String merchantName;
+    @Schema(description = "法定代表人")
+    private String legalRepresentative;
+
+    @Schema(description = "营业执照号", required = true, example = "123456")
+    private String taxNum;
 
     @Schema(description = "开户行名称")
     @NotNull(message = "开户行名称不能为空")
