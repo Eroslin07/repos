@@ -53,6 +53,9 @@ public class AuthPermissionInfoRespVO {
         @Schema(description = "市场名称")
         private String tenantName;
 
+        @Schema(description = "用户类型(1 主账号 2 商户子账号)")
+        private String staffType;
+
     }
 
 }

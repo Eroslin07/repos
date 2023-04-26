@@ -217,7 +217,7 @@ public class RegisterController {
 
     @GetMapping("/getAccountList")
     @Operation(summary = "获取子账号列表")
-    @Parameter(name = "deptId", description = "商户id", required = true, example = "1650085024672796674")
+    @Parameter(name = "deptId", description = "商户id", required = true, example = "263")
     public CommonResult<List<AddAccountRespVO>> getAccountList(@RequestParam("deptId") Long deptId) {
         return success(authService.getAccountList(deptId));
     }

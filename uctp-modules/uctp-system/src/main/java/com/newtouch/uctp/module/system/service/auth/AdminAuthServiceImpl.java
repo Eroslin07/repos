@@ -35,6 +35,8 @@ import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
+import com.newtouch.uctp.module.system.dal.mysql.user.AdminUserMapper;
+import com.newtouch.uctp.module.system.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
 import com.newtouch.uctp.module.system.enums.logger.LoginResultEnum;
 import com.newtouch.uctp.module.system.enums.oauth2.OAuth2ClientConstants;
@@ -87,6 +89,10 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private UserExtService userExtService;
     @Resource
     private BusinessFileApi businessFileApi;
+    @Resource
+    private UserExtMapper userExtMapper;
+    @Resource
+    private AdminUserMapper adminUserMapper;
 
     /**
      * 验证码的开关，默认为 true
@@ -141,6 +147,32 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         }
         // 创建 Token 令牌，记录登录日志
         return createTokenAfterLoginSuccess(user.getId(), reqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
+    }
+
+    @Override
+    public AuthUserInfoRespVO getUserInfo(Long userId) {
+        AuthUserInfoRespVO infoRespVO = new AuthUserInfoRespVO();
+        UserExtDO userExtDO=new UserExtDO();
+        AdminUserDO user = userService.getUser(userId);
+        DeptDO dept = deptService.getDept(user.getDeptId());
+        //拿到父级
+        DeptDO parentDept = deptService.selectByParent(String.valueOf(dept.getTenantId()), 0L);
+        List<UserExtDO> userExtDOS = userExtMapper.selectByUserId(userId);
+        if(userExtDOS.size()>0){
+            userExtDO = userExtDOS.get(0);
+        }
+        infoRespVO.setNickname(user.getNickname());
+        infoRespVO.setIdCard(userExtDO.getIdCard());
+        infoRespVO.setPhone(user.getMobile());
+        infoRespVO.setTaxNum(dept.getTaxNum());
+        infoRespVO.setDeptName(dept.getName());
+        infoRespVO.setLegalRepresentative(dept.getLegalRepresentative());
+        infoRespVO.setTenantName(parentDept.getName());
+        infoRespVO.setBankName(userExtDO.getBankName());
+        infoRespVO.setBankAccount(userExtDO.getBankAccount());
+        infoRespVO.setBondBankAccount(userExtDO.getBondBankAccount());
+        infoRespVO.setAddress(dept.getAddress());
+        return infoRespVO;
     }
 
     @Override
@@ -210,7 +242,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             userDO.setNickname(reqVO.getName());
             userDO.setDeptId(deptDO.getId());//商户id
             userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            userDO.setStatus(2);//未激活
+            userDO.setStatus(1);
             userService.insertUser(userDO);
 
             //用户扩展表
@@ -221,7 +253,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             extDO.setBankAccount(reqVO.getBankNumber());//对公银行账号
             extDO.setBondBankAccount(reqVO.getBondBankAccount());//保证金充值账号
             extDO.setStaffType("1");//主账号
-            extDO.setStatus(2);
+            extDO.setStatus(1);//未激活
             extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             userExtService.insertUser(extDO);
 
@@ -250,6 +282,72 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             throw exception(AUTH_REGISTER_ERROR);
         }
         return map;
+    }
+
+    @Override
+    public Map addAccount(AddAccountReqVO reqVO) {
+        HashMap<Object, Object> map = new HashMap<>();
+        AdminUserDO userDO = new AdminUserDO();
+        UserExtDO userExtDO = new UserExtDO();
+        if(null==reqVO.getId()){
+            try {
+                userDO.setUsername(reqVO.getPhone());
+                userDO.setMobile(reqVO.getPhone());
+                userDO.setNickname(reqVO.getName());
+                userDO.setStatus(1);
+                userDO.setDeptId(reqVO.getDeptId());
+                userDO.setTenantId(reqVO.getTenantId());
+                userService.insertUser(userDO);
+
+                userExtDO.setUserId(userDO.getId());
+                userExtDO.setStaffType("2");
+                userExtDO.setStatus(1);
+                userExtDO.setBusinessId(reqVO.getDeptId());
+                userExtDO.setTenantId(reqVO.getTenantId());
+                userExtDO.setIdCard(reqVO.getIdCard());
+                userExtService.insertUser(userExtDO);
+                map.put("success","0");
+            }catch (Exception e){
+                throw exception(AUTH_ADDACCOUNT_ERROR);
+            }
+        }else{
+            try {
+                AdminUserDO user = userService.getUser(reqVO.getId());
+                UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
+                user.setNickname(reqVO.getName());
+                //如果身份证变更，修改为未激活（未认证）
+                if(!userExtDOS.getIdCard().equals(reqVO.getIdCard())){
+                    String idCard = reqVO.getIdCard();
+                    user.setStatus(1);
+                    userExtDOS.setIdCard(reqVO.getIdCard());
+                    userExtDOS.setStatus(1);
+                }
+                //如果手机号变更，修改为状态为未激活（未认证）
+                if(user.getMobile().equals(reqVO.getPhone())){
+                    user.setStatus(1);
+                    user.setUsername(reqVO.getPhone());
+                    user.setMobile(reqVO.getPhone());
+                    userExtDOS.setStatus(1);
+                }
+                adminUserMapper.updateById(user);
+                userExtMapper.updateById(userExtDOS);
+            }catch (Exception e){
+                throw exception(AUTH_UPDATEACCOUNT_ERROR);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public int deleteAccount(Long id) {
+        adminUserMapper.deleteById(id);
+        return userExtMapper.deleteByUserId(id);
+    }
+
+    @Override
+    public List<AddAccountRespVO> getAccountList(Long deptId) {
+
+        return userExtMapper.getAccountList(deptId);
     }
 
     @Override
