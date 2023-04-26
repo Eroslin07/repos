@@ -56,26 +56,6 @@
 					_this.wxcode = res.code;
 				}
 			})
-			const params = {
-				appId: _this.appId,
-				secret: '45323149c53d4340dfad4a304803eeaf', // 小程序秘钥
-				grant_type: 'client_credential',
-				js_code: _this.wxcode
-			}
-			uni.request({
-				method: 'GET',
-				url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${params.appId}&secret=${params.secret}`,
-			}).then((res) => {
-				if (res.errcode) {
-					uni.showToast({
-						title: '获取用户信息失败',
-						icon: 'none',
-						duration: 2000
-					});
-					return
-				}
-				_this.sessionKey = res[1].data.access_token
-			})
 			// #endif
 		},
 		methods: {
@@ -110,12 +90,15 @@
 						return;
 					}
 				}
+				const params = {
+					appId: _this.appId,
+					secret: '45323149c53d4340dfad4a304803eeaf', // 小程序秘钥
+					grant_type: 'client_credential',
+					js_code: _this.wxcode
+				}
 				uni.request({
-					method: 'POST',
-					url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${_this.sessionKey}`,
-					data: {
-						code: e.detail.code
-					}
+					method: 'GET',
+					url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${params.appId}&secret=${params.secret}`,
 				}).then((res) => {
 					if (res.errcode) {
 						uni.showToast({
@@ -125,9 +108,26 @@
 						});
 						return
 					}
-					_this.phone = res[1].data.phone_info.phoneNumber;
-					_this.$store.commit('SET_PHONE', _this.phone);
-					_this.phoneLogin();
+					_this.sessionKey = res[1].data.access_token
+					uni.request({
+						method: 'POST',
+						url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${_this.sessionKey}`,
+						data: {
+							code: e.detail.code
+						}
+					}).then((res) => {
+						if (res.errcode) {
+							uni.showToast({
+								title: '获取用户信息失败',
+								icon: 'none',
+								duration: 2000
+							});
+							return
+						}
+						_this.phone = res[1].data.phone_info.phoneNumber;
+						_this.$store.commit('SET_PHONE', _this.phone);
+						_this.phoneLogin();
+					})
 				})
 			},
 			// 手机号登录
