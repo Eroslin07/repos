@@ -6,7 +6,7 @@
 				<view style="margin-top: 20px;" @click="handleLook">
 					<image src="../../../static/images/bycar/hetong1.png" class="form-image"
 						style="width: 16pt;height: 16pt;"></image>
-					<text @click="handleViewContract">《2021年03月20日收车合同》</text>
+					<text @click="handleViewContract">《二手车收购协议》</text>
 				</view>
 			</view>
 			<!-- 底部按钮 -->
@@ -27,12 +27,15 @@
 		data() {
 			return {
 				checkboxValue: null,
-				carId: ''
+				carId: '',
+				// 合同详情
+				contractDtail: [],
 			}
 		},
 		onLoad(options) {
 			console.log((options))
 			this.carId = options.carId
+			this.getContractUrl()
 		},
 		methods: {
 			// 查看
@@ -42,10 +45,8 @@
 			// 合同签章
 			handleAffirm() {
 				const data = {
-					// carId:'1648668268713422850',
-					carId: this.carId,
-					type: '1',
-					contractId: '312313131',
+					...this.contractDtail.find(v=>v.contractType=='1'),
+					type:'1'
 				}
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
@@ -59,26 +60,31 @@
 			handleClose() {
 				this.$tab.reLaunch('/pages/index');
 			},
-			handleViewContract() {
-				let data=`carId=${this.carId}&&type=1`
+			getContractUrl() {
+				let data = `carId=${this.carId}&&type=1`
 				getContractEcho(data).then(res => {
 					console.log(res.data)
-						uni.downloadFile({
-						  url: res.data.url,
-						  success: function (res) {
-						    var filePath = res.tempFilePath;
-						    uni.openDocument({
-						      filePath: filePath,
-						      showMenu: false,
-						      success: function (res) {
-						        console.log('打开文档成功');
-						      }
-						    });
-						  }
-						});
-				}).catch(err=>{
-					this.$modal.msg('打开文档失败')
+					this.contractDtail = res.data
+				}).catch(err => {
+					this.$modal.msg('获取合同失败')
 				})
+			},
+			// 查看合同
+			handleViewContract() {
+				let url=this.contractDtail.find(v=>v.contractType=='2')?.url
+				uni.downloadFile({
+					url: url,
+					success: function(res) {
+						var filePath = res.tempFilePath;
+						uni.openDocument({
+							filePath: filePath,
+							showMenu: false,
+							success: function(res) {
+								console.log('打开文档成功');
+							}
+						});
+					}
+				});
 			},
 
 		}

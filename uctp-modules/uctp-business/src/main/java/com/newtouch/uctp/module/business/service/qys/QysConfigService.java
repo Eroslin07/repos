@@ -1,7 +1,7 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
+import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
@@ -155,4 +155,10 @@ public interface QysConfigService {
     String callBackSealSignAuth(String signature, String timestamp, String content) throws Exception;
 
 
+    /**
+     *  通过部门Id获取契约锁配置
+     * @param businessId 业务表id（部门表Id）
+     * @return
+     */
+    QysConfigDO getByDeptId(Long businessId);
 }

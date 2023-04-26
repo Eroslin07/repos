@@ -1,15 +1,6 @@
 package com.newtouch.uctp.framework.datapermission.core.db;
 
 import cn.hutool.core.collection.CollUtil;
-import com.newtouch.uctp.framework.common.util.collection.SetUtils;
-import com.newtouch.uctp.framework.datapermission.core.rule.DataPermissionRule;
-import com.newtouch.uctp.framework.datapermission.core.rule.DataPermissionRuleFactory;
-import com.newtouch.uctp.framework.mybatis.core.util.MyBatisUtils;
-import com.alibaba.ttl.TransmittableThreadLocal;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
-import com.baomidou.mybatisplus.extension.parser.JsqlParserSupport;
-import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.sf.jsqlparser.expression.*;
@@ -22,6 +13,11 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.statement.update.Update;
+
+import java.sql.Connection;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -30,9 +26,15 @@ import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
-import java.sql.Connection;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.alibaba.ttl.TransmittableThreadLocal;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
+import com.baomidou.mybatisplus.extension.parser.JsqlParserSupport;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
+import com.newtouch.uctp.framework.common.util.collection.SetUtils;
+import com.newtouch.uctp.framework.datapermission.core.rule.DataPermissionRule;
+import com.newtouch.uctp.framework.datapermission.core.rule.DataPermissionRuleFactory;
+import com.newtouch.uctp.framework.mybatis.core.util.MyBatisUtils;
 
 /**
  * 数据权限拦截器，通过 {@link DataPermissionRule} 数据权限规则，重写 SQL 的方式来实现
@@ -472,7 +474,7 @@ public class DataPermissionDatabaseInterceptor extends JsqlParserSupport impleme
         }
 
         // 第二步，合并多个 Expression 条件
-        if (dataPermissionExpression == null) {
+        if (dataPermissionExpression == null || dataPermissionExpression instanceof NullValue) {
             return currentExpression;
         }
         if (currentExpression == null) {
