@@ -125,7 +125,7 @@
 						return
 					}
 					_this.phone = res[1].data.phone_info.phoneNumber;
-					_this.$store.dispatch('GetPhone', _this.phone);
+					_this.$store.commit('SET_PHONE', _this.phone);
 					_this.phoneLogin();
 				})
 			},
