@@ -15,7 +15,7 @@
           已经签约完成并已付款。现需要向卖车方
           <span style="color: #63b0ff">{{
             baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
-              .sellerName
+              .sellerName || '--'
           }}</span>
           的开具正向二手车通用发票。开票内容如下，请平台方开具反向二手车统一发票！
         </div>
