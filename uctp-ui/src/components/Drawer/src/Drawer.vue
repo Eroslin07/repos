@@ -98,7 +98,7 @@ const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])
 // const emit = defineEmits(['handleUpdataList'])
 const activeName = ref('BaseInfo')
-// const statusList = ['SCKP', 'MCGH']
+const statusList = ['SCKP', 'MCGH', 'SCKP', 'MCKP']
 const comps = shallowRef([
   {
     label: '基本信息',
@@ -134,7 +134,7 @@ const drawerVisible = computed(() => {
   return props.visible
 })
 const noVisible = computed(() => {
-  return !(props.status == 'SCKP' || props.status == 'MCGH')
+  return !statusList.includes(props.status)
 })
 function tabChange(name) {
   tabName.value = name
