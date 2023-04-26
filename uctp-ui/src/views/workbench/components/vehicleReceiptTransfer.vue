@@ -309,10 +309,22 @@
             </el-col>
             <el-col :span="2" class="bg-yell">联系地址：</el-col>
             <el-col :span="4">
-              <div>{{
-                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                  .sellerAdder
-              }}</div>
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                    .sellerAdder
+                "
+                placement="top-start"
+              >
+                <div class="carInfo">
+                  {{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                      .sellerAdder
+                  }}</div
+                >
+              </el-tooltip>
             </el-col>
           </el-row>
           <el-row>

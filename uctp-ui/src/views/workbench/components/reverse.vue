@@ -12,9 +12,12 @@
       <icon icon="svg-icon:notice" class="notice"></icon>
       <div class="title-box">
         收车合同
-        <span style="color: #63b0ff">SCHT202303220001</span>
+        <span style="color: #63b0ff">{{ baseInfoData.data.serialNo }}</span>
         已经签约完成并已付款。现需要向卖车方
-        <span style="color: #63b0ff">陈某</span>
+        <span style="color: #63b0ff">{{
+          baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+            .carInvoiceDetailVO.sellerName
+        }}</span>
         的开具反向二手车通用发票。开票内容如下，请平台方开具反向二手车统一发票！
       </div>
     </div>
