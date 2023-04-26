@@ -1,14 +1,12 @@
-package com.newtouch.uctp.module.business.service.impl;
+package com.newtouch.uctp.module.business.service.bank.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.newtouch.uctp.module.business.service.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
 @Service

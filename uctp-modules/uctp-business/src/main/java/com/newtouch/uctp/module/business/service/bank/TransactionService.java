@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service;
+package com.newtouch.uctp.module.business.service.bank;
 
 /**
  * 交易服务
