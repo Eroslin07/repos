@@ -20,7 +20,7 @@ public class TransactionRecordReqVO {
     @Schema(description = "交易金额-单位分")
     @Min(value = 1, message = "交易金额必须大于0",
             groups = {Recharge.class, Withdraw.class, Reserve.class, Back.class, ProfitBack.class})
-    private Integer tranAmount;
+    private Long tranAmount;
 
     @Schema(description = "版本号")
     @NotNull(message = "版本号不能为空",

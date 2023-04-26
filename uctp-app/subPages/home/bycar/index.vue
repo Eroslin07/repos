@@ -1,7 +1,7 @@
 <template>
-	<view class="by-car">
+	<view class="by-car" :class="{popupShow: showModel}">
 		<!-- 自定义导航栏 -->
-		<!-- <u-navbar title="我要收车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
+		<u-navbar title="我要收车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
 			<u-grid-item>
 				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
@@ -16,7 +16,7 @@
 		</u-grid>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
-			<view v-if="vehicleInfor">
+			<view v-show="vehicleInfor">
 				<u--form labelPosition="left" :model="carForm" :rules="carRules" ref="carForm" labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
@@ -102,7 +102,7 @@
 					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="model" borderBottom>
 						<view @click="showModel = true">
-							<u--input v-model="carForm.model" border="none" placeholder="请输入品牌/车系/车型"></u--input>
+							<u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input>
 						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
@@ -165,7 +165,7 @@
 				<!-- 选择登记日期 -->
 				<u-datetime-picker v-if="showDate" :show="showDate" v-model="showDateTime" mode="date"
 					:formatter="formatter" @cancel="showDate = false" @confirm="handleDate"></u-datetime-picker>
-				<u-popup v-if="showModel" :show="showModel" :customStyle="{ 'width': '240px' }" mode="right"
+				<u-popup v-if="showModel" :show="showModel" safeAreaInsetTop :customStyle="{ 'width': '240px' }" mode="right"
 					@close="showModel = false">
 					<view>
 						<model-list :seriesList="seriesList" :title="carForm.brand" @handleClose="handleClose" />
@@ -173,7 +173,7 @@
 				</u-popup>
 			</view>
 			<!-- 卖家信息 -->
-			<view v-if="sellerInfor">
+			<view v-show="sellerInfor">
 				<view class="text">卖家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
@@ -184,7 +184,7 @@
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" border="none" placeholder="请输入收车金额"
+						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none" placeholder="请输入收车金额"
 							@blur="handleBlur" @focus="handleFocus">
 							<template slot="suffix">
 								<view>元</view>
@@ -196,13 +196,13 @@
 							iconStyle="font-size: 16px; color: #e26e1f" text="保证金可用余额150000元" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
-						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus != 0">公允价值审核-退回 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'">公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
 						<u-radio-group v-model="sellerForm.payType" placement="row" activeColor="#fd6404">
 							<u-radio shape="circle" label="全款" :name="0"></u-radio>
 							<text style="margin: 0 5px;"></text>
-							<u-radio shape="circle" label="定金+尾款" :name="1"></u-radio>
+							<!-- <u-radio shape="circle" label="定金+尾款" :name="1"></u-radio> -->
 						</u-radio-group>
 					</u-form-item>
 					<!-- <u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
@@ -669,8 +669,13 @@
 				modelId: null,
 				modelName: null,
 				date: null,
-				fairStatus: 0
+				fairStatus: null
 			}
+		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.carForm.setRules(this.carRules)
+			this.$refs.sellerForm.setRules(this.sellerRules)
 		},
 		onBackPress(options) {
 			if (this.active == 0) {
@@ -679,6 +684,7 @@
 				this.vehicleInfor = true;
 				this.sellerInfor = false;
 				this.active = 0;
+				this.$refs.sellerForm.clearValidate();
 			}
 			return true;
 		},
@@ -704,9 +710,17 @@
 		},
 		methods: {
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				if (this.active == 0) {
+					this.handleSaveCar();
+				} else if (this.active == 1) {
+					this.vehicleInfor = true;
+					this.sellerInfor = false;
+					this.active = 0;
+					uni.pageScrollTo({
+						scrollTop: 0,
+						duration: 300
+					});
+				}
 			},
 			handelKey(value) {
 				if (value.length != 0) {
@@ -804,50 +818,55 @@
 									vehicleLicense: str
 								}).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.words_result['发动机号码']) {
-										let vin = data.words_result['车辆识别代号'].words;
-										getCarInfo({ VIN: vin }).then((result) => {
-											_this.$modal.closeLoading();
-											if (result.data['1']) {
-												// 数据回显
-												_this.getInfo(result.data['1']);
-												if (result.data['1'].fileB.length == 0) {
+									if (data.error_msg) {
+										_this.$modal.msg("请上传正确且清晰的行驶证照片");
+										_this[`fileList${index}`] = [];
+									} else {
+										if (data.words_result['发动机号码']) {
+											let vin = data.words_result['车辆识别代号'].words;
+											getCarInfo({ VIN: vin }).then((result) => {
+												_this.$modal.closeLoading();
+												if (result.data['1']) {
+													// 数据回显
+													_this.getInfo(result.data['1']);
+													if (result.data['1'].fileB.length == 0) {
+														if (i == res.tempFilePaths.length - 1) {
+															_this.upload(res, index);
+														}
+													}
+												} else if (result.data['2']) {
+													_this.$modal.msg("车辆已存在");
+													_this[`fileList${index}`] = [];
+													_this.carForm.drivingLicenseUrl = [];
+												} else if (result.data['3']) {
+													_this.carForm.vin = vin;
+													_this.carForm.carType = data.words_result['车辆类型'].words;
+													_this.carForm.engineNum = data.words_result['发动机号码'].words;
+													_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
+													_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
+													_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+													if (_this.carForm.model.indexOf('汽车') > -1) {
+														_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
+													}
+													_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
+													if (_this.carForm.brand.indexOf('汽车') > -1) {
+														_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
+													}
+													_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
+													let rdate = data.words_result['注册日期'].words;
+													let y = rdate.slice(0, 4);
+													let m = rdate.slice(4, 6);
+													let d = rdate.slice(6);
+													_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
+										
 													if (i == res.tempFilePaths.length - 1) {
 														_this.upload(res, index);
 													}
 												}
-											} else if (result.data['2']) {
-												_this.$modal.msg("车辆已存在");
-												_this[`fileList${index}`] = [];
-												_this.carForm.drivingLicenseUrl = [];
-											} else if (result.data['3']) {
-												_this.carForm.vin = vin;
-												_this.carForm.carType = data.words_result['车辆类型'].words;
-												_this.carForm.engineNum = data.words_result['发动机号码'].words;
-												_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
-												_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
-												_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-												if (_this.carForm.model.indexOf('汽车') > -1) {
-													_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
-												}
-												_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-												if (_this.carForm.brand.indexOf('汽车') > -1) {
-													_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
-												}
-												_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
-												let rdate = data.words_result['注册日期'].words;
-												let y = rdate.slice(0, 4);
-												let m = rdate.slice(4, 6);
-												let d = rdate.slice(6);
-												_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
-
-												if (i == res.tempFilePaths.length - 1) {
-													_this.upload(res, index);
-												}
-											}
-											// 根据品牌查询id
-											_this.carBrandList();
-										})
+												// 根据品牌查询id
+												_this.carBrandList();
+											})
+										}
 									}
 								})
 							}
@@ -858,32 +877,38 @@
 						} else if (index == 3) {
 							// 识别机动车登记证书
 							_this.carForm.certificateUrl = _this[`fileList${index}`];
+							// if (data.error_msg) {
+							// 	_this.$modal.msg("上传模板不正确，请重新上传");
+							// 	_this[`fileList${index}`] = [];
+							// }
 							_this.upload(res, index);
 						} else if (index == 4 || index == 8) {
 							// 识别身份证
-							_this.sellerForm.sellerIdCardUrl = [..._this.sellerForm.sellerIdCardUrl, ..._this[
-								`fileList${index}`]];
+							_this.sellerForm.sellerIdCardUrl = [..._this.sellerForm.sellerIdCardUrl, ..._this[`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
-								getIdCard({
-									IDCardUrl: str
-								}).then((ress) => {
+								getIdCard({ IDCardUrl: str }).then((ress) => {
 									let data = JSON.parse(ress.data);
-									if (data.words_result['公民身份号码']) {
-										_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
-										_this.sellerForm.sellerAdder = data.words_result['住址'].words;
-										_this.sellerForm.sellerName = data.words_result['姓名'].words;
-									}
-									if (data.words_result['失效日期']) {
-										if (_this.date > data.words_result['失效日期'].words) {
-											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-												_this.handleCancel();
-												return;
-											})
+									if (data.error_msg) {
+										_this.$modal.msg("请上传正确且清晰的身份证照照片");
+										_this[`fileList${index}`] = [];
+									} else {
+										if (data.words_result['公民身份号码']) {
+											_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
+											_this.sellerForm.sellerAdder = data.words_result['住址'].words;
+											_this.sellerForm.sellerName = data.words_result['姓名'].words;
 										}
-									}
-									if (i == res.tempFilePaths.length - 1) {
-										_this.upload(res, index);
+										if (data.words_result['失效日期']) {
+											if (_this.date > data.words_result['失效日期'].words) {
+												showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+													_this.handleCancel();
+													return;
+												})
+											}
+										}
+										if (i == res.tempFilePaths.length - 1) {
+											_this.upload(res, index);
+										}
 									}
 								})
 							}
@@ -942,11 +967,20 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({
-					id: event.file.id
-				}).then((res) => {
+				deleteImage({ id: event.file.id }).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
+					if (event.name == 1) {
+						this.carForm.vin = '';
+						this.carForm.carType = '';
+						this.carForm.engineNum = '';
+						this.carForm.licensePlateNum = '';
+						this.carForm.natureOfOperat = '';
+						this.carForm.model = '';
+						this.carForm.brand = '';
+						this.carForm.brandType = '';
+						this.carForm.firstRegistDate = dateTime;
+					}
 				})
 			},
 			// 数据回显
@@ -954,7 +988,7 @@
 				this.carId = data.carInfoDetails.carId;
 				this.modelId = data.carInfo.modelId;
 				this.carForm = {
-					drivingLicenseUrl: data.fileB.length == 0 ? this[`fileList${index}`] : data.fileB,
+					drivingLicenseUrl: data.fileB,
 					certificateUrl: data.fileC,
 					carUrl: data.fileA,
 					vin: data.carInfo.vin,
@@ -973,7 +1007,7 @@
 					brand: data.carInfo.brand,
 					remarks: data.carInfo.remarks,
 					insurance: data.carInfo.insurance,
-					mileage: data.carInfoDetails.mileage.toString(),
+					mileage: data.carInfoDetails.mileage ? data.carInfoDetails.mileage.toString() : '',
 					checkboxValue: [],
 					key: data.carInfoDetails.proceduresAndSpareParts.vehicleKey,
 					other: data.carInfoDetails.proceduresAndSpareParts.accidentVehicle,
@@ -1029,6 +1063,7 @@
 					bankCard: data.carInfoDetails.bankCard,
 					thirdBankCard: data.carInfoDetails.thirdBankCard,
 				}
+				this.fairStatus = data.carInfo.bpmStatus;
 				data.fileD.forEach((item,index) => {
 					if (index == 0) {
 						this.fileList4 = [item];
@@ -1124,7 +1159,6 @@
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
-				this.showOverlay = true;
 				// 车辆手续及备件
 				let proceduresAndSpareParts = {};
 				let list1 = [];
@@ -1140,11 +1174,19 @@
 					proceduresAndSpareParts[item] = false;
 				})
 				if (proceduresAndSpareParts['vehicleKey'] == true) {
+					if (this.carForm.key == '' || !this.carForm.key) {
+						this.$modal.msg("请输入钥匙");
+						return
+					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
 					proceduresAndSpareParts['vehicleKey'] = 0;
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
+					if (this.carForm.other == '' || !this.carForm.other) {
+						this.$modal.msg("请输入其他内容");
+						return
+					}
 					proceduresAndSpareParts['accidentVehicle'] = this.carForm.other;
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
@@ -1178,6 +1220,7 @@
 					remarks: this.carForm.remarks,
 					proceduresAndSpareParts
 				}
+				this.showOverlay = true;
 				this.$modal.loading("提交中，请耐心等待...")
 				setCarInfo(data).then((res) => {
 					this.$modal.closeLoading()
@@ -1188,6 +1231,11 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.$refs.carForm.clearValidate();
+						uni.pageScrollTo({
+							scrollTop: 0,
+							duration: 300
+						});
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
@@ -1316,7 +1364,7 @@
 							}).catch((error) => {
 								this.$modal.closeLoading()
 								this.showOverlay = false;
-								this.$modal.msgError("发起流程失败");
+								// this.$modal.msgError("发起流程失败");
 							})
 						}
 					} else {
@@ -1370,6 +1418,13 @@
 	.by-car {
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
+	}
+	
+	.popupShow {
+		overflow: hidden;
+		position: fixed;
+		height: 100%;
+		width: 100%;
 	}
 
 	.grid-text {

@@ -1,7 +1,7 @@
 <template>
 	<view class="selling-car">
 		<!-- 自定义导航栏 -->
-		<!-- <u-navbar title="我要卖车" leftText="返回" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar> -->
+		<u-navbar title="我要卖车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
 			<u-grid-item>
 				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
@@ -16,7 +16,7 @@
 		</u-grid>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
-			<view v-if="vehicleInfor">
+			<view v-show="vehicleInfor">
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 					</view>
@@ -135,7 +135,7 @@
 
 			</view>
 			<!-- 买家信息 -->
-			<view v-if="sellerInfor">
+			<view v-show="sellerInfor">
 				<view class="text">买家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
@@ -153,7 +153,7 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" border="none" @focus="handleFocus" @blur="handleBlur"
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus" @blur="handleBlur"
 							placeholder="请输入卖车金额">
 							<template slot="suffix">
 								<view>元</view>
@@ -164,7 +164,7 @@
 						<u--text style="font-size:12px;" prefixIcon="info-circle"
 							iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view v-if="false" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看
 								></text></view>
@@ -745,8 +745,15 @@
 				draftStatus: 0,
 
 				// 是否是子账户
-				isChildAccount: false
+				isChildAccount: false,
+				fairStatus: null
 			}
+		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.carForm.setRules(this.carRules)
+			this.$refs.sellerForm.setRules(this.sellerRules)
+			this.$refs.feesForm.setRules(this.feesFormRules)
 		},
 		beforeCreate() {
 			that = this;
@@ -758,6 +765,7 @@
 				this.vehicleInfor = true;
 				this.sellerInfor = false;
 				this.active = 0;
+				this.$refs.sellerForm.clearValidate();
 			}
 			return true;
 		},
@@ -777,9 +785,17 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
+				
+				this.fairStatus = res.data.bpmStatus;
+				
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
+					// 车况及其他费用及约定
+					this.feesForm = {
+						...res.data.feesAndCommitments,
+						...res.data.vehicleProblem
+					}
 				} else {
 					obj = res.data.proceduresAndSpareParts;
 					// 清空特殊约定
@@ -821,11 +837,7 @@
 				} else {
 					this.isDisabledAcc = true
 				}
-				// 车况及其他费用及约定
-				this.feesForm = {
-					...res.data.feesAndCommitments,
-					...res.data.vehicleProblem
-				}
+				
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
@@ -880,9 +892,17 @@
 				}
 			},
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				if (this.active == 0) {
+					this.handleSaveCar();
+				} else if (this.active == 1) {
+					this.vehicleInfor = true;
+					this.sellerInfor = false;
+					this.active = 0;
+					uni.pageScrollTo({
+						scrollTop: 0,
+						duration: 300
+					});
+				}
 			},
 			formatter(type, value) {
 				if (type === 'year') {
@@ -935,25 +955,28 @@
 							`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
-							getIdCard({
-								IDCardUrl: str
-							}).then((ress) => {
+							getIdCard({ IDCardUrl: str }).then((ress) => {
 								let data = JSON.parse(ress.data);
-								if (data.words_result['公民身份号码']) {
-									_this.sellerForm.buyerAdder = data.words_result['住址'].words;
-									_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
-									_this.sellerForm.buyerName = data.words_result['姓名'].words;
-								}
-								if (data.words_result['失效日期']) {
-									if (_this.date > data.words_result['失效日期'].words) {
-										showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-											_this.handleCancel();
-											return;
-										})
+								if (data.error_msg) {
+									_this.$modal.msg("请上传正确且清晰的身份证照照片 ");
+									_this[`fileList${index}`] = [];
+								} else {
+									if (data.words_result['公民身份号码']) {
+										_this.sellerForm.buyerAdder = data.words_result['住址'].words;
+										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
+										_this.sellerForm.buyerName = data.words_result['姓名'].words;
 									}
-								}
-								if (i == res.tempFilePaths.length - 1) {
-									_this.upload(res, index);
+									if (data.words_result['失效日期']) {
+										if (_this.date > data.words_result['失效日期'].words) {
+											showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
+												_this.handleCancel();
+												return;
+											})
+										}
+									}
+									if (i == res.tempFilePaths.length - 1) {
+										_this.upload(res, index);
+									}
 								}
 							})
 						}
@@ -1088,7 +1111,6 @@
 			// 保存车辆信息草稿
 			handleDraft(val) {
 				if (!this.carForm.checkboxValue.length) return this.$modal.msgError('车辆手续及备件不能为空！')
-				this.showOverlay = true;
 				// 车辆手续及备件
 				let proceduresAndSpareParts = {};
 				let list = [];
@@ -1104,11 +1126,19 @@
 					proceduresAndSpareParts[item] = false;
 				})
 				if (proceduresAndSpareParts['vehicleKey'] == true) {
+					if (this.carForm.key == '' || !this.carForm.key) {
+						this.$modal.msg("请输入钥匙");
+						return
+					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
 					proceduresAndSpareParts['vehicleKey'] = 0;
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
+					if (this.carForm.otherEvent == '' || !this.carForm.otherEvent) {
+						this.$modal.msg("请输入其他内容");
+						return
+					}
 					proceduresAndSpareParts['accidentVehicle'] = this.carForm.otherEvent;
 				} else {
 					proceduresAndSpareParts['accidentVehicle'] = '';
@@ -1146,6 +1176,7 @@
 					other: this.carForm.other //其他
 				}
 
+				this.showOverlay = true;
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellCarInfo(data).then((res) => {
 					if (val == 'step') {
@@ -1153,6 +1184,11 @@
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
+						this.$refs.carForm.clearValidate();
+						uni.pageScrollTo({
+							scrollTop: 0,
+							duration: 300
+						});
 						this.showOverlay = false;
 						this.$modal.closeLoading()
 						this.getFairValue();
@@ -1195,7 +1231,7 @@
 							}).catch((error) => {
 								this.$modal.closeLoading()
 								this.showOverlay = false;
-								this.$modal.msgError("发起流程失败");
+								// this.$modal.msgError("发起流程失败");
 							})
 						}
 					} else {

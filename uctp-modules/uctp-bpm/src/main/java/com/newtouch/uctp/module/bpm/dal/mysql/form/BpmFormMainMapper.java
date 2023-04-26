@@ -1,9 +1,10 @@
 package com.newtouch.uctp.module.bpm.dal.mysql.form;
 
-import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import java.util.Map;
 
+import org.apache.ibatis.annotations.*;
+
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.BpmTaskDoneReqVO;
@@ -40,4 +41,9 @@ public interface BpmFormMainMapper extends BaseMapperX<BpmFormMainDO> {
     Page<BpmTaskTodoRespVO> getBpmTaskTodo(Page<BpmTaskTodoRespVO> page, @Param("todoReqVO") BpmTaskTodoReqVO todoReqVO, @Param("loginUserId")Long loginUserId);
 
     Page<BpmTaskDoneRespVO> getBpmTaskDone(Page<BpmTaskDoneRespVO> page, @Param("doneReqVO") BpmTaskDoneReqVO doneReqVO, @Param("loginUserId")Long loginUserId);
+
+    @InterceptorIgnore(tenantLine = "true")
+    @ResultType(Map.class)
+    @Select("select * from system_users where id = #{id}")
+    Map<String, Object> findUserByIdToMap(@Param("id") Long id);
 }

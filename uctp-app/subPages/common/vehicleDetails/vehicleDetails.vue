@@ -1,13 +1,13 @@
 <template>
 	<view class="car-info">
-		<uni-card :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		<uni-card v-if="!isShowError" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
 				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
-						<text>卖车中-合同已发起</text>
-						<text :class="{bcClor:isTest}">检</text>
-						<text :class="{bcClor:isTransfer}">户</text>
+						<text>{{firstStatus}}-{{secondStatus}}</text>
+						<text :class="{bcClor:isShowTest}">检</text>
+						<text :class="{bcClor:isShowTransfer}">户</text>
 					</view>
 					<view class="indicator-num">
 						<text class="indicator-num__text">{{ currentNum + 1 }}/{{ carsList.length }}</text>
@@ -16,64 +16,86 @@
 			</u-swiper>
 			<view class="car-content">
 				<view class="car-title">
-					<text>宝马-宝马X1 2021款 sDrive20Li 时尚型</text>
+					<text>{{carInfoAll.carInfo.model}}</text>
 				</view>
 				<view class="car-vin">
 					<text>车架号（VIN）</text>
-					<text>LE4TG4DB1JL199517</text>
+					<text>{{carInfoAll.carInfo.vin}}</text>
 				</view>
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>定金+尾款</text>
+						<text>{{ carInfoAll.carInfoDetails.remitType || '暂无'}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>全款</text>
+						<text>{{carInfoAll.carInfo.paymentType || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>在库时长</text>
-						<text>30天</text>
+						<text>{{carInfoAll.carInfoDetails.days || 0 }}天</text>
 					</view>
 					<view class="car-item">
 						<text>首次上牌</text>
-						<text>2019年6月</text>
+						<text>{{carInfoAll.carInfoDetails.firstRegistDate || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>3万公里</text>
+						<text>{{carInfoAll.carInfoDetails.mileage || 0}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>张三</text>
+						<text>{{carInfoAll.carInfoDetails.creator || '暂无'}}</text>
 					</view>
 				</view>
 			</view>
-			<view class="car-status">
+			<view class="car-status" id="carStatus">
 				<u-tabs :list="tabsData" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" @changeTest="changeTest"></ca-content>
+			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest"></ca-content>
+		</uni-card>
+		<!-- 系统错误 -->
+		<uni-card v-else :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+			<image class="img-error" src="/static/images/error.png" mode=""></image>
+			<view class="error-tip">
+				系统异常
+			</view>
 		</uni-card>
 	</view>
 </template>
 
 <script>
 	import caContent from './components/carContent.vue'
+	import {
+		getCarInfoById
+	} from '@/api/cost/carInfo.js'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
+	import store from '@/store/index.js'
 	export default {
 		components: {
 			caContent
 		},
 		data() {
 			return {
+				//卡片详情
+				carInfoAll: {
+					carInfo: {},
+					carInfoDetails: {},
+					contractCardVOS:[],
+					contractCardNOS:[],
+					fileF:[],
+				},
 				currentNum: 0,
 				carUpload: true,
 				carsList: [
@@ -95,7 +117,7 @@
 						name: '发票信息'
 					},
 				],
-				tabCar: '0',
+				tabCar: 0,
 				uploadeList: [],
 				listData: [{
 						title: '车辆信息',
@@ -132,20 +154,85 @@
 					}
 				],
 				// 是否检测
-				isTest: true,
-				// 是否过户
-				isTransfer: false,
+				carUpload: false,
 
 				// 父组件传过来的值
 				fatherProps: null,
+				
+				// 是否展示系统异常
+				isShowError:false,
 			};
 		},
 
-		onload(props) {
-			console.log(props)
-			this.fatherProps = JSON.parse(props.item)
+		onLoad(props) {
+			console.log(props, 'this.fatherProps.id')
+			// this.getCarDetails('1650072138860851201')
+			// this.getCarDetails('1650085024672796674')
+			this.getCarDetails('1648534562174574594')
+			
+		},
+		computed: {
+			firstStatus() {
+				let statusValue = store.state.allStatus.statusValue
+				if(statusValue[this.carInfoAll.carInfo.salesStatus]){
+					return statusValue[this.carInfoAll.carInfo.salesStatus]
+				}else{
+					return '暂无'
+				}
+			},
+			secondStatus() {
+				let statusValue = store.state.allStatus.statusValue
+				if(statusValue[this.carInfoAll.carInfo.status]){
+					return statusValue[this.carInfoAll.carInfo.status]
+				}else{
+					return '暂无'
+				}
+				
+			},
+			isShowTest() {
+				if (this.carInfoAll.fileF.length>0 || this.carUpload) {
+					return true
+				} else {
+					return false
+				}
+			},
+			isShowTransfer() {
+				let arr = [22, 23, 42, 43]
+				let flag = arr.indexOf(this.carInfoAll.carInfo.status)
+				if (flag > 0) {
+					return true
+				} else {
+					return false
+				}
+			}
 		},
 		methods: {
+			// 获取数据
+			getCarDetails(id) {
+				let data = {
+					ID: id
+				}
+				getCarInfoById(data).then(res => {
+					this.carInfoAll = res.data
+					let {
+						carInfo: {
+							scrapDate,
+							annualInspectionDate,
+							insuranceEndData
+						}
+					} = res.data
+					this.carInfoAll.carInfo.scrapDate = parseTime(scrapDate, '{y}-{m}-{d}')
+					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
+					this.carInfoAll.carInfo.insuranceEndData=parseTime(insuranceEndData,'{y}-{m}-{d}')
+					this.carsList=this.carInfoAll.fileA.map(v=>v.url);
+					// 库存天数
+					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
+						.createTime))
+				}).catch(()=>{
+					this.isShowError=true;
+				})
+			},
+			// 切换tab
 			changeTab(item) {
 				console.log(item)
 				this.tabCar = item.index
@@ -179,8 +266,13 @@
 				}
 			},
 			changeTest(val) {
-				console.log(val)
-				this.isTest = val
+				this.carUpload = val
+			},
+
+			// 时间戳转天
+			getDays(value = 0) {
+				let currentTime = new Date().getTime();
+				return Math.floor((currentTime - value)/1000 / 3600 / 24)
 			}
 		}
 	}
@@ -189,11 +281,25 @@
 <style lang="scss" scoped>
 	.car-info {
 		overflow: hidden;
+		.img-error{
+			width:246rpx;
+			height:208rpx;
+			margin-top:514rpx;
+			margin-left:50%;
+			transform: translateX(-50%);
+		}
+		.error-tip{
+			padding-top:18rpx;
+			text-align:center;
+			font-size:24rpx;
+			color:#999;
+		}
 	}
 
 	.header-text {
-		width: 334rpx;
-		height: 52rpx;
+		// width: 334rpx;
+		// height: 52rpx;
+		padding:6rpx 8rpx;
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 28rpx;
 		display: flex;
@@ -218,6 +324,7 @@
 		>text:last-child {
 			width: 40rpx;
 			height: 40rpx;
+			margin-left:10rpx;
 			text-align: center;
 			border-radius: 50%;
 			background: rgba(109, 114, 120, 0.6)
@@ -411,5 +518,8 @@
 
 	::v-deep .uni-card--border {
 		border-bottom: none;
+	}
+	::v-deep #carStatus .u-tabs__wrapper__nav__item{
+		padding:0 !important;
 	}
 </style>

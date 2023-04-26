@@ -52,8 +52,8 @@ public interface DeptApi {
         return CollectionUtils.convertMap(getDeptList(ids).getCheckedData(), DeptRespDTO::getId);
     }
 
-    @GetMapping("/getByName")
+    @GetMapping("/get/userId")
     @Operation(summary = "根据部门名称获得部门信息")
     @Parameter(name = "userId", description = "用户Id", required = true, example = "1024")
-    public CommonResult<DeptRespDTO> getDeptByUserId(Long userId);
+    public CommonResult<DeptRespDTO> getDeptByUserId(@RequestParam("name") Long userId);
 }

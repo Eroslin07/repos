@@ -14,7 +14,7 @@ public interface MerchantCashService {
 
     int insert(MerchantCashDO merchantCashDO);
 
-    MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo);
+    MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Long tranAmount, String type, String tradeRecordNo, String contractNo);
 
     MerchantCashDO queryContractNoAmount(String contractNo, List<String> tradeTypes);
 

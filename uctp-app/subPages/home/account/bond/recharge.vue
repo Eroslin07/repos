@@ -1,9 +1,11 @@
 <template>
 	<view class="recharge">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="保证金充值" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<uni-card>
 			<view>
 				<view>充值金额</view>
-				<u-input border="none" v-model="amount" type="number" clearable :customStyle="{'height': '50px'}" fontSize="24px">
+				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable :customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
@@ -48,14 +50,26 @@
 				revision: 0
 			}
 		},
-		onBackPress(options) {
-			this.$tab.redirectTo('/subPages/home/account/bond/bond');
-			return true;
-		},
 		onLoad(options) {
 			this.revision = options.revision;
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+			},
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 确定
 			handleDefine() {
 				if (this.amount == '' || !this.amount) {

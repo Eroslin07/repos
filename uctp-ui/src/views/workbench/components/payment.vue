@@ -1,119 +1,155 @@
 <template>
-  <div class="reverse">
-    <!-- <XModal
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      :fullscreen="true"
-      :showFooter="false"
-      @close="handleClose"
-    > -->
-    <p style="text-align: center; font-weight: bold; font-size: 24px"
-      >收车合同SCHT202303220001收车款支付失败待办</p
-    >
-    <!-- 发票单号 -->
-    <div style="overflow: hidden; margin-bottom: 10px">
-      <p style="float: left">单号：SCKZH202303220001</p>
-      <div style="float: right">
-        <!-- 操作按钮 -->
-        <!-- <el-button type="danger" @click="handleClose">关闭</el-button> -->
-        <el-button type="primary" v-if="type == 'need'" :loading="actionLoading" @click="handlePay"
-          >重新支付</el-button
-        >
-        <el-button type="danger" v-if="type == 'need'" @click="handleCancel" disabled
-          >提交作废</el-button
-        >
-      </div>
-    </div>
-    <el-card class="box-card">
-      <p style="font-weight: bold; margin-bottom: 10px">收车款信息</p>
-      <p
-        >您向卖车方<span style="color: #63b0ff">陈某</span>的收款账号<span style="color: #63b0ff"
-          >68XXXXXXXXXXXXXXXX</span
-        >支付收车款<span style="color: #f57272">30,000.00</span>元，因XXXXX原因支付失败，请处理。</p
-      >
-      <div class="content">
-        <p>付款信息</p>
-        <p>姓名：陈某</p>
-        <p>银行账号：<span style="color: #63b0ff">68XXXXXXXXXXXXXXXX</span></p>
-        <p>收车款：<span style="color: #63b0ff">30,000.00元</span></p>
-      </div>
-      <p style="font-weight: bold; margin-bottom: 10px">合同信息</p>
-      <p style="margin-bottom: 10px"
-        >XXX收车委托合同 <button class="colr159" @click="viewContract">查看</button></p
-      >
-      <p style="margin-bottom: 10px"
-        >XXX收车合同 <button class="colr159" @click="viewContract">查看</button></p
-      >
-    </el-card>
-
-    <!-- 查看合同 -->
-    <AgreementFrame :visible="contractVisible" @handle-cancel="handleCancel1" />
-    <!-- </XModal> -->
-  </div>
+  <ContentWrap>
+    <el-container>
+      <el-main>
+        <div>
+          <div style="font-size: 16px" class="title">
+            <span>单号：{{ baseInfoData.data.serialNo }}</span>
+            <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+            <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
+          </div>
+        </div>
+        <div class="xinxi">收车款信息</div>
+        <div class="content-box">
+          <el-row>
+            <el-col :span="2" class="bg-yell">姓名：</el-col>
+            <el-col :span="4"> {{ mainValue.formDataJson.merchantName || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">开户行：</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.telNo || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">银行账号： </el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.amount || '暂无数据' }}</el-col>
+            <el-col :span="2" class="bg-yell">收车款： </el-col>
+            <el-col :span="4">{{
+              mainValue.formDataJson.balanceAmount + '元' || '暂无数据'
+            }}</el-col>
+          </el-row>
+        </div>
+        <div class="xinxi" style="margin-top: 16px">合同信息</div>
+        <div class="content">
+          <el-row>
+            <template
+              v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                .carInvoiceInfoVO.contractList"
+              :key="item.contractFileId"
+            >
+              <el-col :span="4" class="bg-yell">
+                <span>{{ item.contractName }}</span>
+              </el-col>
+              <el-col :span="4">
+                <span><button class="colr159" @click="viewContract(item)">查看</button></span>
+              </el-col>
+            </template>
+          </el-row>
+        </div>
+      </el-main>
+    </el-container>
+    <AgreementFrame
+      :visible="contractVisible"
+      :src="contractFileUrl"
+      @handle-cancel="handleCancel"
+    />
+  </ContentWrap>
 </template>
+<script lang="ts" setup name="MerchantApprovalPending">
+import { allSchemas } from '../toDoList/toDoList.data'
+import { defineProps } from 'vue'
+import { propTypes } from '@/utils/propTypes'
 
-<script setup lang="ts" name="Reverse">
-import { AgreementFrame } from './index'
-// import { propTypes } from '@/utils/propTypes'
+import { baseInfoData } from '@/views/workbench/basInfoValue'
+
+const [] = useXTable({
+  allSchemas: allSchemas
+})
 
 // const emit = defineEmits(['cancelForm'])
+const props = defineProps({
+  // visible: propTypes.bool.def(false),
+  type: propTypes.bool.def(undefined)
+})
+console.log(props)
+// 详情
+let mainValue = reactive({
+  formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
+})
 
-const actionLoading = ref(false) // 遮罩层
-// const dialogTitle = ref('支付失败待办') // 弹出层标题
+nextTick(() => {
+  mainValue.formDataJson = { ...baseInfoData.data.variables.formDataJson.formMain.formDataJson }
+})
 
 // 合同弹框
 const contractVisible = ref(false)
-
-// const props = defineProps({
-//   // visible: propTypes.bool.def(false),
-//   type: propTypes.bool.def(undefined)
-// })
-
-// const dialogVisible = computed(() => {
-//   const obj = props.visible
-//   return obj
-// })
+const contractFileUrl = ref('')
 
 // 查看合同
-const viewContract = () => {
+const viewContract = (item: any) => {
+  contractFileUrl.value = item.contractFileUrl
   contractVisible.value = true
 }
 
 // 关闭合同弹框
-const handleCancel1 = () => {
+const handleCancel = () => {
   contractVisible.value = false
 }
-
-// 关闭操作
-// const handleClose = () => {
-//   emit('cancelForm')
-// }
-
-// 重新支付
-const handlePay = () => {
-  actionLoading.value = true
-}
-
-// 提交作废
-const handleCancel = () => {}
 </script>
-
 <style lang="scss" scoped>
-p {
+.title {
+  > span {
+    margin-right: 20px;
+    font-weight: 600;
+    color: #333333;
+  }
+  margin-bottom: 16px;
+}
+.xinxi {
+  margin-bottom: 10px;
   font-size: 16px;
+  font-weight: bold;
+  padding-left: 10px;
+  border-left: 4px solid #fa6400;
 }
-
-// .box-card {
-//   height: 80vh;
-// }
-
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+.btn {
+  text-align: right;
+}
+.content-box {
+  color: #606266;
+  .bg-yell {
+    background: #f5f5f5;
+    display: flex;
+    text-align: right;
+    justify-content: flex-end;
+    padding-right: 5px;
+  }
+}
+:deep(.el-main) {
+  padding: 0;
+}
+:deep(.el-col) {
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  height: 40px;
+  align-items: center;
+}
+.content-box .el-row:first-child {
+  border-top: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(1) {
+  border-left: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(even) {
+  padding-left: 15px;
+}
 .content {
-  border: 1px solid #000;
-  padding: 10px;
-  margin: 10px 0;
-}
-
-.colr159 {
-  color: #1592c9;
+  .el-row:first-child {
+    border-top: none;
+    .el-col {
+      border-top: 1px solid #eaeaea;
+    }
+  }
 }
 </style>

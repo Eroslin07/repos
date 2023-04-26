@@ -221,5 +221,9 @@ public interface CarInfoService {
      * @param carId 车辆ID
      * @return
      */
-    CarTransferInfoVO getTransferInfo(Long carId);
+    CarTransferInfoVO getTransferInfo(Long carId, String procDefKey);
+
+    CarInvoiceInfoVO getForwardInvoiceInfo(Long contractId);
+
+    CarInvoiceInfoVO getReverseInvoiceInfo(Long contractId);
 }

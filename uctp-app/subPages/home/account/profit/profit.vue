@@ -74,19 +74,13 @@
 				status: false
 			}
 		},
-		onBackPress(options) {
-			this.$tab.switchTab('/pages/account/index');
-			return true;
-		},
 		mounted() {
 			this.getSummary();
 			this.getList();
 		},
 		methods: {
 			back() {
-				uni.navigateBack({
-					delta: 1
-				})
+				this.$tab.switchTab('/pages/account/index');
 			},
 			// 是否隐藏金额
 			handleEye() {

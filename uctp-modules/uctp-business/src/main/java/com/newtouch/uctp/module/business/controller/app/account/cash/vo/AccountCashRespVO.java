@@ -15,13 +15,13 @@ public class AccountCashRespVO {
     private String accountNo;
 
     @Schema(description = "保证金")
-    private Integer cash;
+    private Long cash;
 
     @Schema(description = "保证金-冻结余额")
-    private Integer freezeCash;
+    private Long freezeCash;
 
     @Schema(description = "保证金-可用余额")
-    private Integer availableCash;
+    private Long availableCash;
 
     @Schema(description = "版本号")
     private Integer revision;

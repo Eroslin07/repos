@@ -1,7 +1,7 @@
 <template>
 	<view class="work-container">
 		<u-swipe-action>
-			<u-swipe-action-item :options="item.options" v-for="(item) in listData" :key="item.id"
+			<u-swipe-action-item :options="item.options" v-for="(item,index) in listData" :key="item.id"
 				@click="handleSwipe(item,index)">
 				<uni-list-chat :avatar-circle="true" :badgeText="item.status=='1'?'':'dot'" badgePositon="left"
 					:title="item.title" :avatar="msgAvatar(item)" :note="item.content" :time="item.createTime" clickable
@@ -30,7 +30,7 @@
 	export default {
 		data() {
 			return {
-				businessId:this.$store.state.user.deptId,
+				businessId: this.$store.state.user.deptId,
 				// 列表
 				listData: [],
 				imageArr: [{
@@ -89,34 +89,10 @@
 				deleteItem: {}
 			}
 		},
-		onShow() {
-			this.getListData()
+		onLoad(params) {
+			this.listData = JSON.parse(decodeURIComponent(params.listData))
 		},
-		// onLoad() {
-		// 	this.getListData()
-		// },
 		methods: {
-			// 获取列表数据
-			getListData() {
-				let options = [{
-					text: '删除',
-					style: {
-						backgroundColor: '#f56c6c'
-					}
-				}]
-				getNoticesApi(this.businessId).then(res => {
-					if (res.data.length) {
-						this.listData = res.data.map(item => {
-							this.$set(item, 'options', options);
-							this.$set(item, 'swipeShow', false);
-							item.createTime = parseTime(item.createTime);
-							return item
-						})
-					}
-				}).catch(err => {
-					console.log(err, 'err')
-				})
-			},
 			// 图标
 			msgAvatar(item) {
 				let obj = this.imageArr.find(v => v.label == item.title)

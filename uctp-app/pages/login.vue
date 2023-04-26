@@ -73,7 +73,7 @@
 				timer: null,
 				loginForm: {
 					username: "17380123816",
-					password: "admin123",
+					password: "123456",
 					code: "",
 					uuid: ''
 				},

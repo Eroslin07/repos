@@ -45,4 +45,11 @@ public interface ErrorCodeConstants {
 
     ErrorCode USERS_INFO_ERROR = new ErrorCode(1005000215, "用户信息不存在");
     ErrorCode DEPT_INFO_ERROR = new ErrorCode(1005000216, "部门信息不存在");
+
+
+    ErrorCode FILL_ERROR = new ErrorCode(1005000216, "系统文件表对应信息不存在");
+
+    ErrorCode BUSINESS_ERROR = new ErrorCode(1005000216, "合同回显时，合同信息未保存成功");
+
+
 }

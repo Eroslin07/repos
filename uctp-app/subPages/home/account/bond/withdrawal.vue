@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>兴业银行（***1167）</view>
+			<view>浦发银行（***1167）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -10,9 +10,11 @@
 				<u-input
 					border="none"
 					v-model="amount"
-					type="number"
+					type="digit"
+					:focus="true"
 					clearable
 					:customStyle="{'height': '50px'}"
+					@input="handleInput"
 					fontSize="24px"
 				>
 					<u--text
@@ -52,6 +54,18 @@
 			});
 		},
 		methods: {
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 确定
 			handleDefine() {
 				if (this.amount == "" || !this.amount) {

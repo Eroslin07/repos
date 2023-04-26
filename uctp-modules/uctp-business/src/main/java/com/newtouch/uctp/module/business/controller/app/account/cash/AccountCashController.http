@@ -12,7 +12,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "123123123"
+  "contractNo": "12345671221"
 }
 
 ###保证金回填-利润
@@ -21,9 +21,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123",
-  "tranAmount": 100,
-  "contractNo": "123123123"
+  "accountNo": "1234567",
+  "tranAmount": 1000,
+  "contractNo": "12345671221"
 }
 
 ###保证金回填
@@ -32,9 +32,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123",
+  "accountNo": "1234567",
   "tranAmount": 100,
-  "contractNo": "123123123"
+  "contractNo": "12345671221"
 }
 
 ###待回填保证金
@@ -43,7 +43,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123"
+  "accountNo": "1234567"
 }
 
 ###保证金实占
@@ -52,7 +52,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "123123123"
+  "contractNo": "123456712211"
 }
 
 ###保证金预占
@@ -61,9 +61,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123",
-  "tranAmount": 100,
-  "contractNo": "123123123"
+  "accountNo": "1234567",
+  "tranAmount": 1100,
+  "contractNo": "123456712211"
 }
 
 ###保证金提取-提取成功后返回我的保证金页面模型数据
@@ -72,9 +72,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123",
-  "tranAmount": 100,
-  "revision": 1
+  "accountNo": "1234567",
+  "tranAmount": 1100,
+  "revision": 14
 }
 
 ###保证金交易明细查询
@@ -83,8 +83,8 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123",
-  "type": 1,
+  "accountNo": "1234567",
+  "type": 4,
   "pageNo": 1,
   "pageSize": 15
 }
@@ -95,9 +95,9 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "accountNo": "123123123",
-  "tranAmount": 100,
-  "revision": 2
+  "accountNo": "1234567",
+  "tranAmount": 11111111111111,
+  "revision": 25
 }
 
 ###保证金详情-我的保证金

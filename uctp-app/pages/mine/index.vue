@@ -17,12 +17,12 @@
 					<image v-if="avatar" @click="handleToAvatar" :src="avatar" class="cu-avatar xl round"
 						mode="widthFix">
 					</image>
-					<view v-if="!name" @click="handleToLogin" class="login-tip">
+					<view v-if="!user.name" @click="handleToLogin" class="login-tip">
 						点击登录
 					</view>
-					<view v-if="name" @click="handleToInfo" class="user-info">
+					<view v-if="user.name" @click="handleToInfo" class="user-info">
 						<view class="u_title">
-							用户名：{{ name }}
+							用户名：{{ user.name }}
 						</view>
 					</view>
 				</view>
@@ -32,7 +32,7 @@
 						</image>
 						<text>企业 ></text>
 					</view>
-					<view class=" flex authentication active">
+					<view class=" flex authentication active" :class="">
 						<image src="../../static/images/mine/slices-active.png" mode=""
 							style="width: 32rpx;height: 32rpx;"></image>
 						<text>个人 ></text>
@@ -98,7 +98,7 @@
 	export default {
 		data() {
 			return {
-				name: this.$store.state.user.name,
+				user: this.$store.state.user,
 				version: getApp().globalData.config.appInfo.version
 			}
 		},
@@ -113,7 +113,9 @@
 		methods: {
 			// 个人信息
 			handleToInfo() {
-				this.$tab.navigateTo('/subPages/mine/info/index')
+				console.log(this.user)
+				const type='0'
+				this.$tab.navigateTo(`/subPages/mine/info/index?type=${type}`)
 			},
 			// 员工管理
 			handleToStaff() {

@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.infra.service.file;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
 
@@ -29,7 +30,7 @@ public interface FileService {
      * @param content 文件内容
      * @return 文件路径
      */
-    String createFile(String name, String path, byte[] content);
+    FileDTO createFile(String name, String path, byte[] content);
 
     /**
      * 保存文件new
@@ -40,12 +41,16 @@ public interface FileService {
      */
     FileDO createFileNew(String name, String path, byte[] content);
 
+    FileDO uploadReport(String name, String path, byte[] content,Long carId);
+
     /**
      * 删除文件
      *
      * @param id 编号
      */
     void deleteFile(Long id) throws Exception;
+
+    void deleteReport(Long id,Long carId) throws Exception;
 
     /**
      * 获得文件内容

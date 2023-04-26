@@ -1,23 +1,23 @@
 <template>
 	<view class=" info-box">
 		<!-- 车辆信息 -->
-		<view v-if="tabCar=='0'" class="car-info-box">
-			<view class="car-upload">
+		<view v-if="tabCar==0" class="car-info-box">
+			<view  class="car-upload">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
 					<text class="car-upload-title__title">车辆检测报告</text>
-					<text v-if="!carUpload" class="car-upload-title__text">未检测</text>
+					<text v-if="!isShowTest" class="car-upload-title__text">未检测</text>
 					<text v-else class="car-upload-title__text">已检测</text>
 				</view>
-				<view class="upload-content">
-					<view class="upload-text" @click="photograph" v-if="!carUpload">
+				<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status>21" class="upload-content">
+					<view v-if="!isShowTest" class="upload-text" @click="photograph(1)">
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
 					<view v-else class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
 						<text>您已经上传检测报告!</text>
-						<u-icon @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
+						<u-icon v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30" @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
 						</u-icon>
 					</view>
 				</view>
@@ -28,28 +28,32 @@
 				</view>
 				<text>行驶证</text>
 			</view>
-			<view class="driving-image">
+			<view v-if="carInfoAll.fileB && carInfoAll.fileB.length" class="driving-image">
+				<!-- <image :src="carInfoAll.fileB[0].url" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
+				<u-album :urls="carInfoAll.fileB" :singleSize="rpxToPx(232)" keyName="url" ></u-album>
+			</view>
+			<view v-else class="driving-image">
 				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
 			</view>
 			<view class="driving-content">
 				<view class="car-details">
 					<view class="car-item">
 						<text>发动机编号</text>
-						<text>19289098</text>
+						<text>{{carInfoAll.carInfo.engineNum}}</text>
 					</view>
 					<view class="car-item">
 						<text>首次登录日期</text>
-						<text>2019年6月30日</text>
+						<text>{{carInfoAll.carInfoDetails.firstRegistDate}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>车牌号</text>
-						<text>川A 2989</text>
+						<text>{{carInfoAll.carInfo.plateNum}}</text>
 					</view>
 					<view class="car-item">
 						<text>使用性质</text>
-						<text>非营运</text>
+						<text>{{carInfoAll.carInfoDetails.natureOfOperat}}</text>
 					</view>
 				</view>
 			</view>
@@ -59,50 +63,54 @@
 				</view>
 				<text>机动车登记证书</text>
 			</view>
-			<view class="driving-image">
-				<image :src="vehicleImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
+			<view id="carRegister" v-if="carInfoAll.fileC && carInfoAll.fileC.length" class="driving-image">
+				<!-- <image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
+				<u-album :urls="carInfoAll.fileC" :singleSize="rpxToPx(232)" keyName="url" singleModex="scaleToFill" ></u-album>
+			</view>
+			<view v-else class="driving-image">
+				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
 			</view>
 			<view class="driving-content driving-details">
 				<view class="car-details">
 					<view class="car-item">
 						<text>登记证号</text>
-						<text>19289098</text>
+						<text>{{carInfoAll.carInfoDetails.certificateNo}}</text>
 					</view>
 					<view class="car-item">
 						<text>颜色</text>
-						<text>白色</text>
+						<text>{{carInfoAll.carInfoDetails.colour}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>29万公里</text>
+						<text>{{carInfoAll.carInfoDetails.mileage}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>使用年限至</text>
-						<text>2023-12-30</text>
+						<text>{{carInfoAll.carInfo.scrapDate}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>年检签章有效期</text>
-						<text>29万公里</text>
+						<text>{{carInfoAll.carInfo.annualInspectionDate}}</text>
 					</view>
 					<view class="car-item">
 						<text>保险险种</text>
-						<text>交强险</text>
+						<text>{{carInfoAll.carInfo.insurance}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>保险期至</text>
-						<text>2023-12-30</text>
+						<text>{{carInfoAll.carInfo.insuranceEndData}}</text>
 					</view>
 				</view>
 			</view>
 		</view>
 		<!-- 合同信息 -->
-		<view v-if="tabCar=='1'" class="car-contract">
+		<view v-if="tabCar==1" class="car-contract">
 			<view class="driving-license car-registration">
 				<view class="">
 					<view class="driving-license__icon">
@@ -110,34 +118,42 @@
 					</view>
 					<text>有效合同</text>
 				</view>
-				<view class="download">
+				<!-- <view class="download">
 					<text>批量下载</text>
 					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
-				</view>
+				</view> -->
 			</view>
-			<view class="contrart-info">
-				<view class="flex contrart-info__row">
-					<text>XXX某收车委托合同</text>
-					<text class="button">作废</text>
+			<view class="contrart-info" v-for="(contract,index) in carInfoAll.contractCardVOS" :key="index">
+				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
+					class="flex contrart-info__row">
+					<text @click="handleContact()">{{contract.contractDO.contractName}}合同</text>
+					<text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text>
 				</view>
-				<view class="flex">
-					<text>XXX某收车合同</text>
-					<view class="flex">
-						<text>卖家信息（第三方收款）</text>
-						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+				<view v-else class="flex contrart-info__row">
+					<view class="">
+						<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}</text>
+						<view class="flex selInfo">
+							<text
+								@click="handleOwnerInfo(contract.contractDO.contractType)">{{contract.contractDO.contractType==2?'卖家信息（第三方收款）':'买家信息'}}</text>
+							<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
+						</view>
 					</view>
+					<text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text>
 				</view>
-				<view class="flex  contrart-info__row">
+				<!-- <view class="flex  contrart-info__row">
 					<text>XXX某卖委托合同</text>
 					<text class="button">作废</text>
 				</view>
 				<view class="flex">
 					<text>XXX某卖车合同</text>
-					<view class="flex">
+					<view class="flex selInfo">
 						<text>买家信息</text>
 						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
 					</view>
-				</view>
+				</view> -->
+			</view>
+			<view v-if="!carInfoAll.contractCardVOS.length" class="empty-info">
+				<text>暂无合同</text>
 			</view>
 			<view class="driving-license car-registration">
 				<view class="">
@@ -146,29 +162,32 @@
 					</view>
 					<text>无效合同</text>
 				</view>
-				<view class="download">
+				<!-- <view class="download">
 					<text>批量下载</text>
 					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
-				</view>
+				</view> -->
 			</view>
-			<view class="contrart-info contrart-bottom">
-				<view class="flex contrart-info__row">
+			<view v-for="(contract,index) in carInfoAll.contractCardNOS" :key="index"
+				class="contrart-info contrart-bottom">
+				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
+					class="flex contrart-info__row">
 					<view class="contart-info__">
 						<text class="contrart-info__text">作废文件</text>
-						<text>XXX某收车委托合同（已作废）</text>
+						<text>{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 				</view>
-				<view class="flex">
+				<view v-else class="flex">
 					<view class="">
 						<text class="contrart-info__text">作废文件</text>
-						<text>XXX某收车合同（已作废）</text>
+						<text>{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
-					<view class="flex">
-						<text>卖家信息（第三方收款）</text>
-						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
+					<view class="flex selInfo">
+						<text
+							@click="handleOwnerInfo(contract.contractDO.contractType)">{{contract.contractDO.contractType==2?'卖家信息（第三方收款）':'买家信息'}}</text>
+						<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
 					</view>
 				</view>
-				<view class="flex  contrart-info__row">
+				<!-- <view class="flex  contrart-info__row">
 					<view class="">
 						<text class="contrart-info__text">作废文件</text>
 						<text>XXX某卖委托合同（已作废）</text>
@@ -183,21 +202,24 @@
 						<text>买家信息</text>
 						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
 					</view>
-				</view>
+				</view> -->
+			</view>
+			<view v-if="!carInfoAll.contractCardNOS.length" class="empty-info">
+				<text>暂无合同</text>
 			</view>
 			<view class="car-button">
 				<u-button text="签章" color="#FA6400" @click="handleSignature"></u-button>
 			</view>
 		</view>
-		<view class="car-fund" v-if="tabCar=='2'">
-			<view class="car-upload">
+		<view class="car-fund" v-if="tabCar==2">
+			<!-- <view class="car-upload">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/bank-card.svg"></image>
 					<text class="car-upload-title__title">银行电子回单</text>
 					<text class="car-upload-title__text">待匹配</text>
 				</view>
 				<view class="upload-content">
-					<view class="upload-text" @click="photograph" v-if="!carUpload">
+					<view class="upload-text" @click="photograph(2)" v-if="!carUpload">
 						<text>上传银行电子回单</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
@@ -207,7 +229,7 @@
 						<u-icon name="trash" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
 				</view>
-			</view>
+			</view> -->
 			<view class="car-fund-info">
 				<view class="car-fund-info-title">
 					<view class="">
@@ -228,7 +250,8 @@
 							实际利润
 						</text>
 						<view class="">
-							<text>{{eyeIsShow?'234':'****'}}</text>
+							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.profit | transMoney}}</text>
+							<text v-else>{{'****'}}</text>
 							<text>元</text>
 						</view>
 					</view>
@@ -237,7 +260,9 @@
 					<view class="flex">
 						<view class="flex">
 							<text>收车款</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<text
+								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vehicleReceiptAmount | transMoney}}元</text>
+							<text v-else>{{'****'}}元</text>
 							<view class="flex">
 								<text>公允价值-通过</text>
 								<u-icon name="arrow-right" style="width: 28rpx;height: 28rpx;" color="#FA6400"></u-icon>
@@ -246,7 +271,8 @@
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>卖车款</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.sellAmount | transMoney}}元</text>
+							<text v-else>{{'****'}}元</text>
 							<view class="flex">
 								<text>公允价值-通过</text>
 								<u-icon name="arrow-right" style="width: 28rpx;height: 28rpx;" color="#FA6400"></u-icon>
@@ -256,29 +282,34 @@
 					<view class="flex">
 						<view class="flex">
 							<text>税</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vat | transMoney}}元</text>
+							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>服务费</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<text
+								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.transferSell | transMoney}}元</text>
+							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
 					<view class="flex">
 						<view class="flex">
 							<text>本次回填保证金</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<text v-if="eyeIsShow">{{0 | transMoney}}元</text>
+							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>本次待回填差额</text>
-							<text>{{eyeIsShow?'234':'****'}}元</text>
+							<text v-if="eyeIsShow">{{0 | transMoney}}元</text>
+							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
-		<view class="car-invoice" v-if="tabCar=='3'">
+		<view class="car-invoice" v-if="tabCar==3">
 			<view class="flex">
 				<text>二手车销售统一发票(反向)</text>
 				<view class="flex">
@@ -306,82 +337,208 @@
 </template>
 
 <script>
+	let that;
 	import {
 		showConfirm
 	} from '@/utils/common'
+	import config from '@/config'
+	import {
+		getAccessToken
+	} from '@/utils/auth'
+	import {
+		deleteTestImage
+	} from '@/api/register'
 	export default {
 		data() {
 			return {
 				carUpload: false,
 				eyeIsShow: false,
-				// 行驶证
+				// 检测报告
+				fileList1: [],
+				// 检测报告ID
+				testFileId: 0,
+				// 银行电子回单
+				fileList2: [],
+				// 行驶证 机动车登记证 默认
 				drivingImg: '/static/images/home/driving-license.svg',
-				// 机动车登记证
-				vehicleImg: '/static/images/home/driving-license.svg',
+				// 信息类型
+				infoType: null,
+
 			}
 		},
 		props: {
 			tabCar: {
-				type: String,
-				default: '0'
+				type: Number,
+				default: 0
 			},
-			vehicleDetails: {
+			carInfoAll: {
 				type: Object,
 				default: () => {}
+			},
+			isShowTest: {
+				type: Boolean,
+				default: false
 			}
 		},
-
+		beforeCreate() {
+			that = this;
+		},
+		filters: {
+			transMoney(val) {
+				console.log(that.$amount.getComdify(val), 888)
+				return that.$amount.getComdify(val)
+			}
+		},
 		methods: {
 			// 上传检测报告
-			photograph() {
+			photograph(index) {
 				let _this = this;
 				uni.showActionSheet({
 					// title: "选择类型",
 					itemList: ['相册', '拍摄'],
 					success: async function(res) {
-						console.log(res.tapIndex, 'res.tapIndex')
-						_this.chooseImages(res.tapIndex);
+						_this.chooseImages(res.tapIndex, index);
 					}
 				})
 			},
-			chooseImages(tapIndex) {
+			chooseImages(tapIndex, index) {
 				let _this = this;
 				uni.chooseImage({
 					count: 1,
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: tapIndex == 0 ? ['album'] : ['camera'], // 从相册选择 : 使用相机
 					success: function(res) {
-						console.log(JSON.stringify(res.tempFilePaths));
-						uni.showModal({
-							title: '提示',
-							content: '您的车辆检测报告已经上传完成。',
-							showCancel: false,
-							confirmText: '知道了',
-							confirmColor: '#f60',
-							success: function(res) {
-								if (res.confirm) {
-									_this.carUpload = true;
-									_this.$emit('changeTest', _this.carUpload)
-
-								}
-							}
+						res.tempFilePaths.forEach((item) => {
+							_this[`fileList${index}`].push({
+								url: item,
+								status: 'uploading',
+								message: '上传中'
+							})
 						})
+						for (let i = 0; i < res.tempFilePaths.length; i++) {
+							if (i == res.tempFilePaths.length - 1) {
+								_this.upload(res, index);
+							}
+						}
 					}
 				})
+			},
+			upload(res, index) {
+				let _this = this;
+				for (let i = 0; i < res.tempFilePaths.length; i++) {
+					uni.uploadFile({
+						url: config.upLoadTestUrl, // 仅为示例，非真实的接口地址
+						// #ifdef H5
+						file: res.tempFiles[i],
+						// #endif
+						// #ifdef MP-WEIXIN || APP
+						filePath: res.tempFilePaths[i],
+						// #endif
+						name: 'file',
+						header: {
+							Authorization: 'Bearer ' + getAccessToken()
+						},
+						formData: {
+							'carId': _this.carInfoAll.carInfo.id
+						},
+						success: (ress) => {
+							setTimeout(() => {
+								let fileListLen = 0;
+								let data = JSON.parse(ress.data).data;
+								if (data) {
+									for (let i = 0; i < data.length; i++) {
+										let item = _this[`fileList${index}`][fileListLen]
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(
+											item, {
+												status: 'success',
+												message: '',
+												url: data[i].url,
+												id: data[i].id
+											}))
+										fileListLen++;
+									}
+									if (index == 1) {
+										uni.showModal({
+											title: '提示',
+											content: '您的车辆检测报告已经上传完成。',
+											showCancel: false,
+											confirmText: '知道了',
+											confirmColor: '#f60',
+											success: function(res) {
+												if (res.confirm) {
+													_this.carUpload = true;
+													_this.$emit('changeTest', _this
+														.carUpload)
+												}
+											}
+										})
+									}
+								} else {
+									_this.$modal.msg("上传失败");
+									_this[`fileList${index}`] = [];
+								}
+							}, 1000)
+						}
+					});
+				}
 			},
 			// 删除检测报告
 			handleDelete() {
 				// let _this=this
 				showConfirm('删除检测报告后，您的车辆将无法发起卖车业务，若需要继续卖车请重新上传新的检测报告').then(res => {
 					if (res.confirm) {
-						this.carUpload = false
-						this.$emit('changeTest', this.carUpload)
+						deleteTestImage({
+							id: this.fileList1[0]?.id || this.carInfoAll.fileF[0].id
+						}).then((res) => {
+							this.$modal.msg("删除成功");
+							this.carUpload = false
+							this.$emit('changeTest', this.carUpload)
+						}).catch(err => {
+							this.$modal.msgError('删除失败')
+						})
 					}
 				})
+			},
+			// 预览合同
+			handleContact(url) {
+				console.log(url)
+				uni.downloadFile({
+					url: url,
+					success: function(res) {
+						var filePath = res.tempFilePath;
+						uni.openDocument({
+							filePath: filePath,
+							fileType: 'pdf',
+							showMenu: true,
+							success: function(res) {
+								console.log('打开文档成功');
+							}
+						});
+					}
+				});
+			},
+			// 查看买家、卖家信息
+			handleOwnerInfo(type) {
+				this.infoType = type
+				this.$tab.navigateTo(
+					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
+					)
+			},
+			// 作废
+			handleCancle(id) {
+				console.log(id)
+				this.$tab.navigateTo(
+					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
+					)
 			},
 			// 签章
 			handleSignature() {
 				this.$tab.navigateTo('/subPages/home/sellingCar/agreement')
+			},
+			// rpx转px
+			rpxToPx(rpx) {
+			  const screenWidth = uni.getSystemInfoSync().screenWidth
+			  return (screenWidth * Number.parseInt(rpx)) / 750
 			}
 		}
 	}
@@ -582,24 +739,26 @@
 			.contrart-info {
 				border-bottom: 20rpx solid #FAFAFA;
 				font-size: 24rpx;
+				color: #222222;
 
 				>view {
-					color: #222222;
-					height: 128rpx;
+					// height: 128rpx;
+					padding: 22rpx 0;
 					margin-left: 32rpx;
 					padding-right: 38rpx;
 					border-bottom: 2rpx solid #F5F5F5;
 					flex-direction: column;
 					justify-content: center;
 
-					>view:nth-child(2) {
+					.selInfo {
 						align-items: center;
 						color: #FA6400;
 					}
 				}
 
 				.contrart-info__row {
-					height: 78rpx;
+					// height: 78rpx;
+					padding: 22rpx 38rpx 22rpx 0;
 					flex-direction: row;
 					justify-content: space-between;
 					align-items: center;
@@ -627,6 +786,13 @@
 				height: 80rpx;
 				margin: 36rpx 28rpx 0;
 			}
+		}
+
+		.empty-info {
+			min-height: 128rpx;
+			line-height: 128rpx;
+			text-align: center;
+			border-bottom: 2rpx solid #f5f5f5;
 		}
 
 		.car-fund {
@@ -678,6 +844,7 @@
 						align-items: center;
 						justify-content: center;
 						color: #333333;
+
 						text:first-child {
 							font-size: 32rpx;
 						}
@@ -788,5 +955,9 @@
 			}
 		}
 
+		.info-box {
+			padding: 15px;
+			line-height: 40rpx;
+		}
 	}
 </style>

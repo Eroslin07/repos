@@ -2,6 +2,7 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
+import com.qiyuesuo.sdk.v2.request.ContractSignCompanyRequest;
 import com.qiyuesuo.sdk.v2.request.DocumentAddByTemplateRequest;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 
@@ -54,4 +55,18 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Object> defaultContractSend(Long contractId);
+
+    /**
+     * 静默签章
+     * @param contractId 合同Id
+     * @return
+     */
+    QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId);
+
+    /**
+     * 静默签章
+     * @param request 契约锁需要的参数
+     * @return
+     */
+    QiyuesuoCommonResult<Object> defaultCompanysign(ContractSignCompanyRequest request);
 }

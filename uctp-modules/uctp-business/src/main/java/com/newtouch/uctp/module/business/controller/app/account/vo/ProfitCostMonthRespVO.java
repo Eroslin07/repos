@@ -15,7 +15,7 @@ public class ProfitCostMonthRespVO extends ProfitRespVO {
     @Schema(description = "月度，格式yyyyMM，如：202301")
     private String month;
     @Schema(description = "月度服务费总额")
-    private Integer costTotalAmount;
+    private Long costTotalAmount;
     @Schema(description = "月度税费总额")
-    private Integer taxTotalAmount;
+    private Long taxTotalAmount;
 }

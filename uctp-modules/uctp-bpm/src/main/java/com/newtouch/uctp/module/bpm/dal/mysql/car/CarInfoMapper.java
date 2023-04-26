@@ -3,7 +3,9 @@ package com.newtouch.uctp.module.bpm.dal.mysql.car;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 
@@ -49,5 +51,9 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     default CarInfoDO queryCarInfo(Long id){
         return selectById(id);
     }
+
+    @InterceptorIgnore(tenantLine = "true")
+    @Select("select * from uctp_car_info where id=#{id} and deleted = 0")
+    CarInfoDO findCarInfoByCarId(@Param("id") Long id);
 
 }

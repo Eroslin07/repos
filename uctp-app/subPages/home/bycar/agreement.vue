@@ -3,9 +3,10 @@
 		<uni-card :is-shadow="false" is-full>
 			<view class="text">
 				<image src="../../../static/images/bycar/hetong2.png" class="hetong_image"></image>
-				<view style="margin-top: 20px;"  @click="handleLook">
-					<image src="../../../static/images/bycar/hetong1.png" class="form-image" style="width: 16pt;height: 16pt;"></image>
-					<text>《2021年03月20日收车合同》</text>
+				<view style="margin-top: 20px;" @click="handleLook">
+					<image src="../../../static/images/bycar/hetong1.png" class="form-image"
+						style="width: 16pt;height: 16pt;"></image>
+					<text @click="handleViewContract">《2021年03月20日收车合同》</text>
 				</view>
 			</view>
 			<!-- 底部按钮 -->
@@ -19,30 +20,32 @@
 <script>
 	import {
 		getQiyuesuo,
-		getCancelContract
+		getCancelContract,
+		getContractEcho
 	} from '@/api/home/bycar.js'
 	export default {
 		data() {
 			return {
 				checkboxValue: null,
-        carId:''
+				carId: ''
 			}
 		},
-		onLoad(options){
+		onLoad(options) {
 			console.log((options))
-			this.carId=options.carId
+			this.carId = options.carId
 		},
 		methods: {
 			// 查看
 			handleLook() {
-				this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
+				// this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
 			},
 			// 合同签章
 			handleAffirm() {
-				const data={
+				const data = {
 					// carId:'1648668268713422850',
-					carId:this.carId,
-					type:'1'
+					carId: this.carId,
+					type: '1',
+					contractId: '312313131',
 				}
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
@@ -55,7 +58,29 @@
 			// 关闭
 			handleClose() {
 				this.$tab.reLaunch('/pages/index');
-			}
+			},
+			handleViewContract() {
+				let data=`carId=${this.carId}&&type=1`
+				getContractEcho(data).then(res => {
+					console.log(res.data)
+						uni.downloadFile({
+						  url: res.data.url,
+						  success: function (res) {
+						    var filePath = res.tempFilePath;
+						    uni.openDocument({
+						      filePath: filePath,
+						      showMenu: false,
+						      success: function (res) {
+						        console.log('打开文档成功');
+						      }
+						    });
+						  }
+						});
+				}).catch(err=>{
+					this.$modal.msg('打开文档失败')
+				})
+			},
+
 		}
 	}
 </script>
@@ -69,8 +94,9 @@
 	/deep/ .uni-card--border {
 		border-bottom: none;
 	}
+
 	/* #endif */
-	
+
 	.hetong_image {
 		width: 66pt;
 		height: 66pt;

@@ -1,474 +1,538 @@
 <template>
-  <ContentWrap>
-    <!-- <XModal
-      v-model="carVisible"
-      :title="dialogTitle"
-      :fullscreen="true"
-      :showFooter="false"
-      @close="closeDialog"
-    > -->
-    <el-container>
-      <!-- <el-header class="header">{{
-        (baseInfoData.data.variables.marketName || '') +
-        (baseInfoData.data.variables.merchantName || '') +
-        '收车价格超公允值审批流程'
-      }}</el-header> -->
-      <el-main>
-        <div style="overflow: hidden; margin-bottom: 10px">
-          <div style="float: left; font-size: 16px">单号：{{ baseInfoData.data.serialNo }}</div>
-          <div class="btn">
-            <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
-            <!-- <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
-            <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button> -->
-          </div>
+  <div>
+    <el-card>
+      <div style="font-size: 16px" class="title">
+        <span>单号：{{ baseInfoData.data.serialNo }}</span>
+        <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+        <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
+      </div>
+      <div class="content-box">
+        <h3 style="font-weight: bold; color: #333333; line-height: 36px">车辆基础信息</h3>
+        <div>
+          <el-row>
+            <el-col :span="2" class="bg-yell">行驶证：</el-col>
+            <el-col :span="4">
+              <div>
+                <span
+                  >{{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.length
+                  }}张</span
+                >
+                <el-image
+                  v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                    .fileB"
+                  :key="url.id"
+                  style="width: 34px; height: 34px; margin: 0 5px; vertical-align: top"
+                  :src="url.url"
+                  fit="fill"
+                  :zoom-rate="1.2"
+                  :preview-src-list="fileB"
+                />
+              </div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">机动车登记证书：</el-col>
+            <el-col :span="4">
+              <div>
+                <span
+                  >{{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileC.length
+                  }}张</span
+                >
+                <el-image
+                  v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                    .fileC"
+                  :key="url.id"
+                  style="width: 34px; height: 34px; margin: 0 5px; vertical-align: top"
+                  :src="url.url"
+                  fit="fill"
+                  :zoom-rate="1.2"
+                  :preview-src-list="fileC"
+                />
+              </div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">车辆图片：</el-col>
+            <el-col :span="10">
+              <div>
+                <span
+                  >{{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileA.length
+                  }}张</span
+                >
+                <el-image
+                  v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                    .fileA"
+                  :key="url.id"
+                  style="width: 34px; height: 34px; margin: 0 5px; vertical-align: top"
+                  :src="url.url"
+                  fit="fill"
+                  :zoom-rate="1.2"
+                  :preview-src-list="fileA"
+                />
+              </div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">车架号：</el-col>
+            <el-col :span="4">
+              <div>
+                {{ baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.vin }}
+              </div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">发动机编号：</el-col>
+            <el-col :span="4">
+              <div>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.engineNum
+                }}</div
+              >
+            </el-col>
+            <el-col :span="2" class="bg-yell">首次登记日期：</el-col>
+            <el-col :span="4">
+              <div>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                    .firstRegistDate
+                }}</div
+              >
+            </el-col>
+            <el-col :span="2" class="bg-yell">车牌号：</el-col>
+            <el-col :span="4">
+              <div>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.plateNum
+                }}</div
+              >
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">使用性质：</el-col>
+            <el-col :span="4">
+              <div>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                    .natureOfOperat
+                }}</div
+              >
+            </el-col>
+            <el-col :span="2" class="bg-yell">品牌/车型：</el-col>
+            <el-col :span="4">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.model
+                "
+                placement="top-start"
+              >
+                <div class="carInfo">
+                  {{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.model
+                  }}</div
+                >
+              </el-tooltip>
+            </el-col>
+            <el-col :span="2" class="bg-yell">车辆类型：</el-col>
+            <el-col :span="4">
+              <div>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.carType
+                }}</div
+              >
+            </el-col>
+            <el-col :span="2" class="bg-yell">品牌型号：</el-col>
+            <el-col :span="4">
+              <div>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.brandType
+                }}</div
+              >
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">登记证号：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                  .certificateNo
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">颜色：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.colour
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">里程数：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                  .mileage
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">使用年限至：</el-col>
+            <el-col :span="4">
+              <div>{{
+                formatDate(
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.scrapDate
+                )
+              }}</div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">年检签证有效期至：</el-col>
+            <el-col :span="4">
+              <div>{{
+                formatDate(
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                    .annualInspectionDate
+                )
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">保险险种：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.insurance
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">保险期至：</el-col>
+            <el-col :span="10">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                  .insuranceEndData
+              }}</div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">特殊约定：</el-col>
+            <el-col :span="22">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.remarks
+              }}</div>
+            </el-col>
+          </el-row>
         </div>
-        <!-- <el-card class="content-box"> -->
-        <div class="content-box">
-          <h3 style="font-weight: bold">车辆基础信息</h3>
-          <el-form>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="行驶证：">
-                  <div>
-                    <span
-                      >{{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.length
-                      }}张</span
-                    >
-                    <el-image
-                      v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                        .fileB"
-                      :key="url.id"
-                      style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
-                      :src="url.url"
-                      fit="fill"
-                      :zoom-rate="1.2"
-                      :preview-src-list="fileB"
-                    />
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="机动车登记证书：">
-                  <div>
-                    <span
-                      >{{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileC.length
-                      }}张</span
-                    >
-                    <el-image
-                      v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                        .fileC"
-                      :key="url.id"
-                      style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
-                      :src="url.url"
-                      fit="fill"
-                      :zoom-rate="1.2"
-                      :preview-src-list="fileC"
-                    />
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="车辆图片：">
-                  <div>
-                    <span
-                      >{{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileA.length
-                      }}张</span
-                    >
-                    <el-image
-                      v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                        .fileA"
-                      :key="url.id"
-                      style="width: 40px; height: 40px; margin: 0 5px; vertical-align: top"
-                      :src="url.url"
-                      fit="fill"
-                      :zoom-rate="1.2"
-                      :preview-src-list="fileA"
-                    />
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6"><div></div></el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="车架号：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.vin
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="发动机编号：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                        .engineNum
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="首次登记日期：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                        .firstRegistDate
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="车牌号：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                        .plateNum
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="使用性质：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                        .natureOfOperat
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="品牌/车型：">
-                  <el-tooltip
-                    class="box-item"
-                    effect="dark"
-                    :content="
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.model
-                    "
-                    placement="top-start"
-                  >
-                    <div class="carInfo">
-                      {{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.model
-                      }}</div
-                    >
-                  </el-tooltip>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="车辆类型：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.carType
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="品牌型号：">
-                  <div>
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                        .brandType
-                    }}</div
-                  >
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="登记证号：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .certificateNo
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="颜色：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .colour
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="里程数：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .mileage
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="使用年限至：">
-                  <div>{{
-                    formatDate(
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                        .scrapDate
+        <h3 style="font-weight: bold; color: #333333; line-height: 36px">交易信息</h3>
+        <div>
+          <el-row>
+            <el-col :span="2" class="bg-yell">收车金额：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                  .vehicleReceiptAmount
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">卖车金额：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.sellAmount
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">公允值范围：</el-col>
+            <el-col :span="4">
+              <div
+                >{{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue?.value1
+                }}元—{{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue?.value2
+                }}元</div
+              >
+            </el-col>
+            <el-col :span="2" class="bg-yell">付款方式：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                  .payType == '0'
+                  ? '全款'
+                  : '定金+尾款'
+              }}</div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">身份证：</el-col>
+            <el-col :span="10">
+              <div style="display: flex; align-items: center">
+                <span class="identify identify-eye" v-if="identifyShow">
+                  {{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
+                      0,
+                      1
                     )
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="年检签证有效期至：">
-                  <div>{{
-                    formatDate(
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                        .annualInspectionDate
+                  }}*****************{{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                        .sellerIdCard.length - 1,
+                      1
                     )
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="保险险种：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.insurance
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="保险期至：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                      .insuranceEndData
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="特殊约定：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.remarks
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <h3 style="font-weight: bold">交易信息</h3>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="收车金额：">
-                  <div style="display: flex; flex-direction: column">
-                    <div>{{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                        .vehicleReceiptAmount
-                    }}</div>
-                    <el-tag class="ml-2" type="danger"
-                      >公允值范围：{{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue
-                          ?.value1
-                      }}元—{{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue
-                          ?.value2
-                      }}元</el-tag
-                    >
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="付款方式 ：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .payType == '0'
-                      ? '全款'
-                      : '定金+尾款'
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="是否第三方代收： ">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .collection == '0'
-                      ? '否'
-                      : '是'
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="身份证">
-                  <div style="display: flex; flex-direction: column">
-                    <div>
-                      <span class="identify" v-if="identifyShow">
-                        {{
-                          baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
-                            0,
-                            1
-                          )
-                        }}*****************{{
-                          baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
-                            baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                              .carInfoDetails.sellerIdCard.length - 1,
-                            1
-                          )
-                        }}</span
-                      >
-                      <span class="identify" v-else>{{
-                        baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                          .carInfoDetails.sellerIdCard
-                      }}</span>
-                      <Icon
-                        style="margin: 0 6px"
-                        icon="ep:view"
-                        v-if="identifyShow"
-                        @click="identifyShow = !identifyShow"
-                      />
-                      <Icon
-                        style="margin: 0 6px"
-                        icon="ep:hide"
-                        v-else
-                        @click="identifyShow = !identifyShow"
-                      />
-                    </div>
-                    <div>
-                      <el-image
-                        v-for="item in baseInfoData.data.variables.formDataJson.formMain
-                          .formDataJson.fileD"
-                        :key="item.id"
-                        style="width: 70px; height: 70px; margin-right: 5px"
-                        :src="item.url"
-                        fit="cover"
-                        :zoom-rate="1.2"
-                        :initial-index="0"
-                        :preview-src-list="fileD"
-                      />
-                    </div>
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="姓名：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .sellerName
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="联系地址：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .sellerAdder
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="电话：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .sellerTel
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="收款方式：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .remitType
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="开户行：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .bankName
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col
-                :span="6"
-                v-if="
+                  }}</span
+                >
+                <span class="identify" v-else>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .collection == '0'
-                "
-              >
-                <el-form-item label="银行卡号：">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .bankCard
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col
-                :span="6"
-                v-if="
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .collection == '1'
-                "
-              >
-                <el-form-item label="第三方联系人： ">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .thirdSellerName
-                  }}</div>
-                </el-form-item>
-              </el-col>
-              <el-col
-                :span="6"
-                v-if="
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .collection == '1'
-                "
-              >
-                <el-form-item label="第三方银行卡号： ">
-                  <div>{{
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .thirdBankCard
-                  }}</div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-          <!-- </el-card> -->
+                    .sellerIdCard
+                }}</span>
+                <Icon
+                  style="margin-right: 5px"
+                  icon="ep:view"
+                  v-if="identifyShow"
+                  @click="identifyShow = !identifyShow"
+                />
+                <Icon
+                  style="margin-right: 5px"
+                  icon="ep:hide"
+                  v-else
+                  @click="identifyShow = !identifyShow"
+                />
+              </div>
+              <el-image
+                v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileD"
+                :key="item.id"
+                style="width: 34px; height: 34px; margin-right: 5px"
+                :src="item.url"
+                fit="cover"
+                :zoom-rate="1.2"
+                :initial-index="0"
+                :preview-src-list="fileD"
+              />
+            </el-col>
+            <el-col :span="2" class="bg-yell">姓名：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                  .sellerName
+              }}</div>
+            </el-col>
+            <el-col :span="2" class="bg-yell">联系地址：</el-col>
+            <el-col :span="4">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                  .sellerAdder
+              }}</div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="2" class="bg-yell">联系电话：</el-col>
+            <el-col :span="22">
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                  .sellerTel
+              }}</div>
+            </el-col>
+          </el-row>
         </div>
-      </el-main>
-    </el-container>
-    <!-- </XModal> -->
-  </ContentWrap>
+        <p style="font-weight: bold; margin: 10px 0">发票信息</p>
+        <div>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>买车单位/个人</span>
+            </el-col>
+            <el-col :span="8">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.buyerName
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>单位代码/身份证号码</span></el-col>
+            <el-col :span="8"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.buyerIdCard
+              }}</span></el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>买车单位/个人住址</span>
+            </el-col>
+            <el-col :span="8">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.buyerAddress
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>电话</span></el-col>
+            <el-col :span="8"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.buyerTel
+              }}</span></el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>卖方单位/个人</span>
+            </el-col>
+            <el-col :span="8">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.sellerName
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>单位代码/身份证号码</span></el-col>
+            <el-col :span="8"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.sellerIdCard
+              }}</span></el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>卖车单位/个人住址</span>
+            </el-col>
+            <el-col :span="8">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.sellerAddress
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>电话</span></el-col>
+            <el-col :span="8"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.sellerTel
+              }}</span></el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>车牌号</span>
+            </el-col>
+            <el-col :span="4"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.plateNum
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>登记证书</span></el-col>
+            <el-col :span="4"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.certificateNo
+              }}</span></el-col
+            >
+            <el-col :span="4" class="bg-yell"><span>车辆类型</span></el-col>
+            <el-col :span="4"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.carType
+              }}</span></el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>车架号/车辆识别代码</span>
+            </el-col>
+            <el-col :span="4">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.vin
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>厂牌型号</span></el-col>
+            <el-col :span="4"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.model
+              }}</span></el-col
+            >
+            <el-col :span="4" class="bg-yell"><span>转入地车辆管理所名称</span></el-col>
+            <el-col :span="4">
+              <span>
+                {{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                    .carInvoiceDetailVO.transManageName
+                }}
+              </span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>车辆价款</span>
+            </el-col>
+            <el-col :span="20">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.sellAmount
+              }}</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>二手车市场</span>
+            </el-col>
+            <el-col :span="8">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.marketName
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"
+              ><div class="flex-column">
+                <span>纳税人识别号</span>
+                <span>地址</span>
+              </div></el-col
+            >
+            <el-col :span="8"
+              ><div class="flex-column flex-content">
+                <span>{{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                    .carInvoiceDetailVO.taxNum
+                }}</span>
+                <span>{{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                    .carInvoiceDetailVO.marketAdress
+                }}</span>
+              </div></el-col
+            >
+          </el-row>
+          <el-row>
+            <el-col :span="4" class="bg-yell">
+              <span>开户行账号</span>
+            </el-col>
+            <el-col :span="8">
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.marketBankNum
+              }}</span>
+            </el-col>
+            <el-col :span="4" class="bg-yell"><span>电话</span></el-col>
+            <el-col :span="8"
+              ><span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
+                  .carInvoiceDetailVO.marketTel
+              }}</span></el-col
+            >
+          </el-row>
+        </div>
+        <p style="font-weight: bold; margin: 10px 0">合同信息</p>
+        <div class="content">
+          <el-row>
+            <template
+              v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                .carInvoiceInfoVO.contractList"
+              :key="item.contractFileId"
+            >
+              <el-col :span="4" class="bg-yell">
+                <span>{{ item.contractName }}</span>
+              </el-col>
+              <el-col :span="4">
+                <span><button class="colr159" @click="viewContract(item)">查看</button></span>
+              </el-col>
+            </template>
+          </el-row>
+        </div>
+      </div>
+    </el-card>
+    <AgreementFrame
+      :visible="contractVisible"
+      :src="contractFileUrl"
+      @handle-cancel="handleCancel"
+    />
+  </div>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
-import { allSchemas } from '../toDoList/toDoList.data'
-import { defineProps } from 'vue'
-import { propTypes } from '@/utils/propTypes'
-// import type { FormExpose } from '@/components/Form'
-// const { t } = useI18n() // 国际化
-// const message = useMessage() // 消息弹窗
-
-// 详情
+import { AgreementFrame } from './index'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
 
-const [] = useXTable({
-  allSchemas: allSchemas
-})
-
-const actionType = ref('detail') // 操作按钮的类型
-// const dialogVisible = ref(true) // 是否显示弹出层
-// const dialogTitle = ref('收车价格超公允值待办') // 弹出层标题
-// const formRef = ref<FormExpose>() // 表单 Ref
-
-// 设置标题
-const setDialogTile = (type: string) => {
-  // dialogTitle.value = t('action.' + type)
-  actionType.value = type
-  // dialogVisible.value = true
-}
 //时间戳转日期
 const formatDate = (time: string) => {
   let date = ''
@@ -482,13 +546,7 @@ const formatDate = (time: string) => {
     return ''
   }
 }
-// 详情
-let mainValue = reactive({
-  formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
-})
-nextTick(() => {
-  mainValue.formDataJson = { ...baseInfoData.data.variables.formDataJson.formMain.formDataJson }
-})
+
 const fileB = computed(() => {
   return baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileB.map(
     (item) => item.url
@@ -511,46 +569,69 @@ const fileD = computed(() => {
 })
 const identifyShow = ref(true)
 
-// const emit = defineEmits(['closeCarDialog'])
-const props = defineProps({
-  // carVisible: propTypes.bool.def(false),
-  type: propTypes.bool.def(undefined)
-})
+// 合同弹框
+const contractVisible = ref(false)
+const contractFileUrl = ref('')
 
-// const carVisible = computed(() => {
-//   return props.carVisible
-// })
+const message = useMessage() // 消息弹窗
+// 查看合同
+const viewContract = (item: any) => {
+  if (item.contractFileUrl) {
+    contractFileUrl.value = item.contractFileUrl
+    contractVisible.value = true
+  } else {
+    message.error('改合同暂无预览')
+  }
+}
 
-console.log(setDialogTile, props)
-
-// 关闭弹框
-// const closeDialog = () => {
-//   emit('closeCarDialog')
-// }
-
-// 通过
-// const passBtn = () => {
-//   emit('closeCarDialog')
-// }
-
-// 退回
-// const returnBtn = () => {
-//   emit('closeCarDialog')
-// }
+// 关闭合同弹框
+const handleCancel = () => {
+  contractVisible.value = false
+}
 </script>
 <style lang="scss" scoped>
-.header {
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
+.title {
+  > span {
+    margin-right: 20px;
+    font-weight: 600;
+    color: #333333;
+  }
+  margin-bottom: 16px;
 }
 
 .btn {
   text-align: right;
+  margin-bottom: 20px;
 }
 
 .content-box {
-  line-height: 36px;
+  color: #606266;
+  .bg-yell {
+    background: #f5f5f5;
+    display: flex;
+    text-align: right;
+    padding-right: 5px;
+    justify-content: flex-end;
+  }
+}
+:deep(.el-main) {
+  padding: 0;
+}
+:deep(.el-col) {
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  height: 40px;
+  align-items: center;
+}
+.content-box .el-row:first-child {
+  border-top: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(1) {
+  border-left: 1px solid #eaeaea;
+}
+.content-box .el-row .el-col:nth-child(even) {
+  padding-left: 15px;
 }
 .carInfo {
   overflow: hidden;
@@ -559,6 +640,17 @@ console.log(setDialogTile, props)
 }
 .identify {
   display: inline-block;
-  width: 136px;
+  width: 140px;
+}
+.content {
+  .el-row:first-child {
+    border-top: none;
+    .el-col {
+      border-top: 1px solid #eaeaea;
+    }
+  }
+}
+.colr159 {
+  color: #1592c9;
 }
 </style>

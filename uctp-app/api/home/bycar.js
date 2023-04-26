@@ -28,11 +28,11 @@ export function setSellerInfo(data) {
 }
 
 // 合同签章
-export function getQiyuesuo(params) {
+export function getQiyuesuo(data) {
 	return request({
 		url: '/uctp/qys/send',
 		'method': 'POST',
-		params
+		data
 	})
 }
 
@@ -104,5 +104,13 @@ export function delCarInfoWithCollect(data) {
 		url: '/uctp/car-info/delCarInfoWithCollect',
 		'method': 'DELETE',
 		params: data
+	})
+}
+
+// 查看合同
+export function getContractEcho(data) {
+	return request({
+		url: `/uctp/qys/ContractEcho?${data}`,
+		'method': 'POST',
 	})
 }

@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>兴业银行（***1167）</view>
+			<view>浦发银行（***1167）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -10,9 +10,11 @@
 				<u-input
 					border="none"
 					v-model="amount"
-					type="number"
+					type="digit"
+					:focus="true"
 					clearable
 					:customStyle="{'height': '50px'}"
+					@input="handleInput"
 					fontSize="24px"
 				>
 					<u--text
@@ -67,6 +69,18 @@
 			this.allAmount = options.amount;
 		},
 		methods: {
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 删除图片
 			deletePic(event) {
 				deleteImage({ id: event.file.id }).then((res) => {
@@ -130,10 +144,10 @@
 					accountNo: this.accountNo,
 					merchantBankId: 2,
 					amount: Number(this.amount * 100),
-					invoiceIds: this.fileList1.map((item) => { return {id: item.id, url: item.url} })
+					invoiceFiles: this.fileList1.map((item) => { return {fileId: item.id, fileUrl: item.url} })
 				}
 				getPresent(data).then((res) => {
-					this.$modal.msg("提现成功");
+					this.$modal.msg("利润提现流程发起成功");
 					this.$tab.navigateTo('/subPages/home/account/profit/profit');
 					// this.$tab.navigateTo('/subPages/home/account/profit/progress');
 				})

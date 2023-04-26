@@ -1,12 +1,16 @@
 package com.newtouch.uctp.module.business.service.qys;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysCallbackConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,6 +28,7 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.QYS_CAL
  */
 @Service
 @Validated
+@Slf4j
 public class QysCallbackServiceImpl implements QysCallbackService {
 
     @Resource
@@ -104,6 +109,17 @@ public class QysCallbackServiceImpl implements QysCallbackService {
 
     }
 
+    @Override
+    public void saveDO(String content, Integer type,Long deptId) {
+        QysCallbackDO qysCallbackDO = new QysCallbackDO();
+        qysCallbackDO.setContent(content);
+        //目前根据saas文档来的
+        qysCallbackDO.setType(type);
+        if (ObjectUtil.isNotNull(deptId)) {
+            qysCallbackDO.setMainId(deptId);
+        }
+        qysCallbackMapper.insert(qysCallbackDO);
+    }
 
 
 }

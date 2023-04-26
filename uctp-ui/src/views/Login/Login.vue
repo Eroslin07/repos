@@ -4,12 +4,10 @@
     class="h-[100%] relative <xl:bg-v-dark <sm:px-10px <xl:px-10px <md:px-10px"
   >
     <div class="relative h-full flex mx-auto">
-      <div
-        :class="`${prefixCls}__left flex-1 bg-gray-500 bg-opacity-20 relative p-30px <xl:hidden`"
-      >
+      <div :class="`${prefixCls}__left flex-1  relative p-30px <xl:hidden`">
         <!-- 左上角的 logo + 系统标题 -->
-        <div class="flex items-center relative text-white">
-          <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
+        <div class="flex items-center relative login-title">
+          <!-- <img src="@/assets/imgs/car.jpeg" alt="" class="w-48px h-48px mr-10px" /> -->
           <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
         </div>
         <!-- 左边的背景图 + 欢迎语 -->
@@ -19,7 +17,10 @@
             tag="div"
             enter-active-class="animate__animated animate__bounceInLeft"
           >
-            <img src="@/assets/svgs/login-box-bg.svg" key="1" alt="" class="w-350px" />
+            <div class="login-content flex justify-center">
+              <span class="text-20px font-bold">助力车商 经纪转经销</span>
+            </div>
+            <img src="@/assets/svgs/login-logo.svg" key="1" alt="" class="w-350px" />
             <div class="text-3xl text-white" key="2">{{ t('login.welcome') }}</div>
             <div class="mt-5 font-normal text-white text-14px" key="3">
               {{ t('login.message') }}
@@ -31,7 +32,7 @@
         <!-- 右上角的主题、语言选择 -->
         <div class="flex justify-between items-center text-white @2xl:justify-end @xl:justify-end">
           <div class="flex items-center @2xl:hidden @xl:hidden">
-            <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
+            <!-- <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" /> -->
             <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
           </div>
           <div class="flex justify-end items-center space-x-10px">
@@ -85,11 +86,18 @@ $prefix-cls: #{$namespace}-login;
       z-index: -1;
       width: 100%;
       height: 100%;
-      background-image: url('@/assets/svgs/login-bg.svg');
-      background-position: center;
-      background-repeat: no-repeat;
+      // background-image: url('@/assets/svgs/login-bg.svg');
+      // background-position: center;
+      // background-repeat: no-repeat;
       content: '';
     }
   }
+}
+.login-title {
+  color: #fa6400;
+}
+.login-content {
+  color: #fa6400;
+  margin-bottom: 64px;
 }
 </style>

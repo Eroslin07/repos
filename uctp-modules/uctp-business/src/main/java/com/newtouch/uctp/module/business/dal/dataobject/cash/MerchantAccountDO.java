@@ -23,15 +23,15 @@ public class MerchantAccountDO extends BaseDO {
 
     private Long tenantId;//租户标识
 
-    private Integer cash;//保证金
+    private Long cash;//保证金
 
-    private Integer profit;//利润
+    private Long profit;//利润
 
-    private Integer freezeCash;//保证金-冻结余额
+    private Long freezeCash;//保证金-冻结余额
 
-    private Integer availableCash;//保证金-可用余额
+    private Long availableCash;//保证金-可用余额
 
-    private Integer freezeProfit;//利润-冻结余额
+    private Long freezeProfit;//利润-冻结余额
 
     private Long merchantId;//商户标识
 

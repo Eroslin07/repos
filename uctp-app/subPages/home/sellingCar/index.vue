@@ -1,12 +1,14 @@
 <template>
 	<view>
+		<!-- 自定义导航栏 -->
+		<u-navbar title="我要卖车" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<view class="search_header">
 			<view class="tip-text" style="margin-bottom: 10px;">请选择您要售卖的车辆</view>
 			<u-search v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
 				placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
 		<!-- status==22 未检测 -->
-		<view style="margin-top: 85px;">
+		<view>
 			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)"
 				style="margin-top: 10px;">
 				<uni-row :gutter="20">
@@ -20,9 +22,9 @@
 						</view>
 					</uni-col>
 					<uni-col :span="15">
-						<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<h3 class="right-title">{{tab.model || '暂无'}}</h3>
 						<!-- <view class="fs12">VIN：{{tab.vin}}</view> -->
-						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || 0}} 万公里</view>
+						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || '——'}} 万公里</view>
 						<view class="right-price">收车价：
 							<text v-if="tab.isSHowMoney">{{tab.vehicleReceiptAmount | handleMoney}} 万元</text>
 							<text v-else>***元</text>
@@ -86,11 +88,6 @@
 		mounted() {
 			this.getList(this.formData);
 		},
-		onBackPress(options) {
-			this.$tab.reLaunch('/pages/index');
-			return true;
-		},
-
 		// 下拉刷新
 		onPullDownRefresh() {
 			this.getList(this.formData)
@@ -106,6 +103,10 @@
 			this.getMore(this.formData)
 		},
 		methods: {
+			// 页面返回
+			back() {
+				this.$tab.reLaunch('/pages/index');
+			},
 			// 获取list
 			getList(obj) {
 				this.tabList = [];
@@ -201,11 +202,6 @@
 	}
 
 	.search_header {
-		position: fixed;
-		top: 44px;
-		/* #ifdef MP-WEIXIN */
-		top: 0;
-		/* #endif */
 		width: 100%;
 		padding: 10px;
 		font-size: 16px;
