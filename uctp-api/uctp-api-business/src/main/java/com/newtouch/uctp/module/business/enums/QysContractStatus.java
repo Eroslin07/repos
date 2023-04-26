@@ -1,0 +1,45 @@
+package com.newtouch.uctp.module.business.enums;
+
+import java.util.stream.Stream;
+
+/**
+ * 契约锁合同状态
+ *
+ */
+public enum QysContractStatus {
+    DRAFT("DRAFT","草稿"),
+    RECALLED("RECALLED","已撤回"),
+    SIGNING("SIGNING","签署中"),
+    REJECTED("REJECTED","已退回"),
+    COMPLETE("COMPLETE","已完成"),
+    EXPIRED("EXPIRED","已截止签署"),
+    FILLING("FILLING","拟定中"),
+    INVALIDING("INVALIDING","草稿"),
+    COLLECT("DRAFT","作废中"),
+    FORCE_END("FORCE_END","强制结束"),
+    INVALIDED("INVALIDED","已作废");
+
+
+
+    private String value;
+    private String text;
+
+    QysContractStatus(String value, String text) {
+        this.value = value;
+        this.text = text;
+    }
+
+    public String value(){
+        return this.value;
+    }
+    public String text(){
+        return this.text;
+    }
+
+    public static QysContractStatus toType(String value){
+        return Stream.of(QysContractStatus.values())
+                .filter(c -> c.value == value)
+                .findAny()
+                .orElse(null);
+    }
+}

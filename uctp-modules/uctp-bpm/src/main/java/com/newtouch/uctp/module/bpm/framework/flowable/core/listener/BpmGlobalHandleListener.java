@@ -66,7 +66,7 @@ public class BpmGlobalHandleListener {
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
             //收车公允价值流程发起，修改车辆状态
-            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A_b.value(),CarStatus.COLLECT_A_b_a.value(),"已发起","");
+            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A_B.value(),CarStatus.COLLECT_A_B_A.value(),"已发起","");
         }else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允价值流程发起，修改车辆状态
             carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");

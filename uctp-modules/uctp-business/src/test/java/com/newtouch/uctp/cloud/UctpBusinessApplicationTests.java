@@ -5,20 +5,16 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 
-@SpringBootTest
+@SpringBootTest(classes =UctpBusinessApplicationTests.class )
 class UctpBusinessApplicationTests {
-    @Resource
-    private QysConfigService qysConfigService;
     private static DefaultQiyuesuoClient client;
     @BeforeAll
     public static void before() {
@@ -45,7 +41,7 @@ class UctpBusinessApplicationTests {
     void sendContract(){
 //        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         Contract draftContract = new Contract();
-        draftContract.setSubject("三方-二手车-测试-0423");
+        draftContract.setSubject("二手车-测试-666");
         // 设置合同接收方
         // 甲方个人签署方
 //        Signatory persoanlSignatory = new Signatory();
@@ -56,8 +52,8 @@ class UctpBusinessApplicationTests {
         // 乙方平台
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
-        platformSignatory.setTenantName("成都新致云服测试公司");
-        platformSignatory.setReceiver(new User( "13708206115", "MOBILE"));
+        platformSignatory.setTenantName("广东光耀汽车公司");
+        platformSignatory.setReceiver(new User( "17380123817", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
         //丙方
         Signatory initiator2 = new Signatory();

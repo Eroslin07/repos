@@ -2,6 +2,8 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
+import com.qiyuesuo.sdk.v2.request.ContractDetailRequest;
+import com.qiyuesuo.sdk.v2.request.ContractInvalidRequest;
 import com.qiyuesuo.sdk.v2.request.ContractSignCompanyRequest;
 import com.qiyuesuo.sdk.v2.request.DocumentAddByTemplateRequest;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
@@ -69,4 +71,53 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Object> defaultCompanysign(ContractSignCompanyRequest request);
+
+    /**
+     * 撤回/作废合同
+     * @param request 契约锁需要的参数
+     * @return
+     */
+    QiyuesuoCommonResult<String> defaultContractInvalid(ContractInvalidRequest request);
+
+    /**
+     * “签署中”状态下撤回合同
+     *
+     * @param contractId 合同 ID
+     * @param reason 撤回 / 作废原因
+     * @return
+     */
+    QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, String reason);
+
+    /**
+     *  “已完成”状态下请求作废合同，同时发起方签署作废合同
+     *
+     * @param contractId 合同 ID
+     * @param sealId 印章 ID，发起方签署作废文件时指定的印章，作废合同时使用。若发起方已签署，不传默认取发起方印章 ID
+     * @param reason 撤回 / 作废原因
+     * @return
+     */
+    QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, Long sealId, String reason);
+
+    /**
+     *  “草稿”状态下删除合同
+     *
+     * @param contractId 合同 ID
+     * @return
+     */
+    QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId);
+
+    /**
+     * 获取合同详情
+     *
+     * @param request 合同 ID
+     * @return
+     */
+    QiyuesuoCommonResult<Contract> defaultContractDetail(ContractDetailRequest request);
+    /**
+     * 获取合同详情
+     *
+     * @param contractId 合同 ID
+     * @return
+     */
+    QiyuesuoCommonResult<Contract> defaultContractDetail(Long contractId);
 }

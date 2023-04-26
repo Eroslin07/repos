@@ -131,6 +131,40 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(ContractInvalidRequest request) {
+        QiyuesuoCommonResult<String> result;
+        try {
+            result = doDefaultContractInvalid(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractDetail(ContractDetailRequest request) {
+        QiyuesuoCommonResult<Contract> result;
+        try {
+            result = doDefaultContractDetail(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<Contract> doDefaultContractDetail(ContractDetailRequest request)
+            throws Throwable;
+    protected abstract QiyuesuoCommonResult<String> doDefaultContractInvalid(ContractInvalidRequest request)
+            throws Throwable;
     protected abstract QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request)
             throws Throwable;
     protected abstract QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId)
@@ -215,4 +249,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
 
     protected abstract QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doSaasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request)
             throws Throwable;
+
+
+
 }

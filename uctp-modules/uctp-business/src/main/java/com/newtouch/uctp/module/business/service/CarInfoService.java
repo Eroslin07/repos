@@ -1,16 +1,15 @@
 package com.newtouch.uctp.module.business.service;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 车辆主表 Service 接口
@@ -226,4 +225,6 @@ public interface CarInfoService {
     CarInvoiceInfoVO getForwardInvoiceInfo(Long contractId);
 
     CarInvoiceInfoVO getReverseInvoiceInfo(Long contractId);
+
+    void update(CarInfoDO carInfo);
 }
