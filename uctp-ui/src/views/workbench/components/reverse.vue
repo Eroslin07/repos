@@ -157,10 +157,14 @@
             <span>车辆价款</span>
           </el-col>
           <el-col :span="20">
-            <span>{{
-              baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
-                .sellAmount
-            }}</span>
+            <span>
+              {{
+                moneyFormat(
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+                    .sellAmount
+                )
+              }}元
+            </span>
           </el-col>
         </el-row>
         <el-row>
@@ -212,7 +216,7 @@
         </el-row>
       </div>
       <p style="font-weight: bold; margin: 10px 0">合同信息</p>
-      <div class="content">
+      <div class="content-box">
         <el-row>
           <template
             v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
@@ -240,6 +244,12 @@
 <script setup lang="ts" name="Reverse">
 import { AgreementFrame } from './index'
 import { baseInfoData, completedVisible } from '@/views/workbench/basInfoValue'
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 // 合同弹框
 const contractVisible = ref(false)
 const contractFileUrl = ref('')
@@ -305,6 +315,7 @@ p {
 .flex-content {
   padding: 0;
   span {
+    height: 20px;
     text-align: left;
   }
 }

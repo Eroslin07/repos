@@ -155,10 +155,14 @@
             <span>车辆价款</span>
           </el-col>
           <el-col :span="20">
-            <span>{{
-              baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
-                .sellAmount
-            }}</span>
+            <span>
+              {{
+                moneyFormat(
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+                    .sellAmount
+                )
+              }}元
+            </span>
           </el-col>
         </el-row>
         <el-row>
@@ -263,7 +267,12 @@ const viewContract = (item: any) => {
     message.error('改合同暂无预览')
   }
 }
-
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 // 关闭合同弹框
 const handleCancel = () => {
   contractVisible.value = false
@@ -314,6 +323,7 @@ p {
 .flex-content {
   padding: 0;
   span {
+    height: 20px;
     text-align: left;
   }
 }
