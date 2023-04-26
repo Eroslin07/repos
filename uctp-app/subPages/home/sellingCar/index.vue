@@ -46,7 +46,7 @@
 			<view>请先对该车辆进行检测处理，再进行卖车。</view>
 		</u-modal>
 		<!-- 加载 -->
-		<u-loadmore :status="loadStatus" />
+		<u-loadmore v-show="isSHowLoadMore" :status="loadStatus" />
 		
 	</view>
 </template>
@@ -75,6 +75,7 @@
 				show: false,
 				// 加载图标
 				loadStatus: 'loadmore',
+				isSHowLoadMore:true,
 				isSHowTip:'',
 			}
 		},
@@ -134,12 +135,18 @@
 					this.total = res.data.total
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
-					} else {
+					} else if(this.total>0){
 						this.loadStatus = 'nomore'
+					}else{
+						this.isSHowLoadMore=false;
 					}
-				}).catch(() => {
-					this.loadStatus = 'nomore'
-					
+				}).catch((err) => {
+					this.isSHowLoadMore=false;
+					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+						this.isSHowTip = 'webError'
+					} else {
+						this.isSHowTip = 'sysError'
+					}
 				}).finally(() => {
 					this.$modal.closeLoading()
 					uni.stopPullDownRefresh()
