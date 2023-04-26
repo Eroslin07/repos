@@ -12,7 +12,7 @@
 			</u-tabs>
 		</view>
 		<!-- 列表 -->
-		<view class="" v-if="tabList.length>0">
+		<view class="" v-if="!isSHowTip">
 			<uni-card v-for="(tab, tabIndex) in tabList" :key="tab.id" @click="handleCard(tab)">
 				<view v-if="tab.status != 11">
 					<uni-row :gutter="30">
@@ -127,17 +127,8 @@
 				<text>经纪转经销</text>
 			</view>
 		</view>
-		<view v-if="noData" class="empty-page">
-			<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
-			<text class="empty-text">暂无数据</text>
-		</view>
-
-		<view v-if="loadingInfo" class="loading-box">
-			<image src="/static/images/home/car-loading2.gif" mode=""></image>
-			<view class="loading-text">
-				加载中...
-			</view>
-		</view>
+		<!-- 提示信息 -->
+		<AbnormalPage v-else :isSHowTip="isSHowTip"/>
 	</view>
 </template>
 
@@ -152,7 +143,7 @@
 	import {
 		delCarInfoWithCollect
 	} from '@/api/home/bycar.js'
-
+	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
 			return {
@@ -188,11 +179,12 @@
 				timer: {},
 				defaultUrl: '/static/images/carlistImg.png',
 				type: null,
-				// 加载中
-				loadingInfo: false,
-				// 暂无数据
-				noData: false,
+				// 提示信息
+				isSHowTip:'',
 			}
+		},
+		components: {
+			AbnormalPage
 		},
 		filters: {
 			handleMoney(val) {
@@ -248,11 +240,14 @@
 			},
 			// 获取list数据
 			getList(params) {
+				this.isSHowTip='onLoading'
 				this.tabList = []
-				// this.$modal.loading("数据加载中...");
-				this.loadingInfo = true;
 				getHomePageList(params).then(res => {
-					this.loadingInfo = false;
+					if(res.data.list.length>0){
+						this.isSHowTip=''
+					}else{
+						this.isSHowTip='noData'
+					}
 					this.tabList = res.data.list.map(item => {
 						let label = this.allChild.find(v => v.status == item.status)?.label
 						this.$set(item, 'eyeIsShow', false)
@@ -263,20 +258,19 @@
 						}
 					})
 					this.total = res.data.total;
-					if (!this.total) {
-						this.noData = true;
-					} else {
-						this.noData = false;
-					}
+
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
 					} else {
 						this.loadStatus = 'nomore'
 					}
-				}).catch((error) => {
-					this.loadStatus = 'nomore'
+				}).catch((err) => {
+					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+						this.isSHowTip = 'webError'
+					} else {
+						this.isSHowTip = 'sysError'
+					}
 				}).finally(() => {
-					// this.$modal.closeLoading()
 					uni.stopPullDownRefresh()
 				})
 			},
@@ -297,6 +291,8 @@
 					} else {
 						this.loadStatus = 'nomore'
 					}
+				}).catch(err=>{
+					console.log(err)
 				})
 			},
 
