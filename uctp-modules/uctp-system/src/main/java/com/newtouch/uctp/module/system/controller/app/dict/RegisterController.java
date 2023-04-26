@@ -1,28 +1,26 @@
 package com.newtouch.uctp.module.system.controller.app.dict;
 
 import cn.hutool.core.util.StrUtil;
-import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.util.collection.SetUtils;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
 import com.newtouch.uctp.framework.security.config.SecurityProperties;
 import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
 import com.newtouch.uctp.module.system.convert.auth.AuthConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
-import com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO;
-import com.newtouch.uctp.module.system.dal.dataobject.permission.RoleDO;
 import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
-import com.newtouch.uctp.module.system.enums.permission.MenuTypeEnum;
 import com.newtouch.uctp.module.system.service.auth.AdminAuthService;
 import com.newtouch.uctp.module.system.service.dept.DeptService;
 import com.newtouch.uctp.module.system.service.permission.PermissionService;
 import com.newtouch.uctp.module.system.service.permission.RoleService;
 import com.newtouch.uctp.module.system.service.tenant.TenantService;
 import com.newtouch.uctp.module.system.service.user.AdminUserService;
+import com.newtouch.uctp.module.system.service.user.UserExtService;
 import com.newtouch.uctp.module.system.util.collection.OCRUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -34,12 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.obtainAuthorization;
-import static java.util.Collections.singleton;
 
 @Tag(name =  "管理后台 - 认证")
 @RestController
@@ -68,6 +64,9 @@ public class RegisterController {
     @Resource
     private SecurityProperties securityProperties;
 
+    @Resource
+    private UserExtService userExtService;
+
 
     @PostMapping("/appLogin")
     @PermitAll
@@ -92,19 +91,13 @@ public class RegisterController {
         // 获得用户信息
         AdminUserDO user = userService.getUser(getLoginUserId());
         DeptDO dept = deptService.getDept(user.getDeptId());
+        UserExtDO userExtDOS = userExtService.selectByUserId(user.getId()).get(0);
         TenantDO tenant = tenantService.getTenant(user.getTenantId());
         if (user == null) {
             return null;
         }
-        // 获得角色列表
-        Set<Long> roleIds = permissionService.getUserRoleIdsFromCache(getLoginUserId(), singleton(CommonStatusEnum.ENABLE.getStatus()));
-        List<RoleDO> roleList = roleService.getRoleListFromCache(roleIds);
-        // 获得菜单列表
-        List<MenuDO> menuList = permissionService.getRoleMenuListFromCache(roleIds,
-                SetUtils.asSet(MenuTypeEnum.DIR.getType(), MenuTypeEnum.MENU.getType(), MenuTypeEnum.BUTTON.getType()),
-                singleton(CommonStatusEnum.ENABLE.getStatus())); // 只要开启的
         // 拼接结果返回
-        return success(AuthConvert.INSTANCE.convert(user,dept,tenant, roleList, menuList));
+        return success(AuthConvert.INSTANCE.convert(user,userExtDOS,dept,tenant));
     }
 
     @PostMapping("/logout")
@@ -125,6 +118,8 @@ public class RegisterController {
     @Operation(summary = "识别身份证号")
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public CommonResult<String> orcIdCard(@RequestBody Map map) {
+//        String ak="iV1qdyTyr8LG3KD7cZBYpxIh";
+//        String sk="LdSEwbqTNmmCjkPbixW4YZP0xXonMGYv";
         String ak="dzb9KhZMmaTdGd3rbnmXnc0u";
         String sk="K65GO95WOMOyloXZ4ZV72MKEX9EreG5H";
         String idCardUrl = String.valueOf(map.get("IDCardUrl"));
@@ -194,5 +189,36 @@ public class RegisterController {
     }
 
 
+    @GetMapping("/getUserInfo")
+    @Operation(summary = "获取个人信息")
+    @Parameter(name = "userId", description = "用户id", required = true, example = "1650085024672796674")
+    public CommonResult<AuthUserInfoRespVO> getUserInfo(@RequestParam("userId") Long userId) {
+        return success(authService.getUserInfo(userId));
+    }
 
+
+
+    @PostMapping("/addAccount")
+    @PermitAll
+    @Operation(summary = "新增&修改子账号")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<Map> addAccount(@RequestBody @Valid AddAccountReqVO reqVO) {
+        Map map = authService.addAccount(reqVO);
+        return success(map);
+    }
+
+
+    @GetMapping("/deleteAccount")
+    @Operation(summary = "删除子账号")
+    @Parameter(name = "userId", description = "用户id", required = true, example = "1650085024672796674")
+    public CommonResult<Integer> deleteAccount(@RequestParam("userId") Long userId) {
+        return success(authService.deleteAccount(userId));
+    }
+
+    @GetMapping("/getAccountList")
+    @Operation(summary = "获取子账号列表")
+    @Parameter(name = "deptId", description = "商户id", required = true, example = "1650085024672796674")
+    public CommonResult<List<AddAccountRespVO>> getAccountList(@RequestParam("deptId") Long deptId) {
+        return success(authService.getAccountList(deptId));
+    }
 }
