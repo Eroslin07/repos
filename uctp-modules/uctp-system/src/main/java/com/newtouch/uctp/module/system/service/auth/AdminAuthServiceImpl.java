@@ -312,7 +312,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 userExtDO.setIdCard(reqVO.getIdCard());
                 userExtService.insertUser(userExtDO);
                 map.put("success","0");
-//                qysConfigApi.userAuth(userDO.getId());
+                CommonResult<Boolean> result = qysConfigApi.userAuth(userDO.getId());
             }catch (Exception e){
                 throw exception(AUTH_ADDACCOUNT_ERROR);
             }
@@ -335,7 +335,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                     userExtDOS.setStatus(1);
                     adminUserMapper.updateById(user);
                     userExtMapper.updateById(userExtDOS);
-//                    qysConfigApi.userAuth(userDO.getId());
+                    CommonResult<Boolean> booleanCommonResult = qysConfigApi.userAuth(userDO.getId());
                 }
 
             }catch (Exception e){

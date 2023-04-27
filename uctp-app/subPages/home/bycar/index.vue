@@ -1,5 +1,5 @@
 <template>
-	<view class="by-car" :class="{popupShow: showModel}">
+	<view class="by-car" :class="{popupShow: showModel || brandShow}">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要收车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
@@ -101,7 +101,7 @@
 						<u--input v-model="carForm.brandType" border="none" placeholder="请输入品牌型号"></u--input>
 					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="model" borderBottom>
-						<view @click="showModel = true">
+						<view @click="handleShow()">
 							<u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input>
 						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
@@ -165,6 +165,24 @@
 				<!-- 选择登记日期 -->
 				<u-datetime-picker v-if="showDate" :show="showDate" v-model="showDateTime" mode="date"
 					:formatter="formatter" @cancel="showDate = false" @confirm="handleDate"></u-datetime-picker>
+				<u-popup v-if="brandShow" :show="brandShow" safeAreaInsetTop :customStyle="{ 'width': '240px' }" mode="right"
+					@close="brandShow = false">
+					<u-index-list :index-list="indexList">
+						<template v-for="(item, index) in barandList">
+							<!-- #ifdef APP-NVUE -->
+							<u-index-anchor :text="indexList[index]"></u-index-anchor>
+							<!-- #endif -->
+							<u-index-item>
+								<!-- #ifndef APP-NVUE -->
+								<u-index-anchor :text="indexList[index]"></u-index-anchor>
+								<!-- #endif -->
+								<view class="list-cell" v-for="(cell, index1) in item" :key="index1" @click="handleBrand(cell)">
+									{{cell.name}}
+								</view>
+							</u-index-item>
+						</template>
+					</u-index-list>
+				</u-popup>
 				<u-popup v-if="showModel" :show="showModel" safeAreaInsetTop :customStyle="{ 'width': '240px' }" mode="right"
 					@close="showModel = false">
 					<view>
@@ -369,7 +387,8 @@
 		getCarInfo,
 		delCarInfoWithCollect,
 		getCarInfoDetail,
-		getVehicleRegistrationCertificate
+		getVehicleRegistrationCertificate,
+		getAllCarBrandList
 	} from '@/api/home/bycar.js'
 	const dateTime = uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd');
 	export default {
@@ -513,6 +532,10 @@
 				showModel: false,
 				// 车系
 				seriesList: [],
+				barandList: [],
+				indexList: [],
+				brandShow: false,
+				brandStatus: true,
 				// 车辆手续
 				checkboxList: [
 					{ label: '行驶证正、副本', name: 'drivingLicense' },
@@ -708,6 +731,7 @@
 		},
 		mounted() {
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
+			this.getAllBrand();
 		},
 		methods: {
 			back() {
@@ -1088,14 +1112,27 @@
 					}
 				})
 			},
+			handleShow() {
+				if (this.brandStatus) {
+					this.brandShow = true;
+				} else {
+					this.showModel = true;
+				}
+			},
 			// 查询品牌id
 			carBrandList() {
 				let data = {
 					brand_name: this.carForm.brand
 				}
 				getCarBrandList(data).then((res) => {
-					// 根据品牌id查询车系
-					this.carSeriesList(res.brand_id);
+					if (res.brand_id) {
+						// 根据品牌id查询车系
+						this.carSeriesList(res.brand_id);
+						this.brandStatus = false;
+						this.brandShow = false;
+					} else {
+						this.brandStatus = true;
+					}
 				})
 			},
 			// 查询车系
@@ -1108,6 +1145,39 @@
 					this.seriesList = res.series_list;
 				})
 			},
+			// 查询所有品牌
+			getAllBrand() {
+				this.barandList = [];
+				this.indexList = [];
+				getAllCarBrandList().then((res) => {
+					res.forEach((item) => {
+						if (this.indexList.indexOf(item.initial) == -1) {
+							this.indexList.push(item.initial);
+						}
+					})
+					this.indexList.forEach((i) => {
+						let list = res.filter((m) => { return m.initial == i });
+						let arr = [];
+						list.forEach((l) => {
+							arr.push({name: l.brand_name, id: l.brand_id});
+						})
+						this.barandList.push(arr);
+					})
+				})
+			},
+			handleBrand(val) {
+				this.carForm.brand = val.name;
+				// 根据品牌id查询车系
+				let data1 = {
+					brand_id: val.id
+				}
+				this.seriesList = [];
+				getCarSeriesList(data1).then((res) => {
+					this.seriesList = res.series_list;
+					this.showModel = true;
+					this.brandShow = false;
+				})
+			},
 			// 关闭选择车型
 			handleClose(val) {
 				if (val) {
@@ -1116,6 +1186,7 @@
 					this.carForm.model = this.carForm.brand + '-' + val.model_name;
 				}
 				this.showModel = false;
+				this.brandShow = false;
 			},
 			// 点击日期下拉框
 			getDate(date, i) {
@@ -1443,7 +1514,6 @@
 	
 	.popupShow {
 		overflow: hidden;
-		position: fixed;
 		height: 100%;
 		width: 100%;
 	}
