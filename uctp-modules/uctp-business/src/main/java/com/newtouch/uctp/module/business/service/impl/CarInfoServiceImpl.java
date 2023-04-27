@@ -314,7 +314,6 @@ public class CarInfoServiceImpl implements CarInfoService {
         ContractDO contractDO = contractMapper.selectByContractId(contractId);
         //根据合同数据的carId获取收车金额
         CarInfoDO carInfoDO = carInfoMapper.selectById(contractDO.getCarId());
-        carInfoDO.getVehicleReceiptAmount();
         return carInfoDO.getVehicleReceiptAmount();
     }
 
