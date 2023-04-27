@@ -230,19 +230,18 @@ public class QysConfigServiceImpl implements QysConfigService {
         String companyId = jsonObject.getString("companyId");
         String registerNo = jsonObject.getString("registerNo");
         //通过营业执照，和公司名称找到公司数据
-//        DeptDO deptDO = deptMapper.selectOne("name", companyName, "tax_num", registerNo);
         DeptDO deptDO = deptMapper.findByNameAndTaxNum(companyName,registerNo);
         if (ObjectUtil.isNotNull(deptDO)) {
-//            this.configurationSystemVariable(deptDO);
             //fengin接口回调，如果要用feign 那么这里必须卸载回调里，不然报错没传参数 tenant-id
             TenantUtils.execute(deptDO.getTenantId(), () -> {
                 WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,deptDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
                 WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(adminUserRespDTOs.get(0).getId()));
+                QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
+                AdminUserRespDTO userRespDTO = null;
                 //如果回调数据为认证成功，保存公司id
                 if ("1".equals(status) && StrUtil.isNotBlank(companyId)) {
-                    QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
                     if (ObjectUtil.isNull(configDO)) {
                         configDO = new QysConfigDO();
                     }
@@ -259,7 +258,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                     List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
                     if (CollUtil.isNotEmpty(checkedData)) {
                         //此时只会存在一条当前部门下的用户数据
-                        AdminUserRespDTO userRespDTO = checkedData.get(0);
+                        userRespDTO = checkedData.get(0);
 //                    this.privilegeUrl(userRespDTO.getId());
                         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
                         SaaSPrivilegeUrlResult privilegeUrlResult = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
@@ -277,23 +276,26 @@ public class QysConfigServiceImpl implements QysConfigService {
                     }else {
                         log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
                     }
+                }else if ("2".equals(status) && StrUtil.isNotBlank(companyId)){
+                    //如果回调数据为认证失败，删除注册数据
+                    deptMapper.deleteById(deptDO);
+                    AdminUserDO adminUserDO = userMapper.selectById(userRespDTO.getId());
+                    if (ObjectUtil.isNotNull(adminUserDO)) {
+                        userMapper.deleteById(adminUserDO);
+                    }
+                    UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", userRespDTO.getId());
+                    if (ObjectUtil.isNotNull(userExtDO)) {
+                        userExtMapper.deleteById(userExtDO);
+                    }
+                    if (ObjectUtil.isNotNull(configDO)) {
+                        qysConfigMapper.deleteById(configDO);
+                    }
                 }
             });
         }else {
             log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}",companyName,registerNo);
         }
         return "success";
-    }
-
-    private void configurationSystemVariable(DeptDO deptDO){
-        //设置租户
-        TenantUtils.execute(deptDO.getTenantId(), () -> {
-            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID,deptDO.getTenantId());
-            //设置当前登录人信息，免得保存报错
-//            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(contractDO.getCreator()));
-        });
-
-
     }
 
     @Override
