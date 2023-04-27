@@ -43,7 +43,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>营业执照号</text>
@@ -59,7 +59,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>法定代表人</text>
@@ -67,7 +67,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>市场所在地</text>
@@ -75,7 +75,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>开户行</text>
@@ -83,7 +83,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>对公银行账号</text>
@@ -97,7 +97,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>保证金充值卡</text>
@@ -111,7 +111,7 @@
 					</view>
 				</template>
 			</uni-list-item>
-			<uni-list-item v-if="type=='0'">
+			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
 						<text>联系地址</text>
@@ -136,16 +136,17 @@
 				eyeIsShow1: false,
 				eyeIsShow2: false,
 				eyeIsShow3: false,
-				type: '0'
 			}
 		},
 		computed: {
 			avatar() {
 				return this.$store.state.user.avatar
+			},
+			type(){
+				return this.$store.state.user.staffType
 			}
 		},
 		onLoad(options) {
-			this.type = options.type
 			this.getUser()
 		},
 		methods: {

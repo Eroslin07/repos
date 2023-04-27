@@ -27,14 +27,17 @@
 					</view>
 				</view>
 				<view class="flex authentication-box">
-					<view class="flex authentication">
-						<image src="../../static/images/mine/slices.png" mode="" style="width: 32rpx;height: 32rpx;">
+					<view class="flex authentication" :class="type=='1'?'active':''">
+						<image
+							:src="type=='1'?'../../static/images/mine/slices-active.png':'../../static/images/mine/slices.png'"
+							mode="" style="width: 32rpx;height: 32rpx;">
 						</image>
 						<text>企业 ></text>
 					</view>
-					<view class=" flex authentication active" :class="">
-						<image src="../../static/images/mine/slices-active.png" mode=""
-							style="width: 32rpx;height: 32rpx;"></image>
+					<view class=" flex authentication" :class="type=='2'?'active':''">
+						<image
+							:src="type=='2'?'../../static/images/mine/slices-active.png':'../../static/images/mine/slices.png'"
+							mode="" style="width: 32rpx;height: 32rpx;"></image>
 						<text>个人 ></text>
 					</view>
 				</view>
@@ -108,14 +111,15 @@
 			},
 			windowHeight() {
 				return uni.getSystemInfoSync().windowHeight - 50
+			},
+			type() {
+				return this.$store.state.user.staffType
 			}
 		},
 		methods: {
 			// 个人信息
 			handleToInfo() {
-				console.log(this.user)
-				const type='0'
-				this.$tab.navigateTo(`/subPages/mine/info/index?type=${type}`)
+				this.$tab.navigateTo(`/subPages/mine/info/index`)
 			},
 			// 员工管理
 			handleToStaff() {

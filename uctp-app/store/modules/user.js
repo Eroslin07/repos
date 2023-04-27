@@ -19,7 +19,8 @@ const user = {
     tenantId: uni.getStorageSync('TENANT_ID') || storage.get(constant.tenantId),
     deptName: uni.getStorageSync('SET_DEPTNAME') || storage.get(constant.deptName),
     tenantName: uni.getStorageSync('SET_TENANTNAME') || storage.get(constant.tenantName),
-    accountNo: '55555555'
+    accountNo: '55555555',
+	staffType:uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
   },
 
   mutations: {
@@ -69,6 +70,11 @@ const user = {
       storage.set(constant.tenantName, tenantName)
       uni.setStorageSync('SET_TENANTNAME', tenantName)
     },
+	SET_STAFFTYPE: (state, staffType) => {
+	  state.staffType = staffType
+	  storage.set(constant.staffType, staffType)
+	  uni.setStorageSync('SET_STAFFTYPE', staffType)
+	},
   },
 
   actions: {
@@ -126,9 +132,10 @@ const user = {
           commit('SET_TENANTID', tenantId)
           commit('SET_TENANTNAME', user.tenantName)
           commit('SET_ID', user.id)
+          commit('SET_STAFFTYPE', user.staffType)
           // 判断是否为主账户/子账户
           tarBarUserType['member'].forEach((item) => {
-            if (user.getStaffType == 2) {
+            if (user.staffType == 2) {
               if (item.index == 1 || item.index == 2) {
                 item.visible = false;
               }
