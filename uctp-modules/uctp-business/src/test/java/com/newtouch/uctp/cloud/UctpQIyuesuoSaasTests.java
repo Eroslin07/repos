@@ -5,23 +5,19 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
+import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.Resource;
-import java.io.FileNotFoundException;
-
-@SpringBootTest
+@SpringBootTest(classes = UctpQIyuesuoSaasTests.class)
 public class UctpQIyuesuoSaasTests {
 
-    @Resource
-    private QysConfigService qysConfigService;
+//    @Resource
+//    private QysConfigService qysConfigService;
     private static SaasQiyuesuoSaasClient client;
 
     @BeforeAll
@@ -43,22 +39,17 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void companyAuth() {
-//        String applicanInfo = "{\"name\":\"阿卡丽\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
-//        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("拳头科技公司", applicanInfo);
-//        System.out.println(result.getData().getPageUrl());
-//        Assert.equals(result.getCode(),0);
-        try {
-            qysConfigService.companyAuth(267L);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        String applicanInfo = "{\"name\":\"马丽\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
+        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("拳头大科技公司", applicanInfo);
+        System.out.println(result.getData().getPageUrl());
+        Assert.equals(result.getCode(), 0);
     }
 
     @Test
     void personAuth() {
         QiyuesuoCommonResult<SaaSUserAuthPageResult> result = client.saasUserAuthPage("17396202169");
         System.out.println(result.getData().getAuthUrl());
-        Assert.equals(result.getCode(),0);
+        Assert.equals(result.getCode(), 0);
     }
 
     @Test
@@ -66,7 +57,7 @@ public class UctpQIyuesuoSaasTests {
         SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
         QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3088322841008022468L, "17380123816");
         System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(),0);
+        Assert.equals(result.getCode(), 0);
     }
 
 

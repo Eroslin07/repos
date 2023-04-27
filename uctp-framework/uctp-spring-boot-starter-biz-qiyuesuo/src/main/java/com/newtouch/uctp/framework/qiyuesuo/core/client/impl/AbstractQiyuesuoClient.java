@@ -237,6 +237,24 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<SaaSUserAuthResult> saasUserAuthResult(SaaSUserAuthResultRequest request) {
+        QiyuesuoCommonResult<SaaSUserAuthResult> result;
+        try {
+            result = doSaasUserAuthResult(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<SaaSUserAuthResult> doSaasUserAuthResult(SaaSUserAuthResultRequest request)
+            throws Throwable;
+
     protected abstract QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request)
             throws Throwable;
 

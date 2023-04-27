@@ -53,6 +53,7 @@ import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
 import com.newtouch.uctp.module.business.util.ContractUtil;
+import com.newtouch.uctp.module.business.util.ShortUrlsUtil;
 import com.newtouch.uctp.module.business.util.UppercaseUtil;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
@@ -263,11 +264,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
                         SaaSPrivilegeUrlResult privilegeUrlResult = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
                         log.info("企业授权【{}】,授权地址【{}】",deptDO.getName(),privilegeUrlResult.getPageUrl());
+                        List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(privilegeUrlResult.getPageUrl()));
                         Map<String, String> map = MapUtil
                                 .builder("title", "企业认证")
                                 .put("contentType", "40")
                                 .put("name", deptDO.getName())
-                                .put("url", privilegeUrlResult.getPageUrl())
+                                .put("url", urls.get(0))
                                 .put("phone", userRespDTO.getMobile())
                                 .put("businessId", deptDO.getId().toString())
                                 .put("type", "1").build();
@@ -921,7 +923,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             Long companyId = configDO.getCompanyId();
             String qysContractId = contract.getContractId().toString();
             //TODO 这里换成系统的页面然后配置白名单
-            String signReturnUrl = "www.baidu.com";
+            String signReturnUrl = "";
             ssoUrl += "&companyId=%s&contractId=%s&signReturnUrl=%s";
             ssoUrl = String.format(ssoUrl, ticket, pageType,companyId,qysContractId,signReturnUrl);
         }else {
@@ -933,7 +935,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
-    public void companyAuth(Long userId) throws FileNotFoundException {
+    public void companyAuth(Long userId) throws FileNotFoundException{
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
         QysConfigDO configDO = qysConfigMapper.selectById(1);
@@ -958,11 +960,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                 streamFile);
         SaaSCompanyAuthPageResult checkedData = result.getCheckedData();
         log.info("企业认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getPageUrl());
+        List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getPageUrl()));
         Map<String, String> map = MapUtil
                 .builder("title", "企业认证")
                 .put("contentType", "40")
                 .put("name", deptRespDTO.getName())
-                .put("url", checkedData.getPageUrl())
+                .put("url", urls.get(0))
                 .put("phone", userRespDTO.getMobile())
                 .put("businessId", deptRespDTO.getId().toString())
                 .put("type", "1").build();
@@ -979,17 +982,42 @@ public class QysConfigServiceImpl implements QysConfigService {
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
         log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
+        List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getAuthUrl()));
         Map<String, String> map = MapUtil
                 .builder("title", "企业认证")
                 .put("contentType", "42")
                 .put("name", deptRespDTO.getName())
                 .put("userName", userRespDTO.getNickname())
-                .put("url", checkedData.getAuthUrl())
+                .put("url", urls.get(0))
                 .put("phone", userRespDTO.getMobile())
                 .put("businessId", deptRespDTO.getId().toString())
                 .put("type", "1").build();
         noticeService.saveNotice(map);
     }
+
+    @Override
+    public void userAuthResult(Long userId, String contract) {
+        if (StrUtil.isBlank(contract) && ObjectUtil.isNull(userId)) {
+            throw exception(QYS_CONFIG_PARAM_ERROR);
+        }
+        AdminUserDO adminUserDO = null;
+        if (StrUtil.isBlank(contract)){
+            adminUserDO = userMapper.selectById(userId);
+            contract = adminUserDO.getMobile();
+        }
+        QiyuesuoSaasClient qiyuesuoSaasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
+        SaaSUserAuthResult checkedData = qiyuesuoSaasClient.saasUserAuthResult(contract).getCheckedData();
+        if (checkedData.getRealName()) {
+            //认证通过
+            if (ObjectUtil.isNull(adminUserDO)) {
+                adminUserDO = userMapper.selectOne("mobile", contract);
+            }
+            UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", adminUserDO.getId());
+            userExtDO.setStatus(0);
+            userExtMapper.updateById(userExtDO);
+        }
+    }
+
     @Transactional
     @Override
     public String callBackPrivilege(String signature, String timestamp, String content) throws Exception {
@@ -1039,11 +1067,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                 SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
                         companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
                 log.info("企业印章自动签授权,用户【{}】,授权地址【{}】",userRespDTO.getNickname(),authUrlResult.getPageUrl());
+                List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
                 //发送短信
                 Map<String, String> map = MapUtil
                         .builder("title", "企业印章自动签授权")
                         .put("contentType", "43")
-                        .put("url", authUrlResult.getPageUrl())
+                        .put("url", urls.get(0))
                         .put("phone", userRespDTO.getMobile())
                         .put("businessId", configDO.getBusinessId().toString())
                         .put("type", "1").build();

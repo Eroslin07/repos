@@ -67,6 +67,16 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<SaaSUserAuthResult> doSaasUserAuthResult(SaaSUserAuthResultRequest request) throws Throwable {
+        String response = client.service(request);
+        SdkResponse<SaaSUserAuthResult> sdkResponse = JSONUtils.toQysResponse(response, SaaSUserAuthResult.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request) throws Throwable {
         String response = client.service(request);
         SdkResponse<SaaSSealSignAuthUrlResult> sdkResponse = JSONUtils.toQysResponse(response, SaaSSealSignAuthUrlResult.class);
@@ -184,6 +194,14 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 //        request.setAppId();
         request.setReturnUrl("https://fssc.cloud:28000/");
         return this.saasSealSignAuthUrl(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSUserAuthResult> saasUserAuthResult(String contact) {
+        Assert.notBlank(contact, "contact 不能为空");
+        User user = new User(contact, "MOBILE");
+        SaaSUserAuthResultRequest request = new SaaSUserAuthResultRequest(user);
+        return this.saasUserAuthResult(request);
     }
 
     @Override
