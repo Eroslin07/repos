@@ -37,10 +37,10 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pg") Page<AppHomeCarInfoRespVO> page,
                                                  @Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
 
-    default List<Map<String, Object>> selectCarCountGroupByStatus(){
+    default List<Map<String, Object>> selectCarCountGroupByStatus(Long deptId){
         return selectMaps(new QueryWrapper<CarInfoDO>()
                 .select("SALES_STATUS statusOne","STATUS statusTwo","count(*) num")
-                .eq("BUSINESS_ID", SecurityFrameworkUtils.getLoginUser().getDeptId())
+                .eq("BUSINESS_ID", deptId)
                 .groupBy("SALES_STATUS","STATUS")
                 .orderByAsc(Arrays.asList("SALES_STATUS","STATUS"))
         );

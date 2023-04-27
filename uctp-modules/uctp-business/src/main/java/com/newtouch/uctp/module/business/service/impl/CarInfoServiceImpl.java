@@ -6,6 +6,7 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
@@ -348,7 +349,8 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Override
     public List<HomeCountVO> getCarCountGroupByStatus() {
-        List<Map<String, Object>> maps = carInfoMapper.selectCarCountGroupByStatus();
+        AdminUserDO adminUserDO = userMapper.selectById(SecurityFrameworkUtils.getLoginUserId());
+        List<Map<String, Object>> maps = carInfoMapper.selectCarCountGroupByStatus(adminUserDO.getDeptId());
         List<Map<String, Object>> maps1 = this.initRetMap(maps);
         return this.buildHomeCountRespVO(maps1);
     }
