@@ -230,6 +230,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public AdminUserDO selectByMobileAndStatus(String mobile,int status) {
+        return userMapper.selectByMobileAndStatus(mobile,status);
+    }
+
+    @Override
     public List<AdminUserDO> selectIsExist(String mobile,Integer status) {
         return userMapper.selectIsExist(mobile,status);
     }

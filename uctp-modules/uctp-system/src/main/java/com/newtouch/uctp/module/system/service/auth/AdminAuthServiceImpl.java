@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.system.service.auth;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,7 @@ import javax.annotation.Resource;
 import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +95,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private UserExtMapper userExtMapper;
     @Resource
     private AdminUserMapper adminUserMapper;
+    @Resource
+    @Lazy
+    private QysConfigApi qysConfigApi;
 
     /**
      * 验证码的开关，默认为 true
@@ -140,7 +145,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public AuthLoginRespVO wxLogin(AuthWxLoginReqVO reqVO) {
-        AdminUserDO user = userService.getUserByMobile(reqVO.getUsername());
+        AdminUserDO user = userService.selectByMobileAndStatus(reqVO.getUsername(),0);
         //查询该手机号是否注册
         if(null==user){
             throw exception(AUTH_MOBILE_NOT_EXIST);
@@ -307,6 +312,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 userExtDO.setIdCard(reqVO.getIdCard());
                 userExtService.insertUser(userExtDO);
                 map.put("success","0");
+                qysConfigApi.companyAuth(userDO.getId());
             }catch (Exception e){
                 throw exception(AUTH_ADDACCOUNT_ERROR);
             }
