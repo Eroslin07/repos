@@ -115,10 +115,13 @@
 			  this.$modal.loading("登录中，请耐心等待...")
 			  // 执行登录
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
-					this.$modal.closeLoading()
+					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
+					this.$modal.hideMsg()
 					this.showModel = true;
+				}).finally(()=>{
+					this.$modal.closeLoading()
 				})
 			},
 			// 登录成功后，处理函数
