@@ -25,4 +25,8 @@ public class QYSContractVO {
 
     @Schema(description = "合同类型（1：委托，2：正常合同）")
     private String contractType;
+
+    @Schema(description = "合同名称")
+    private String contractName;
+
 }

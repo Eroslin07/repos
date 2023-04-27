@@ -67,4 +67,11 @@ public interface ContractService {
      * @param contractDO
      */
     void update(ContractDO contractDO);
+
+    /**
+     * 通过 契约锁合同id 找到合同
+     * @param contractId
+     * @return
+     */
+    ContractDO getByContractId(Long contractId);
 }

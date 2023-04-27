@@ -153,5 +153,8 @@ uctp:
     permit-all-urls:
       - /app-api/infra/file/upload
       - /app-api/infra/file/delete
+minio:
+  preview:
+    endpoint-url: https://miniapp.wanguo.net:28001
 
 debug: false

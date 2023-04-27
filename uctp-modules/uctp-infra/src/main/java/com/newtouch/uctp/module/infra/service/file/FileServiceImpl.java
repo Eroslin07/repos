@@ -2,9 +2,20 @@ package com.newtouch.uctp.module.infra.service.file;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import lombok.SneakyThrows;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.common.util.io.FileUtils;
 import com.newtouch.uctp.framework.file.core.client.FileClient;
+import com.newtouch.uctp.framework.file.core.client.s3.S3FileClient;
 import com.newtouch.uctp.framework.file.core.utils.FileTypeUtils;
 import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
@@ -12,12 +23,6 @@ import com.newtouch.uctp.module.infra.dal.dataobject.file.BusinessFileDO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
 import com.newtouch.uctp.module.infra.dal.mysql.file.BusinessFileMapper;
 import com.newtouch.uctp.module.infra.dal.mysql.file.FileMapper;
-import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-
-import java.util.List;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.infra.enums.ErrorCodeConstants.FILE_NOT_EXISTS;
@@ -38,6 +43,9 @@ public class FileServiceImpl implements FileService {
 
     @Resource
     private BusinessFileMapper businessFileMapper;
+
+    @Value("${minio.preview.endpoint-url}")
+    private String previewUrl;
 
     @Override
     public PageResult<FileDO> getFilePage(FilePageReqVO pageReqVO) {
@@ -61,6 +69,7 @@ public class FileServiceImpl implements FileService {
         FileClient client = fileConfigService.getMasterFileClient();
         Assert.notNull(client, "客户端(master) 不能为空");
         String url = client.upload(content, path, type);
+
 
         // 保存到数据库
         FileDO file = new FileDO();
@@ -100,13 +109,21 @@ public class FileServiceImpl implements FileService {
         FileClient client = fileConfigService.getMasterFileClient();
         Assert.notNull(client, "客户端(master) 不能为空");
         String url = client.upload(content, path, type);
+        String endpointURL = null;
+        if (client instanceof S3FileClient) {
+            S3FileClient s3FileClient = (S3FileClient) client;
+            endpointURL = s3FileClient.buildEndpointURL();
+        }
+
+        //TODO: 临时处理
+        String newUrl = StringUtils.hasText(endpointURL) && StringUtils.hasText(previewUrl) ? url.replaceFirst(endpointURL, previewUrl) : url;
 
         // 保存到数据库
         FileDO file = new FileDO();
         file.setConfigId(client.getId());
         file.setName(name);
         file.setPath(path);
-        file.setUrl(url);
+        file.setUrl(newUrl);
         file.setType(type);
         file.setSize(content.length);
         fileMapper.insert(file);
