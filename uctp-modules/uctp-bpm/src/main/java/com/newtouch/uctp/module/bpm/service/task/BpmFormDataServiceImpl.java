@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.bpm.service.task;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,10 +42,8 @@ public class BpmFormDataServiceImpl implements BpmFormDataService {
     @PostConstruct
     public void init() {
         log.info("---------------------- [开始扫描：工作流表单数据存储相关实体] ----------------------");
-        // 1.扫描注入到MyBatis Plus中的实体类集合
-        Reflections reflections = new Reflections(typeAliasesPackage);
-        // 2.解析实体类集合中带@WfEntity注解的类
-        Set<Class<?>> entityClassSet = reflections.getTypesAnnotatedWith(WfEntity.class);
+        // 1.解析实体类集合中带@WfEntity注解的类
+        Set<Class<?>> entityClassSet = ClassUtil.scanPackageByAnnotation(typeAliasesPackage, WfEntity.class);
         if (ObjectUtil.isNotEmpty(entityClassSet)) {
             for (Class<?> entityClass:entityClassSet) {
                 WfEntity wfEntity = entityClass.getAnnotation(WfEntity.class);
