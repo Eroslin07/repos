@@ -68,7 +68,12 @@ public interface CarInfoService {
     void delCarInfoWithCollect(Long id);
 
 
-
+    /**
+     * 根据合同编号获取收车金额
+     * @param contractId
+     * @return
+     */
+    BigDecimal getAmountByContract(Long contractId);
 
     /**
      * 获得车辆主表
