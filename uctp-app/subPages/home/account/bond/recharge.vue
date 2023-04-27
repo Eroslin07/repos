@@ -82,7 +82,7 @@
 					}
 					getRecharge(data).then((res) => {
 						this.$modal.msg("充值成功");
-						this.$tab.navigateTo('/subPages/home/account/bond/bond');
+						this.$tab.redirectTo('/subPages/home/account/bond/bond');
 					})
 					// this.show = true;
 				}
@@ -100,7 +100,7 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					this.$tab.redirectTo('/subPages/home/account/bond/progress');
 				})
 			},
 			// 云闪付
@@ -112,7 +112,7 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					this.$tab.redirectTo('/subPages/home/account/bond/progress');
 				})
 			}
 		}

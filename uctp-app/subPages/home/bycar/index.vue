@@ -1156,7 +1156,7 @@
 			},
 			// 放弃编辑
 			handleGive() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
@@ -1240,7 +1240,7 @@
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
-						this.$tab.reLaunch('/pages/index');
+						this.$tab.switchTab('/pages/index');
 					}
 				}).catch((error) => {
 					this.$modal.closeLoading()
@@ -1325,8 +1325,8 @@
 					sellerTel: this.sellerForm.sellerTel,
 					remitType: this.sellerForm.remitType,
 					bankName: this.sellerForm.bankName,
-					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard : null,
-					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard : null,
+					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g,"") : null,
+					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g,"") : null,
 				}
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
@@ -1361,7 +1361,7 @@
 								this.$modal.closeLoading()
 								this.showOverlay = false;
 								this.$modal.msg("已提交审核");
-								this.$tab.reLaunch('/pages/index');
+								this.$tab.switchTab('/pages/index');
 							}).catch((error) => {
 								this.$modal.closeLoading()
 								this.showOverlay = false;
@@ -1373,7 +1373,7 @@
 						this.$modal.closeLoading()
 						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
-						this.$tab.reLaunch('/pages/index');
+						this.$tab.switchTab('/pages/index');
 					}
 				}).catch((error) => {
 					this.showOverlay = false;

@@ -61,7 +61,7 @@
 			},
 			// 关闭
 			handleClose() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			getContractUrl() {
 				let data = `carId=${this.carId}&&type=1`
