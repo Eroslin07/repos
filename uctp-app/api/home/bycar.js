@@ -71,6 +71,14 @@ export function getCarBrandList(data) {
 	})
 }
 
+// 查询所有品牌
+export function getAllCarBrandList() {
+	return request({
+		url: '/uctp/car-info/getAllCarBrandList',
+		'method': 'POST'
+	})
+}
+
 // 查询车系
 export function getCarSeriesList(data) {
 	return request({

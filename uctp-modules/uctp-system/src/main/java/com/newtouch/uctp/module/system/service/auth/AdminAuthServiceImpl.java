@@ -299,7 +299,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
                 userDO.setNickname(reqVO.getName());
-                userDO.setStatus(0);
+                userDO.setStatus(1);
                 userDO.setDeptId(reqVO.getDeptId());
                 userDO.setTenantId(reqVO.getTenantId());
                 userService.insertUser(userDO);
@@ -312,7 +312,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 userExtDO.setIdCard(reqVO.getIdCard());
                 userExtService.insertUser(userExtDO);
                 map.put("success","0");
-                qysConfigApi.companyAuth(userDO.getId());
+//                qysConfigApi.userAuth(userDO.getId());
             }catch (Exception e){
                 throw exception(AUTH_ADDACCOUNT_ERROR);
             }
@@ -322,19 +322,22 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
                 user.setNickname(reqVO.getName());
                 user.setStatus(Integer.valueOf(reqVO.getStatus()));
-                //如果身份证变更，修改为未激活（未认证）
-                if(!userExtDOS.getIdCard().equals(reqVO.getIdCard())){
+                //如果身份证&身份证变更，修改为未激活（未认证）
+                if(userExtDOS.getIdCard().equals(reqVO.getIdCard()) &&user.getMobile().equals(reqVO.getPhone())){
+                    adminUserMapper.updateById(user);
+                    userExtMapper.updateById(userExtDOS);
+                }else{
                     userExtDOS.setIdCard(reqVO.getIdCard());
                     userExtDOS.setStatus(1);
-                }
-                //如果手机号变更，修改为状态为未激活（未认证）
-                if(user.getMobile().equals(reqVO.getPhone())){
+
                     user.setUsername(reqVO.getPhone());
                     user.setMobile(reqVO.getPhone());
                     userExtDOS.setStatus(1);
+                    adminUserMapper.updateById(user);
+                    userExtMapper.updateById(userExtDOS);
+//                    qysConfigApi.userAuth(userDO.getId());
                 }
-                adminUserMapper.updateById(user);
-                userExtMapper.updateById(userExtDOS);
+
             }catch (Exception e){
                 throw exception(AUTH_UPDATEACCOUNT_ERROR);
             }

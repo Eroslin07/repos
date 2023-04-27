@@ -31,4 +31,10 @@ public class QysConfigApiImpl implements QysConfigApi{
         }
         return success(Boolean.TRUE);
     }
+
+    @Override
+    public CommonResult<Boolean> userAuth(Long userId) {
+        qysConfigService.userAuth(userId);
+        return success(Boolean.TRUE);
+    }
 }
