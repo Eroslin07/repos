@@ -3,10 +3,11 @@ package com.newtouch.uctp.framework.file.core.client.s3;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
-import com.newtouch.uctp.framework.file.core.client.AbstractFileClient;
 import io.minio.*;
 
 import java.io.ByteArrayInputStream;
+
+import com.newtouch.uctp.framework.file.core.client.AbstractFileClient;
 
 import static com.newtouch.uctp.framework.file.core.client.s3.S3FileClientConfig.ENDPOINT_ALIYUN;
 import static com.newtouch.uctp.framework.file.core.client.s3.S3FileClientConfig.ENDPOINT_TENCENT;
@@ -45,7 +46,7 @@ public class S3FileClient extends AbstractFileClient<S3FileClientConfig> {
      *
      * @return URI 地址
      */
-    private String buildEndpointURL() {
+    public String buildEndpointURL() {
         // 如果已经是 http 或者 https，则不进行拼接.主要适配 MinIO
         if (HttpUtil.isHttp(config.getEndpoint()) || HttpUtil.isHttps(config.getEndpoint())) {
             return config.getEndpoint();
