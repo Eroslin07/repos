@@ -58,10 +58,9 @@
 			},
 			// 删除
 			removeItem(item) {
-				console.log(item)
-				this.$modal.confirm('确定删除改员工吗？').then(() => {
+				this.$modal.confirm('确定删除该员工吗？').then(() => {
 					deleteAccount({ userId: item.id }).then((res) => {
-						this.$tab.msg("删除成功")
+						this.$modal.msg("删除成功")
 						this.getList();
 					})
 				})
