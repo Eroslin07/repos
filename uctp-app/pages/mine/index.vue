@@ -52,14 +52,14 @@
 						<view>个人信息</view>
 					</view>
 				</view>
-				<view class="list-cell list-cell-arrow" @click="handleToStaff">
+				<view class="list-cell list-cell-arrow" @click="handleToStaff" v-if="type=='1'">
 					<view class="menu-item-box">
 						<image src="../../static/images/mine/staff.png"
 							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
 						<view>员工管理</view>
 					</view>
 				</view>
-				<view class="list-cell list-cell-arrow" @click="handleToStore">
+				<!-- <view class="list-cell list-cell-arrow" @click="handleToStore">
 					<view class="menu-item-box">
 						<view class="iconfont icon-user menu-icon"></view>
 						<view>门店管理</view>
@@ -82,7 +82,7 @@
 						<view class="iconfont icon-setting menu-icon"></view>
 						<view>登录设置</view>
 					</view>
-				</view>
+				</view> -->
 			</view>
 		</view>
 		<view class="cu-list menu">
