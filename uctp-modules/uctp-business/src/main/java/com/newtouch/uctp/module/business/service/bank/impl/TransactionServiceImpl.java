@@ -1,14 +1,19 @@
 package com.newtouch.uctp.module.business.service.bank.impl;
 
 import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
 import com.newtouch.uctp.module.business.enums.bank.ClearingType;
+import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import com.newtouch.uctp.module.business.service.bank.request.UnKnowClearingRequest;
+import com.newtouch.uctp.module.business.service.bank.response.UnKnowClearingResponse;
+import com.newtouch.uctp.module.business.util.bank.SPDBSMSignature;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -19,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @Validated
+@Slf4j
 public class TransactionServiceImpl implements TransactionService {
 
     @Resource
@@ -68,16 +74,45 @@ public class TransactionServiceImpl implements TransactionService {
         request.setYlkTranSeqNo(null); // 还不确定该值从哪来
         request.setOrgTranSeqNo(null);
 
-        if (true) { // 存在该笔交易，则
+        boolean transExists = true; // TODO 需要判断该笔交易是否真实存在
+        if (transExists) { // 存在该笔交易，则按子账号入金
+            log.info("存在交易：{}，按子账号入金", contractNo);
             request.setClrgTp(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getCode());
             request.setClrgRsltDsc(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getValue());
         } else { // 不存在该笔交易，则原路退回
+            log.warn("不存在交易：{}，原路退回", contractNo);
             request.setClrgTp(ClearingType.ORIGINAL_WAY_BACK.getCode());
             request.setClrgRsltDsc(ClearingType.ORIGINAL_WAY_BACK.getValue());
         }
         request.setRsrvFld(null);
         request.setRsrvFld1(null);
         request.setRsrvFld2(null);
+
+        String requestMessage = JSONObject.toJSONString(request);
+        log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
+
+        String responseMessage = null;
+        // 调用银行接口
+        try {
+            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
+            log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
+            if (responseMessage == null) {
+                throw new RuntimeException("银行响应报文为空，交易失败");
+            }
+
+            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
+
+            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+                // 交易成功
+
+            }
+
+        } catch (Exception e) {
+            log.error("调用银行接口失败", e);
+
+        } finally {
+            // TODO 记录交易日志
+        }
 
         return null;
     }
