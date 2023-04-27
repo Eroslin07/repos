@@ -307,6 +307,16 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     }
 
+    @Override
+    public BigDecimal getAmountByContract(Long contractId) {
+        //根据合同编号拿到合同数据
+        ContractDO contractDO = contractMapper.selectByContractId(contractId);
+        //根据合同数据的carId获取收车金额
+        CarInfoDO carInfoDO = carInfoMapper.selectById(contractDO.getCarId());
+        carInfoDO.getVehicleReceiptAmount();
+        return carInfoDO.getVehicleReceiptAmount();
+    }
+
     private void validateCarInfoExists(Long id) {
         if (carInfoMapper.selectById(id) == null) {
             throw exception(CAR_INFO_NOT_EXISTS);

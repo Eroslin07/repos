@@ -6,6 +6,7 @@ import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo;
+import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -34,6 +35,10 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
 
     ContractDO getContractOneBuyType(@Param("carId") Long carId,
                              @Param("contractType") String contractType);
+
+    default ContractDO selectByContractId(Long contractId){
+        return selectOne(ContractDO::getContractId,contractId);
+    };
 
     @TenantIgnore
     @Select("select * from uctp_contract where CONTRACT_ID = #{contractId} AND DELETED = 0")
