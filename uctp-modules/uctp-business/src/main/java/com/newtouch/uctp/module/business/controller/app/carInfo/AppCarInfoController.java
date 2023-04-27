@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo;
 
+import com.alibaba.fastjson.JSONArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -344,6 +345,22 @@ public class AppCarInfoController {
         return appContractarVO;
     }
 */
+
+    @PostMapping("/getAllCarBrandList")
+    @PermitAll
+    @Operation(summary = "所有品牌查询")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public JSONArray getAllCarBrandList() {
+        JSONArray jsonArray = new JSONArray();
+        try {
+            String url = "http://testapi.che300.com/service/getCarBrandList";
+            String token = "61f499b086392005f92009b91f8f966a";
+            jsonArray = UctpCarInfoSearchUtils.getCarBrandList(token,  url);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return jsonArray;
+    }
 
     @PostMapping("/getCarBrandList")
     @PermitAll
