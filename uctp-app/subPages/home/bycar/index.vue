@@ -368,7 +368,8 @@
 		getCarBrandList,
 		getCarInfo,
 		delCarInfoWithCollect,
-		getCarInfoDetail
+		getCarInfoDetail,
+		getVehicleRegistrationCertificate
 	} from '@/api/home/bycar.js'
 	const dateTime = uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd');
 	export default {
@@ -403,9 +404,9 @@
 					natureOfOperat: '',
 					carType: '',
 					firstRegistDate: dateTime,
-					scrapDate: dateTime,
-					annualInspectionDate: dateTime,
-					insuranceEndData: dateTime,
+					scrapDate: '',
+					annualInspectionDate: '',
+					insuranceEndData: '',
 					licensePlateNum: '',
 					certificateNo: '',
 					colour: '',
@@ -877,9 +878,19 @@
 						} else if (index == 3) {
 							// 识别机动车登记证书
 							_this.carForm.certificateUrl = _this[`fileList${index}`];
-							// if (data.error_msg) {
-							// 	_this.$modal.msg("上传模板不正确，请重新上传");
-							// 	_this[`fileList${index}`] = [];
+							// for (let i = 0; i < res.tempFilePaths.length; i++) {
+							// 	let str = await urlTobase64(res.tempFilePaths[i]);
+							// 	getVehicleRegistrationCertificate({ operationId: str }).then((ress) => {
+							// 		let data = JSON.parse(ress.data);
+							// 		if (data.error_msg) {
+							// 			_this.$modal.msg("上传模板不正确，请重新上传");
+							// 			_this[`fileList${index}`] = [];
+							// 		} else {
+							// 			if (i == res.tempFilePaths.length - 1) {
+							// 				_this.upload(res, index);
+							// 			}
+							// 		}
+							// 	})
 							// }
 							_this.upload(res, index);
 						} else if (index == 4 || index == 8) {
@@ -1103,6 +1114,11 @@
 			},
 			// 点击日期下拉框
 			getDate(date, i) {
+				if (!date) {
+					this.$nextTick(() => {
+						this.showDateTime = dateTime;
+					})
+				}
 				this.showDateTime = date;
 				this.dateStatus = i;
 				this.showDate = true;

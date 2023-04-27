@@ -9,6 +9,15 @@ export function getVehicleLicense(data) {
 	})
 }
 
+// 识别行驶证
+export function getVehicleRegistrationCertificate(data) {
+	return request({
+		url: '/system/appAuth/orcVehicleRegistrationCertificate',
+		'method': 'POST',
+		'data': data
+	})
+}
+
 // 保存车辆信息
 export function setCarInfo(data) {
 	return request({
