@@ -133,7 +133,13 @@ public interface QysConfigService {
      * @return
      */
     void userAuth(Long userId);
-
+    /**
+     * 获取个人认证结果
+     * @param id 注册用户id
+     * @param contract 注册用户手机号
+     * @return
+     */
+    void userAuthResult(Long id,String contract);
 
     /**
      * 企业授权

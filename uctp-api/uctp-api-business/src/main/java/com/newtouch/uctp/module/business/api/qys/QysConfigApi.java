@@ -25,4 +25,12 @@ public interface QysConfigApi {
     @Operation(summary = "公司认证")
     @Parameter(name = "userId", description = "注册用户Id", example = "1024", required = true)
     CommonResult<Boolean> companyAuth(@RequestParam("userId") Long userId);
+
+    /**
+     * 个人认证
+     */
+    @GetMapping(PREFIX + "/userAuth")
+    @Operation(summary = "个人认证")
+    @Parameter(name = "userId", description = "注册用户Id", example = "1024", required = true)
+    CommonResult<Boolean> userAuth(@RequestParam("userId") Long userId);
 }

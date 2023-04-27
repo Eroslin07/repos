@@ -43,6 +43,9 @@
 		mounted() {
 			this.getList();
 		},
+		onPullDownRefresh(){
+			this.getList()
+		},
 		methods: {
 			back() {
 				this.$tab.switchTab(`/pages/mine/index`)
@@ -51,6 +54,7 @@
 			getList() {
 				getAccountList({ deptId: this.$store.state.user.deptId }).then((res) => {
 					this.list = res.data
+					uni.stopPullDownRefresh()
 				})
 			},
 			handleAdd() {

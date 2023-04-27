@@ -43,7 +43,7 @@
             </el-col>
             <el-col :span="2" class="bg-yell">保证金充值卡号：</el-col>
             <el-col :span="10">
-              <div>{{ mainValue.formDataJson.bondBankAcconut || '暂无数据' }}</div>
+              <div>{{ mainValue.formDataJson.bondBankAccount || '暂无数据' }}</div>
             </el-col>
           </el-row>
           <el-row>

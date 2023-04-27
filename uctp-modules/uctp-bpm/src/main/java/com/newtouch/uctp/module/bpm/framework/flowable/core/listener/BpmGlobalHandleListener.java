@@ -23,7 +23,9 @@ import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
+import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
+import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
@@ -50,6 +52,8 @@ public class BpmGlobalHandleListener {
     private QysConfigApi qysConfigApi;
     @Resource
     private AccountProfitApi accountProfitApi;
+    @Resource
+    private AccountApi accountApi;
     @Resource
     private UserMapper userMapper;
 
@@ -98,6 +102,18 @@ public class BpmGlobalHandleListener {
                 userService.updateUserStatus(adminUserDO.getId());
                 // 公司认证
                 Boolean flag = qysConfigApi.companyAuth(bpmFormMainVO.getStartUserId()).getCheckedData();
+                //商户虚拟账户开户
+                AccountDTO accountVO = new AccountDTO();
+                accountVO.setIdCard(jsonObject.getString("idCard"));
+                accountVO.setTenantId(adminUserDO.getTenantId());
+                accountVO.setMerchantId(bpmFormMainVO.getMerchantId());
+                accountVO.setBusinessName(jsonObject.getString("businessName"));
+                accountVO.setLegalRepresentative(jsonObject.getString("legal_representative"));
+                accountVO.setTaxNum(jsonObject.getString("taxNum"));
+                accountVO.setBankName(jsonObject.getString("bankName"));
+                accountVO.setBankNo(jsonObject.getString("bankNumber"));
+                accountVO.setCashBankNo(jsonObject.getString("bondBankAccount"));
+                accountApi.merchantAccountOpen(accountVO).getCheckedData();
                 // 注册成功
                 noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
             }else if ("disagree".equals(approvalType)){
@@ -162,6 +178,17 @@ public class BpmGlobalHandleListener {
      * @param event
      */
     public void taskCompleted(FlowableEngineEntityEvent event) {
+        /*TaskEntity taskEntity = (TaskEntity)event.getEntity();
+        String processInstanceId = taskEntity.getProcessInstanceId();
+        taskEntity.getProcessDefinitionId();
+
+
+        if (true) {
+            throw new IllegalStateException("Task is already completed");
+        }*/
+
+
+
         String procDefKey = null; // 需要补充获取
         String taskNode = null; // 需要获得任务节点
         Task task = (Task) event.getEntity();
