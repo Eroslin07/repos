@@ -1,24 +1,6 @@
 package com.newtouch.uctp.module.system.service.auth;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
-import io.seata.spring.annotation.GlobalTransactional;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-import javax.validation.Validator;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.enums.UserTypeEnum;
@@ -28,6 +10,7 @@ import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
 import com.newtouch.uctp.framework.common.util.validation.ValidationUtils;
 import com.newtouch.uctp.module.business.api.file.BusinessFileApi;
 import com.newtouch.uctp.module.business.api.file.dto.FileInsertReqDTO;
+import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import com.newtouch.uctp.module.system.api.sms.SmsCodeApi;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
@@ -53,6 +36,20 @@ import com.newtouch.uctp.module.system.service.user.UserExtService;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
 import com.xingyuv.captcha.service.CaptchaService;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.validation.Validator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.servlet.ServletUtils.getClientIP;
