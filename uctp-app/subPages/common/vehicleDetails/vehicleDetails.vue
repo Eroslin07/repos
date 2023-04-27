@@ -52,7 +52,7 @@
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>{{carInfoAll.carInfoDetails.creator || '暂无'}}</text>
+						<text>{{carInfoAll.carInfo.creator || '暂无'}}</text>
 					</view>
 				</view>
 			</view>

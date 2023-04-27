@@ -208,7 +208,7 @@
 				<text>暂无合同</text>
 			</view>
 			<view class="car-button">
-				<u-button text="签章" color="#FA6400" @click="handleSignature"></u-button>
+				<u-button v-show="signInShow"  text="签章" color="#FA6400" @click="handleSignature"></u-button>
 			</view>
 		</view>
 		<view class="car-fund" v-if="tabCar==2">
@@ -389,6 +389,16 @@
 				return that.$amount.getComdify(val)
 			}
 		},
+		computed:{
+			signInShow(){
+				let {statusThree}=this.carInfoAll.carInfo
+				if(statusThree==121 || statusThree==122 || statusThree==123 || statusThree==321 || statusThree==322 || statusThree==323){
+					return true
+				}else{
+					return false
+				}
+			}
+		},
 		methods: {
 			// 上传检测报告
 			photograph(index) {
@@ -533,7 +543,14 @@
 			},
 			// 签章
 			handleSignature() {
-				this.$tab.navigateTo('/subPages/home/sellingCar/agreement')
+				let {status,id} = this.carInfoAll.carInfo
+				if(status==12){
+					this.$tab.navigateTo('/subPages/home/bycar/agreement?carId='+id)
+				}else{
+					this.$tab.navigateTo('/subPages/home/sellingCar/agreement?carId='+id)
+				}
+				
+				
 			},
 			// rpx转px
 			rpxToPx(rpx) {
