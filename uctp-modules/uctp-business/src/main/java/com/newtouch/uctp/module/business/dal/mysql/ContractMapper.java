@@ -45,4 +45,6 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
                 .eq(ContractDO::getContractType,contractType)
                 .eq(ContractDO::getTenantId,tenantId));
     }
+
+    void updateContractByContractId(@Param("status") String status,@Param("contractId") Long contractId);
 }
