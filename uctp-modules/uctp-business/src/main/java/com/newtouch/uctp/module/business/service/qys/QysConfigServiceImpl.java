@@ -984,7 +984,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         log.info("个人认证【{}】,认证地址【{}】",deptRespDTO.getName(),checkedData.getAuthUrl());
         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getAuthUrl()));
         Map<String, String> map = MapUtil
-                .builder("title", "企业认证")
+                .builder("title", "个人认证")
                 .put("contentType", "42")
                 .put("name", deptRespDTO.getName())
                 .put("userName", userRespDTO.getNickname())
