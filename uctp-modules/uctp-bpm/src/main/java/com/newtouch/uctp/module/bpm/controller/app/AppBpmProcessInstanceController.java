@@ -17,7 +17,6 @@ import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.BpmProcess
 import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
-import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 
 /**
  * @author helong
@@ -34,6 +33,6 @@ public class AppBpmProcessInstanceController {
     @PostMapping("/v3/create")
     @Operation(summary = "根据流程定义标识（业务类型）新建流程")
     public CommonResult<String> createProcessInstanceByKey(@Valid @RequestBody BpmProcessInstanceByKeyReqVO createReqVO) {
-        return success(processInstanceService.createProcessInstanceByKey(getLoginUserId(), createReqVO.getProcDefKey(), createReqVO.getVariables()));
+        return success(processInstanceService.createProcessInstanceByKey(null, createReqVO.getProcDefKey(), createReqVO.getVariables()));
     }
 }

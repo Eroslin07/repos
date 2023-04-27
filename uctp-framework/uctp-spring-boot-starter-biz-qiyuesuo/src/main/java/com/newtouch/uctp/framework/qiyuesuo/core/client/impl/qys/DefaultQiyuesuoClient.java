@@ -39,6 +39,26 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Contract> doDefaultContractDetail(ContractDetailRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response,Contract.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<String> doDefaultContractInvalid(ContractInvalidRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<String> sdkResponse = JSONUtils.toQysResponse(response);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request) throws Throwable {
         String response = this.client.service(request);
         SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response, Contract.class);
@@ -132,6 +152,30 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         param.setContractId(contractId);
         ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);
         return this.defaultCompanysign(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, String reason) {
+        ContractInvalidRequest request = new ContractInvalidRequest(contractId, reason);
+        return this.defaultContractInvalid(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, Long sealId, String reason) {
+        ContractInvalidRequest request = new ContractInvalidRequest(contractId,sealId, reason,false);
+        return this.defaultContractInvalid(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId) {
+        ContractInvalidRequest request = new ContractInvalidRequest(contractId);
+        return this.defaultContractInvalid(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractDetail(Long contractId) {
+        ContractDetailRequest request = new ContractDetailRequest(contractId);
+        return this.defaultContractDetail(request);
     }
 
     @Override

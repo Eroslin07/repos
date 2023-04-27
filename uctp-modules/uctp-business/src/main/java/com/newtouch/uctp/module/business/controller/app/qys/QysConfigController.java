@@ -2,7 +2,7 @@ package com.newtouch.uctp.module.business.controller.app.qys;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.contact.QYSContractVO;
+import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigRespVO;
@@ -124,7 +124,7 @@ public class QysConfigController {
             "COMPANY_INFO_SETUP_PAGE（”公司设置页面“）。\n" +
             "H5页面仅支持CONTRACT_LIST_PAGE、CONTRACT_DETAIL_PAGE、INDEX_PAGE\n" +
             "以个人身份单点登录时，仅支持指定以上页面说明中，非公司开头的页面\n")
-    @Parameter(name = "ContractId", description = "合同id", required = true, example = "如果pageType是CONTRACT_DETAIL_PAGE，必填")
+    @Parameter(name = "contractId", description = "合同id", required = true, example = "如果pageType是CONTRACT_DETAIL_PAGE，必填")
     public CommonResult<String> ssoUrl(@RequestParam String pageType,
                                        @RequestParam Long contractId) throws Exception {
         String ssoUrl = qysConfigService.getSsoUrl(pageType,contractId);
@@ -141,8 +141,16 @@ public class QysConfigController {
 
     @PostMapping("/send")
     @Operation(summary ="发起契约锁合同")
-   // public CommonResult<String> send(@Valid @RequestBody QYSContractVO qysContractVO) {
-    public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {
+    public CommonResult<String> send(@Valid @RequestBody QYSContractVO qysContractVO) {
+        String result="";
+        //这里只发起委托合同
+        if(qysContractVO.getContractType().equals("1")) {
+            result= qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+        }
+
+        return success(result);
+}
+    /*public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {
         String result="";
         for (QYSContractVO qysContractVO : VO) {
             //这里只发起委托合同
@@ -152,7 +160,7 @@ public class QysConfigController {
         }
 
         return success(result);
-    }
+    }*/
 
     @PostMapping("/ContractEcho")
     @Operation(summary ="合同回显")

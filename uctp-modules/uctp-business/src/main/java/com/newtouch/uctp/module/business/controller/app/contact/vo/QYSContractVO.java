@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.controller.app.contact;
+package com.newtouch.uctp.module.business.controller.app.contact.vo;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,4 +25,8 @@ public class QYSContractVO {
 
     @Schema(description = "合同类型（1：委托，2：正常合同）")
     private String contractType;
+
+    @Schema(description = "合同名称")
+    private String contractName;
+
 }

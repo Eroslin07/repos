@@ -106,6 +106,13 @@ public interface AdminUserService {
      */
     AdminUserDO getUserByMobile(String mobile);
 
+    /**
+     * 通过手机号和状态获取用户
+     * @param mobile
+     * @return
+     */
+    AdminUserDO selectByMobileAndStatus(String mobile,int status);
+
 
     List<AdminUserDO> selectIsExist(String mobile,Integer status);
 

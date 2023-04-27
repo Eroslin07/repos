@@ -161,6 +161,7 @@ const dialogSubmit = () => {
     variables: baseInfoData.data.variables
   }
   data.variables.approvalType = dialogText.value == '同意' ? 'pass' : 'disagree'
+  data.variables.nodeId = baseInfoData.data.nodeId
   data.variables = detailAPI
     .putApproveAPI(data)
     .then(() => {

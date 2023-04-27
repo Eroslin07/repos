@@ -25,8 +25,9 @@ public interface ErrorCodeConstants {
     ErrorCode QYS_BUSINESS_TYPE_NOT_EXISTS = new ErrorCode(1005000104, "契约锁业务分类不存在");
     ErrorCode QYS_FILE_URL_NOT_NULL = new ErrorCode(1005000105, "契约锁:输出路径不能为空");
     ErrorCode QYS_CONFIG_NOT_EXISTS = new ErrorCode(1005000106, "契约锁不存在");
-
+    ErrorCode QYS_CONFIG_AUTH_ERROR = new ErrorCode(1005000107, "契约锁未做认证授权");
     ErrorCode QYS_CALLBACK_NOT_EXISTS = new ErrorCode(1005000150, "契约锁回调日志不存在");
+    ErrorCode QYS_CONFIG_NOT_AUTH = new ErrorCode(1005000151, "企业未做契约锁认证");
     // ========== business 资金错误 1005000200 ==========
     ErrorCode ACC_ACCOUNT_NO_NOT_NULL = new ErrorCode(1005000201, "商户号不能为空");
     ErrorCode ACC_CONTRACT_NO_NOT_NULL = new ErrorCode(1005000202, "交易合同号不能为空");
@@ -48,8 +49,9 @@ public interface ErrorCodeConstants {
 
 
     ErrorCode FILL_ERROR = new ErrorCode(1005000216, "系统文件表对应信息不存在");
-
-    ErrorCode BUSINESS_ERROR = new ErrorCode(1005000216, "合同回显时，合同信息未保存成功");
+    // ========== business 合同错误 1005000300 ==========
+    ErrorCode CONTRACT_NOT_EXISTS = new ErrorCode(1005000300, "合同不存在");
+    ErrorCode CONTRACT_TYPE_UNKNOWN = new ErrorCode(1005000301, "未知合同类型");
 
 
 }

@@ -2,27 +2,11 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import lombok.extern.slf4j.Slf4j;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
-
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
@@ -40,6 +24,20 @@ import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
 import com.newtouch.uctp.module.system.enums.DictTypeConstants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
@@ -310,6 +308,15 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     }
 
+    @Override
+    public BigDecimal getAmountByContract(Long contractId) {
+        //根据合同编号拿到合同数据
+        ContractDO contractDO = contractMapper.selectByContractId(contractId);
+        //根据合同数据的carId获取收车金额
+        CarInfoDO carInfoDO = carInfoMapper.selectById(contractDO.getCarId());
+        return carInfoDO.getVehicleReceiptAmount();
+    }
+
     private void validateCarInfoExists(Long id) {
         if (carInfoMapper.selectById(id) == null) {
             throw exception(CAR_INFO_NOT_EXISTS);
@@ -341,7 +348,8 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Override
     public List<HomeCountVO> getCarCountGroupByStatus() {
-        List<Map<String, Object>> maps = carInfoMapper.selectCarCountGroupByStatus();
+        AdminUserDO adminUserDO = userMapper.selectById(SecurityFrameworkUtils.getLoginUserId());
+        List<Map<String, Object>> maps = carInfoMapper.selectCarCountGroupByStatus(adminUserDO.getDeptId());
         List<Map<String, Object>> maps1 = this.initRetMap(maps);
         return this.buildHomeCountRespVO(maps1);
     }
@@ -921,6 +929,13 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInvoiceInfoVO.setContractCode(contractCode);
         carInvoiceInfoVO.setContractList(contractList);
         return carInvoiceInfoVO;
+    }
+
+    @Override
+    public void update(CarInfoDO carInfo) {
+        if (ObjectUtil.isNotNull(carInfo)) {
+            carInfoMapper.updateById(carInfo);
+        }
     }
 
 

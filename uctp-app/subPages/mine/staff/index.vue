@@ -1,5 +1,7 @@
 <template>
 	<view class="container">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="员工管理" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<view class="xinzeng" @click="handleAdd">
 			<u-icon name="plus" color="#FA6400" size="28rpx "></u-icon>
 			<text>新增</text>
@@ -42,6 +44,9 @@
 			this.getList();
 		},
 		methods: {
+			back() {
+				this.$tab.switchTab(`/pages/mine/index`)
+			},
 			// 获取子账户列表
 			getList() {
 				getAccountList({ deptId: this.$store.state.user.deptId }).then((res) => {
@@ -58,10 +63,9 @@
 			},
 			// 删除
 			removeItem(item) {
-				console.log(item)
-				this.$modal.confirm('确定删除改员工吗？').then(() => {
+				this.$modal.confirm('确定删除该员工吗？').then(() => {
 					deleteAccount({ userId: item.id }).then((res) => {
-						this.$tab.msg("删除成功")
+						this.$modal.msg("删除成功")
 						this.getList();
 					})
 				})

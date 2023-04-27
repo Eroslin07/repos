@@ -1,24 +1,27 @@
 package com.newtouch.uctp.cloud;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONUtil;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-@SpringBootTest
+@SpringBootTest(classes =UctpBusinessApplicationTests.class )
 class UctpBusinessApplicationTests {
-    @Resource
-    private QysConfigService qysConfigService;
     private static DefaultQiyuesuoClient client;
     @BeforeAll
     public static void before() {
@@ -45,7 +48,7 @@ class UctpBusinessApplicationTests {
     void sendContract(){
 //        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         Contract draftContract = new Contract();
-        draftContract.setSubject("三方-二手车-测试-0423");
+        draftContract.setSubject("二手车-测试-666");
         // 设置合同接收方
         // 甲方个人签署方
 //        Signatory persoanlSignatory = new Signatory();
@@ -56,8 +59,8 @@ class UctpBusinessApplicationTests {
         // 乙方平台
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
-        platformSignatory.setTenantName("成都新致云服测试公司");
-        platformSignatory.setReceiver(new User( "13708206115", "MOBILE"));
+        platformSignatory.setTenantName("广东光耀汽车公司");
+        platformSignatory.setReceiver(new User( "17380123817", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
         //丙方
         Signatory initiator2 = new Signatory();
@@ -91,6 +94,24 @@ class UctpBusinessApplicationTests {
         System.out.println(docRes.getData());
         QiyuesuoCommonResult<Object> result1 = client.defaultContractSend(contract.getId());
         System.out.println(result1.getData());
+    }
+
+    @Test
+    void http(){
+        String url = UrlBuilder.create()
+                .setScheme("https")
+                .setHost("dwz.cn")
+                .addPath("//api/v3/short-urls")
+                .build();
+        Map<String, String> map = MapUtil.builder("LongUrl", "https://expose.qiyuesuo.cn/enterpriseAuth/index?token=dUpRZTJOR2Z1NTN1MWhQbURwV2tFQ1NtWEM2cE5TanAzMzRscDhxVjhzOXJ1ck8yaDhVcmQ2L1kzNjloZFFNVQ==").put("TermOfValidity", "1-year").build();
+        List<Map<String, String>> list = ListUtil.of(map);
+        String result2 = HttpRequest.post(url)
+                .header(Header.CONTENT_TYPE, "application/json; charset=UTF-8")//头信息，多个头信息多次调用此方法即可
+                .header("Dwz-Token","a03c080908fccf5a2a21c125abf4ded6")
+                .body(JSONUtil.toJsonStr(list))
+                .timeout(20000)//超时，毫秒
+                .execute().body();
+        System.out.println(result2);
     }
 
 }

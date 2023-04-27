@@ -160,23 +160,24 @@
 						this.allChild.push(...item.child)
 					})
 				}).catch((error) => {
+					this.gatherData=[]
 					for (let i = 0; i < 4; i++) {
 						this.gatherData.push({
 							// salesStatus: i,
-							status: i + 1,
+							status: i++,
 							num: 0,
 							label: '收车中',
 							child: [{
-								status: 11,
-								num: 1,
+								status:i+2,
+								num: 0,
 								label: '草稿'
 							}, {
-								status: 11,
-								num: 1,
+								status: i+3,
+								num: 0,
 								label: '草稿'
 							}, {
-								status: 11,
-								num: 1,
+								status: i+4,
+								num: 0,
 								label: '草稿'
 							}]
 						})

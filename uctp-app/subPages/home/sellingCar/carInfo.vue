@@ -1228,7 +1228,7 @@
 								this.$modal.closeLoading()
 								this.showOverlay = false;
 								this.$modal.msg("已提交审核");
-								this.$tab.reLaunch('/pages/index');
+								this.$tab.switchTab('/pages/index');
 							}).catch((error) => {
 								this.$modal.closeLoading()
 								this.showOverlay = false;
@@ -1240,7 +1240,7 @@
 						this.$modal.closeLoading()
 						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
-						this.$tab.reLaunch('/pages/index');
+						this.$tab.switchTab('/pages/index');
 					}
 				}).catch((error) => {
 					this.showOverlay = false;

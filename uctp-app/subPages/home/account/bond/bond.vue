@@ -80,7 +80,7 @@
 		},
 		methods: {
 			back() {
-				this.$tab.reLaunch('/pages/account/index');
+				this.$tab.switchTab('/pages/account/index');
 			},
 			// 是否隐藏金额
 			handleEye() {

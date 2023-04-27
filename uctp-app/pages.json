@@ -264,7 +264,8 @@
 		}, {
 			"path": "mine/staff/index",
 			"style": {
-				"navigationBarTitleText": "员工管理"
+				"navigationBarTitleText": "员工管理",
+				"navigationStyle": "custom"
 			}
 		}, {
 			"path": "mine/staff/addStaff",

@@ -41,8 +41,6 @@
 				content: '您的手机号尚未在平台注册，是否要注册?',
 				value: [''],
 				show: true,
-				// 小程序ID
-				appId: 'wx9decec45b7374b90',
 				wxcode: '',
 				phone: null
 			}
@@ -90,12 +88,6 @@
 						return;
 					}
 				}
-				const params = {
-					appId: _this.appId,
-					secret: '45323149c53d4340dfad4a304803eeaf', // 小程序秘钥
-					grant_type: 'client_credential',
-					js_code: _this.wxcode
-				}
 				getWxToken().then((res) => {
 					uni.request({
 						method: 'POST',
@@ -123,10 +115,13 @@
 			  this.$modal.loading("登录中，请耐心等待...")
 			  // 执行登录
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
-					this.$modal.closeLoading()
+					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
+					this.$modal.hideMsg()
 					this.showModel = true;
+				}).finally(()=>{
+					this.$modal.closeLoading()
 				})
 			},
 			// 登录成功后，处理函数

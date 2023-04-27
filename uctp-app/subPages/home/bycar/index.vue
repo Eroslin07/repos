@@ -339,7 +339,7 @@
 				</u-grid-item>
 				<u-grid-item>
 					<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
-					<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
+					<button @click="handleSubmit1" class="button" v-if="sellerInfor">保存</button>
 				</u-grid-item>
 			</u-grid>
 		</view>
@@ -368,7 +368,8 @@
 		getCarBrandList,
 		getCarInfo,
 		delCarInfoWithCollect,
-		getCarInfoDetail
+		getCarInfoDetail,
+		getVehicleRegistrationCertificate
 	} from '@/api/home/bycar.js'
 	const dateTime = uni.$u.timeFormat(Number(new Date()), 'yyyy-mm-dd');
 	export default {
@@ -403,9 +404,9 @@
 					natureOfOperat: '',
 					carType: '',
 					firstRegistDate: dateTime,
-					scrapDate: dateTime,
-					annualInspectionDate: dateTime,
-					insuranceEndData: dateTime,
+					scrapDate: '',
+					annualInspectionDate: '',
+					insuranceEndData: '',
 					licensePlateNum: '',
 					certificateNo: '',
 					colour: '',
@@ -877,9 +878,19 @@
 						} else if (index == 3) {
 							// 识别机动车登记证书
 							_this.carForm.certificateUrl = _this[`fileList${index}`];
-							// if (data.error_msg) {
-							// 	_this.$modal.msg("上传模板不正确，请重新上传");
-							// 	_this[`fileList${index}`] = [];
+							// for (let i = 0; i < res.tempFilePaths.length; i++) {
+							// 	let str = await urlTobase64(res.tempFilePaths[i]);
+							// 	getVehicleRegistrationCertificate({ operationId: str }).then((ress) => {
+							// 		let data = JSON.parse(ress.data);
+							// 		if (data.error_msg) {
+							// 			_this.$modal.msg("上传模板不正确，请重新上传");
+							// 			_this[`fileList${index}`] = [];
+							// 		} else {
+							// 			if (i == res.tempFilePaths.length - 1) {
+							// 				_this.upload(res, index);
+							// 			}
+							// 		}
+							// 	})
 							// }
 							_this.upload(res, index);
 						} else if (index == 4 || index == 8) {
@@ -1103,6 +1114,11 @@
 			},
 			// 点击日期下拉框
 			getDate(date, i) {
+				if (!date) {
+					this.$nextTick(() => {
+						this.showDateTime = dateTime;
+					})
+				}
 				this.showDateTime = date;
 				this.dateStatus = i;
 				this.showDate = true;
@@ -1156,7 +1172,7 @@
 			},
 			// 放弃编辑
 			handleGive() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			// 保存车辆信息草稿
 			handleDraft(val) {
@@ -1240,7 +1256,7 @@
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.msg("保存草稿成功");
-						this.$tab.reLaunch('/pages/index');
+						this.$tab.switchTab('/pages/index');
 					}
 				}).catch((error) => {
 					this.$modal.closeLoading()
@@ -1280,31 +1296,30 @@
 					this.handleSubmit('entrust');
 				})
 			},
-			// 点击交易信息保存
 			handleSubmit(val) {
 				let _this = this;
-				if (val) {
-					let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
-					amount = amount / 10000;
-					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-						_this.saveSellerInfo(val);
-					} else {
-						uni.showModal({
-							title: '提示',
-							content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
-							confirmText: '是',
-							cancelText: '否',
-							confirmColor: '#fa6401',
-							success(ress) {
-								if (ress.confirm) {
-									_this.saveSellerInfo(val);
-								}
-							}
-						})
-					}
+				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
+				amount = amount / 10000;
+				if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
+					_this.saveSellerInfo(val);
 				} else {
-					_this.saveSellerInfo();
+					uni.showModal({
+						title: '提示',
+						content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+						confirmText: '是',
+						cancelText: '否',
+						confirmColor: '#fa6401',
+						success(ress) {
+							if (ress.confirm) {
+								_this.saveSellerInfo(val);
+							}
+						}
+					})
 				}
+			},
+			// 点击交易信息保存
+			handleSubmit1() {
+				this.saveSellerInfo(1);
 			},
 			saveSellerInfo(val) {
 				this.showOverlay = true;
@@ -1325,8 +1340,8 @@
 					sellerTel: this.sellerForm.sellerTel,
 					remitType: this.sellerForm.remitType,
 					bankName: this.sellerForm.bankName,
-					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard : null,
-					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard : null,
+					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g,"") : null,
+					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g,"") : null,
 				}
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
@@ -1361,7 +1376,7 @@
 								this.$modal.closeLoading()
 								this.showOverlay = false;
 								this.$modal.msg("已提交审核");
-								this.$tab.reLaunch('/pages/index');
+								this.$tab.switchTab('/pages/index');
 							}).catch((error) => {
 								this.$modal.closeLoading()
 								this.showOverlay = false;
@@ -1373,7 +1388,7 @@
 						this.$modal.closeLoading()
 						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
-						this.$tab.reLaunch('/pages/index');
+						this.$tab.switchTab('/pages/index');
 					}
 				}).catch((error) => {
 					this.showOverlay = false;

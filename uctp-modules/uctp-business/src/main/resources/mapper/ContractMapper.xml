@@ -55,4 +55,11 @@
          where CAR_ID =#{carId} and CONTRACT_TYPE=#{contractType} and STATUS in('0','1','2')
     </select>
 
+
+    <update id="updateContractByContractId" >
+        update
+            uctp_contract set STATUS=#{status}
+        where CONTRACT_ID=#{contractId}
+    </update>
+
 </mapper>

@@ -1,12 +1,12 @@
 <template>
 	<view class="agreement">
-		<uni-card :is-shadow="false" is-full>
+		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full>
 			<view class="text">
 				<image src="../../../static/images/bycar/hetong2.png" class="hetong_image"></image>
-				<view style="margin-top: 20px;" @click="handleLook">
+				<view style="margin-top: 20px;" @click="handleViewContract">
 					<image src="../../../static/images/bycar/hetong1.png" class="form-image"
 						style="width: 16pt;height: 16pt;"></image>
-					<text @click="handleViewContract">《2021年03月20日收车合同》</text>
+					<text>{{contractName || '《二手车收购协议》'}}</text>
 				</view>
 			</view>
 			<!-- 底部按钮 -->
@@ -14,6 +14,8 @@
 			<button @click="handleCancel" class="button" style="background-color: #fff;color: #333;">取消合同签章</button>
 			<button @click="handleClose" class="button">保存并关闭</button>
 		</uni-card>
+		<!-- 提示信息 -->
+		<AbnormalPage v-else :isSHowTip="isSHowTip" />
 	</view>
 </template>
 
@@ -23,32 +25,56 @@
 		getCancelContract,
 		getContractEcho
 	} from '@/api/home/bycar.js'
+	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
 			return {
 				checkboxValue: null,
-				carId: ''
+				carId: '',
+				// 合同详情
+				contractDtail: [],
+				isSHowTip:'',
+				contractName:'',
 			}
+		},
+		components: {
+			AbnormalPage
 		},
 		onLoad(options) {
 			console.log((options))
 			this.carId = options.carId
+			// 1650784037801914369
+			this.getContractUrl()
 		},
 		methods: {
-			// 查看
-			handleLook() {
-				// this.$tab.navigateTo('/subPages/common/agreement/index?type=' + '收车');
+			// 查看合同
+			handleViewContract() {
+				this.$modal.msg('正在加载，请稍等...')
+				let url=this.contractDtail.find(v=>v.contractType=='2')?.url
+				uni.downloadFile({
+					url: url,
+					success: function(res) {
+						var filePath = res.tempFilePath;
+						uni.openDocument({
+							filePath: filePath,
+							showMenu: false,
+							success: function(res) {
+								console.log('打开文档成功');
+							}
+						});
+					},
+				});
 			},
 			// 合同签章
 			handleAffirm() {
-				const data = {
-					// carId:'1648668268713422850',
-					carId: this.carId,
-					type: '1',
-					contractId: '312313131',
+				this.$modal.msg('正在加载，请稍等...')
+				let data={
+					...this.contractDtail.find(v=>v.contractType=='1')
 				}
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
+				}).catch(()=>{
+					this.$modal.msg('加载失败！')
 				})
 			},
 			// 取消合同签章
@@ -57,29 +83,21 @@
 			},
 			// 关闭
 			handleClose() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
-			handleViewContract() {
-				let data=`carId=${this.carId}&&type=1`
+			getContractUrl() {
+				this.isSHowTip = 'onLoading'
+				let data = `carId=${this.carId}&&type=1`
 				getContractEcho(data).then(res => {
-					console.log(res.data)
-						uni.downloadFile({
-						  url: res.data.url,
-						  success: function (res) {
-						    var filePath = res.tempFilePath;
-						    uni.openDocument({
-						      filePath: filePath,
-						      showMenu: false,
-						      success: function (res) {
-						        console.log('打开文档成功');
-						      }
-						    });
-						  }
-						});
-				}).catch(err=>{
-					this.$modal.msg('打开文档失败')
+					this.contractDtail = res.data
+					this.contractName=res.data.find(v=>v.contractType=='2')?.contractName
+				}).catch(err => {
+					this.$modal.msg('获取合同失败')
+				}).finally(()=>{
+					this.isSHowTip = ''
 				})
 			},
+			
 
 		}
 	}

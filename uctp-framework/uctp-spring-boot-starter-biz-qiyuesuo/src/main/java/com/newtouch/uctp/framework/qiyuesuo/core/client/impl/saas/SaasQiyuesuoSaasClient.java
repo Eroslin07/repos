@@ -42,6 +42,16 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Contract> doDefaultContractDetail(ContractDetailRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<String> doDefaultContractInvalid(ContractInvalidRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -183,6 +193,26 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 
     @Override
     public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, String reason) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, Long sealId, String reason) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractDetail(Long contractId) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 

@@ -215,9 +215,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public String createProcessInstanceByKey(Long userId, String processDefinitionKey, Map<String, Object> variables) {
+        log.info("-------------------- begin createProcessInstanceByKey --------------------");
+        log.info("userId:" + userId + ",processDefinitionKey:" + processDefinitionKey);
         if (CollectionUtils.isEmpty(variables)) {
             variables = new HashMap<String, Object>();
         }
+        log.info("variables:" + JSON.toJSONString(variables));
         Long businessKey = IdUtil.getSnowflakeNextId();
         if (ObjectUtil.isNotEmpty(variables.get("businessKey"))) {
             businessKey = Long.valueOf(StrUtil.toStringOrNull(variables.get("businessKey")));
@@ -271,6 +274,8 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
             formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), null);
         }
         formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
+        log.info("variables:" + JSON.toJSONString(variables));
+        log.info("formDataJsonVariable:" + JSON.toJSONString(formDataJsonVariable));
         this.bpmFormDataService.saveDataObject(businessKey, formDataJsonVariable);
 
         // 4.发起流程

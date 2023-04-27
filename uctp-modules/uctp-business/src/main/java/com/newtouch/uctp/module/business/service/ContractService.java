@@ -46,4 +46,32 @@ public interface ContractService {
      * @return
      */
     ContractDO getById(Long id);
+
+    /**
+     * 合同作废，包含契约锁合同作废
+     * @param id
+     */
+    void contractInvalid(Long id,String reason);
+
+    /**
+     * 获取收车草稿合同
+     * @param carId 车辆id
+     * @param contractType 合同类型
+     * @param tenantId 部门ID
+     * @return
+     */
+    ContractDO getCollectDraft(Long carId, Integer contractType, Long tenantId);
+
+    /**
+     * 更新数据
+     * @param contractDO
+     */
+    void update(ContractDO contractDO);
+
+    /**
+     * 通过 契约锁合同id 找到合同
+     * @param contractId
+     * @return
+     */
+    ContractDO getByContractId(Long contractId);
 }

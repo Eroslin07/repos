@@ -1,6 +1,6 @@
 <template>
 	<view class="car-info">
-		<uni-card  v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
 				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
@@ -52,7 +52,7 @@
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>{{carInfoAll.carInfoDetails.creator || '暂无'}}</text>
+						<text>{{carInfoAll.carInfo.creator || '暂无'}}</text>
 					</view>
 				</view>
 			</view>
@@ -61,10 +61,11 @@
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest"></ca-content>
+			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest">
+			</ca-content>
 		</uni-card>
 		<!-- 提示信息 -->
-		<AbnormalPage v-else :isSHowTip="isSHowTip"/>
+		<AbnormalPage v-else :isSHowTip="isSHowTip" />
 	</view>
 </template>
 
@@ -89,9 +90,9 @@
 				carInfoAll: {
 					carInfo: {},
 					carInfoDetails: {},
-					contractCardVOS:[],
-					contractCardNOS:[],
-					fileF:[],
+					contractCardVOS: [],
+					contractCardNOS: [],
+					fileF: [],
 				},
 				currentNum: 0,
 				carUpload: true,
@@ -155,39 +156,37 @@
 
 				// 父组件传过来的值
 				fatherProps: null,
-				
+
 				// 是否展示系统异常
 				isSHowTip: '',
 			};
 		},
 
 		onLoad(props) {
-			console.log(props, 'this.fatherProps.id')
-			// this.getCarDetails('1650072138860851201')
-			// this.getCarDetails('1650085024672796674')
-			this.getCarDetails('1648534562174574594')
-			
+			// console.log(props, 'this.fatherProps.id')
+			let id = JSON.parse(props.item)?.id || '1650085024672796674'
+			this.getCarDetails(id)
 		},
 		computed: {
 			firstStatus() {
 				let statusValue = store.state.allStatus.statusValue
-				if(statusValue[this.carInfoAll.carInfo.salesStatus]){
+				if (statusValue[this.carInfoAll.carInfo.salesStatus]) {
 					return statusValue[this.carInfoAll.carInfo.salesStatus]
-				}else{
+				} else {
 					return '暂无'
 				}
 			},
 			secondStatus() {
 				let statusValue = store.state.allStatus.statusValue
-				if(statusValue[this.carInfoAll.carInfo.status]){
+				if (statusValue[this.carInfoAll.carInfo.status]) {
 					return statusValue[this.carInfoAll.carInfo.status]
-				}else{
+				} else {
 					return '暂无'
 				}
-				
+
 			},
 			isShowTest() {
-				if (this.carInfoAll.fileF.length>0 || this.carUpload) {
+				if (this.carInfoAll.fileF.length > 0 || this.carUpload) {
 					return true
 				} else {
 					return false
@@ -206,16 +205,15 @@
 		methods: {
 			// 获取数据
 			getCarDetails(id) {
-				this.isSHowTip='onLoading'
+				this.isSHowTip = 'onLoading'
 				let data = {
 					ID: id
 				}
 				getCarInfoById(data).then(res => {
-					
-					if(res.data.length>0){
-						this.isSHowTip=''
-					}else{
-						this.isSHowTip='noData'
+					if (Object.keys(res.data)?.length) {
+						this.isSHowTip = ''
+					} else {
+						this.isSHowTip = 'noData'
 					}
 					this.carInfoAll = res.data
 					let {
@@ -227,16 +225,16 @@
 					} = res.data
 					this.carInfoAll.carInfo.scrapDate = parseTime(scrapDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
-					this.carInfoAll.carInfo.insuranceEndData=parseTime(insuranceEndData,'{y}-{m}-{d}')
-					this.carsList=this.carInfoAll.fileA.map(v=>v.url);
+					this.carInfoAll.carInfo.insuranceEndData = parseTime(insuranceEndData, '{y}-{m}-{d}')
+					this.carsList = this.carInfoAll.fileA.map(v => v.url);
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
 						.createTime))
-				}).catch((err)=>{
+				}).catch((err) => {
+					this.$modal.hideMsg();
 					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
 						this.isSHowTip = 'webError'
 					} else {
-						console.log(222)
 						this.isSHowTip = 'sysError'
 					}
 				})
@@ -281,7 +279,7 @@
 			// 时间戳转天
 			getDays(value = 0) {
 				let currentTime = new Date().getTime();
-				return Math.floor((currentTime - value)/1000 / 3600 / 24)
+				return Math.floor((currentTime - value) / 1000 / 3600 / 24)
 			}
 		}
 	}
@@ -289,26 +287,28 @@
 
 <style lang="scss" scoped>
 	.car-info {
-		height:100%;
-		.img-error{
-			width:246rpx;
-			height:208rpx;
-			margin-top:514rpx;
-			margin-left:50%;
+		height: 100%;
+
+		.img-error {
+			width: 246rpx;
+			height: 208rpx;
+			margin-top: 514rpx;
+			margin-left: 50%;
 			transform: translateX(-50%);
 		}
-		.error-tip{
-			padding-top:18rpx;
-			text-align:center;
-			font-size:24rpx;
-			color:#999;
+
+		.error-tip {
+			padding-top: 18rpx;
+			text-align: center;
+			font-size: 24rpx;
+			color: #999;
 		}
 	}
 
 	.header-text {
 		// width: 334rpx;
 		// height: 52rpx;
-		padding:6rpx 8rpx;
+		padding: 6rpx 8rpx;
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 28rpx;
 		display: flex;
@@ -333,7 +333,7 @@
 		>text:last-child {
 			width: 40rpx;
 			height: 40rpx;
-			margin-left:10rpx;
+			margin-left: 10rpx;
 			text-align: center;
 			border-radius: 50%;
 			background: rgba(109, 114, 120, 0.6)
@@ -528,7 +528,8 @@
 	::v-deep .uni-card--border {
 		border-bottom: none;
 	}
-	::v-deep #carStatus .u-tabs__wrapper__nav__item{
-		padding:0 !important;
+
+	::v-deep #carStatus .u-tabs__wrapper__nav__item {
+		padding: 0 !important;
 	}
 </style>

@@ -34,7 +34,7 @@
 			},
 			// 同意并注册
 			handleAgree() {
-				this.$tab.navigateTo('/subPages/register')
+				this.$tab.redirectTo('/subPages/register')
 			},
 
 			// 用户协议

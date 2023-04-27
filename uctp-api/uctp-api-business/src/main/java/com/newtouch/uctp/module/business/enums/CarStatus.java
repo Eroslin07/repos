@@ -12,12 +12,12 @@ public enum CarStatus {
     COLLECT_A(11,"草稿"),
     COLLECT_A_A(111,"草稿"),
 
-    COLLECT_A_b(12,"合同发起"),
-    COLLECT_A_b_a(121,"公允审核"),
-    COLLECT_A_b_B(122,"委托合同已发起"),
-    COLLECT_A_b_C(123,"合同已发起"),
-    COLLECT_A_b_D(124,"待支付"),
-    COLLECT_A_b_E(125,"待开票"),
+    COLLECT_A_B(12,"合同已发起"),
+    COLLECT_A_B_A(121,"公允审核"),
+    COLLECT_A_B_B(122,"委托合同已发起"),
+    COLLECT_A_B_C(123,"合同已发起"),
+    COLLECT_A_B_D(124,"待支付"),
+    COLLECT_A_B_E(125,"待开票"),
 
     COLLECT_A_C(13,"支付失败"),
     COLLECT_A_C_A(131,"支付失败"),
