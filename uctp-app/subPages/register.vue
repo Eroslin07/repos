@@ -606,11 +606,11 @@
 						marketLocation: this.registerForm.marketLocation,
 						marketLocationValue: this.registerForm.marketLocationValue,
 						address: this.registerForm.address,
-						bankNumber: this.registerForm.bankAccount,
+						bankNumber: this.registerForm.bankAccount.replace(/\s*/g,""),
 						businessName: this.registerForm.businessName,
 						legal_representative: this.registerForm.legal_representative,
 						bankName: this.registerForm.bankName,
-						bondBankAccount: this.registerForm.bondBankAccount,
+						bondBankAccount: this.registerForm.bondBankAccount.replace(/\s*/g,""),
 					}
 					if (data.idCardUrl.length != 2) {
 						this.$modal.msg("需要上传两张图片");

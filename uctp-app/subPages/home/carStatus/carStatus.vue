@@ -236,7 +236,7 @@
 		methods: {
 			// 页面返回
 			back() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			// 获取list数据
 			getList(params) {

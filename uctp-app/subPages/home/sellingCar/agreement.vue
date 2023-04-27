@@ -46,7 +46,7 @@
 			},
 			// 关闭
 			handleClose() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			}
 		}
 	}

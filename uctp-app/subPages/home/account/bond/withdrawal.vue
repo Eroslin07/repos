@@ -83,8 +83,8 @@
 				}
 				getWithdraw(data).then((res) => {
 					this.$modal.msg("提现成功");
-					this.$tab.navigateTo('/subPages/home/account/bond/bond');
-					// this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
+					this.$tab.redirectTo('/subPages/home/account/bond/bond');
+					// this.$tab.redirectTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
 				})
 			},
 			// 点击全部提现

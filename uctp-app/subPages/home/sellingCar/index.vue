@@ -37,6 +37,8 @@
 					</uni-col>
 				</uni-row>
 			</uni-card>
+			<!-- 加载 -->
+			<u-loadmore :status="loadStatus" />
 		</view>
 		<!-- 提示信息 -->
 		<AbnormalPage v-else :isSHowTip="isSHowTip"/>
@@ -45,8 +47,7 @@
 			@cancel="handleCancel">
 			<view>请先对该车辆进行检测处理，再进行卖车。</view>
 		</u-modal>
-		<!-- 加载 -->
-		<u-loadmore v-show="isSHowLoadMore" :status="loadStatus" />
+		
 		
 	</view>
 </template>
@@ -75,7 +76,6 @@
 				show: false,
 				// 加载图标
 				loadStatus: 'loadmore',
-				isSHowLoadMore:true,
 				isSHowTip:'',
 			}
 		},
@@ -114,7 +114,7 @@
 		methods: {
 			// 页面返回
 			back() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			// 获取list
 			getList(obj) {
@@ -135,13 +135,10 @@
 					this.total = res.data.total
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
-					} else if(this.total>0){
+					} else{
 						this.loadStatus = 'nomore'
-					}else{
-						this.isSHowLoadMore=false;
 					}
 				}).catch((err) => {
-					this.isSHowLoadMore=false;
 					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
 						this.isSHowTip = 'webError'
 					} else {

@@ -148,8 +148,8 @@
 				}
 				getPresent(data).then((res) => {
 					this.$modal.msg("利润提现流程发起成功");
-					this.$tab.navigateTo('/subPages/home/account/profit/profit');
-					// this.$tab.navigateTo('/subPages/home/account/profit/progress');
+					this.$tab.redirectTo('/subPages/home/account/profit/profit');
+					// this.$tab.redirectTo('/subPages/home/account/profit/progress');
 				})
 			},
 			// 点击全部提现

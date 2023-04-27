@@ -45,12 +45,10 @@
 			},
 			// 合同签章
 			handleAffirm() {
-				let  data = []
-				let obj={
+				let data={
 					...this.contractDtail.find(v=>v.contractType=='1'),
 					type:'1'
 				}
-				data.push(obj)
 				getQiyuesuo(data).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
 				})
@@ -61,7 +59,7 @@
 			},
 			// 关闭
 			handleClose() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			getContractUrl() {
 				let data = `carId=${this.carId}&&type=1`
