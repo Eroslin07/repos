@@ -658,6 +658,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             documentId = documentAddResult.getDocumentId();
             businessFile.setFileType("11");//收车合同类型
             qysContractVO.setType("1");
+            qysContractVO.setContractName("二手车收购协议");
             if (buyContract==null) {
 
                     ContractDO buyContrsctDo = new ContractDO();
@@ -730,6 +731,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             businessFile.setFileType("13");//卖车合同类型
             contractName = "二手车销售协议.pdf";
             qysContractVO.setType("2");
+            qysContractVO.setContractName("二手车销售协议");
             ContractDO sellContract = contractMapper.getContractOneBuyType(carId,"4");
            // ContractDO contractDO = contractMapper.selectOne("contract_id", contractId, "status", "0");
             if (sellContract == null) {
