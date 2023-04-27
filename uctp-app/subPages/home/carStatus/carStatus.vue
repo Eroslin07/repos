@@ -7,8 +7,8 @@
 			placeholder="请输入商户/车辆型号/单号">
 		</u-search>
 		<!-- tab导航 -->
-		<view class="" style="margin: 0 auto">
-			<u-tabs :current="current" :list="navList" keyName="label" lineColor="#FA6400" @change="handleChange">
+		<view id="tabBox" class="">
+			<u-tabs :scrollable="false" itemStyle="height:44px;padding:0px;" :current="current" :list="navList" keyName="label" lineColor="#FA6400" @change="handleChange">
 			</u-tabs>
 		</view>
 		<!-- 列表 -->
@@ -371,24 +371,18 @@
 		.search {
 			padding: 10px 15px;
 		}
-
-		/deep/ .u-tabs__wrapper__nav__item {
-			// width:86px;
-			// margin:0 auto;
-		}
-
-		/deep/ view.data-v-48634e29,
-		scroll-view.data-v-48634e29,
-		swiper-item.data-v-48634e29 {
-			flex-grow: 1 !important;
+		/deep/ view,scroll-view,swiper-item {
+			// flex-grow: 1 !important;
+			// padding:0 !important;
 		}
 
 		/* #ifdef H5 */
-		/deep/ view[data-v-48634e29],
-		scroll-view[data-v-48634e29],
-		swiper-item[data-v-48634e29] {
-			flex-grow: 1 !important;
-		}
+		// /deep/ view,
+		// scroll-view,
+		// swiper-item {
+		// 	flex-grow: 1 !important;
+		// 	padding:0 !important;
+		// }
 
 		/* #endif */
 		/deep/ .uni-card {
@@ -546,4 +540,7 @@
 	.fs12 {
 		font-size: 12px;
 	}
+	// /deep/ #tabBox .u-tabs__wrapper__nav__item{
+	// 	padding:0;
+	// }
 </style>
