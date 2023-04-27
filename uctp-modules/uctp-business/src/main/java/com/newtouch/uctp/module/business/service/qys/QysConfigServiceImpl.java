@@ -27,7 +27,6 @@ import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
-import com.newtouch.uctp.module.business.controller.app.qys.dto.CompanyAuthDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.ContractStatusDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.DoServiceDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
@@ -36,7 +35,6 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateRe
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.*;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
-import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.UserExtDO;
@@ -894,8 +892,17 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public String getSsoUrl(String pageType,Long contractId) {
-        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-        Long loginUserId = loginUser.getId();
+        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+        AdminUserDO adminUserDO = userMapper.selectById(loginUserId);
+        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", adminUserDO.getDeptId());
+//        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", 236L);
+        if (ObjectUtil.isNull(configDO)) {
+            throw exception(QYS_CONFIG_NOT_AUTH);
+        }
+        ContractDO contract =contractService.getByContractId(contractId);
+        if (ObjectUtil.isNull(contract)) {
+            throw exception(CONTRACT_NOT_EXISTS);
+        }
         //加密
         // 随机生成密钥
         byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
@@ -903,21 +910,18 @@ public class QysConfigServiceImpl implements QysConfigService {
         AES aes = SecureUtil.aes(key);
         // 加密为16进制表示
         String ticket = aes.encryptHex(loginUserId.toString());
+        //存入redis
+        String strKey = Byte2StrUtil.toHexString(key);
+        this.redisTemplate.opsForValue().set("ticket:" + ticket, strKey);
         String ssoUrl = "https://cloudapi.qiyuesuo.cn/saas/ssogateway?ticket=%s&pageType=%s";
         if ("CONTRACT_DETAIL_PAGE".equals(pageType)) {
             //合同签署页面
-            List<QysCallbackDO> callbackDOS = qysCallbackService.getByMainIdAndType(loginUser.getDeptId(),QysCallBackType.COMPANY_AUTH.value());
-             ContractDO contract =contractService.getById(contractId);
-            if (CollUtil.isNotEmpty(callbackDOS)) {
-                QysCallbackDO callbackDO = callbackDOS.get(0);
-                CompanyAuthDTO companyAuthDTO = JSON.parseObject(callbackDO.getContent(), CompanyAuthDTO.class);
-                String companyId = companyAuthDTO.getCompanyId();
-                String qysContractId = contract.getContractId().toString();
-                //TODO 这里换成系统的页面然后配置白名单
-                String signReturnUrl = "www.baidu.com";
-                ssoUrl += "&companyId=%s&contractId&signReturnUrl=%s";
-                ssoUrl = String.format(ssoUrl, ticket, pageType,companyId,qysContractId,signReturnUrl);
-            }
+            Long companyId = configDO.getCompanyId();
+            String qysContractId = contract.getContractId().toString();
+            //TODO 这里换成系统的页面然后配置白名单
+            String signReturnUrl = "www.baidu.com";
+            ssoUrl += "&companyId=%s&contractId=%s&signReturnUrl=%s";
+            ssoUrl = String.format(ssoUrl, ticket, pageType,companyId,qysContractId,signReturnUrl);
         }else {
             ssoUrl = String.format(ssoUrl, ticket, pageType);
         }
