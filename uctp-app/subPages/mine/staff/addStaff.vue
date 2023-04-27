@@ -94,22 +94,32 @@
 				this.staffForm = JSON.parse(decodeURIComponent(options.data));
 				this.oldData = JSON.parse(decodeURIComponent(options.data));
 			}
+			if (options.type == 'add') {
+				uni.setNavigationBarTitle({
+				    title: "新增员工"
+				});
+			} else if (options.type == 'edit') {
+				uni.setNavigationBarTitle({
+				    title: "修改员工"
+				});
+			}
 			this.type = options.type
 		},
 		methods: {
 			// 保存
 			handleSave() {
+				let _this = this;
 				this.$refs.staffForm.validate().then(res => {
 					let data = {
-						id: this.type == 'add' ? null : this.staffForm.id,
-						name: this.staffForm.name,
-						phone: this.staffForm.phone,
-						idCard: this.staffForm.idCard,
-						status: this.staffForm.status,
-						deptId: this.type == 'add' ? this.$store.state.user.deptId : this.staffForm.deptId,
-						tenantId: this.type == 'add' ? this.$store.state.user.tenantId : this.staffForm.tenantId,
+						id: _this.type == 'add' ? null : _this.staffForm.id,
+						name: _this.staffForm.name,
+						phone: _this.staffForm.phone,
+						idCard: _this.staffForm.idCard,
+						status: _this.staffForm.status,
+						deptId: _this.type == 'add' ? _this.$store.state.user.deptId : _this.staffForm.deptId,
+						tenantId: _this.type == 'add' ? _this.$store.state.user.tenantId : _this.staffForm.tenantId,
 					}
-					if (this.type == 'add') {
+					if (_this.type == 'add') {
 						setAccount(data).then((res) => {
 							uni.showModal({
 								title: '提示',
@@ -118,13 +128,13 @@
 								confirmText: '知道了',
 								confirmColor: '#fa6401',
 								success: function (res) {
-									this.$tab.redirectTo('/subPages/mine/staff/index')
+									_this.$tab.redirectTo('/subPages/mine/staff/index')
 								}
 							})
 						})
 					}else{
 						setAccount(data).then((res) => {
-							if (this.oldData.phone != data.phone || this.oldData.idCard != data.idCard) {
+							if (_this.oldData.phone != data.phone || _this.oldData.idCard != data.idCard) {
 								uni.showModal({
 									title: '提示',
 									showCancel: false,
@@ -132,7 +142,7 @@
 									confirmText: '知道了',
 									confirmColor: '#fa6401',
 									success: function (res) {
-										this.$tab.redirectTo('/subPages/mine/staff/index')
+										_this.$tab.redirectTo('/subPages/mine/staff/index')
 									}
 								})
 							} else {
@@ -143,7 +153,7 @@
 									confirmText: '知道了',
 									confirmColor: '#fa6401',
 									success: function (res) {
-										this.$tab.redirectTo('/subPages/mine/staff/index')
+										_this.$tab.redirectTo('/subPages/mine/staff/index')
 									}
 								})
 							}
@@ -153,8 +163,9 @@
 			},
 			//重新认证
 			handleauthentication() {
+				let _this = this;
 				let data = {
-					userId: this.staffForm.id
+					userId: _this.staffForm.id
 				}
 				getAuth(data).then((res) => {
 					uni.showModal({
@@ -164,7 +175,7 @@
 						confirmText: '知道了',
 						confirmColor: '#fa6401',
 						success: function (res) {
-							this.$tab.redirectTo('/subPages/mine/staff/index')
+							_this.$tab.redirectTo('/subPages/mine/staff/index')
 						}
 					})
 				})
