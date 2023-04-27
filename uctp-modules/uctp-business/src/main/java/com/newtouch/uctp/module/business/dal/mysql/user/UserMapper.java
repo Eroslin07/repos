@@ -13,11 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserMapper extends BaseMapperX<AdminUserDO> {
 
 
-    void updateUserExtStatus(String userId);
-
-    void deleteUserExt(Long userId);
-
-    void deleteUser(Long userId);
 
 
 }
