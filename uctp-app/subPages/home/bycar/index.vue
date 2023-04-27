@@ -339,7 +339,7 @@
 				</u-grid-item>
 				<u-grid-item>
 					<button @click="handleDraft" class="button" v-if="vehicleInfor">保存</button>
-					<button @click="handleSubmit" class="button" v-if="sellerInfor">保存</button>
+					<button @click="handleSubmit1" class="button" v-if="sellerInfor">保存</button>
 				</u-grid-item>
 			</u-grid>
 		</view>
@@ -1280,31 +1280,30 @@
 					this.handleSubmit('entrust');
 				})
 			},
-			// 点击交易信息保存
 			handleSubmit(val) {
 				let _this = this;
-				if (val) {
-					let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
-					amount = amount / 10000;
-					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-						_this.saveSellerInfo(val);
-					} else {
-						uni.showModal({
-							title: '提示',
-							content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
-							confirmText: '是',
-							cancelText: '否',
-							confirmColor: '#fa6401',
-							success(ress) {
-								if (ress.confirm) {
-									_this.saveSellerInfo(val);
-								}
-							}
-						})
-					}
+				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
+				amount = amount / 10000;
+				if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
+					_this.saveSellerInfo(val);
 				} else {
-					_this.saveSellerInfo();
+					uni.showModal({
+						title: '提示',
+						content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+						confirmText: '是',
+						cancelText: '否',
+						confirmColor: '#fa6401',
+						success(ress) {
+							if (ress.confirm) {
+								_this.saveSellerInfo(val);
+							}
+						}
+					})
 				}
+			},
+			// 点击交易信息保存
+			handleSubmit1() {
+				this.saveSellerInfo(1);
 			},
 			saveSellerInfo(val) {
 				this.showOverlay = true;
