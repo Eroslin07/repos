@@ -1074,6 +1074,11 @@
 					bankCard: data.carInfoDetails.bankCard,
 					thirdBankCard: data.carInfoDetails.thirdBankCard,
 				}
+				if (this.sellerForm.collection == 0) {
+					this.handleChange(this.sellerForm.bankCard);
+				} else if (this.sellerForm.collection == 1) {
+					this.handleChange(this.sellerForm.thirdBankCard);
+				}
 				this.fairStatus = data.carInfo.bpmStatus;
 				data.fileD.forEach((item,index) => {
 					if (index == 0) {
