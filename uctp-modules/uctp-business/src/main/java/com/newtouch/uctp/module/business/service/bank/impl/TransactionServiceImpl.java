@@ -9,6 +9,7 @@ import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
 import com.newtouch.uctp.module.business.service.bank.request.UnKnowClearingRequest;
 import com.newtouch.uctp.module.business.service.bank.response.UnKnowClearingResponse;
 import com.newtouch.uctp.module.business.util.bank.SPDBSMSignature;
@@ -46,9 +47,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String nominalAccountGenerate() {
+    public String nominalAccountGenerate(NominalAccountRequest nominalAccountRequest) {
         return null;
     }
+
 
     @Override
     public String outGold() {

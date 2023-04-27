@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.business.service.bank;
 
+import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
+
 /**
  * 银行交易服务
  */
@@ -43,7 +45,7 @@ public interface TransactionService {
      *
      * @return 银行子账户号
      */
-    String nominalAccountGenerate();
+    String nominalAccountGenerate(NominalAccountRequest nominalAccountRequest);
 
     /**
      * 银行出金

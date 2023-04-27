@@ -8,6 +8,8 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantAccountMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.account.AccountService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
+import com.newtouch.uctp.module.business.service.bank.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,33 +25,38 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
     @Resource
     private MerchantBankService merchantBankService;
 
+    @Resource
+    private TransactionService transactionService;
+
     @Override
     @Transactional
-    public boolean openAccount(AccountDTO accountDTO) {
+    public boolean accountGenerate(AccountDTO accountDTO) {
         try {
-            // 创建银行保证经充值子账号
-            String cashAccountNo = "";//TODO
-            MerchantAccountDO accountCash = new MerchantAccountDO();
-            accountCash.setAccountNo(cashAccountNo);
-            accountCash.setMerchantId(accountDTO.getMerchantId());
-            accountCash.setTenantId(accountDTO.getTenantId());
-            save(accountCash);
 
+            MerchantAccountDO merchantAccount = new MerchantAccountDO();
+            merchantAccount.setAccountNo(accountDTO.getIdCard());
+            merchantAccount.setMerchantId(accountDTO.getMerchantId());
+            merchantAccount.setTenantId(accountDTO.getTenantId());
+            save(merchantAccount);
+
+            // 创建银行保证经充值子账号
+            NominalAccountRequest requestCash = new NominalAccountRequest();
+            String cashAccountNo = transactionService.nominalAccountGenerate(requestCash);
             MerchantBankDO merchantBankCash = new MerchantBankDO();
-            merchantBankCash.setAccountNo(cashAccountNo);
+            merchantBankCash.setAccountNo(accountDTO.getIdCard());
+            merchantBankCash.setBankNo(cashAccountNo);
+            //todo 商户编号
             merchantBankCash.setBusinessType(AccountEnum.BANK_NO_CASH.getKey());
             merchantBankService.save(merchantBankCash);
 
 
             // 创景银行对公利润提现子账号
-            String profitAccountNo = "";//TODO
-            MerchantAccountDO accountProfit = new MerchantAccountDO();
-            accountProfit.setAccountNo(profitAccountNo);
-            save(accountProfit);
-
+            NominalAccountRequest requestProfit = new NominalAccountRequest();
+            String bankAccountNoProfit = transactionService.nominalAccountGenerate(requestProfit);
             MerchantBankDO merchantBankProfit = new MerchantBankDO();
-            merchantBankProfit.setAccountNo(cashAccountNo);
-            merchantBankProfit.setBusinessType(AccountEnum.BANK_NO_CASH.getKey());
+            merchantBankProfit.setAccountNo(accountDTO.getIdCard());
+            merchantBankProfit.setBusinessType(AccountEnum.BANK_NO_PROFIT.getKey());
+            merchantBankProfit.setBankNo(bankAccountNoProfit);
             merchantBankService.save(merchantBankProfit);
             return true;
         } catch (Exception e) {
@@ -57,5 +64,12 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         }
     }
 
-
+    /**
+     * 生成平台商户虚拟账户号
+     *
+     * @return
+     */
+    private String generateAccountNo() {
+        return "";
+    }
 }
