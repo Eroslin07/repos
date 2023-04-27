@@ -61,7 +61,8 @@
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest" @changeTest="changeTest">
+			<ca-content ref="contractInfo" :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest"
+				@changeTest="changeTest">
 			</ca-content>
 		</uni-card>
 		<!-- 提示信息 -->
@@ -243,6 +244,10 @@
 			changeTab(item) {
 				console.log(item)
 				this.tabCar = item.index
+				if (item.index != 2) {
+					this.$refs.contractInfo.eyeIsShow = false
+				}
+
 			},
 
 			// 删除图片

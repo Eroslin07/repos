@@ -72,6 +72,9 @@
 								console.log('打开文档成功');
 							}
 						});
+					},
+					fail:()=>{
+						this.$modal.msg('加载失败！')
 					}
 				});
 			},
