@@ -496,7 +496,7 @@
                 }}</span>
                 <span>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                    .carInvoiceDetailVO.marketAdress
+                    .carInvoiceDetailVO.marketAddress
                 }}</span>
               </div></el-col
             >

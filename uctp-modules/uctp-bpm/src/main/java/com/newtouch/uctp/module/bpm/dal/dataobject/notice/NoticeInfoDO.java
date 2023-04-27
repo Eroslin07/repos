@@ -60,5 +60,13 @@ public class NoticeInfoDO extends BaseDO {
      * 消息推送状态,只展示未推送消息
      */
     private String pushStatus;
+    /**
+     * 消息推送失败原因
+     */
+    private String errorMsg;
+    /**
+     * 消息推送失败次数
+     */
+    private String errorNum;
 
 }

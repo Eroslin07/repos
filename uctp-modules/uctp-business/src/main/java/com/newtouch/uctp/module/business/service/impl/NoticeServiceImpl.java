@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
+import com.newtouch.uctp.module.business.util.MsgSendUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -117,9 +119,11 @@ public class NoticeServiceImpl implements NoticeService {
             //收车公允值通过需要添加跳转路径
             if (contentType.equals("12")){
                 infoDO.setUrl("/subPages/home/bycar/agreement");
+                map.put("buyType","1");
             }else if(contentType.equals("22")){
             //卖车公允值通过需要添加跳转路径
                 infoDO.setUrl("/subPages/home/sellingCar/agreement");
+                map.put("buyType","12");
             }
         }
         infoDO.setPushStatus("0");
@@ -133,16 +137,25 @@ public class NoticeServiceImpl implements NoticeService {
                 map.put("type","0");
                 map.put("contentType","11");
                 map.put("url","/subPages/home/bycar/index");
+                map.put("buyType","1");
                 //公允审批不通过的跳转路径
                 //添加站内消息
                 saveNotice(map);
             }else if (contentType.equals("31")){
                 map.put("type","0");
                 map.put("contentType","21");
+                map.put("buyType","2");
                 //卖车公允审批不通过的跳转路径
                 map.put("url","/subPages/home/sellingCar/carInfo");
                 //添加站内消息
                 saveNotice(map);
+            }
+        }
+        if (type.equals("1")){
+            Map<String, String> message = MsgSendUtil.sendMessage(map);
+            if (message.get("flags").equals("FALSE")){
+                infoDO.setErrorMsg(message.get("msg"));
+                infoDO.setErrorNum(message.get("errorNum"));
             }
         }
         String result="写入数据失败";
@@ -179,7 +192,13 @@ public class NoticeServiceImpl implements NoticeService {
         //默认状态为未推送
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
-
+        if (map.get("type").equals("1")){
+            Map<String, String> message = MsgSendUtil.sendMessage(map);
+            if (message.get("flags").equals("FALSE")){
+                infoDO.setErrorMsg(message.get("msg"));
+                infoDO.setErrorNum(message.get("errorNum"));
+            }
+        }
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
         if (insert>0) {
