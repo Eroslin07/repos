@@ -1,6 +1,11 @@
 package com.newtouch.uctp.cloud;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONUtil;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
@@ -12,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(classes =UctpBusinessApplicationTests.class )
 class UctpBusinessApplicationTests {
@@ -87,6 +94,24 @@ class UctpBusinessApplicationTests {
         System.out.println(docRes.getData());
         QiyuesuoCommonResult<Object> result1 = client.defaultContractSend(contract.getId());
         System.out.println(result1.getData());
+    }
+
+    @Test
+    void http(){
+        String url = UrlBuilder.create()
+                .setScheme("https")
+                .setHost("dwz.cn")
+                .addPath("//api/v3/short-urls")
+                .build();
+        Map<String, String> map = MapUtil.builder("LongUrl", "https://expose.qiyuesuo.cn/enterpriseAuth/index?token=dUpRZTJOR2Z1NTN1MWhQbURwV2tFQ1NtWEM2cE5TanAzMzRscDhxVjhzOXJ1ck8yaDhVcmQ2L1kzNjloZFFNVQ==").put("TermOfValidity", "1-year").build();
+        List<Map<String, String>> list = ListUtil.of(map);
+        String result2 = HttpRequest.post(url)
+                .header(Header.CONTENT_TYPE, "application/json; charset=UTF-8")//头信息，多个头信息多次调用此方法即可
+                .header("Dwz-Token","a03c080908fccf5a2a21c125abf4ded6")
+                .body(JSONUtil.toJsonStr(list))
+                .timeout(20000)//超时，毫秒
+                .execute().body();
+        System.out.println(result2);
     }
 
 }
