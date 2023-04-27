@@ -5,20 +5,27 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
+import com.newtouch.uctp.module.business.enums.bank.BankSubAccountType;
 import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.request.InnerTransferRequest;
 import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
 import com.newtouch.uctp.module.business.service.bank.request.UnKnowClearingRequest;
+import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
 import com.newtouch.uctp.module.business.service.bank.response.UnKnowClearingResponse;
 import com.newtouch.uctp.module.business.util.bank.SPDBSMSignature;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,8 +65,73 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String innerTransfer() {
-        return null;
+    @Transactional(propagation = Propagation.REQUIRES_NEW) // 新建事务，避免调用方的事务回滚影响交易日志记录
+    public InnerTransferResponse innerTransfer(String accountNo,
+                                               String contractNo,
+                                               BankSubAccountType outSubAccountType,
+                                               BankSubAccountType inSubAccountType,
+                                               Long tranAmount,
+                                               String remark) {
+        if (StringUtils.isBlank(accountNo)) {
+            throw new IllegalArgumentException("账户号不能为空");
+        }
+        if (StringUtils.isBlank(contractNo)) {
+            throw new IllegalArgumentException("合同号不能为空");
+        }
+        if (outSubAccountType == null) {
+            throw new IllegalArgumentException("转出子账户类型不能为空");
+        }
+        if (inSubAccountType == null) {
+            throw new IllegalArgumentException("转入子账户类型不能为空");
+        }
+        if (tranAmount == null) {
+            throw new IllegalArgumentException("交易金额不能为空");
+        }
+        if (tranAmount.compareTo(0L) <= 0) {
+            throw new IllegalArgumentException("交易金额必需大于0");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        String outSubAccountNo = null; // TODO: 根据转出账户类型查询对应子账户号
+        String outSubAccountNname = null; // TODO: 根据转出账户类型查询对应子账户号
+        String inSubAccountNo = null; // TODO: 根据转入账户类型查询对应子账户号
+        String inSubAccountName = null; // TODO: 根据转入账户类型查询对应子账户号
+        String mainAccountNo = null; // TODO: 主账户号
+
+        InnerTransferRequest request = new InnerTransferRequest();
+        request.setAreaCode(BankConstants.AREA_CODE);
+        request.setTranSeqNo(this.generaTranNo());
+        request.setSettleAcctNo(mainAccountNo);
+        request.setPayeeAcctNo(outSubAccountNo);
+        request.setPayeeName(outSubAccountNname);
+        request.setPayeeAcctNo(inSubAccountNo);
+        request.setPayeeName(inSubAccountName);
+        // 传入的是分，需要转为元
+        String tranAmt = BigDecimal.valueOf(tranAmount).divide(BigDecimal.valueOf(100)).setScale(2, BigDecimal.ROUND_UP).toString();
+        request.setTranAmt(tranAmt);
+        request.setRemark(remark);
+
+        String requestMessage = JSONObject.toJSONString(request);
+        log.info("合同：{}的银行请求报文是：{}", contractNo, requestMessage);
+
+        String responseMessage = null;
+        // 调用银行接口
+        try {
+            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
+            log.info("合同：{}的银行响应报文是：{}", contractNo, responseMessage);
+            if (responseMessage == null) {
+                throw new RuntimeException("银行响应报文为空，交易失败");
+            }
+
+            InnerTransferResponse response = JSONObject.parseObject(responseMessage, InnerTransferResponse.class);
+            return response;
+        } catch (Exception e) {
+            log.error("调用银行接口失败", e);
+            throw new RuntimeException("调用银行接口失败", e);
+        } finally {
+            // TODO 记录交易日志
+        }
     }
 
     @Override
