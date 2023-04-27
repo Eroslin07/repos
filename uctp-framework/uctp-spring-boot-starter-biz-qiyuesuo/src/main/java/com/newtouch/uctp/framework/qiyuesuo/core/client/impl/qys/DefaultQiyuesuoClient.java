@@ -90,6 +90,11 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<SaaSUserAuthResult> doSaasUserAuthResult(SaaSUserAuthResultRequest request) throws Throwable {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request) throws Throwable {
         throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
@@ -136,6 +141,11 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
 
     @Override
     public QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(String sealAdminContract, Long companyId, String authDeadline, String remark) {
+        throw new UnsupportedOperationException("default的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSUserAuthResult> saasUserAuthResult(String contact) {
         throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 

@@ -1,14 +1,8 @@
 package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import com.qiyuesuo.sdk.v2.http.StreamFile;
-import com.qiyuesuo.sdk.v2.request.SaaSSealSignAuthUrlRequest;
-import com.qiyuesuo.sdk.v2.request.SaaSUserAuthPageRequest;
-import com.qiyuesuo.sdk.v2.request.SaasCompanyAuthPageUrlRequest;
-import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSSealSignAuthUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
+import com.qiyuesuo.sdk.v2.request.*;
+import com.qiyuesuo.sdk.v2.response.*;
 
 /**
  * 用于对接各契约锁SAAS模式
@@ -111,4 +105,17 @@ public interface QiyuesuoSaasClient {
      * @return
      */
     QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request);
+
+    /**
+     * 查询个人认证结果
+     * @param request 契约锁需要的参数
+     * @return
+     */
+    QiyuesuoCommonResult<SaaSUserAuthResult> saasUserAuthResult(SaaSUserAuthResultRequest request);
+    /**
+     * 查询个人认证结果
+     * @param contact 认证用户联系方式
+     * @return
+     */
+    QiyuesuoCommonResult<SaaSUserAuthResult> saasUserAuthResult(String contact);
 }

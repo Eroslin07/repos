@@ -11,6 +11,7 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuo
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.bean.*;
+import com.qiyuesuo.sdk.v2.request.SaaSUserAuthResultRequest;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,8 @@ class UctpBusinessApplicationTests {
         System.out.println(docRes.getData());
         QiyuesuoCommonResult<Object> result1 = client.defaultContractSend(contract.getId());
         System.out.println(result1.getData());
+        String contact = "";
+        SaaSUserAuthResultRequest request = new SaaSUserAuthResultRequest(new User("10020033044", "MOBILE"));
     }
 
     @Test

@@ -18,7 +18,7 @@
                 left join uctp_user_ext uue on
                 uue.USER_ID = su.id
         where
-            su.dept_id =#{deptId}
+            su.dept_id =#{deptId} and uue.STAFF_TYPE ='2'
             and su.status in(0,1) and su.deleted=0
     </select>
 
