@@ -176,6 +176,51 @@ public class UctpCarInfoSearchUtils {
         }
     }
 
+    public static JSONArray getCarBrandList(String token,  String url) throws UnsupportedEncodingException {
+
+        StringBuffer urlParam = new StringBuffer();
+        urlParam.append(url);
+        urlParam.append("?token=" + token);
+
+        //处理url中中文编码
+        Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
+        String getUrl = null;
+        String uri = urlParam.toString();
+        while (matcher.find()) {
+            String tmp = matcher.group();
+            uri = uri.replaceAll(tmp, java.net.URLEncoder.encode(tmp, "utf-8"));
+        }
+        getUrl = uri;
+        // 创建httpClient实例对象
+        HttpClient httpClient = new HttpClient();
+        // 设置httpClient连接主机服务器超时时间：15000毫秒
+        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(15000);
+        // 创建GET请求方法实例对象
+        GetMethod getMethod = new GetMethod(getUrl);
+        // 设置post请求超时时间
+        getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 60000);
+        getMethod.addRequestHeader("Content-Type", "application/json");
+        JSONArray array = new JSONArray();
+        try {
+            httpClient.executeMethod(getMethod);
+            String result = getMethod.getResponseBodyAsString();
+            Map maps = JSON.parseObject(result);
+            for (Object map : maps.entrySet()) {
+                if (((Map.Entry) map).getKey().equals("brand_list")) {
+                    array = (JSONArray) ((Map.Entry) map).getValue();
+
+                }
+            }
+
+
+            getMethod.releaseConnection();
+        } catch (IOException e) {
+            log.error("GET请求发出失败，请求的地址为{}，参数为{}，错误信息为{}", url, getUrl, e.getMessage(), e);
+        }
+        return array;
+    }
+
+
     /**
      * GET请求
      * 品牌查询
@@ -239,7 +284,6 @@ public class UctpCarInfoSearchUtils {
         }
         return obj;
     }
-
 
     /**
      * GET请求
