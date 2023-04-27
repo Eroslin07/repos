@@ -1461,8 +1461,9 @@
 		border-bottom: none;
 	}
 	
-	/deep/ .u-form-item__body__right__content__slot.data-v-067e4733{
+	/deep/ .u-form-item__body__right__content__slot{
 		flex-direction: row;
+		width: 100%;
 	}
 
 	/* #endif */
