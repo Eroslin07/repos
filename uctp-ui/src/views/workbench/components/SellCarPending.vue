@@ -166,10 +166,12 @@
               </el-col>
               <el-col :span="2" class="bg-yell">里程数：</el-col>
               <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .mileage
-                }}</div>
+                <div
+                  >{{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                      .mileage
+                  }}万公里</div
+                >
               </el-col>
               <el-col :span="2" class="bg-yell">使用年限至：</el-col>
               <el-col :span="4">
@@ -244,10 +246,10 @@
                   >{{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue
                       ?.value1
-                  }}元—{{
+                  }}万元—{{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue
                       ?.value2
-                  }}元</div
+                  }}万元</div
                 >
               </el-col>
               <el-col :span="2" class="bg-yell">付款方式：</el-col>
@@ -314,33 +316,23 @@
                     .sellerName
                 }}</div>
               </el-col>
-              <el-col :span="2" class="bg-yell">联系地址：</el-col>
-              <el-col :span="4">
-                <el-tooltip
-                  class="box-item"
-                  effect="dark"
-                  :content="
-                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .sellerAdder
-                  "
-                  placement="top-start"
-                >
-                  <div class="carInfo">
-                    {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                        .sellerAdder
-                    }}</div
-                  >
-                </el-tooltip>
-              </el-col>
-            </el-row>
-            <el-row>
               <el-col :span="2" class="bg-yell">联系电话：</el-col>
-              <el-col :span="22">
+              <el-col :span="4">
                 <div>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
                     .sellerTel
                 }}</div>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2" class="bg-yell">联系地址：</el-col>
+              <el-col :span="22">
+                <div>
+                  {{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                      .sellerAdder
+                  }}</div
+                >
               </el-col>
             </el-row>
           </div>
@@ -457,13 +449,13 @@ console.log(setDialogTile, props)
 .content-box .el-row .el-col:nth-child(even) {
   padding-left: 15px;
 }
+.identify {
+  display: inline-block;
+  width: 140px;
+}
 .carInfo {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.identify {
-  display: inline-block;
-  width: 140px;
 }
 </style>
