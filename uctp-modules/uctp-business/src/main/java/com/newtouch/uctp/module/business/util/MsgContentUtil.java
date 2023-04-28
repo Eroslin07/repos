@@ -76,7 +76,7 @@ public class MsgContentUtil {
                     break;*/
 //-------
                 case "40":
-                    result="【翼龙科技】"+map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    result=String.format("[翼龙科技]恭喜您已成为车友通一员，交易中电子签需您进行企业认证，请在15分钟内访问%s 完成认证",map.get("url"));
                     break;
                 case "41":
                     result="【翼龙科技】"+map.get("name")+"恭喜您已完成企业认证。在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");

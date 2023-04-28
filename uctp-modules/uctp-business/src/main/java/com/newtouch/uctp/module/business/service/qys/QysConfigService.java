@@ -91,7 +91,7 @@ public interface QysConfigService {
      * @param ticket 加密内容
      * @return
      */
-    Map<String, Object> verification(String ticket) throws Exception;
+    Map<String, Object> verification(String ticket);
     /**
      * 电子签回调接口 ->8）平台登录地址：若选择单点登录集成方案，用于单点登录集成Ticket校验失败的重定向地址；
      * @param signature 签名
