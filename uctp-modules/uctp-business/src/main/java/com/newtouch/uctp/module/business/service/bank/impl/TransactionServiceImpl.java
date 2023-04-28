@@ -4,11 +4,21 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionLogDO;
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
+import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
+import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
+import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
 import com.newtouch.uctp.module.business.enums.bank.BankSubAccountType;
 import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
+import com.newtouch.uctp.module.business.service.account.MerchantBankService;
+import com.newtouch.uctp.module.business.service.bank.TransactionLogService;
+import com.newtouch.uctp.module.business.service.bank.TransactionRecordService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import com.newtouch.uctp.module.business.service.bank.request.InnerTransferRequest;
 import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
@@ -18,13 +28,19 @@ import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResp
 import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
 import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 import com.newtouch.uctp.module.business.service.bank.response.UnKnowClearingResponse;
+import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import com.newtouch.uctp.module.business.util.bank.SPDBSMSignature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
+import com.newtouch.uctp.module.business.service.bank.request.BalancesWithdrawalRequest;
+import com.newtouch.uctp.module.business.service.bank.request.OrderPayRequest;
+import com.newtouch.uctp.module.business.service.bank.request.OrdersPayStatusRequest;
+import com.newtouch.uctp.module.business.service.bank.response.BalancesWithdrawalResponse;
+import com.newtouch.uctp.module.business.service.bank.response.OrderPayResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
@@ -41,6 +57,19 @@ public class TransactionServiceImpl implements TransactionService {
     @Resource
     private AccountProfitService accountProfitService;
 
+    @Resource
+    private TransactionRecordService transactionRecordService;
+
+    @Resource
+    private TransactionLogService transactionLogService;
+
+    @Resource
+    private MerchantBankService merchantBankService;
+
+    @Resource
+    private MerchantAccountService merchantAccountService;
+
+
     @Override
     public void noticePaymentResult() {
 
@@ -48,13 +77,103 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public String orderPayment(String contractNo) {
+
+        String mrchNo = "";
+        String pymtMd = "";
+        String strNo = "";
+        String stdntId = "";
+        String ordrAmt = "";
+        String mrchOrdrNo = "";
+
+        OrderPayRequest param = OrderPayRequest.buildPayReq(mrchNo, pymtMd, strNo, stdntId, ordrAmt, mrchOrdrNo);
+
+        String url = BankConstants.API_URL + BankConstants.ORDERS_PAY_API;
+        OrderPayResponse response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, OrderPayResponse.class);
+        String statusCode = response.getStatusCode();
+
+        TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
+        transactionRecordDO.setTranNo(response.getTransNo());
+        transactionRecordDO.setTranType("");
+        transactionRecordDO.setContractNo("");
+        transactionRecordDO.setPayerName("");
+        transactionRecordDO.setPayerBankName("");
+        transactionRecordDO.setPayerBankAccount("");
+        transactionRecordDO.setPayeeName("");
+        transactionRecordDO.setPayeeBankName("");
+        transactionRecordDO.setPayeeBankAccount("");
+        transactionRecordDO.setApproveAccount("");
+        transactionRecordDO.setTranAmount(0L);
+        transactionRecordDO.setTranStatus(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+        transactionRecordDO.setBankResultCode(response.getStatusCode());
+        transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
+        transactionRecordService.save(transactionRecordDO);
+
+        transactionLogService.save(TransactionLogDO.builder()
+                .tranId(mrchOrdrNo)
+                .tranBeginTime(LocalDateTime.now())
+                .tranEndTime(LocalDateTime.now())
+                .tranRequest(JSON.toJSONString(param))
+                .tranResponse(JSON.toJSONString(response))
+                .tranStatus(response.getStatusCode()).build());
+
+
         return null;
     }
 
     @Override
-    public String orderPayStatus(String contractNo) {
-        return null;
+    @Transactional
+    public TransactionRecordDO orderPayStatus(String tranNo) {
+        //交易处理中订单查询浦发接口，其余状态查询系统数据
+        TransactionRecordDO transactionRecord = transactionRecordService.getOne(new LambdaQueryWrapperX<TransactionRecordDO>().eq(TransactionRecordDO::getTranNo, tranNo));
+
+        //只查询系统状态为 交易处理中 的数据
+        if (transactionRecord != null && AccountEnum.TRAN_STATE_DURING.getKey().equals(transactionRecord.getTranStatus())) {
+
+            String mrchOrdrNo = "";
+            OrdersPayStatusRequest param = OrdersPayStatusRequest.builder()
+                    //TODO:商户编号-必填
+                    .mrchNo("")
+                    //TODO:商户订单号-必填
+                    //TODO:商户订单号不能使用交易合同号，一个交易合同号有可能会产生多笔流水
+                    .mrchOrdrNo("")
+                    //TODO:订单支付日期-必填
+                    .pymtDt("").build();
+
+            String url = BankConstants.API_URL + BankConstants.ORDERS_PAY_STATUS;
+
+            OrderPayResponse response = new OrderPayResponse();
+            try {
+                response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, OrderPayResponse.class);
+            } catch (Exception e) {
+                log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
+                response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
+                response.setStatusMsg(e.getCause().toString());
+            } finally {
+                //接口调用日志
+                transactionLogService.save(TransactionLogDO.builder()
+                        .tranId(mrchOrdrNo)
+                        .tranBeginTime(LocalDateTime.now())
+                        .tranEndTime(LocalDateTime.now())
+                        .tranRequest(JSON.toJSONString(param))
+                        .tranResponse(JSON.toJSONString(response))
+                        .tranStatus(StringUtils.isEmpty(response.getStatusCode()) ? AccountEnum.TRAN_STATE_FAIL.getKey() : response.getStatusCode())
+                        .build());
+            }
+
+            //银行返回支付状态后落表
+            String bankResultCode = response.getStatusCode();
+            if (StringUtils.isNotEmpty(bankResultCode) && !bankResultCode.equals(transactionRecord.getBankResultCode())) {
+
+                transactionRecord.setTranStatus(AccountEnum.bankResultCodeMap.get(bankResultCode));
+                transactionRecord.setBankResultCode(bankResultCode);
+                transactionRecord.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(bankResultCode));
+                transactionRecordService.updateById(transactionRecord);
+            }
+        }
+
+        return transactionRecord;
     }
+
 
     @Override
     public NominalAccountResponse nominalAccountGenerate(NominalAccountRequest nominalAccountRequest) {
@@ -88,8 +207,83 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public String outGold() {
-        return null;
+    public TransactionRecordDO outGold(String bankNo, Long amount, String tranType, String contractNo) {
+
+        //子账户出金到银行卡，提现操作时给到银行卡号及金额
+        MerchantBankDO merchantBankDO = merchantBankService.getOne(
+                new LambdaQueryWrapperX<MerchantBankDO>()
+                        .eq(MerchantBankDO::getBankNo, bankNo)
+                        .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
+
+        String accountNo = merchantBankDO.getAccountNo();
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
+        String tranNo = generateTranNo();
+
+        BalancesWithdrawalRequest param = new BalancesWithdrawalRequest();
+        //TODO:交易地区代码-必填 约定的代发平台专用代码
+        param.setAreaCode("");
+        //TODO:监管账号-必填 代发平台子公司存管账户账号
+        param.setSettleAcctNo("");
+        //TODO:子账号-必填 发薪企业台账子账户出金类型为06时必输
+        String capitalAcctNo = "";
+        param.setCapitalAcctNo(capitalAcctNo);
+        //商户交易流水号-必填
+        param.setChannelSeqNo(tranNo);
+        //出金类型-必填 06-按子账户出金
+        param.setGldYldTypeCd("06");
+        //TODO:授权码-必填
+        param.setAuthrCd("");
+        //收款方开户行名称-必填
+        param.setOpnBnkNm(merchantBankDO.getBankName());
+        //TODO:收款方开户行行号-必填
+        param.setOpenBrNo("");
+        //TODO:收款方户名-必填
+        param.setPyAcctNm("");
+        //收款方账号-必填
+        param.setPyAcctNo(merchantBankDO.getBankNo());
+        //交易金额-必填
+        param.setTranAmt(BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(100)).setScale(2, BigDecimal.ROUND_UP).toString());
+
+        String url = BankConstants.API_URL + BankConstants.BALANCES_WITHDRAWALS_API;
+
+        BalancesWithdrawalResponse response = new BalancesWithdrawalResponse();
+        try {
+            response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, BalancesWithdrawalResponse.class);
+
+        } catch (Exception e) {
+            log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
+            response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
+            response.setStatusMsg(e.getCause().toString());
+
+        } finally {
+            //接口调用日志
+            transactionLogService.save(TransactionLogDO.builder()
+                    .tranId(tranNo)
+                    .tranBeginTime(LocalDateTime.now())
+                    .tranEndTime(LocalDateTime.now())
+                    .tranRequest(JSON.toJSONString(param))
+                    .tranResponse(JSON.toJSONString(response))
+                    .tranStatus(StringUtils.isEmpty(response.getStatusCode()) ? AccountEnum.TRAN_STATE_FAIL.getKey() : response.getStatusCode())
+                    .build());
+        }
+
+        TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
+        transactionRecordDO.setTranNo(tranNo);
+        transactionRecordDO.setTranType(tranType);
+        transactionRecordDO.setContractNo(contractNo);
+        transactionRecordDO.setPayerName("子账户");
+        transactionRecordDO.setPayerBankName("浦发银行");
+        transactionRecordDO.setPayerBankAccount(capitalAcctNo);
+        transactionRecordDO.setPayeeName("");
+        transactionRecordDO.setPayeeBankName("浦发银行");
+        transactionRecordDO.setPayeeBankAccount(bankNo);
+        transactionRecordDO.setApproveAccount("");
+        transactionRecordDO.setTranAmount(amount);
+        transactionRecordDO.setBankResultCode(response.getStatusCode());
+        transactionRecordDO.setTranStatus(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+        transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
+        transactionRecordService.save(transactionRecordDO);
+        return transactionRecordDO;
     }
 
     @Override

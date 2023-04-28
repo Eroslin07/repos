@@ -38,7 +38,11 @@ public class TransactionRecordDO implements Serializable {
 
     private String approveAccount;
 
-    private Integer tranAmount;
+    private Long tranAmount;
 
     private String tranStatus;
+
+    private String bankResultCode;
+
+    private String bankResultReason;
 }

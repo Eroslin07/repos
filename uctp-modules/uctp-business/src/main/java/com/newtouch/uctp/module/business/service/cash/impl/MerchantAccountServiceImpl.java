@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.cash.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
@@ -38,23 +39,24 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
 
     @Override
     @Transactional
-    public int changeCash(String accountNo, Long tranAmount, Integer revision, String tradeType) {
+    public MerchantAccountDO changeCash(String accountNo, Long tranAmount, Integer revision, String tradeType) {
 
         MerchantAccountDO merchantAccountDO = merchantAccountMapper.selectForUpdateByAccountNo(accountNo);
-
+        log.info("保证金信息变更，当前账户信息：{}", JSON.toJSONString(merchantAccountDO));
         if (revision != null && !revision.equals(merchantAccountDO.getRevision())) {
+            log.info("请求版本号错误，reversion {}，accountNo：{}", revision, accountNo);
             //版本号错误
             throw new ServiceException(AccountConstants.ERROR_CODE_REVERSION_ERROR, AccountConstants.ERROR_MESSAGE_REVERSION_ERROR);
         }
 
-        if (AccountConstants.TRADE_TYPE_DEDUCTION.equals(tradeType) || AccountConstants.TRADE_TYPE_RELEASE.equals(tradeType)) {
+        if (AccountConstants.TRADE_TYPE_DEDUCTION.equals(tradeType) || AccountConstants.TRADE_TYPE_RELEASE.equals(tradeType) || AccountConstants.TRADE_TYPE_WITHDRAW.equals(tradeType)) {
             if (merchantAccountDO == null || merchantAccountDO.getFreezeCash() < tranAmount) {
-                //冻结金额不足
+                log.info("当前账户冻结金额不足");
                 throw new ServiceException(AccountConstants.ERROR_CODE_INSUFFICIENT_FREEZE_CASH, AccountConstants.ERROR_MESSAGE_INSUFFICIENT_FREEZE_CASH);
             }
         } else {
             if (merchantAccountDO == null || merchantAccountDO.getAvailableCash() < tranAmount) {
-                //可用余额不足
+                log.info("当前账户可用余额不足");
                 throw new ServiceException(AccountConstants.ERROR_CODE_INSUFFICIENT_AVAILABLE_BALANCE, AccountConstants.ERROR_MESSAGE_INSUFFICIENT_AVAILABLE_BALANCE);
             }
         }
@@ -63,8 +65,9 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
         switch (tradeType) {
             case AccountConstants.TRADE_TYPE_WITHDRAW:
                 merchantAccountDO.setCash(merchantAccountDO.getCash() - tranAmount);
-                merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() - tranAmount);
+                merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() - tranAmount);
                 break;
+            case AccountConstants.TRADE_TYPE_WITHDRAWING:
             case AccountConstants.TRADE_TYPE_PREEMPTION:
                 merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() - tranAmount);
                 merchantAccountDO.setFreezeCash(merchantAccountDO.getFreezeCash() + tranAmount);
@@ -77,7 +80,9 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
                 merchantAccountDO.setAvailableCash(merchantAccountDO.getAvailableCash() + tranAmount);
                 break;
         }
-        return merchantAccountMapper.updateById(merchantAccountDO);
+        log.info("保证金信息变更，修改账户信息：{}", JSON.toJSONString(merchantAccountDO));
+        merchantAccountMapper.updateById(merchantAccountDO);
+        return merchantAccountDO;
     }
 
     @Override
