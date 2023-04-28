@@ -30,7 +30,7 @@ public class AccountProfitServiceTest {
     private RedissonClient redissonClient;
 
     private String accountNo = "666";
-    private String contractNo = "25001";
+    private String contractNo = "28001";
 
     @Test
     public void testRecorded() {
@@ -44,9 +44,6 @@ public class AccountProfitServiceTest {
         CostDTO c2 = new CostDTO();
         c2.setAmount(2L);
         c2.setType("FEE_2");
-        c2.setPromptPayment(true);
-        c2.setBankNo("622000000");
-        c2.setBankName("张三");
         costs.add(c2);
 
         List<TaxDTO> taxes = new ArrayList<>();

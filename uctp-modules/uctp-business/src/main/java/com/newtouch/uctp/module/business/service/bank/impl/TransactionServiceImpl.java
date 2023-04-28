@@ -14,7 +14,6 @@ import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
 import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
-import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.bank.TransactionLogService;
 import com.newtouch.uctp.module.business.service.bank.TransactionRecordService;
@@ -41,9 +40,6 @@ import java.time.format.DateTimeFormatter;
 @Validated
 @Slf4j
 public class TransactionServiceImpl implements TransactionService {
-
-    @Resource
-    private AccountProfitService accountProfitService;
 
     @Resource
     private TransactionRecordService transactionRecordService;
@@ -307,6 +303,28 @@ public class TransactionServiceImpl implements TransactionService {
         String inSubAccountName = null; // TODO: 根据交易类型查询对应子账户号
         String mainAccountNo = null; // TODO: 主账户号
 
+        if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(tranType)) {
+            // 待清分子账户->商户保证金子账户
+            // TODO
+        } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(tranType)) {
+            // 待清分子账户->服务费子账户
+            // TODO
+        } else if (AccountEnum.TRAN_PROFIT_TAX_COST.getKey().equals(tranType)) {
+            // 待清分子账户->税费子账户
+            // TODO
+        } else if (AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey().equals(tranType)) {
+            // 待清分子账户->商户利润子账户
+            // TODO
+        } else if (AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(tranType)) {
+            // 商户利润子账户->商户保证金子账户
+            // TODO
+        } else if (AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey().equals(tranType)) {
+            // 商户利润子账户->商户保证金子账户
+            // TODO
+        } else {
+            throw new IllegalArgumentException("不支持的交易类型");
+        }
+
         InnerTransferRequest request = new InnerTransferRequest();
         request.setAreaCode(BankConstants.AREA_CODE);
         request.setTranSeqNo(tranNo);
@@ -322,7 +340,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         String requestMessage = JSONObject.toJSONString(request);
         log.info("合同：{}的银行请求报文是：{}", contractNo, requestMessage);
-
 
         String responseMessage = null;
         InnerTransferResponse response = null;

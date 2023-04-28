@@ -22,6 +22,7 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMa
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitInvoiceMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
+import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.BpmService;
@@ -29,6 +30,8 @@ import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
 import com.newtouch.uctp.module.business.service.account.dto.*;
 import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
+import com.newtouch.uctp.module.business.service.bank.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +95,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Resource
     private SecurityProperties securityProperties;
+
+    @Resource
+    private TransactionService transactionService;
 
     @Override
     @Transactional
@@ -169,10 +175,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
             // 待写入的提现状态记录
             List<PresentStatusRecordDO> statusRecordList = new ArrayList<>();
-            // 回填保证金的提现利润清单
-            List<MerchantProfitDO> backCashList = new ArrayList<>();
-            // 需要立即付款的费用清单
-            List<MerchantProfitDO> costWaitForPayList = new ArrayList<>();
 
             for (MerchantProfitDO mp : profitList) {
                 List<PresentStatusRecordDO> psrs = mp.getPresentStatusRecords();
@@ -181,18 +183,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         psr.setPresentNo(mp.getId());
                         statusRecordList.add(psr);
                     }
-                }
-
-                if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(mp.getTradeType()) ||
-                        AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(mp.getTradeType()) ||
-                        AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey().equals(mp.getTradeType())) {
-                    // 保证金回填交易
-                    backCashList.add(mp);
-                } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(mp.getTradeType())
-                        && StringUtils.isNotBlank(mp.getBankNo())
-                        && StringUtils.isNotBlank(mp.getBankName())) {
-                    // 需要立即支付的费用
-                    costWaitForPayList.add(mp);
                 }
             }
 
@@ -219,19 +209,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             // 回填保证金
             this.cashBack(accountNo, contractNo, merchantAccount.getRevision(), profitCalcResult);
 
-            // 处理利润回填保证金提现状态（含使用利润抵扣交易）
-            for (int i = 0; i < backCashList.size(); i++) {
-                MerchantProfitDO mp = backCashList.get(i);
-                this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
-            }
-
-            // 处理费用立即支付
-            for (MerchantProfitDO mp : costWaitForPayList) {
-                this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.COST_PAY);
-                // 调用支付接口
-                this.pay(mp.getBankName(), mp.getBankNo(), mp.getProfit() * -1);
-                // TODO 根据支付结果处理利润余额和利润冻结
-            }
+            // 调用银行接口进行子账户互转并更新提现状态
+            //this.transfer(profitList); // TODO:待银行接口调通后再放开，避免影响调试
 
             return profitList;
         } catch (InterruptedException e) {
@@ -340,9 +319,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         }
 
         // 触发提现申请
-        this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.APPLY);
+        this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.PRESENT_APPLY);
         // 提现申请后，立即变为审核中
-        this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.MARKET_AUDIT_PROCESSING);
+        this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.PRESENT_MARKET_AUDIT_PROCESSING);
 
         // 发起流程
         String businessKey = this.createProfitPresentProcess(accountNo, mp.getId());
@@ -567,7 +546,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      */
     private void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
         if (event != null) {
-            log.info("利润【{}】触发【{}】事件", id, ProfitPressentStatusChangeEvent.CASH_BACK_DONE);
+            log.info("利润【{}】触发【{}】事件", id, ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
 
             MerchantProfitDO profitDO = new MerchantProfitDO();
             profitDO.setId(id);
@@ -604,13 +583,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             } else {
                 log.error("利润：{}，提现处理时账户发生变更，处理失败", id);
                 throw exception(ACC_PRESENT_ERROR);
-            }
-
-            if (event == ProfitPressentStatusChangeEvent.BANK_PROCESSING) {
-                // 如果触发了银行处理中事件，则需要发起支付
-                MerchantProfitDO waitForPay = this.merchantProfitMapper.selectById(id);
-                this.pay(waitForPay.getBankName(), waitForPay.getBankNo(), waitForPay.getProfit() * -1);
-                // TODO 根据支付结果处理利润余额和利润冻结
             }
         }
     }
@@ -798,7 +770,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      * @param carSalesAmount
      */
     private void recordedCheck(String accountNo,
-                                     String contractNo,
+                               String contractNo,
                                Long vehicleReceiptAmount,
                                Long carSalesAmount) {
         if (StringUtils.isBlank(accountNo)) {
@@ -863,7 +835,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
                     .presentType(PRESENT_TYPE_PROFIT)
                     .occurredTime(now)
-                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey())
+                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
                     .statusText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
                     .build();
             psr.setDeleted(false);
@@ -880,8 +852,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_BACK.getValue())
                     .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
                     .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
-                    .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
-                    .presentStateText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .presentState(psr.getStatus())
+                    .presentStateText(psr.getStatusText())
                     .presentStatusRecords(presentStatusRecords)
                     .tradeTime(now)
                     .build();
@@ -894,25 +866,16 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 本次服务费用
         if (profitCalcResult.getCurrentCosts() != null && !profitCalcResult.getCurrentCosts().isEmpty()) {
             for (CostDTO cost : profitCalcResult.getCurrentCosts()) {
-                boolean isPromptPayment = cost.isPromptPayment();
-                AccountEnum presentState = null;
-                List<PresentStatusRecordDO> presentStatusRecords = null;
-                if (isPromptPayment) {
-                    presentState = AccountEnum.PRESENT_PROFIT_APPLY; // 如果费用立即付款，则需要将费用的提现状态改为申请
-                    if (presentStatusRecords == null) {
-                        presentStatusRecords = new ArrayList<>();
+                List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+                PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                        .presentType(PRESENT_TYPE_PROFIT)
+                        .occurredTime(now)
+                        .status(AccountEnum.PRESENT_PROFIT_APPLY.getKey()) // 申请登记
+                        .statusText(AccountEnum.PRESENT_PROFIT_APPLY.getValue())
+                        .build();
+                psr.setDeleted(false);
 
-                        PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
-                                .presentType(PRESENT_TYPE_PROFIT)
-                                .occurredTime(now)
-                                .status(presentState.getKey())
-                                .statusText(presentState.getValue())
-                                .build();
-                        psr.setDeleted(false);
-
-                        presentStatusRecords.add(psr);
-                    }
-                }
+                presentStatusRecords.add(psr);
 
                 MerchantProfitDO profit = MerchantProfitDO.builder()
                         .accountNo(accountNo)
@@ -924,24 +887,13 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         .tradeTypeText(AccountEnum.TRAN_PROFIT_SERVICE_COST.getValue() + "-" + cost.getType()) // 讨论决定使用”利润-服务费-“拼接传入的服务费用名称
                         .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 费用去向为：市场方
                         .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
-                        .presentState(presentState == null ? null : presentState.getKey())
-                        .presentStateText(presentState == null ? null : presentState.getValue())
+                        .presentState(psr.getStatus())
+                        .presentStateText(psr.getStatusText())
                         .presentStatusRecords(presentStatusRecords)
                         .tradeTime(now)
                         .build();
                 profit.setDeleted(false);
                 profit.setRevision(0);
-
-                if (isPromptPayment) {
-                    if (StringUtils.isBlank(cost.getBankName())) {
-                        throw exception(ACC_PRESENT_PROFIT_BANK_NOT_NULL);
-                    }
-                    if (StringUtils.isBlank(cost.getBankNo())) {
-                        throw exception(ACC_PRESENT_PROFIT_BANK_NOT_NULL);
-                    }
-                    profit.setBankName(cost.getBankName());
-                    profit.setBankNo(cost.getBankNo());
-                }
 
                 profitList.add(profit);
             }
@@ -950,6 +902,17 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         // 本次税费
         if (profitCalcResult.getCurrentTaxes() != null && !profitCalcResult.getCurrentTaxes().isEmpty()) {
             for (TaxDTO tax : profitCalcResult.getCurrentTaxes()) {
+                List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+                PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                        .presentType(PRESENT_TYPE_PROFIT)
+                        .occurredTime(now)
+                        .status(AccountEnum.PRESENT_PROFIT_APPLY.getKey())
+                        .statusText(AccountEnum.PRESENT_PROFIT_APPLY.getValue())
+                        .build();
+                psr.setDeleted(false);
+
+                presentStatusRecords.add(psr);
+
                 MerchantProfitDO profit = MerchantProfitDO.builder()
                         .accountNo(accountNo)
                         .contractNo(contractNo)
@@ -960,7 +923,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                         .tradeTypeText(AccountEnum.TRAN_PROFIT_TAX_COST.getValue() + "-" + tax.getType())
                         .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 税费去向为：市场方
                         .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
-                        .presentState(null) // 初始写入税费无提现状态
+                        .presentState(psr.getStatus())
+                        .presentStateText(psr.getStatusText())
                         .tradeTime(now)
                         .build();
                 profit.setDeleted(false);
@@ -998,7 +962,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
                     .presentType(PRESENT_TYPE_PROFIT)
                     .occurredTime(now)
-                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey())
+                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) //待回款保证金
                     .statusText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
                     .build();
             psr.setDeleted(false);
@@ -1015,8 +979,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getValue())
                     .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
                     .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
-                    .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
-                    .presentStateText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .presentState(psr.getStatus())
+                    .presentStateText(psr.getStatusText())
                     .presentStatusRecords(presentStatusRecords)
                     .tradeTime(now)
                     .build();
@@ -1050,8 +1014,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getValue())
                     .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
                     .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
-                    .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
-                    .presentStateText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .presentState(psr.getStatus())
+                    .presentStateText(psr.getStatusText())
                     .presentStatusRecords(presentStatusRecords)
                     .tradeTime(now)
                     .build();
@@ -1068,7 +1032,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
                     .presentType(PRESENT_TYPE_PROFIT)
                     .occurredTime(now)
-                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey())
+                    .status(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
                     .statusText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
                     .build();
             psr.setDeleted(false);
@@ -1085,8 +1049,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getValue())
                     .tradeTo(AccountEnum.TRADE_TO_MY_CASH.getKey()) // 回填保证金支向为：我的保证金
                     .tradeToText(AccountEnum.TRADE_TO_MY_CASH.getValue())
-                    .presentState(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getKey()) // 待回填保证金
-                    .presentStateText(AccountEnum.PRESENT_PROFIT_CASH_BACK_WAIT.getValue())
+                    .presentState(psr.getStatus())
+                    .presentStateText(psr.getStatusText())
                     .presentStatusRecords(presentStatusRecords)
                     .tradeTime(now)
                     .build();
@@ -1124,7 +1088,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             waitForCashBackList.add(mcb);
         }
 
-        // 使用利润（本次利润或原利润）抵扣回填保证金
+        // 使用利润（本次利润）抵扣原有待回填保证金
         if (profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount().compareTo(0L) > 0) {
             MerchantCashBackDO mcb = MerchantCashBackDO.builder()
                     .accountNo(accountNo) // 商户账户号
@@ -1139,6 +1103,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
             waitForCashBackList.add(mcb);
         }
+        // 使用利润（原利润）抵扣本次待回填保证金
         if (profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0L) > 0) {
             MerchantCashBackDO mcb = MerchantCashBackDO.builder()
                     .accountNo(accountNo) // 商户账户号
@@ -1153,7 +1118,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
             waitForCashBackList.add(mcb);
         }
-        // 理论上不存在该场景
+        // 使用利润（原利润）抵扣原有待回填保证金（理论上不存在该场景）
         if (profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount().compareTo(0L) > 0) {
             MerchantCashBackDO mcb = MerchantCashBackDO.builder()
                     .accountNo(accountNo) // 商户账户号
@@ -1273,13 +1238,42 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     }
 
     /**
-     * 支付，内部用调支付接口
-     * @param bankName 银行卡账户名
-     * @param bankNo 银行卡号
-     * @param amount 支付金额
+     * 转账处理（含银行子账户互转及利润明细提现状态更新）
+     * @param profitList
      */
-    private void pay(String bankName, String bankNo, Long amount) {
-        // TODO: 调用支付接口
+    private void transfer(List<MerchantProfitDO> profitList) {
+        if (profitList != null && !profitList.isEmpty()) {
+            // 过滤金额为空或为0的数据
+            profitList.parallelStream().filter(e -> e.getProfit() != null && e.getProfit().compareTo(0L) != 0).forEach(e -> {
+                // 金额处理成正数
+                Long amount = Math.abs(e.getProfit());
+                InnerTransferResponse innerTransferResponse = transactionService.innerTransfer(e.getAccountNo(), e.getContractNo(), e.getTradeType(), amount, e.getTradeTypeText());
+                if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(innerTransferResponse.getStatusCode())) {
+                    if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(e.getTradeType())) {
+                        // 更新提现状态
+                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+                    } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(e.getTradeType())) {
+                        // 更新提现状态
+                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.COST_TRANSFER_SUCCESS);
+                    } else if (AccountEnum.TRAN_PROFIT_TAX_COST.getKey().equals(e.getTradeType())) {
+                        // 更新提现状态
+                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.TAX_TRANSFER_SUCCESS);
+                    } else if (AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey().equals(e.getTradeType())) {
+                        // 更新提现状态
+                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.PROFIT_TRANSFER_SUCCESS);
+                    } else if (AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(e.getTradeType())) {
+                        // 更新提现状态
+                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+                    } else if (AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey().equals(e.getTradeType())) {
+                        // 更新提现状态
+                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+                    }
+                } else {
+                    // 接口返回“不成功”，则报异常，TODO 后续改为银行接口调用失败
+                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+                }
 
+            });
+        }
     }
 }
