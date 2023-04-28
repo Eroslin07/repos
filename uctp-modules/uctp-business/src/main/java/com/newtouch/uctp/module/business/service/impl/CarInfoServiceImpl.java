@@ -200,7 +200,6 @@ public class CarInfoServiceImpl implements CarInfoService {
             carInfoDetailsService.insertCarInfoDetail(detailsDO);
 
         }
-        int ff=1/0;
         //保存图片到中间表
         List<String> carUrl = createReqVO.getCarUrl();
         businessFileService.deleteByMainIdAndType(infoDO.getId(),"1-1");
@@ -246,6 +245,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         //更新车辆明细表
         Long id = reqVO.getId();
         CarInfoDetailsDO infoDetails = carInfoDetailsService.getCarInfoDetails(id);
+        //1为确认发起  2为保存草稿
         if("1".equals(reqVO.getButtonSaveOrSubmit())){
             CarInfoDO carInfoDO1 = carInfoMapper.selectById(infoDetails.getId());
             //如果车辆状态在 除草稿或者已分账 以外有数据，此时无法提交
