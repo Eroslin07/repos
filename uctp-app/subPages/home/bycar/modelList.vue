@@ -67,6 +67,9 @@
 					}
 					getCarModelList(data).then((res) => {
 						this.status = false;
+						for (let j = 0; j < 2; j++) {
+							res.model_list.push({model_name: '无', model_id: null})
+						}
 						this.modelList = res.model_list;
 					})
 				} else {

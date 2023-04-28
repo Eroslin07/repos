@@ -22,7 +22,7 @@ public class AccountApiImpl implements AccountApi {
 
     @Override
     public CommonResult<String> merchantAccountOpen(AccountDTO accountVO) {
-        accountService.openAccount(accountVO);
+        accountService.accountGenerate(accountVO);
 
         return success("提交成功");
     }
