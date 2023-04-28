@@ -1,14 +1,11 @@
 package com.newtouch.uctp.module.business.service.bank;
 
-import com.newtouch.uctp.module.business.enums.bank.BankSubAccountType;
-import com.newtouch.uctp.module.business.service.AccountCashService;
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
 import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
 import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
 import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
 import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
-
-import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 
 /**
  * 银行交易服务
@@ -79,16 +76,14 @@ public interface TransactionService {
      *
      * @param accountNo         平台账户号
      * @param contractNo        合同号
-     * @param outSubAccountType 转出子账户类型
-     * @param inSubAccountType  转入子账户类型
+     * @param tranType          交易类型
      * @param tranAmount        交易金额
      * @param remark            备注
      * @return 银行响应结果
      */
     InnerTransferResponse innerTransfer(String accountNo,
                                         String contractNo,
-                                        BankSubAccountType outSubAccountType,
-                                        BankSubAccountType inSubAccountType,
+                                        String tranType,
                                         Long tranAmount,
                                         String remark);
 
