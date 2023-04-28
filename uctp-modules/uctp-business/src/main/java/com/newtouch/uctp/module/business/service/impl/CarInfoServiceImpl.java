@@ -40,8 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_NOT_EXISTS;
-import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_STATUS_ERROR;
+import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 import static com.newtouch.uctp.module.system.enums.DictTypeConstants.*;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.DICT_TYPE_NOT_EXISTS;
 
@@ -100,11 +99,11 @@ public class CarInfoServiceImpl implements CarInfoService {
     public AppBpmCarInfoRespVO insertCarInfo(AppCarInfoCreateReqVO createReqVO) {
         CarInfoDO infoDO = new CarInfoDO();
         CarInfoDetailsDO detailsDO = new CarInfoDetailsDO();
-
+        Long businessId = createReqVO.getDeptId();
 
         if(null!=createReqVO.getId()){
             //保存之前查看是否存在草稿
-            List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(), 1, 11);
+            List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(),businessId, 1, 11);
             infoDO = carInfoDOS.get(0);
             Long id = infoDO.getId();
             detailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
@@ -126,12 +125,18 @@ public class CarInfoServiceImpl implements CarInfoService {
             infoDO.setBusinessId(createReqVO.getDeptId());
             infoDO.setTenantId(createReqVO.getTenantId());
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
-            String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
-            infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
-            infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+            if(""!=createReqVO.getScrapDate()){//使用年限至
+                String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
+                infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
+            }
+            if(""!=createReqVO.getAnnualInspectionDate()){//年检签证有效期至
+                String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
+                infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+            }
             infoDO.setInsurance(createReqVO.getInsurance());
-            infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+            if(""!=createReqVO.getInsuranceEndData()){//保险期至
+                infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+            }
             infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
             infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
             infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
@@ -164,12 +169,18 @@ public class CarInfoServiceImpl implements CarInfoService {
             infoDO.setBusinessId(createReqVO.getDeptId());
             infoDO.setTenantId(createReqVO.getTenantId());
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
-            String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
-            infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
-            infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+            if(""!=createReqVO.getScrapDate()){//使用年限至
+                String scrapDate = createReqVO.getScrapDate() + " 00:00:00";
+                infoDO.setScrapDate(LocalDateTime.parse(scrapDate,df));
+            }
+            if(""!=createReqVO.getAnnualInspectionDate()){//年检签证有效期至
+                String annualInspectionDate = createReqVO.getAnnualInspectionDate()+" 00:00:00";
+                infoDO.setAnnualInspectionDate(LocalDateTime.parse(annualInspectionDate,df));
+            }
             infoDO.setInsurance(createReqVO.getInsurance());
-            infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+            if(""!=createReqVO.getInsuranceEndData()){//保险期至
+                infoDO.setInsuranceEndData(createReqVO.getInsuranceEndData());
+            }
             infoDO.setSalesStatus(CarStatus.COLLECT.value());//收车中
             infoDO.setStatus(CarStatus.COLLECT_A.value());//草稿
             infoDO.setStatusThree(CarStatus.COLLECT_A_A.value());
@@ -189,6 +200,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             carInfoDetailsService.insertCarInfoDetail(detailsDO);
 
         }
+        int ff=1/0;
         //保存图片到中间表
         List<String> carUrl = createReqVO.getCarUrl();
         businessFileService.deleteByMainIdAndType(infoDO.getId(),"1-1");
@@ -234,6 +246,14 @@ public class CarInfoServiceImpl implements CarInfoService {
         //更新车辆明细表
         Long id = reqVO.getId();
         CarInfoDetailsDO infoDetails = carInfoDetailsService.getCarInfoDetails(id);
+        if("1".equals(reqVO.getButtonSaveOrSubmit())){
+            CarInfoDO carInfoDO1 = carInfoMapper.selectById(infoDetails.getId());
+            //如果车辆状态在 除草稿或者已分账 以外有数据，此时无法提交
+            List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(carInfoDO1.getVin(),  CarStatus.COLLECT_A.value(),CarStatus.SOLD_C_A.value());
+            if(carInfoDOS.size()>0){
+                throw exception(CAR_INFO_EXIST_OTHER);
+            }
+        }
         infoDetails.setSellerName(reqVO.getSellerName());
         infoDetails.setTransManageName(reqVO.getTransManageName());
         infoDetails.setCollection(reqVO.getCollection());//是否第三方代收
@@ -398,10 +418,10 @@ public class CarInfoServiceImpl implements CarInfoService {
     }
 
     @Override
-    public Map getCarInfoByVIN(String vin) {
+    public Map getCarInfoByVIN(String vin,Long deptId) {
         Map map = new HashMap<>();
-        //查询除已卖状态以外的车
-        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsSell(vin,CarStatus.SOLD_C_A.value());
+        //查询该租户下除已卖状态以外的车
+        List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsSell(vin,CarStatus.SOLD_C_A.value(),deptId);
         //除已卖状态外 有且只有一条数据
         if(carInfoDOS.size()>0){
             for (CarInfoDO carInfoDO:carInfoDOS) {

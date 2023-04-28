@@ -126,7 +126,7 @@ public interface CarInfoService {
      */
     AppSellCarInfoRespVO getSellCarInfo(Long id);
 
-    Map getCarInfoByVIN(String vin);
+    Map getCarInfoByVIN(String vin,Long businessId);
 
     /**
      * 根据车辆id回显车辆信息
