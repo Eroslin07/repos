@@ -92,29 +92,6 @@
 					_this.phone = res.data;
 					_this.$store.commit('SET_PHONE', _this.phone);
 					_this.phoneLogin();
-					// uni.request({
-					// 	method: 'POST',
-					// 	url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${res.data}`,
-					// 	data: {
-					// 		code: e.detail.code
-					// 	}
-					// }).then((ress) => {
-					// 	if (res.errcode) {
-					// 		uni.showToast({
-					// 			title: '获取用户信息失败',
-					// 			icon: 'none',
-					// 			duration: 2000
-					// 		});
-					// 		return
-					// 	}
-					// 	if (res.phone_info) {
-					// 		_this.phone = ress.phone_info.phoneNumber;
-					// 	} else {
-					// 		_this.phone = ress[1].data.phone_info.phoneNumber;
-					// 	}
-					// 	_this.$store.commit('SET_PHONE', _this.phone);
-					// 	_this.phoneLogin();
-					// })
 				})
 			},
 			// 手机号登录
