@@ -3,7 +3,7 @@
 <mapper namespace="com.newtouch.uctp.module.business.dal.mysql.user.UserMapper">
 
 
-    <select id="selectFAUser" resultType="com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO">
+    <select id="selectFAUser" resultType="com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO">
         select
             su.id
             ,su.username
