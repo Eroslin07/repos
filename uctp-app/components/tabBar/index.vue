@@ -12,7 +12,7 @@
 				src="/static/images/tabbar/homepage_.png"
 			></image>
 		</u-tabbar-item>
-		<u-tabbar-item text="费用分析" v-if="$store.state.user.staffType == 1">
+		<u-tabbar-item text="费用分析" v-if="type == 1">
 			<image
 				class="form-image"
 				slot="active-icon"
@@ -24,7 +24,7 @@
 				src="/static/images/tabbar/feiyong.png"
 			></image>
 		</u-tabbar-item>
-		<u-tabbar-item text="资金管理" v-if="$store.state.user.staffType == 1">
+		<u-tabbar-item text="资金管理" v-if="type == 1">
 			<image
 				class="form-image"
 				slot="active-icon"
@@ -53,28 +53,28 @@
 
 <script>
 	export default {
-		props: ['name'],
+		props: ['name', 'type'],
 		data() {
 			return {
 				
 			}
 		},
 		methods: {
-			handleChange(name) {
-				if (this.$store.state.user.staffType == 1) {
-					if (name == 0) {
+			handleChange(index) {
+				if (this.type == 1) {
+					if (index == 0) {
 						this.$tab.switchTab('/pages/index');
-					} else if (name == 1) {
+					} else if (index == 1) {
 						this.$tab.switchTab('/pages/cost/index');
-					} else if (name == 2) {
+					} else if (index == 2) {
 						this.$tab.switchTab('/pages/account/index');
-					} else if (name == 3) {
+					} else if (index == 3) {
 						this.$tab.switchTab('/pages/mine/index');
 					}
 				} else {
-					if (name == 0) {
+					if (index == 0) {
 						this.$tab.switchTab('/pages/index');
-					} else if (name == 1) {
+					} else if (index == 1) {
 						this.$tab.switchTab('/pages/mine/index');
 					}
 				}

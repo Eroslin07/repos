@@ -52,7 +52,7 @@
 			</uni-card>
 		</uni-card>
 		<!-- 自定义tabbar -->
-		<tab-bar :name="1"></tab-bar>
+		<tab-bar :name="1" :type="type"></tab-bar>
 	</view>
 </template>
 
@@ -61,6 +61,7 @@
 	export default {
 		data() {
 			return {
+				type: 0,
 				// 商户账户号
 				accountNo: this.$store.state.user.accountNo,
 				// 日期
@@ -103,6 +104,7 @@
 			}
 		},
 		onLoad() {
+			this.type = this.$store.state.user.staffType;
 			let currentMonth = new Date().getMonth() + 1;
 			let currentQuarter = Math.floor((currentMonth % 3 == 0) ? (currentMonth / 3) : (currentMonth / 3 + 1));
 			let currentValue = (String(this.endYear) + currentQuarter) * 1

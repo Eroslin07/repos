@@ -80,7 +80,7 @@
 		<!-- 加载图标 -->
 		<!-- <u-loadmore :status="status" loadingText="努力加载中..." /> -->
 		<!-- 自定义tabbar -->
-		<tab-bar :name="0"></tab-bar>
+		<tab-bar :name="0" :type="type"></tab-bar>
 	</view>
 </template>
 
@@ -99,6 +99,7 @@
 	export default {
 		data() {
 			return {
+				type: 0,
 				businessId: this.$store.state.user.deptId,
 				// 导航栏高度
 				navigateBarHeight: 0,
@@ -130,6 +131,7 @@
 			/* #endif */
 			uni.startPullDownRefresh();
 			uni.hideTabBar();
+			this.type = this.$store.state.user.staffType;
 
 		},
 		onShow(){

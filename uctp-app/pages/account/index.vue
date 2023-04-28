@@ -48,7 +48,7 @@
 			</view>
 		</uni-card>
 		<!-- 自定义tabbar -->
-		<tab-bar :name="2"></tab-bar>
+		<tab-bar :name="2" :type="type"></tab-bar>
 	</view>
 </template>
 
@@ -57,6 +57,7 @@
 	export default {
 		data() {
 			return {
+				type: 0,
 				text: '资金受浦发银行监管、保证资金账户7×24小时充值/提现',
 				data: {},
 				chartData: {},
@@ -88,6 +89,9 @@
 					}
 				},
 			}
+		},
+		onLoad() {
+			this.type = this.$store.state.user.staffType;
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
