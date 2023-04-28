@@ -33,10 +33,11 @@ export function wxLogin(phone) {
 }
 
 // 获取微信授权token
-export function getWxToken() {
+export function getWxToken(data) {
 	return request({
 		url: '/system/appAuth/wxToken',
-		'method': 'GET'
+		'method': 'GET',
+		params: data
 	})
 }
 
