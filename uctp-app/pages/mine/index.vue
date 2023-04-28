@@ -92,6 +92,8 @@
 				</view>
 			</view>
 		</view>
+		<!-- 自定义tabbar -->
+		<tab-bar :name="$store.state.user.staffType == 1 ? 3 : 1"></tab-bar>
 	</view>
 </template>
 
