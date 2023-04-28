@@ -231,6 +231,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             deptDO.setTaxNum(reqVO.getTaxNum());
             deptDO.setAddress(reqVO.getAddress());
             deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            deptDO.setLegalRepresentative(reqVO.getLegal_representative());
 //            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
             deptDO.setSort(2);
             deptDO.setStatus(2);//未激活
