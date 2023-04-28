@@ -247,7 +247,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         CarInfoDetailsDO infoDetails = carInfoDetailsService.getCarInfoDetails(id);
         //1为确认发起  2为保存草稿
         if("1".equals(reqVO.getButtonSaveOrSubmit())){
-            CarInfoDO carInfoDO1 = carInfoMapper.selectById(infoDetails.getId());
+            CarInfoDO carInfoDO1 = carInfoMapper.selectById(infoDetails.getCarId());
             //如果车辆状态在 除草稿或者已分账 以外有数据，此时无法提交
             List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(carInfoDO1.getVin(),  CarStatus.COLLECT_A.value(),CarStatus.SOLD_C_A.value());
             if(carInfoDOS.size()>0){

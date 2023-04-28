@@ -76,24 +76,19 @@ public class MsgContentUtil {
                     break;*/
 //-------
                 case "40":
-                    result="【翼龙科技】"+map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    result = String.format("【翼龙科技】您在车友通注册的主账号已审批通过，请在15分钟内访问%s 完成企业实名认证。", map.get("url"));
                     break;
                 case "41":
-                    result="【翼龙科技】"+map.get("name")+"恭喜您已完成企业认证。在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
-                    //result="【翼龙科技】"+map.get("name")+"您在车友通平台注册的主账号已审批通过，请在15分钟内访问"+map.get("url")+" 完成企业实名认证";
+                    result = String.format("【翼龙科技】您在车友通的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。", map.get("url"));
                     break;
                 case "42":
-                    result="【翼龙科技】"+map.get("userName")+"您已经成为车友通平台【"+map.get("name")+"】的一员，在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
-                    //result="【翼龙科技】"+map.get("userName")+"您在车友通的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。";
+                    result = String.format("【翼龙科技】您已完成企业认证，请在15分钟内访问#url#完成个人实名认证。", map.get("url"));
                     break;
                 case "43":
                     result=map.get("url");
                     break;
                 default:
                     result="无匹配模版";
-//【翼龙科技】您在#name#注册的主账号已审批通过，请在15分钟内访问#url# 完成企业实名认证。
-//【翼龙科技】您在#name#的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。
-//【翼龙科技】您已完成企业认证，请在15分钟内访问#url#完成个人实名认证。
             }
         }
         else if ("0".equals(map.get("type"))) {

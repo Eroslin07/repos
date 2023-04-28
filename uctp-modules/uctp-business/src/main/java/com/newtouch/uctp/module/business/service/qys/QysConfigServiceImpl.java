@@ -254,6 +254,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                     //保存回调信息
                     qysCallbackService.saveDO(json,
                             QysCallBackType.COMPANY_AUTH.value(),deptDO.getId());
+                    //更新契约锁client
+                    initLocalCache();
                     //继续做企业授权
                     List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
                     if (CollUtil.isNotEmpty(checkedData)) {
@@ -480,21 +482,33 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public Map<String, Object> verification(String ticket) throws Exception {
+    public Map<String, Object> verification(String ticket){
         log.info("[verification]电子签CAS校验：ticket【{}】",ticket);
+        Map<String, Object> retMap = new HashMap<>();
         //拿到 aes 密钥
 //        redisTemplate.opsForValue().set("ticket:"+ticket,"密钥");
         String aesKeyStr = redisTemplate.opsForValue().get("ticket:"+ticket);
+        if (StrUtil.isBlank(aesKeyStr)) {
+            log.error("[verification]电子签CAS校验：失败，未获取到redis的密钥[ticket:{}]",ticket);
+            retMap.put("code", -1);
+            return retMap;
+        }
         byte[] aesKey = Byte2StrUtil.toByteArray(aesKeyStr);
         AES aes = SecureUtil.aes(aesKey);
         //解密 获取到userId
         String userId = aes.decryptStr(ticket, CharsetUtil.CHARSET_UTF_8);
         //查询到用户数据并返回
-        AdminUserDO adminUser = userMapper.selectById(userId);
+        AdminUserDO adminUser = userMapper.findById(Long.valueOf(userId));
+        if (ObjectUtil.isNull(adminUser)) {
+            log.error("[verification]电子签CAS校验：失败，未获取到用户userId:{}",userId);
+            retMap.put("code", -1);
+            return retMap;
+        }
+//        AdminUserDO adminUser = userMapper.selectById(userId);
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("contract", adminUser.getMobile());
         userMap.put("name", adminUser.getNickname());
-        Map<String, Object> retMap = new HashMap<>();
+
         retMap.put("code", 0);
         retMap.put("message", "SUCCESS");
         retMap.put("result", userMap);
@@ -782,8 +796,6 @@ public class QysConfigServiceImpl implements QysConfigService {
 
             }
         }
-
-
         qysContractVO.setContractType("2");
         qysContractVO.setCarId(carId);
         qysContractVO.setContractId(contractId);
@@ -998,7 +1010,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("type", "1").build();
         noticeService.saveNotice(map);
         //发送消息，做认证后结果查询
-        userAuthProducer.sendUserAuthMessage(userId,urls.get(0),UserAuthProducer.TEN_MINUTES);
+        userAuthProducer.sendUserAuthMessage(userId,urls.get(0),UserAuthProducer.TWO_MINUTES);
     }
 
     @Override
@@ -1026,7 +1038,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         }else {
             if (ObjectUtil.equals(1,message.getCount())) {
                 //认证不通过，且为第一次发送消息，发一条5分钟的的延时消息
-                userAuthProducer.sendUserAuthMessage(contract,UserAuthProducer.FIVE_MINUTES);
+                userAuthProducer.sendUserAuthMessage(contract,UserAuthProducer.ONE_MINUTES);
             }
         }
     }
@@ -1128,13 +1140,15 @@ public class QysConfigServiceImpl implements QysConfigService {
     //收车委托合同
     private Contract buildBuyWTContract(DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
+        AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
+        AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         draftContract.setSubject("两方-二手车-收车委托合同");
         // 设置合同接收方
         // 甲方平台
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
         platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User(platformDept.getPhone(), "MOBILE"));
+        platformSignatory.setReceiver(new User(platformUserDO.getMobile(), "MOBILE"));
         // platformSignatory.setTenantName("广东光耀汽车公司");
         //platformSignatory.setReceiver(new User("17380123816", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
@@ -1145,7 +1159,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         // persoanlSignatory.setTenantName("平头哥二手车");
         // persoanlSignatory.setReceiver(new User("17311271898", "MOBILE"));
         persoanlSignatory.setTenantName(userDept.getName());
-        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
+        persoanlSignatory.setReceiver(new User( pUserDO.getMobile(), "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
         //模板参数
         //draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置`
@@ -1157,6 +1171,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     //卖车委托合同
     private Contract buildSellWTContract(DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
+        AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
+        AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         draftContract.setSubject("两方-二手车-卖车委托合同");
         // 设置合同接收方
         // 甲方平台
@@ -1168,14 +1184,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
         platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User(platformDept.getPhone(), "MOBILE"));
+        platformSignatory.setReceiver(new User(platformUserDO.getMobile(), "MOBILE"));
         draftContract.addSignatory(platformSignatory);
 
         //乙方个人签署方
         Signatory persoanlSignatory = new Signatory();
         persoanlSignatory.setTenantType("COMPANY");
         persoanlSignatory.setTenantName(userDept.getName());
-        persoanlSignatory.setReceiver(new User(userDept.getPhone(), "MOBILE"));
+        persoanlSignatory.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
 //        persoanlSignatory.setTenantName(userDept.getName());
 //        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
@@ -1189,6 +1205,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     //收车合同
     private Contract buildBuyContract(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept) {
         Contract draftContract = new Contract();
+        AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
+        AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         draftContract.setSubject("三方-二手车-收车合同");
         // 设置合同接收方
         // 甲方个人签署方
@@ -1234,7 +1252,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         //platformSignatory.setTenantName("广东光耀汽车公司");
         //platformSignatory.setReceiver(new User( "17380123816", "MOBILE"));
         platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User( platformDept.getPhone(), "MOBILE"));
+        platformSignatory.setReceiver(new User( platformUserDO.getMobile(), "MOBILE"));
         draftContract.addSignatory(platformSignatory);
         //丙方
         Signatory initiator2 = new Signatory();
@@ -1242,7 +1260,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         //initiator2.setTenantName("平头哥二手车");
         //initiator2.setReceiver(new User("17311271898", "MOBILE"));
         initiator2.setTenantName(userDept.getName());
-        initiator2.setReceiver(new User(userDept.getPhone(), "MOBILE"));
+        initiator2.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
         draftContract.addSignatory(initiator2);
 
 
@@ -1256,6 +1274,8 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     //卖车合同
     private Contract buildSellContract(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept) {
+        AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
+        AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         Contract draftContract = new Contract();
         draftContract.setSubject("三方-二手车-卖车合同");
         // 设置合同接收方
@@ -1269,13 +1289,13 @@ public class QysConfigServiceImpl implements QysConfigService {
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
         platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User( platformDept.getPhone(), "MOBILE"));
+        platformSignatory.setReceiver(new User( platformUserDO.getMobile(), "MOBILE"));
         draftContract.addSignatory(platformSignatory);
         //丙方
         Signatory initiator2 = new Signatory();
         initiator2.setTenantType("COMPANY");
         initiator2.setTenantName(userDept.getName());
-        initiator2.setReceiver(new User(userDept.getPhone(), "MOBILE"));
+        initiator2.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
         draftContract.addSignatory(initiator2);
 
         //模板参数
@@ -1289,20 +1309,22 @@ public class QysConfigServiceImpl implements QysConfigService {
     //模板参数
     private List<TemplateParam>  buildTemplateParam(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO,DeptDO userDept,DeptDO platformDept,String type) {
         InvoiceTitleDO invoiceTitleDO=invoiceTitleMapper.selectOne("dept_id",platformDept.getId());
+        AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
+        AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         List<TemplateParam> params =new ArrayList<>();
         //收车委托合同
         if ("1".equals(type)) {
             params.add(new TemplateParam("受托人", platformDept.getName()));
             params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
             params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("甲方联系电话", platformDept.getPhone()));
+            params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
             //params.add(new TemplateParam("甲方联系电话", "18942820000"));
             params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
 
             params.add(new TemplateParam("委托人", userDept.getName()));
             params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
             params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", userDept.getPhone()));
+            params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
             params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
 
             params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
@@ -1330,13 +1352,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             params.add(new TemplateParam("受托人", platformDept.getName()));
             params.add(new TemplateParam("甲方营业执照号",platformDept.getTaxNum()));
             params.add(new TemplateParam("甲方法定代表人",platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("甲方联系电话",platformDept.getPhone()));
+            params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
             params.add(new TemplateParam("甲方联系地址",platformDept.getAddress()));
 
             params.add(new TemplateParam("委托人",userDept.getName()));
             params.add(new TemplateParam("乙方营业执照号",userDept.getTaxNum()));
             params.add(new TemplateParam("乙方法定代表人",userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话",userDept.getPhone()));
+            params.add(new TemplateParam("乙方联系电话",pUserDO.getMobile()));
             params.add(new TemplateParam("乙方联系地址",userDept.getAddress()));
 
             params.add(new TemplateParam("车辆牌号",carInfo.getPlateNum()));
@@ -1394,13 +1416,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             params.add(new TemplateParam("平台受托人", platformDept.getName()));
             params.add(new TemplateParam("乙方营业执照号",platformDept.getTaxNum()));
             params.add(new TemplateParam("乙方法定代表人",platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话",platformDept.getPhone()));
+            params.add(new TemplateParam("乙方联系电话",platformUserDO.getMobile()));
             params.add(new TemplateParam("乙方联系地址",platformDept.getAddress()));
 
             params.add(new TemplateParam("车商公司名称",userDept.getName()));
             params.add(new TemplateParam("丙方营业执照号",userDept.getTaxNum()));
             params.add(new TemplateParam("丙方法定代表人",userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("丙方联系电话",userDept.getPhone()));
+            params.add(new TemplateParam("丙方联系电话",pUserDO.getMobile()));
             params.add(new TemplateParam("丙方联系地址",userDept.getAddress()));
 
 

@@ -691,6 +691,7 @@
 				],
 				showOverlay: false,
 				carId: null,
+				detailId: null,
 				modelId: null,
 				modelName: null,
 				date: null,
@@ -1022,6 +1023,7 @@
 			// 数据回显
 			getInfo(data) {
 				this.carId = data.carInfoDetails.carId;
+				this.detailId = data.carInfoDetails.id;
 				this.modelId = data.carInfo.modelId;
 				this.carForm = {
 					drivingLicenseUrl: data.fileB,
@@ -1332,7 +1334,7 @@
 					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
-						this.carId = res.data.carInfoDetails.id;
+						this.detailId = res.data.carInfoDetails.id;
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
@@ -1413,7 +1415,7 @@
 				this.showOverlay = true;
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
-					id: this.carId,
+					id: this.detailId,
 					vehicleReceiptAmount: this.$amount.getDelcommafy(this.sellerForm.vehicleReceiptAmount),
 					collection: this.sellerForm.collection,
 					payType: this.sellerForm.payType,
