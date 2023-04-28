@@ -2,7 +2,10 @@ package com.newtouch.uctp.module.business.service.bank;
 
 import com.newtouch.uctp.module.business.enums.bank.BankSubAccountType;
 import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
+import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
 import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
+import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
+import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 
 /**
  * 银行交易服务
@@ -47,7 +50,7 @@ public interface TransactionService {
      *
      * @return 银行子账户号
      */
-    String nominalAccountGenerate(NominalAccountRequest nominalAccountRequest);
+    NominalAccountResponse nominalAccountGenerate(NominalAccountRequest nominalAccountRequest);
 
     /**
      * 银行出金
@@ -60,12 +63,12 @@ public interface TransactionService {
     /**
      * 子账号互转
      *
-     * @param accountNo 平台账户号
-     * @param contractNo 合同号
+     * @param accountNo         平台账户号
+     * @param contractNo        合同号
      * @param outSubAccountType 转出子账户类型
-     * @param inSubAccountType 转入子账户类型
-     * @param tranAmount 交易金额
-     * @param remark 备注
+     * @param inSubAccountType  转入子账户类型
+     * @param tranAmount        交易金额
+     * @param remark            备注
      * @return 银行响应结果
      */
     InnerTransferResponse innerTransfer(String accountNo,
@@ -79,4 +82,11 @@ public interface TransactionService {
      * 不明入金清分
      */
     String unKnowClearing(String contractNo);
+
+    /**
+     * 商户充值时使用银行APP支付，通过链接唤起银行端APP
+     *
+     * 账链接生成交易
+     */
+    TechAddressesResponse techAddressesGenerate(TechAddressesRequest techAddressesRequest);
 }

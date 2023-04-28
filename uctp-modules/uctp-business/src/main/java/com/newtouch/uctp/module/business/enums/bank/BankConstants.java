@@ -8,6 +8,11 @@ public class BankConstants {
     public final static String tranDateFormat = "yyyyMMdd";
     public final static String tranTimeFormat = "HHmmss";
 
+    /**
+     * 银行合作商户号 todo 合共银行评审后提供
+     */
+    public final static String MERCHANT_ID = "";
+
     // 市场方母账号
     public final static String ACCT_NO = "";
     // 交易地区代码 TODO 银行确认
