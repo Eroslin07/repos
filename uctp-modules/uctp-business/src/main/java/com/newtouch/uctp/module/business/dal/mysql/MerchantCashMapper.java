@@ -22,7 +22,7 @@ public interface MerchantCashMapper extends BaseMapperX<MerchantCashDO> {
                 .orderByDesc(MerchantCashDO::getCreateTime);
         if (merchantCashReq.getType() == 2) {
             //冻结明细
-            queryWrapper.in(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_PREEMPTION, AccountConstants.TRADE_TYPE_RELEASE);
+            queryWrapper.in(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_PREEMPTION, AccountConstants.TRADE_TYPE_RELEASE, AccountConstants.TRADE_TYPE_WITHDRAWING);
         }
 
         if (merchantCashReq.getType() == 3) {
