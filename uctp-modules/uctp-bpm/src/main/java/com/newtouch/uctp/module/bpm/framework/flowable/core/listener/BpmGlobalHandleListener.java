@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.flowable.bpmn.model.ExtensionAttribute;
 import org.flowable.bpmn.model.ExtensionElement;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
@@ -195,29 +196,55 @@ public class BpmGlobalHandleListener {
         String processDefinitionId = taskEntity.getProcessDefinitionId();
         // 当前完成节点ID
         String taskDefinitionKey = taskEntity.getTaskDefinitionKey();
-        String nodeSymbol = this.getTaskNodeExtPropByKey(taskEntity, "nodeSymbol");
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, processInstanceId);
+        // 流程时，判断流程通过与不通过的标识（通过：pass    不通过：disagree）
+        String approvalType = StrUtil.toStringOrNull(taskEntity.getVariable("approvalType"));
+        // 流程时，通过与不通过的审批意见
+        String reason = StrUtil.toStringOrNull(taskEntity.getVariable("reason"));
+        String businessKey = String.valueOf(bpmFormMainDO.getId());
+        BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
 
 
+        if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.LRTX.name())) {
+            String nodeSymbol = this.getTaskNodeExtPropByKey(taskEntity, "nodeSymbol");
 
+            // ”提现审批“节点操作
+            if (ObjectUtil.equals(nodeSymbol, "withdrawApprove")) {
+                Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId(); // 租户ID
+                String token = null; // 需要获得token
 
-        /*if (true) {
-            throw new IllegalStateException("Task is already completed");
-        }*/
+                if ("pass".equals(approvalType)) {
+                    // 审批通过
+                    ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
+                    a.setBusinessKey(businessKey);
+                    a.setAuditOpinion(1);
+
+                    accountProfitApi.presentAudit(tenantId, token, a);
+                } else if ("disagree".equals(approvalType)) {
+                    // 审批不通过
+                    ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
+                    a.setBusinessKey(businessKey);
+                    a.setAuditOpinion(2);
+
+                    accountProfitApi.presentAudit(tenantId, token, a);
+                }
+            }
+        }
 
 
 
         String procDefKey = null; // 需要补充获取
         String taskNode = null; // 需要获得任务节点
         Task task = (Task) event.getEntity();
-        if (BpmDefTypeEnum.LRTX.name().equals(procDefKey) && "提现审批".equals(taskNode)) {
+        if (BpmDefTypeEnum.LRTX.name().equals(bpmFormMainVO.getBusiType()) && "提现审批".equals(taskNode)) {
             // 当前流程是“利润提现流程”且当前任务是“提现审批”
 
             // 获得“利润提现申请的业务ID”
-            String businessKey = null; // 需要获得业务ID
+            //String businessKey = null; // 需要获得业务ID
             Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId(); // 租户ID
             String token = null; // 需要获得token
 
-            String approvalType = StrUtil.toStringOrNull(task.getTaskLocalVariables().get("approvalType")); // 审批结果
+            //String approvalType = StrUtil.toStringOrNull(task.getTaskLocalVariables().get("approvalType")); // 审批结果
 
             if ("pass".equals(approvalType)) {
                 // 审批通过
@@ -281,11 +308,22 @@ public class BpmGlobalHandleListener {
         if (CollectionUtils.isEmpty(properties)) {
             return null;
         }
-        for (ExtensionElement extElement:properties) {
-            System.out.println(extElement.getName());
-            System.out.println(extElement.getElementText());
+        Map<String, List<ExtensionElement>> childElements = properties.get(0).getChildElements();
+        if (CollectionUtils.isEmpty(childElements)) {
+            return null;
         }
-        //properties.get(0).getChildElements()
+        List<ExtensionElement> property = childElements.get("property");
+
+        for (ExtensionElement extElement:property) {
+            Map<String, List<ExtensionAttribute>> attributes = extElement.getAttributes();
+            if (CollectionUtils.isEmpty(attributes)) {
+                continue;
+            }
+            if (ObjectUtil.equals(attributes.get("name").get(0).getValue(), extPropKey)) {
+                return attributes.get("value").get(0).getValue();
+            }
+        }
+
         return null;
     }
 
