@@ -6,6 +6,7 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateRe
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
@@ -133,14 +134,13 @@ public interface QysConfigService {
      * @return
      */
     void userAuth(Long userId);
+
     /**
-     * 获取个人认证结果
-     * @param id 注册用户id
-     * @param contract 注册用户手机号
+     * 用户认证消息
+     * @param message 用户认证消息
      * @return
      */
-    void userAuthResult(Long id,String contract);
-
+    void userAuthResult(UserAuthMessage message);
     /**
      * 企业授权
      *

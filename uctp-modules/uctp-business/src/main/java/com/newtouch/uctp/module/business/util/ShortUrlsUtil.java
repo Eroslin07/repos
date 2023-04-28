@@ -30,7 +30,7 @@ public class ShortUrlsUtil {
         for (String longUrl : longUrls) {
             Map<String, String> map = MapUtil
                     .builder("LongUrl", longUrl)
-                    .put("TermOfValidity", "1-year")
+                    .put("TermOfValidity", "1-year") //默认一年
                     .build();
             list.add(map);
         }

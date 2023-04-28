@@ -50,6 +50,8 @@ import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.enums.QysCallBackType;
 import com.newtouch.uctp.module.business.enums.QysContractStatus;
+import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
+import com.newtouch.uctp.module.business.mq.producer.UserAuthProducer;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.business.util.Byte2StrUtil;
 import com.newtouch.uctp.module.business.util.ContractUtil;
@@ -131,18 +133,16 @@ public class QysConfigServiceImpl implements QysConfigService {
     private ContractMapper contractMapper;
     @Resource
     private FileApi fileApi;
-   /* @Resource
-    private FileMapper fileMapper;*/
     @Resource
     private BusinessFileMapper businessFileMapper;
-   /* @Resource
-    private FileService fileService;*/
     @Resource
     private BusinessFileService businessFileService;
     @Resource
     private NoticeService noticeService;
     @Resource
     private InvoiceTitleMapper invoiceTitleMapper;
+    @Resource
+    private UserAuthProducer userAuthProducer;
 
     @PostConstruct
     @Override
@@ -534,6 +534,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         }else if (type.equals(4)) {
             SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816").getCheckedData();
             System.out.println(checkedData);
+        } else if (type.equals(5)) {
+            userAuthProducer.sendUserAuthMessage(666L,"17396202169",UserAuthProducer.FIVE_MINUTES);
         }
     }
 
@@ -995,10 +997,14 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("businessId", deptRespDTO.getId().toString())
                 .put("type", "1").build();
         noticeService.saveNotice(map);
+        //发送消息，做认证后结果查询
+        userAuthProducer.sendUserAuthMessage(userId,urls.get(0),UserAuthProducer.TEN_MINUTES);
     }
 
     @Override
-    public void userAuthResult(Long userId, String contract) {
+    public void userAuthResult(UserAuthMessage message) {
+        Long userId = message.getUserId();
+        String contract = message.getContract();
         if (StrUtil.isBlank(contract) && ObjectUtil.isNull(userId)) {
             throw exception(QYS_CONFIG_PARAM_ERROR);
         }
@@ -1017,6 +1023,11 @@ public class QysConfigServiceImpl implements QysConfigService {
             UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", adminUserDO.getId());
             userExtDO.setStatus(0);
             userExtMapper.updateById(userExtDO);
+        }else {
+            if (ObjectUtil.equals(1,message.getCount())) {
+                //认证不通过，且为第一次发送消息，发一条5分钟的的延时消息
+                userAuthProducer.sendUserAuthMessage(contract,UserAuthProducer.FIVE_MINUTES);
+            }
         }
     }
 
