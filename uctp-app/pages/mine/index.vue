@@ -93,7 +93,7 @@
 			</view>
 		</view>
 		<!-- 自定义tabbar -->
-		<tab-bar :name="$store.state.user.staffType == 1 ? 3 : 1" :type="type"></tab-bar>
+		<tab-bar :name="type == 1 ? 3 : 1" :type="type"></tab-bar>
 	</view>
 </template>
 
