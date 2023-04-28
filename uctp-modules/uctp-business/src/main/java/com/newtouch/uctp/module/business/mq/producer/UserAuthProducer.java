@@ -23,6 +23,8 @@ public class UserAuthProducer extends AbstractBusProducer {
     public static final String TEN_MINUTES = "14";
     //延时5分钟
     public static final String FIVE_MINUTES = "9";
+    public static final String ONE_MINUTES = "5";
+    public static final String TWO_MINUTES = "6";
 
     @Resource
     private StreamBridge streamBridge;

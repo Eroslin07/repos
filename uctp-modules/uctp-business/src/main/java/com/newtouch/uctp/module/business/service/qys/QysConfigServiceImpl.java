@@ -254,6 +254,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                     //保存回调信息
                     qysCallbackService.saveDO(json,
                             QysCallBackType.COMPANY_AUTH.value(),deptDO.getId());
+                    //更新契约锁client
+                    initLocalCache();
                     //继续做企业授权
                     List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
                     if (CollUtil.isNotEmpty(checkedData)) {
@@ -480,21 +482,33 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public Map<String, Object> verification(String ticket) throws Exception {
+    public Map<String, Object> verification(String ticket){
         log.info("[verification]电子签CAS校验：ticket【{}】",ticket);
+        Map<String, Object> retMap = new HashMap<>();
         //拿到 aes 密钥
 //        redisTemplate.opsForValue().set("ticket:"+ticket,"密钥");
         String aesKeyStr = redisTemplate.opsForValue().get("ticket:"+ticket);
+        if (StrUtil.isBlank(aesKeyStr)) {
+            log.error("[verification]电子签CAS校验：失败，未获取到redis的密钥[ticket:{}]",ticket);
+            retMap.put("code", -1);
+            return retMap;
+        }
         byte[] aesKey = Byte2StrUtil.toByteArray(aesKeyStr);
         AES aes = SecureUtil.aes(aesKey);
         //解密 获取到userId
         String userId = aes.decryptStr(ticket, CharsetUtil.CHARSET_UTF_8);
         //查询到用户数据并返回
-        AdminUserDO adminUser = userMapper.selectById(userId);
+        AdminUserDO adminUser = userMapper.findById(Long.valueOf(userId));
+        if (ObjectUtil.isNull(adminUser)) {
+            log.error("[verification]电子签CAS校验：失败，未获取到用户userId:{}",userId);
+            retMap.put("code", -1);
+            return retMap;
+        }
+//        AdminUserDO adminUser = userMapper.selectById(userId);
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("contract", adminUser.getMobile());
         userMap.put("name", adminUser.getNickname());
-        Map<String, Object> retMap = new HashMap<>();
+
         retMap.put("code", 0);
         retMap.put("message", "SUCCESS");
         retMap.put("result", userMap);
@@ -782,8 +796,6 @@ public class QysConfigServiceImpl implements QysConfigService {
 
             }
         }
-
-
         qysContractVO.setContractType("2");
         qysContractVO.setCarId(carId);
         qysContractVO.setContractId(contractId);
@@ -998,7 +1010,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("type", "1").build();
         noticeService.saveNotice(map);
         //发送消息，做认证后结果查询
-        userAuthProducer.sendUserAuthMessage(userId,urls.get(0),UserAuthProducer.TEN_MINUTES);
+        userAuthProducer.sendUserAuthMessage(userId,urls.get(0),UserAuthProducer.TWO_MINUTES);
     }
 
     @Override
@@ -1026,7 +1038,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         }else {
             if (ObjectUtil.equals(1,message.getCount())) {
                 //认证不通过，且为第一次发送消息，发一条5分钟的的延时消息
-                userAuthProducer.sendUserAuthMessage(contract,UserAuthProducer.FIVE_MINUTES);
+                userAuthProducer.sendUserAuthMessage(contract,UserAuthProducer.ONE_MINUTES);
             }
         }
     }
