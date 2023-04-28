@@ -1142,6 +1142,9 @@
 				}
 				this.seriesList = [];
 				getCarSeriesList(data).then((res) => {
+					for (let j = 0; j < 2; j++) {
+						res.series_list.push({series_name: '无', series_id: null})
+					}
 					this.seriesList = res.series_list;
 				})
 			},
@@ -1155,12 +1158,17 @@
 							this.indexList.push(item.initial);
 						}
 					})
-					this.indexList.forEach((i) => {
+					this.indexList.forEach((i, index) => {
 						let list = res.filter((m) => { return m.initial == i });
 						let arr = [];
 						list.forEach((l) => {
 							arr.push({name: l.brand_name, id: l.brand_id});
 						})
+						if (index == this.indexList.length - 1) {
+							for (let j = 0; j < 2; j++) {
+								arr.push({name: '', id: null})
+							}
+						}
 						this.barandList.push(arr);
 					})
 				})
@@ -1173,6 +1181,9 @@
 				}
 				this.seriesList = [];
 				getCarSeriesList(data1).then((res) => {
+					for (let j = 0; j < 2; j++) {
+						res.series_list.push({series_name: '无', series_id: null})
+					}
 					this.seriesList = res.series_list;
 					this.showModel = true;
 					this.brandShow = false;
@@ -1514,6 +1525,7 @@
 	
 	.popupShow {
 		overflow: hidden;
+		position: fixed;
 		height: 100%;
 		width: 100%;
 	}

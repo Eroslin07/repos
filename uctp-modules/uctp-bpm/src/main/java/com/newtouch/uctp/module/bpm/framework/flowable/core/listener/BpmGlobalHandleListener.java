@@ -127,30 +127,30 @@ public class BpmGlobalHandleListener {
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
            //收车公允审批不通过
             if ("disagree".equals(approvalType)) {
-                noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
                 //修改车辆状态
                 carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
+                noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
             } else if ("pass".equals(approvalType)) {
-                noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
                 carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
                 carInfoMapper.updateById(carInfoDO);
+                noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允审批不通过
             if ("disagree".equals(approvalType)) {
-                noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
                 //修改车辆状态
                 carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
+                noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
             } else if ("pass".equals(approvalType)) {
-                noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
                 carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
                 carInfoMapper.updateById(carInfoDO);
+                noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
             }
         }
 
