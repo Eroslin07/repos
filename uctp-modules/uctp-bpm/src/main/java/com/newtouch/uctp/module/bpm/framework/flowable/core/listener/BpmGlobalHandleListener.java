@@ -3,12 +3,20 @@ package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
+import org.flowable.bpmn.model.ExtensionElement;
+import org.flowable.bpmn.model.FlowElement;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
+import org.flowable.engine.RepositoryService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -56,6 +64,8 @@ public class BpmGlobalHandleListener {
     private AccountApi accountApi;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private RepositoryService repositoryService;
 
     /**
      * 流程创建时处理
@@ -178,12 +188,19 @@ public class BpmGlobalHandleListener {
      * @param event
      */
     public void taskCompleted(FlowableEngineEntityEvent event) {
-        /*TaskEntity taskEntity = (TaskEntity)event.getEntity();
+        TaskEntity taskEntity = (TaskEntity)event.getEntity();
+        // 流程实例ID
         String processInstanceId = taskEntity.getProcessInstanceId();
-        taskEntity.getProcessDefinitionId();
+        // 流程定义ID
+        String processDefinitionId = taskEntity.getProcessDefinitionId();
+        // 当前完成节点ID
+        String taskDefinitionKey = taskEntity.getTaskDefinitionKey();
+        String nodeSymbol = this.getTaskNodeExtPropByKey(taskEntity, "nodeSymbol");
 
 
-        if (true) {
+
+
+        /*if (true) {
             throw new IllegalStateException("Task is already completed");
         }*/
 
@@ -242,6 +259,34 @@ public class BpmGlobalHandleListener {
         bpmFormMainVO.setFormDataJson(ObjectUtil.isNull(bpmFormMainDO.getFormDataJson()) ? new JSONObject() : JSON.parseObject(new String(bpmFormMainDO.getFormDataJson())));
 
         return bpmFormMainVO;
+    }
+
+    /**
+     * 根据节点的扩展属性Key获取值
+     * @param taskEntity
+     * @param extPropKey
+     * @return
+     */
+    private String getTaskNodeExtPropByKey(TaskEntity taskEntity, String extPropKey) {
+        // 流程定义ID
+        String processDefinitionId = taskEntity.getProcessDefinitionId();
+        // 当前完成节点ID
+        String taskDefinitionKey = taskEntity.getTaskDefinitionKey();
+        FlowElement flowElement = repositoryService.getBpmnModel(processDefinitionId).getMainProcess().getFlowElement(taskDefinitionKey);
+        Map<String, List<ExtensionElement>> extensionElements = flowElement.getExtensionElements();
+        if (CollectionUtils.isEmpty(extensionElements)) {
+            return null;
+        }
+        List<ExtensionElement> properties = extensionElements.get("properties");
+        if (CollectionUtils.isEmpty(properties)) {
+            return null;
+        }
+        for (ExtensionElement extElement:properties) {
+            System.out.println(extElement.getName());
+            System.out.println(extElement.getElementText());
+        }
+        //properties.get(0).getChildElements()
+        return null;
     }
 
 }
