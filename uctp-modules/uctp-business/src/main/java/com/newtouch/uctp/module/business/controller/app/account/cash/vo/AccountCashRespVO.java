@@ -14,17 +14,20 @@ public class AccountCashRespVO {
     @Schema(description = "账户号")
     private String accountNo;
 
-    @Schema(description = "保证金")
+    @Schema(description = "保证金（单位：分）")
     private Long cash;
 
-    @Schema(description = "保证金-冻结余额")
+    @Schema(description = "保证金-冻结余额（单位：分）")
     private Long freezeCash;
 
-    @Schema(description = "保证金-可用余额")
+    @Schema(description = "保证金-可用余额（单位：分）")
     private Long availableCash;
 
     @Schema(description = "版本号")
     private Integer revision;
+
+    @Schema(description = "保证金提现中冻结金额（单位：分）")
+    private Long withdrawFreezeCash;
 
     @Schema(description = "保证金交易明细")
     private List<CashDetailRespVO> cashDetails;

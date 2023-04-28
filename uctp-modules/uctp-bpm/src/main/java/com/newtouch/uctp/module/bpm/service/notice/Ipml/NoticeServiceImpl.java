@@ -64,15 +64,17 @@ public class NoticeServiceImpl implements NoticeService {
         if (type.equals("0")&&map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
         }
+        infoDO.setPushStatus("0");
         //短信发送
         if (type.equals("1")){
             Map<String, String> message = MsgSendUtil.sendMessage(map);
             if (message.get("flags").equals("FALSE")){
                 infoDO.setErrorMsg(message.get("msg"));
                 infoDO.setErrorNum(message.get("errorNum"));
+                infoDO.setPushStatus("1");
             }
         }
-        infoDO.setPushStatus("0");
+
         infoDO.setType(type);
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
@@ -105,7 +107,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (map.get("type").equals("0")&&map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
         }
-        //默认状态为未推送
+        //默认状态为推送成功
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
         if (map.get("type").equals("1")){
@@ -113,6 +115,7 @@ public class NoticeServiceImpl implements NoticeService {
             if (message.get("flags").equals("FALSE")){
                 infoDO.setErrorMsg(message.get("msg"));
                 infoDO.setErrorNum(message.get("errorNum"));
+                infoDO.setPushStatus("1");
             }
         }
         String result="写入数据失败";
@@ -159,7 +162,8 @@ public class NoticeServiceImpl implements NoticeService {
                 map.put("url","/subPages/home/sellingCar/agreement?type='1'&carId="+carInfoDetails.getCarId());
             }
 
-        }else if(type.equals("1")){
+        }
+        else if(type.equals("1")){
             CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON)jsonObject.get("carInfoDetails"),CarInfoDetailsDO.class);
             CarInfoDO carInfo = JSON.toJavaObject((JSON)jsonObject.get("carInfo"),CarInfoDO.class);
 

@@ -24,7 +24,7 @@ public class AccountConstants {
     //损益类型-支出
     public static final String PROFIT_LOSS_TYPE_DISBURSEMENT = "10021002";
 
-    //支付渠道-兴业银行
+    //支付渠道-浦发银行
     public static final String PAY_CHANNEL_DEFAULT = "10031001";
     //支付渠道-平台
     public static final String PAY_CHANNEL_PLATFORM= "10031002";

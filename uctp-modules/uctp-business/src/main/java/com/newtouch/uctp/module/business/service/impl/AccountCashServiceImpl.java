@@ -1,64 +1,91 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.AccountCashRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDetailRespVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
+import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.dal.mysql.TransactionRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
+import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
+import com.newtouch.uctp.module.business.service.account.MerchantBankService;
+import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import com.newtouch.uctp.module.business.service.cash.MerchantCashService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @Validated
-@RequiredArgsConstructor
 public class AccountCashServiceImpl implements AccountCashService {
 
-    private final MerchantAccountService merchantAccountService;
-    private final MerchantCashService merchantCashService;
-    private final MerchantPresentStatusRecordMapper merchantPresentStatusRecordMapper;
-    private final TransactionRecordMapper transactionRecordMapper;
+    @Resource
+    private MerchantAccountService merchantAccountService;
+    @Resource
+    private MerchantCashService merchantCashService;
+    @Resource
+    private MerchantPresentStatusRecordMapper merchantPresentStatusRecordMapper;
+    @Autowired
+    @Lazy
+    private TransactionService transactionService;
+    @Resource
+    private MerchantBankService merchantBankService;
 
     //保证金详情
     @Override
     public AccountCashRespVO detail(String accountNo) {
-
+        log.info("保证金详情查询 accountNo:{}", accountNo);
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
         if (merchantAccountDO == null || StringUtils.isEmpty(merchantAccountDO.getAccountNo())) {
+            log.info("保证金详情查询-未获取到当前账户信息 accountNo:{}", accountNo);
             throw new ServiceException(AccountConstants.ERROR_CODE_ACCOUNT_NOT_FOUND, AccountConstants.ERROR_MESSAGE_ACCOUNT_NOT_FOUND);
         }
+
+        //查询提现中冻结金额
+        Long withdrawFreezeCash = merchantCashService.list(new LambdaQueryWrapperX<MerchantCashDO>()
+                .eq(MerchantCashDO::getAccountNo, accountNo)
+                .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING))
+                .stream().filter(x -> x != null && x.getPayAmount() != null && x.getPayAmount() > 0).mapToLong(MerchantCashDO::getPayAmount).sum();
 
         MerchantCashReqVO merchantCashReqVO = new MerchantCashReqVO().setAccountNo(accountNo);
         merchantCashReqVO.setPageSize(5);
         PageResult<CashDetailRespVO> list = list(merchantCashReqVO);
-        return AccountCashRespVO.build(merchantAccountDO, list.getList());
+        AccountCashRespVO accountCashRespVO = AccountCashRespVO.build(merchantAccountDO, list.getList());
+        accountCashRespVO.setWithdrawFreezeCash(withdrawFreezeCash);
+        return accountCashRespVO;
     }
 
     //保证金明交易明细查询
     @Override
     @SuppressWarnings("unchecked")
     public PageResult<CashDetailRespVO> list(MerchantCashReqVO merchantCashReqVO) {
+        log.info("保证金明交易明细查询 req:{}", JSON.toJSONString(merchantCashReqVO));
         PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
 
         PageResult<CashDetailRespVO> page = new PageResult<>();
@@ -67,6 +94,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         List<CashDetailRespVO> voList = new ArrayList<>();
 
         if (CollectionUtil.isEmpty(list)) {
+            log.info("保证金明交易明细查询-未查询到当前账户交易信息明细 accountNo:{}", merchantCashReqVO.getAccountNo());
             page.setList(voList);
             return page;
         }
@@ -122,11 +150,13 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public AccountCashRespVO recharge(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金充值 req:{}", JSON.toJSONString(transactionRecordReqVO));
         String accountNo = transactionRecordReqVO.getAccountNo();
         Long tranAmount = transactionRecordReqVO.getTranAmount();
         //增加保证金金额，版本号加1
         int count = merchantAccountService.updateCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), 1);
         if (count <= 0) {
+            log.info("账户保证金充值充值失败，请求版本号错误。 Revision:{}", transactionRecordReqVO.getRevision());
             //数据修改失败
             throw new ServiceException(AccountConstants.ERROR_CODE_REVERSION_ERROR, AccountConstants.ERROR_MESSAGE_REVERSION_ERROR);
         }
@@ -150,71 +180,120 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public AccountCashRespVO withdraw(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金提取 req:{}", JSON.toJSONString(transactionRecordReqVO));
         String accountNo = transactionRecordReqVO.getAccountNo();
         Long tranAmount = transactionRecordReqVO.getTranAmount();
-        //扣除保证金金额，版本号加1
-        merchantAccountService.changeCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), AccountConstants.TRADE_TYPE_WITHDRAW);
+        //扣除保证金金额，增加保证金冻结金额版本号加1
+        merchantAccountService.changeCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), AccountConstants.TRADE_TYPE_WITHDRAWING);
 
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
 
-        boolean flag = Boolean.TRUE;
-        //TODO: 调用银行接口扣除金额
-        if (!flag) {
-            //转账接口调用失败
-            throw new ServiceException(AccountConstants.ERROR_CODE_INTERFACE_CALL_FAILURE, AccountConstants.ERROR_MESSAGE_INTERFACE_CALL_FAILURE);
+
+        MerchantBankDO merchantBankDO = merchantBankService.getOne(
+                new LambdaQueryWrapperX<MerchantBankDO>()
+                        .eq(MerchantBankDO::getAccountNo, accountNo)
+                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH)
+                        .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
+
+        if (merchantBankDO == null || StringUtils.isEmpty(merchantBankDO.getBankNo())) {
+            throw new ServiceException(AccountConstants.ERROR_CODE_ACCOUNT_NOT_FOUND, AccountConstants.ERROR_MESSAGE_ACCOUNT_NOT_FOUND);
         }
 
-        //新增保证金变动记录
-        String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
-        MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_WITHDRAW, tradeRecordNo, null);
+        TransactionRecordDO transactionRecordDO = transactionService.outGold(merchantBankDO.getBankNo(), tranAmount, AccountEnum.TRAN_TYPE_PRESENT_CASH.getKey(), transactionRecordReqVO.getContractNo());
+        if (transactionRecordDO.getTranStatus().equals(AccountConstants.TRAN_STATE_SUCCESS)) {
+            // 交易成功-当前调用方式为交易中
+        } else if (transactionRecordDO.getTranStatus().equals(AccountConstants.TRAN_STATE_DURING)){
+            //交易中
+            /**
+             * TODO::后续如何判定交易成功，交易成功后需调用
+             * {@link AccountCashServiceImpl#changeWithdrawState}
+             * 进行提现金额扣除
+             */
+            //新增保证金变动记录
+            String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
+            MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_WITHDRAWING, tradeRecordNo, null);
 
-        //todo：新增提现流程 发起提现申请 -> 银行处理中 -> 到账成功 后续根据实际情况添加，如若实时到账不用添加
-        PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_APPLY);
-        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
-        PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
-        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO1);
+            PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_APPLY);
+            merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
+            PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
+            merchantPresentStatusRecordMapper.insert(presentStatusRecordDO1);
+
+        } else {
+            //TODO:交易失败发起失败流程
+
+        }
+
+        return this.detail(accountNo);
+    }
+
+
+    @Transactional
+    public Boolean changeWithdrawState(String tradeRecordNo) {
+        //保证金提取非实时到账 保证金提取接口withdraw 状态为保证金提取中，当前接口为保证金提取后银行返回成功，变更保证金提取状态接口
+
+        //查询银行流水号提取金额
+        MerchantCashDO merchantCash = merchantCashService.getOne(new LambdaQueryWrapperX<MerchantCashDO>()
+                .eq(MerchantCashDO::getTranRecordNo, tradeRecordNo).eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING));
+        if (merchantCash == null || merchantCash.getPayAmount() == null) {
+            log.info("账户保证金提现实占-未查询到当前合同号冻结流水明细 contractNo:{}", tradeRecordNo);
+            throw new ServiceException(AccountConstants.ERROR_CODE_CONTRACT_NO_NOT_FOUND, AccountConstants.ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND);
+        }
+
+        //扣除保证金金额及保证金冻结金额版本号加1
+        MerchantAccountDO merchantAccountDO = merchantAccountService.changeCash(merchantCash.getAccountNo(), merchantCash.getPayAmount(), null, AccountConstants.TRADE_TYPE_WITHDRAW);
+
+        //变更保证金提取中记录为保证金提取
+        MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, merchantCash.getPayAmount(), AccountConstants.TRADE_TYPE_WITHDRAWING, tradeRecordNo, null);
+        merchantCashService.update(new MerchantCashDO(), new LambdaUpdateWrapper<MerchantCashDO>()
+                .set(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAW)
+                .eq(MerchantCashDO::getTranRecordNo, tradeRecordNo)
+                .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING));
+        //新增保证金提现状态-到账成功
         PresentStatusRecordDO presentStatusRecordDO2 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_SUCCESS);
         merchantPresentStatusRecordMapper.insert(presentStatusRecordDO2);
 
-        return this.detail(accountNo);
+        return Boolean.TRUE;
     }
 
     //保证金预占
     @Override
     @Transactional
     public Boolean reserve(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金预占 req:{}", JSON.toJSONString(transactionRecordReqVO));
         //保证金预占，版本号加1
-        int count = merchantAccountService.changeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), AccountConstants.TRADE_TYPE_PREEMPTION);
-        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
+        MerchantAccountDO merchantAccountDO = merchantAccountService.changeCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), AccountConstants.TRADE_TYPE_PREEMPTION);
 
         //新增保证金变动记录
         merchantCashService.insertCash(merchantAccountDO, transactionRecordReqVO.getTranAmount(), AccountConstants.TRADE_TYPE_PREEMPTION, null, transactionRecordReqVO.getContractNo());
-        return count > 0;
+        return Boolean.TRUE;
     }
 
     //保证金实占
     @Override
     @Transactional
     public Boolean deduction(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金实占 req:{}", JSON.toJSONString(transactionRecordReqVO));
         String contractNo = transactionRecordReqVO.getContractNo();
         //查询合同号预占金额
         MerchantCashDO merchantCashDO = merchantCashService.queryContractNoAmount(contractNo, Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
         if (merchantCashDO == null || merchantCashDO.getPayAmount() == null) {
+            log.info("账户保证金实占-未查询到当前合同号冻结流水明细 contractNo:{}", transactionRecordReqVO.getContractNo());
             throw new ServiceException(AccountConstants.ERROR_CODE_CONTRACT_NO_NOT_FOUND, AccountConstants.ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND);
         }
         //冻结金额扣除，版本号+1
-        int count = merchantAccountService.changeCash(merchantCashDO.getAccountNo(), merchantCashDO.getPayAmount(), null, AccountConstants.TRADE_TYPE_DEDUCTION);
+        merchantAccountService.changeCash(merchantCashDO.getAccountNo(), merchantCashDO.getPayAmount(), null, AccountConstants.TRADE_TYPE_DEDUCTION);
         //更改保证金预占记录为实占
         merchantCashService.updateCashDeduction(contractNo);
 
         //todo：是否调用银行接口扣除金额
-        return count > 0;
+        return Boolean.TRUE;
     }
 
     //待回填保证金
     @Override
     @Transactional
     public Long difference(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金实占 req:{}", JSON.toJSONString(transactionRecordReqVO));
         //待回填保证金 = 保证金 - 冻结 - 可用；
         Long amount = 0L;
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
@@ -238,6 +317,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public Boolean back(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金回填 req:{}", JSON.toJSONString(transactionRecordReqVO));
         String accountNo = transactionRecordReqVO.getAccountNo();
         //增加保证金金额，版本号加1
         int count = merchantAccountService.updateCash(accountNo, transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), 2);
@@ -254,6 +334,7 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public Boolean profitBack(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金回填-利润 req:{}", JSON.toJSONString(transactionRecordReqVO));
         //增加保证金金额，版本号加1
         int count = merchantAccountService.updateCash(transactionRecordReqVO.getAccountNo(), transactionRecordReqVO.getTranAmount(), transactionRecordReqVO.getRevision(), 3);
 
@@ -269,21 +350,22 @@ public class AccountCashServiceImpl implements AccountCashService {
     @Override
     @Transactional
     public Boolean release(TransactionRecordReqVO transactionRecordReqVO) {
+        log.info("账户保证金释放 req:{}", JSON.toJSONString(transactionRecordReqVO));
         //查询合同号预占金额
         MerchantCashDO merchantCashDO = merchantCashService.queryContractNoAmount(transactionRecordReqVO.getContractNo(), Collections.singletonList(AccountConstants.TRADE_TYPE_PREEMPTION));
 
         if (merchantCashDO == null || merchantCashDO.getPayAmount() == null) {
+            log.info("账户保证金释放-未查询到当前合同号冻结流水明细 contractNo:{}", transactionRecordReqVO.getContractNo());
             throw new ServiceException(AccountConstants.ERROR_CODE_CONTRACT_NO_NOT_FOUND, AccountConstants.ERROR_MESSAGE_CONTRACT_NO_NOT_FOUND);
         }
         String accountNo = merchantCashDO.getAccountNo();
         Long payAmount = merchantCashDO.getPayAmount();
         //冻结解冻，版本号+1
-        int count = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_RELEASE);
+        MerchantAccountDO merchantAccountDO = merchantAccountService.changeCash(accountNo, payAmount, null, AccountConstants.TRADE_TYPE_RELEASE);
 
         //更改保证金预占记录为实占
-        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
         merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_RELEASE, null, transactionRecordReqVO.getContractNo());
-        return count > 0;
+        return Boolean.TRUE;
     }
 
     private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {

@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.util.bank;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
@@ -229,4 +230,60 @@ public class SPDBSMSignature {
         System.out.println("验签结果：" + validateSign);
     }
 
+    /**
+     *
+     * @param url   请求的URL,请使用对API外接口文档中提供的URL
+     * @param requestMethod   请求类型 GET/POST
+     * @param param   请求参数
+     * @param <T> cls   返回值类型
+     * @return  请求返回值
+     * @throws Exception
+     */
+
+    public static final String REQUEST_METHOD_GET = "get";
+    public static final String REQUEST_METHOD_POST = "post";
+
+    public static <T> T request (String url, String requestMethod, Object param, boolean forbidden, Class<T> cls)  {
+        String resBody = "";
+
+        String data = JSON.toJSONString(param);
+        /**
+         * 获取防重放参数
+         */
+        String newBodyData = getNonceParam(false, data);
+        /**
+         * 获取签名
+         */
+        String signature = getSign(newBodyData,false,false);
+
+        //发送HTTP请求
+        Request request = createRequest(requestMethod,url,data,signature);
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            resBody = new String(response.body().bytes(), "UTF-8");
+            String sg = new String(response.header("X-SPDB-SIGNATURE").getBytes(), "UTF-8");
+            System.out.println("响应报文：" + resBody);
+
+
+            String digest = SHA1.digest(resBody);
+            byte[] bytes = digest.getBytes(charset);
+
+            byte[] signatureBytes = ByteUtils.fromHexString(new String(DatatypeConverter.parseBase64Binary(sg)));
+            SM2Sign sm2Sign = SM2SignVerify.validateSign(ByteUtils.fromHexString(spdbPublicKey), bytes, signatureBytes);
+
+            boolean validateSign = sm2Sign.isVerify();
+            System.out.println("验签结果：" + validateSign);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSON.parseObject(resBody,cls);
+
+    }
 }

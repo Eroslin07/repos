@@ -850,7 +850,7 @@
 									} else {
 										if (data.words_result['发动机号码']) {
 											let vin = data.words_result['车辆识别代号'].words;
-											getCarInfo({ VIN: vin }).then((result) => {
+											getCarInfo({ VIN: vin, deptId: _this.$store.state.user.deptId, }).then((result) => {
 												_this.$modal.closeLoading();
 												if (result.data['1']) {
 													// 数据回显
@@ -1430,6 +1430,7 @@
 					bankName: this.sellerForm.bankName,
 					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g,"") : null,
 					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g,"") : null,
+					buttonSaveOrSubmit: val == 'entrust' ? '1' : '2'
 				}
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
@@ -1597,5 +1598,16 @@
 		justify-content: center;
 		height: 100%;
 	}
-	/* #ifdef H5 */	/deep/ .u-form-item__body__right__content__slot>uni-view{		flex:1;	}	/* #endif */			/* #ifdef MP-WEIXIN */	/deep/ .u-form-item__body__right__content__slot>view{		flex:1;	}	/* #endif */
+	/* #ifdef H5 */
+	/deep/ .u-form-item__body__right__content__slot>uni-view{
+		flex:1;
+	}
+	/* #endif */
+	
+	
+	/* #ifdef MP-WEIXIN */
+	/deep/ .u-form-item__body__right__content__slot>view{
+		flex:1;
+	}
+	/* #endif */
 </style>

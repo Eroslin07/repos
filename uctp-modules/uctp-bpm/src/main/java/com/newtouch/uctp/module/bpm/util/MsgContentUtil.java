@@ -29,13 +29,13 @@ public class MsgContentUtil {
         if ("1".equals(map.get("type"))) {
             switch (map.get("contentType")) {
                 case "11"://1
-                    result="【翼龙科技】您在翼龙科技平台的账号注册流程因"+map.get("reason")+"原因审批未通过，请及时与市场方进行沟通。";//流程调存一条站内，一条短信
+                    result="【翼龙科技】您在翼龙科技平台的账号注册流程因"+map.get("reason")+"审批未通过，请及时与市场方进行沟通。";//流程调存一条站内，一条短信
                     break;
                 case "12":
                     result="【翼龙科技】恭喜您已经成为翼龙科技平台的一员，请登录翼龙科技小程序进行使用";
                     break;
                 case "21"://5
-                    result="【翼龙科技】您的"+buyType+"车价格"+amount+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";//流程调存一条站内，一条短信
+                    result="【翼龙科技】您的"+buyType+"车价格"+amount+"元偏离了市场评估价值，审核不通过，请联系市场方沟通处理。";//流程调存一条站内，一条短信
                     break;
                 case "22":
                     result="【翼龙科技】"+buyType+"车合同卖家签章【契约锁触发】";
@@ -45,14 +45,14 @@ public class MsgContentUtil {
                     break;
 
                 case "24"://3
-                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+amount+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+amount+"元，因"+map.get("reason")+"支付失败。请联系市场方处理。";
                     break;
 
                 case "25":
                     result="【翼龙科技】因"+map.get("reason")+"错误导致您的"+buyType+"车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "26"://2
-                    result="【翼龙科技】您的收车合同编号"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
+                    result="【翼龙科技】您的"+buyType+"车合同"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家已超过10分钟未签署，请及时与"+buyType+"家沟通。";
                     break;
 
               /*  case "31"://5
@@ -75,19 +75,24 @@ public class MsgContentUtil {
                     break;*/
 //-------
                 case "40":
-                    result=map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    result="【翼龙科技】"+map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");
                     break;
                 case "41":
-                    result=map.get("name")+"恭喜您已完成企业认证。在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    result="【翼龙科技】"+map.get("name")+"恭喜您已完成企业认证。在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    //result="【翼龙科技】"+map.get("name")+"您在车友通平台注册的主账号已审批通过，请在15分钟内访问"+map.get("url")+" 完成企业实名认证";
                     break;
                 case "42":
-                    result=map.get("userName")+"您已经成为车友通平台【"+map.get("name")+"】的一员，在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    result="【翼龙科技】"+map.get("userName")+"您已经成为车友通平台【"+map.get("name")+"】的一员，在交易过程中会涉及到电子合同签署，平台需要您配合进行个人认证，请您在15分钟内访问链接完成认证。"+map.get("url");
+                    //result="【翼龙科技】"+map.get("userName")+"您在车友通的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。";
                     break;
                 case "43":
                     result=map.get("url");
                     break;
                 default:
                     result="无匹配模版";
+//【翼龙科技】您在#name#注册的主账号已审批通过，请在15分钟内访问#url# 完成企业实名认证。
+//【翼龙科技】您在#name#的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。
+//【翼龙科技】您已完成企业认证，请在15分钟内访问#url#完成个人实名认证。
 
             }
         }

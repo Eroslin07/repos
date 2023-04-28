@@ -11,7 +11,6 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
-import javax.sql.rowset.serial.SerialException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ public class ShortUrlsUtil {
         List<Map<String, String>> list = ListUtil.list(false);
         for (String longUrl : longUrls) {
             Map<String, String> map = MapUtil
-                    .builder("LongUrl", "https://expose.qiyuesuo.cn/enterpriseAuth/index?token=dUpRZTJOR2Z1NTN1MWhQbURwV2tFQ1NtWEM2cE5TanAzMzRscDhxVjhzOXJ1ck8yaDhVcmQ2L1kzNjloZFFNVQ==")
+                    .builder("LongUrl", longUrl)
                     .put("TermOfValidity", "1-year")
                     .build();
             list.add(map);
@@ -69,8 +68,7 @@ public class ShortUrlsUtil {
     }
 
     public static void main(String[] args) {
-        List<String> urls = shortUrls(ListUtil.of("https://expose.qiyuesuo.cn/enterpriseAuth/index?token=V3dXb2ZOeElsSHRKNkxUT0dWQnpwYWpueng3Kzk3cmdtV2MyZUpETXJnakVwRmI4UklZOVpFT2cvaGNyWm53Vg==",
-                "https://auth.qiyuesuo.cn?ticket=kkekOx5IQ25RuoEVrniCoGDThAUUPVKQgPmRrE9ch4%2F2xyndsZ4oCsurvvoMampa&channel=SAAS_PC"));
+        List<String> urls = shortUrls(ListUtil.of("https://expose.qiyuesuo.cn/enterpriseAuth/index?token=MWZjUkxZUDZvNjMrMmNHdW1NNmUyZmFSMlpMZGxZZWRzNkJjQm9CU052RlVyNEpVdlF3dzZRTEMyd3hEY1FiVQ==" ));
         System.out.println(JSONUtil.toJsonStr(urls));
     }
 }

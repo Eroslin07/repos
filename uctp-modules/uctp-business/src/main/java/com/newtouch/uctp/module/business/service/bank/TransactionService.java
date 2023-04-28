@@ -1,11 +1,14 @@
 package com.newtouch.uctp.module.business.service.bank;
 
 import com.newtouch.uctp.module.business.enums.bank.BankSubAccountType;
+import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
 import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
 import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
 import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
 import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
+
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 
 /**
  * 银行交易服务
@@ -43,7 +46,7 @@ public interface TransactionService {
      * @param contractNo 交易合同号=订单号
      * @return
      */
-    String orderPayStatus(String contractNo);
+    TransactionRecordDO orderPayStatus(String contractNo);
 
     /**
      * 商户银行子账户创建
@@ -58,7 +61,18 @@ public interface TransactionService {
      *
      * @return
      */
-    String outGold();
+    /**
+     * 银行出金
+     * 支付收车款：商户保证金子账户
+     *
+     * @param bankNo        银行卡号
+     * @param amount        金额（单位：分）
+     * @param tranType      交易类型 {@link com.newtouch.uctp.module.business.enums.AccountEnum#TRAN_TYPE_RECHARGE_CASH}
+     * @param contractNo    合同号
+     *
+     * @return 交易记录
+     */
+    TransactionRecordDO outGold(String bankNo, Long amount, String tranType, String contractNo);
 
     /**
      * 子账号互转

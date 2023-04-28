@@ -72,7 +72,7 @@ public class MsgSendUtil {
         while (flag) {
             JSONObject jsonObject =JSON.parseObject(response);
             jsonObject.getString("code");
-            if (jsonObject.get("code").equals("0") ) {
+            if (jsonObject.getString("code").equals("0") ) {
                 break;
             }else {
                 response= sendPostRequest(map);
