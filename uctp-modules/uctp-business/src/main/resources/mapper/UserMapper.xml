@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.user.UserMapper">
+
+
+    <select id="selectFAUser" resultType="com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO">
+        select
+            su.id
+            ,su.username
+            ,su.password
+            ,su.nickname
+            ,su.remark
+            ,su.dept_id    as    ptId
+            ,su.post_ids    as   ostIds
+            ,su.email
+            ,su.mobile
+            ,su.sex
+            ,su.avatar
+            ,su.status
+            ,su.login_ip    as   oginIp
+            ,su.login_date    as  loginDate
+            ,su.creator
+            ,su.create_time    as  createTime
+            ,su.updater
+            ,su.update_time    as  updateTime
+            ,su.deleted
+            ,su.tenant_id    as  tenantId
+            from
+                system_dept sd
+            inner join system_users su on
+                su.dept_id = sd.id
+                #where dept_id=141
+            inner join uctp_user_ext uue on
+                uue.USER_ID = su.id
+            where
+                uue.STAFF_TYPE = '1'
+                and dept_id = #{deptId}
+
+    </select>
+
+</mapper>
