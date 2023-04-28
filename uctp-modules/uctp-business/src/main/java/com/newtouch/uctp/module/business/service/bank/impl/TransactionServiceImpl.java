@@ -62,6 +62,10 @@ public class TransactionServiceImpl implements TransactionService {
         nominalAccountRequest.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
         nominalAccountRequest.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
         nominalAccountRequest.setChannelSeqNo(generateTranNo());
+        nominalAccountRequest.setAreaCode("");//todo bank
+        nominalAccountRequest.setAcctNo("");//todo bank
+        nominalAccountRequest.setBidsSnglFlgCd(""); //todo bank
+
         String requestMessage = JSONObject.toJSONString(nominalAccountRequest);
 
         String responseMessage = null;
