@@ -18,7 +18,7 @@ public class ContractUtil {
     public static byte[] ContractDown(Long documentId) throws FileNotFoundException {
 
         // 初始化sdkClient
-        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn", "nVtv3tjV9s", "A0OOrtfkB3pqqeSsgBPglUSv7Mneoj");
+        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn", "q4xKsNcFI8", "qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
 
         // 下载合同文档
         DocumentDownloadRequest request = new DocumentDownloadRequest(documentId);
