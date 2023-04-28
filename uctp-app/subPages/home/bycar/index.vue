@@ -849,7 +849,7 @@
 									} else {
 										if (data.words_result['发动机号码']) {
 											let vin = data.words_result['车辆识别代号'].words;
-											getCarInfo({ VIN: vin, deptId: this.$store.state.user.deptId, }).then((result) => {
+											getCarInfo({ VIN: vin, deptId: _this.$store.state.user.deptId, }).then((result) => {
 												_this.$modal.closeLoading();
 												if (result.data['1']) {
 													// 数据回显
