@@ -47,6 +47,8 @@
 				<qiun-data-charts type="pie" :opts="opts" :chartData="chartData" />
 			</view>
 		</uni-card>
+		<!-- 自定义tabbar -->
+		<tab-bar :name="2"></tab-bar>
 	</view>
 </template>
 
