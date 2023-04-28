@@ -14,9 +14,9 @@
 					<view v-if="!avatar" class="cu-avatar xl round bg-white" @click="handleToAvatar">
 						<view class="iconfont icon-people text-gray icon"></view>
 					</view>
-					<image v-if="avatar" @click="handleToAvatar" :src="avatar" class="cu-avatar xl round"
+					<!-- <image v-if="avatar" @click="handleToAvatar" :src="avatar" class="cu-avatar xl round"
 						mode="widthFix">
-					</image>
+					</image> -->
 					<view v-if="!user.name" @click="handleToLogin" class="login-tip">
 						点击登录
 					</view>
@@ -170,7 +170,7 @@
 	.mine-container {
 		.my_image {
 			width: 100%;
-			height: 220pt;
+			height: 524rpx;
 		}
 
 		.header-section {

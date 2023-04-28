@@ -191,7 +191,7 @@
 					accountNo: this.accountNo,
 					quarter
 				}
-				getCostList(data).then((res) => {
+				// getCostList(data).then((res) => {
 					setTimeout(() => {
 						let res = {
 							categories: ["1月", "2月", "3月"],
@@ -207,7 +207,7 @@
 						};
 						this.chartData = JSON.parse(JSON.stringify(res));
 					}, 500);
-				})
+				// })
 			},
 
 			//查看车辆明细

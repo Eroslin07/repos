@@ -239,6 +239,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (CollectionUtils.isEmpty(userMap)) {
             throw  new ServiceException(1009003003, "流程发起人不能为空。");
         }
+        variables.put("businessKey", businessKey);
         variables.put("startUserName", userMap.get("nickname"));
         variables.put("startUserMobile", userMap.get("mobile"));
 

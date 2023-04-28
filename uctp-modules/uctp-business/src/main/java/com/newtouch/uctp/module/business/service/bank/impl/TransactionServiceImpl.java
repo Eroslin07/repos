@@ -12,8 +12,11 @@ import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import com.newtouch.uctp.module.business.service.bank.request.InnerTransferRequest;
 import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
+import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
 import com.newtouch.uctp.module.business.service.bank.request.UnKnowClearingRequest;
 import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
+import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
+import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 import com.newtouch.uctp.module.business.service.bank.response.UnKnowClearingResponse;
 import com.newtouch.uctp.module.business.util.bank.SPDBSMSignature;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +57,33 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String nominalAccountGenerate(NominalAccountRequest nominalAccountRequest) {
-        return null;
+    public NominalAccountResponse nominalAccountGenerate(NominalAccountRequest nominalAccountRequest) {
+        LocalDateTime now = LocalDateTime.now();
+        nominalAccountRequest.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
+        nominalAccountRequest.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
+        nominalAccountRequest.setChannelSeqNo(generateTranNo());
+        nominalAccountRequest.setAreaCode("");//todo bank
+        nominalAccountRequest.setAcctNo("");//todo bank
+        nominalAccountRequest.setBidsSnglFlgCd(""); //todo bank
+
+        String requestMessage = JSONObject.toJSONString(nominalAccountRequest);
+
+        String responseMessage = null;
+        // 调用银行接口
+        try {
+            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.NOMINAL_ACCOUNT_API, requestMessage);
+            if (responseMessage == null) {
+                throw new RuntimeException("银行响应报文为空，交易失败");
+            }
+
+            NominalAccountResponse response = JSONObject.parseObject(responseMessage, NominalAccountResponse.class);
+            return response;
+        } catch (Exception e) {
+            log.error("调用银行接口失败", e);
+            throw new RuntimeException("调用银行接口失败", e);
+        } finally {
+            // TODO 记录交易日志
+        }
     }
 
 
@@ -101,7 +129,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         InnerTransferRequest request = new InnerTransferRequest();
         request.setAreaCode(BankConstants.AREA_CODE);
-        request.setTranSeqNo(this.generaTranNo());
+        request.setTranSeqNo(this.generateTranNo());
         request.setSettleAcctNo(mainAccountNo);
         request.setPayeeAcctNo(outSubAccountNo);
         request.setPayeeName(outSubAccountNname);
@@ -143,7 +171,7 @@ public class TransactionServiceImpl implements TransactionService {
         request.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
         request.setAreaCode(BankConstants.AREA_CODE);
         request.setSettleAcctNo(BankConstants.ACCT_NO);
-        request.setChannelSeqNo(this.generaTranNo());
+        request.setChannelSeqNo(this.generateTranNo());
 
         request.setYlkTranSeqNo(null); // 还不确定该值从哪来
         request.setOrgTranSeqNo(null);
@@ -191,12 +219,44 @@ public class TransactionServiceImpl implements TransactionService {
         return null;
     }
 
+    @Override
+    public TechAddressesResponse techAddressesGenerate(TechAddressesRequest techAddressesRequest) {
+        techAddressesRequest.setMrchId(BankConstants.MERCHANT_ID);
+        String requestMessage = JSONObject.toJSONString(techAddressesRequest);
+        // log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
+
+        String responseMessage = null;
+        // 调用银行接口
+        try {
+            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
+            // log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
+            if (responseMessage == null) {
+                throw new RuntimeException("银行响应报文为空，交易失败");
+            }
+
+            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
+
+            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+                // 交易成功
+
+            }
+
+        } catch (Exception e) {
+            log.error("调用银行接口失败", e);
+
+        } finally {
+            // TODO 记录交易日志
+        }
+
+        return null;
+    }
+
     /**
      * 交易流水号生成
      *
      * @return
      */
-    private String generaTranNo() {
+    private String generateTranNo() {
         StringBuffer tranNo = new StringBuffer();
         // 三位固定值后续根据业务可以做区分
         tranNo.append("101");
