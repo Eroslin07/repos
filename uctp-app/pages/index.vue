@@ -79,6 +79,8 @@
 		</view>
 		<!-- 加载图标 -->
 		<!-- <u-loadmore :status="status" loadingText="努力加载中..." /> -->
+		<!-- 自定义tabbar -->
+		<tab-bar :name="0"></tab-bar>
 	</view>
 </template>
 
@@ -127,6 +129,7 @@
 			this.getnavigateBarHeight();
 			/* #endif */
 			uni.startPullDownRefresh();
+			uni.hideTabBar();
 
 		},
 		onShow(){

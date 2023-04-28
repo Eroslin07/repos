@@ -8,6 +8,9 @@ Vue.use(plugins)
 Vue.config.productionTip = false
 Vue.prototype.$store = store
 
+import tabBar from './components/tabBar/index.vue'
+Vue.component('tabBar',tabBar)
+
 import uView from '@/uni_modules/uview-ui'
 Vue.use(uView)
 

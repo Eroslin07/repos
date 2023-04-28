@@ -51,6 +51,8 @@
 				</view>
 			</uni-card>
 		</uni-card>
+		<!-- 自定义tabbar -->
+		<tab-bar :name="1"></tab-bar>
 	</view>
 </template>
 
