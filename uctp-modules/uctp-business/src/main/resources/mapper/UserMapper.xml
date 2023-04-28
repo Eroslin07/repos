@@ -29,7 +29,6 @@
                 system_dept sd
             inner join system_users su on
                 su.dept_id = sd.id
-                #where dept_id=141
             inner join uctp_user_ext uue on
                 uue.USER_ID = su.id
             where
