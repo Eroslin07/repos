@@ -102,7 +102,8 @@
 					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="model" borderBottom>
 						<view @click="handleShow()">
-							<u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input>
+							<!-- <u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input> -->
+							<u-textarea v-model="carForm.model" disabledColor="#ffffff" border="none" confirmType="done" placeholder="请输入品牌/车系/车型" :autoHeight="true" ></u-textarea>
 						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
@@ -1596,4 +1597,5 @@
 		justify-content: center;
 		height: 100%;
 	}
+	/* #ifdef H5 */	/deep/ .u-form-item__body__right__content__slot>uni-view{		flex:1;	}	/* #endif */			/* #ifdef MP-WEIXIN */	/deep/ .u-form-item__body__right__content__slot>view{		flex:1;	}	/* #endif */
 </style>

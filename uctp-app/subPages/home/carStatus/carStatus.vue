@@ -8,7 +8,8 @@
 		</u-search>
 		<!-- tab导航 -->
 		<view id="tabBox" class="">
-			<u-tabs :scrollable="false" itemStyle="height:44px;padding:0px;" :current="current" :list="navList" keyName="label" lineColor="#FA6400" @change="handleChange">
+			<u-tabs :scrollable="false" itemStyle="height:44px;padding:0px;" :current="current" :list="navList"
+				keyName="label" lineColor="#FA6400" @change="handleChange">
 			</u-tabs>
 		</view>
 		<!-- 列表 -->
@@ -128,7 +129,7 @@
 			</view>
 		</view>
 		<!-- 提示信息 -->
-		<AbnormalPage v-else :isSHowTip="isSHowTip"/>
+		<AbnormalPage v-else :isSHowTip="isSHowTip" />
 	</view>
 </template>
 
@@ -180,7 +181,7 @@
 				defaultUrl: '/static/images/carlistImg.png',
 				type: null,
 				// 提示信息
-				isSHowTip:'',
+				isSHowTip: '',
 			}
 		},
 		components: {
@@ -240,14 +241,29 @@
 			},
 			// 获取list数据
 			getList(params) {
-				this.isSHowTip='onLoading'
+				let firstTime = new Date().getTime();
+				this.isSHowTip = 'onLoading'
 				this.tabList = []
 				getHomePageList(params).then(res => {
-					if(res.data.list.length>0){
-						this.isSHowTip=''
-					}else{
-						this.isSHowTip='noData'
+					let secondTime = new Date().getTime();
+					console.log(secondTime,firstTime,secondTime - firstTime)
+					if (secondTime - firstTime > 1000) {
+						if (res.data.list.length > 0) {
+							this.isSHowTip = ''
+						} else {
+							this.isSHowTip = 'noData'
+						}
+					} else {
+						setTimeout(() => {
+							if (res.data.list.length > 0) {
+								this.isSHowTip = ''
+							} else {
+								this.isSHowTip = 'noData'
+							}
+						}, 1000)
+
 					}
+
 					this.tabList = res.data.list.map(item => {
 						let label = this.allChild.find(v => v.status == item.status)?.label
 						this.$set(item, 'eyeIsShow', false)
@@ -265,11 +281,14 @@
 						this.loadStatus = 'nomore'
 					}
 				}).catch((err) => {
-					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
-						this.isSHowTip = 'webError'
-					} else {
-						this.isSHowTip = 'sysError'
-					}
+					setTimeout(() => {
+						if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+							this.isSHowTip = 'webError'
+						} else {
+							this.isSHowTip = 'sysError'
+						}
+					}, 1000)
+
 				}).finally(() => {
 					uni.stopPullDownRefresh()
 				})
@@ -291,7 +310,7 @@
 					} else {
 						this.loadStatus = 'nomore'
 					}
-				}).catch(err=>{
+				}).catch(err => {
 					console.log(err)
 				})
 			},
@@ -371,7 +390,10 @@
 		.search {
 			padding: 10px 15px;
 		}
-		/deep/ view,scroll-view,swiper-item {
+
+		/deep/ view,
+		scroll-view,
+		swiper-item {
 			// flex-grow: 1 !important;
 			// padding:0 !important;
 		}
@@ -540,6 +562,7 @@
 	.fs12 {
 		font-size: 12px;
 	}
+
 	// /deep/ #tabBox .u-tabs__wrapper__nav__item{
 	// 	padding:0;
 	// }
