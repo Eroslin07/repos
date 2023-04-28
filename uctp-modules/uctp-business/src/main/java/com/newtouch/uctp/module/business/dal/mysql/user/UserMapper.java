@@ -17,4 +17,7 @@ public interface UserMapper extends BaseMapperX<AdminUserDO> {
     @TenantIgnore
     @Select("select * from system_users where id = #{id} AND DELETED = 0")
     AdminUserDO findById(Long id);
+    AdminUserDO selectFAUser(Long deptId);
+
+
 }
