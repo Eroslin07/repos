@@ -126,6 +126,7 @@ public class NoticeServiceImpl implements NoticeService {
                 map.put("buyType","12");
             }
         }
+        //默认状态为推送成功
         infoDO.setPushStatus("0");
         infoDO.setType(type);
         if (type.equals("1")) {
@@ -156,6 +157,7 @@ public class NoticeServiceImpl implements NoticeService {
             if (message.get("flags").equals("FALSE")){
                 infoDO.setErrorMsg(message.get("msg"));
                 infoDO.setErrorNum(message.get("errorNum"));
+                infoDO.setPushStatus("1");
             }
         }
         String result="写入数据失败";
@@ -189,7 +191,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
         }
-        //默认状态为未推送
+        //默认状态为推送成功
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
         if (map.get("type").equals("1")){
@@ -197,6 +199,7 @@ public class NoticeServiceImpl implements NoticeService {
             if (message.get("flags").equals("FALSE")){
                 infoDO.setErrorMsg(message.get("msg"));
                 infoDO.setErrorNum(message.get("errorNum"));
+                infoDO.setPushStatus("1");
             }
         }
         String result="写入数据失败";
