@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<uni-list>
-			<uni-list-item>
+			<!-- <uni-list-item>
 				<template v-slot:body>
 					<view class="center">
 						<view v-if="!avatar" class="cu-avatar xl round bg-white" @click="handleToAvatar">
@@ -12,7 +12,7 @@
 						</image>
 					</view>
 				</template>
-			</uni-list-item>
+			</uni-list-item> -->
 			<uni-list-item>
 				<template v-slot:body>
 					<view class="list-item">
@@ -25,7 +25,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>身份证号码</text>
-						<text>{{(!eyeIsShow1 ? user.idCard.replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2") : user.idCard) || ''}}</text>
+						<text>{{(!eyeIsShow1 ? formatCard(user.idCard) : user.idCard) || ''}}</text>
 					</view>
 				</template>
 				<template v-slot:footer>
@@ -87,7 +87,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>对公银行账号</text>
-						<text>{{(!eyeIsShow2?user.bankAccount.replace(/\s*/g,"").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2"):user.bankAccount) || ''}}</text>
+						<text>{{(!eyeIsShow2?formatBank(user.bankAccount):user.bankAccount) || ''}}</text>
 					</view>
 				</template>
 				<template v-slot:footer>
@@ -101,7 +101,7 @@
 				<template v-slot:body>
 					<view class="list-item">
 						<text>保证金充值卡</text>
-						<text class="slot-box slot-text">{{(!eyeIsShow3?user.bondBankAccount.replace(/\s*/g,"").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2"):user.bondBankAccount) || ''}}</text>
+						<text class="slot-box slot-text">{{(!eyeIsShow3?formatBank(user.bondBankAccount):user.bondBankAccount) || ''}}</text>
 					</view>
 				</template>
 				<template v-slot:footer>
@@ -150,6 +150,22 @@
 			this.getUser()
 		},
 		methods: {
+			//格式化身份证
+			formatCard(val){
+				if(val){
+					return val.replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2")
+				}else{
+					return ''
+				}
+			},
+			// 格式化银行卡
+			formatBank(val){
+				if(val){
+					return val.replace(/\s*/g,"").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2")
+				}else{
+					return ''
+				}
+			},
 			getUser() {
 				getUserInfo({ userId: this.$store.state.user.id }).then(response => {
 					this.user = response.data
