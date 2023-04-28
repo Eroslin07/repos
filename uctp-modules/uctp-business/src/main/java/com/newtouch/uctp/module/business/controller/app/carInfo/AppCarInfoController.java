@@ -163,8 +163,8 @@ public class AppCarInfoController {
     @GetMapping("/getCarInfoByVIN")
     @Operation(summary = "根据VIN获取回显车辆信息")
     @Parameter(name = "VIN", description = "编号", required = true, example = "1024")
-    public CommonResult<Map> getCarInfoByVIN(@RequestParam("VIN") String VIN) {
-        return success(carInfoService.getCarInfoByVIN(VIN));
+    public CommonResult<Map> getCarInfoByVIN(@RequestParam("VIN") String VIN,@RequestParam("deptId") Long deptId) {
+        return success(carInfoService.getCarInfoByVIN(VIN,deptId));
     }
 
     @GetMapping("/getCarInfoByID")

@@ -1,6 +1,8 @@
 package com.newtouch.uctp.module.system.controller.app.dict;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
@@ -36,6 +38,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,8 +95,9 @@ public class RegisterController {
 
     @GetMapping("/wxToken")
     @Operation(summary = "获取微信token")
-    public CommonResult<String> wxToken() {
+    public CommonResult<String> wxToken(@RequestParam("code") String code) {
         String authHost = "https://api.weixin.qq.com/cgi-bin/token?";
+        String getPhone = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?";
         String appId="wx9decec45b7374b90";
         String secret="45323149c53d4340dfad4a304803eeaf";
         String getAccessTokenUrl = authHost
@@ -104,6 +108,7 @@ public class RegisterController {
                 // 3. 官网获取的 Secret Key
                 + "&secret=" + secret;
         String access_token="";
+        String phoneNumber="";
         try {
             URL realUrl = new URL(getAccessTokenUrl);
             // 打开和URL之间的连接
@@ -129,11 +134,32 @@ public class RegisterController {
             System.err.println("result:" + result);
             JSONObject jsonObject = JSON.parseObject(result);
             access_token = jsonObject.getString("access_token");
+
+
+            String getUserPhoneUrl = getPhone
+                    // 1. grant_type为固定参数
+                    + "&access_token=" + access_token;
+            HashMap<String, Object> requestParam = new HashMap<>();
+            // 手机号调用凭证
+            requestParam.put("code", code);
+            String jsonStr = JSONUtil.toJsonStr(requestParam);
+            String result1 = HttpRequest.post(getUserPhoneUrl) .body(jsonStr).execute().body();
+
+            /**
+             * 返回结果示例
+             */
+            System.err.println("result:" + result1);
+            JSONObject phoneJsonObject = JSON.parseObject(result1);
+            String phone_info = phoneJsonObject.getString("phone_info");
+            System.out.println(phone_info);
+            JSONObject jsonObject1 = JSON.parseObject(phone_info);
+            phoneNumber = jsonObject1.getString("phoneNumber");
+            System.out.println(phoneNumber);
         } catch (Exception e) {
             System.err.printf("获取token失败！");
             e.printStackTrace(System.err);
         }
-        return success(access_token);
+        return success(phoneNumber);
     }
 
 

@@ -57,4 +57,7 @@ public class AppSellerInfoReqVO {
 
     @Schema(description = "第三方银行卡号")
     private String thirdBankCard;
+
+    @Schema(description = "提交或者保存（1提交 2保存）")
+    private String buttonSaveOrSubmit;
 }

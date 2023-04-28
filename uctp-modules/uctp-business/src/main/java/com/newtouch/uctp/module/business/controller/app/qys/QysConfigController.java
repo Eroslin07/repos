@@ -178,16 +178,6 @@ public class QysConfigController {
         return success(true);
     }
 
-    @PostMapping("/user/auth/res")
-    @Operation(summary ="个人认证")
-    @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
-    @Parameter(name = "contract", description = "用户电话", required = false, example = "1024")
-    public CommonResult<Boolean> userAuthResult(@RequestParam("userId")Long userId,
-                                                @RequestParam("contract")String contract) {
-        qysConfigService.userAuthResult(userId,contract);
-        return success(true);
-    }
-
 
     @GetMapping("/test")
     @Operation(summary ="测试Id")
