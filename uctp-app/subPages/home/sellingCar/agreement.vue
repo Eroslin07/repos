@@ -130,7 +130,9 @@
 					}
 					getQiyuesuo(data.contractId).then((res) => {
 						if (res.data) {
-							_this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
+							_this.$modal.msg("合同以签章");
+							_this.$tab.switchTab('/pages/index');
+							// _this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
 						}
 					}).catch(()=>{
 						// this.$modal.msg('加载失败！')
