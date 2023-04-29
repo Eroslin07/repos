@@ -1,7 +1,7 @@
 <template>
 	<view class="whole">
 		<u-sticky bgColor="#fff">
-			<view style="border-bottom: 1px solid #f5f5f5;">
+			<view style="border-bottom: 1px solid #f5f5f5;display: flex;width: 100%">
 				<u-tabs :list="list" lineColor="#FA6400" @change="handleChange"></u-tabs>
 			</view>
 		</u-sticky>
@@ -263,5 +263,13 @@
 	
 	/deep/ .u-tabs__wrapper__nav__item  {
 		width: 33%;
+	}
+	
+	/deep/ .u-tabs {
+		width: 100% !important;
+	}
+	
+	/deep/ .u-list {
+		height: auto !important;
 	}
 </style>
