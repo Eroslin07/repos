@@ -82,6 +82,7 @@
 					}
 					getRecharge(data).then((res) => {
 						this.$modal.msg("充值成功");
+						uni.$emit('refresh', { refresh: true });
 						this.$tab.navigateBack();
 					})
 					// this.show = true;
@@ -100,6 +101,7 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
+					uni.$emit('refresh', { refresh: true });
 					this.$tab.navigateBack();
 				})
 			},
@@ -112,6 +114,7 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
+					uni.$emit('refresh', { refresh: true });
 					this.$tab.navigateBack();
 				})
 			}
