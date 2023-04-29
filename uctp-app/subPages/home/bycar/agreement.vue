@@ -24,8 +24,7 @@
 
 			<!-- 底部按钮 -->
 			<button @click="handleAffirm" class="button" style="background-color: #fff;color: #333;">合同签章</button>
-			<button @click="handleCancel" class="button" style="background-color: #fff;color: #333;">取消合同签章</button>
-			<button @click="handleClose" class="button">保存并关闭</button>
+			<button @click="handleClose" class="button">关闭</button>
 		</uni-card>
 		<!-- 提示信息 -->
 		<AbnormalPage v-else :isSHowTip="isSHowTip" />
@@ -38,6 +37,9 @@
 		getCancelContract,
 		getContractEcho
 	} from '@/api/home/bycar.js'
+	import {
+		setCreate
+	} from '@/api/home'
 	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
@@ -49,9 +51,15 @@
 				isSHowTip: '',
 				contractName: '收购协议',
 				entrustName: '委托收购协议',
-
+				fairVisible: true,
 				contractValue: [],
 				entrustValue: [],
+				jsonData: {},
+				fairValue: {
+					value1: '',
+					value2: ''
+				},
+				available: ''
 			}
 		},
 		components: {
@@ -60,6 +68,10 @@
 		onLoad(options) {
 			console.log((options))
 			this.carId = options.carId
+			this.fairVisible = options.fairVisible
+			this.jsonData = JSON.parse(options.data)
+			this.fairValue = JSON.parse(options.fairValue)
+			this.available = options.available
 			// 1650784037801914369
 			this.getContractUrl()
 		},
@@ -87,7 +99,28 @@
 			},
 			// 合同签章
 			handleAffirm() {
-				if(!this.contractValue.length || !this.entrustValue.length) return this.$modal.msg('请勾选协议和委托协议！')
+				let _this = this
+				if (!this.contractValue.length || !this.entrustValue.length) return this.$modal.msg('请勾选协议和委托协议！')
+				if (this.jsonData.carInfo.vehicleReceiptAmount > this.available) return uni.showModal({
+					title: '提示',
+					content: `收车金额${this.$amount.getComdify(this.jsonData.carInfo.vehicleReceiptAmount)}元超过保证金余额${this.$amount.getComdify(this.available)}元，余额不足，不能发起收车，请充值后再发起收车操作。`,
+					showCancel: false,
+					confirmText: '知道了',
+					confirmColor: '#fa6401',
+
+				})
+				if (!this.fairVisible) return uni.showModal({
+					title: '提示',
+					content: '您的收车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
+					confirmText: '是',
+					cancelText: '否',
+					confirmColor: '#fa6401',
+					success(ress) {
+						if (ress.confirm) {
+							_this.handleFair();
+						}
+					}
+				})
 				this.$modal.msg('正在加载，请稍等...')
 				let data = {
 					...this.contractDtail.find(v => v.contractType == '1')
@@ -100,10 +133,44 @@
 					// this.$modal.msg('加载失败！')
 				})
 			},
-			// 取消合同签章
-			handleCancel() {
-				this.$tab.navigateBack()
+			handleFair() {
+				this.$modal.loading("提交中，请耐心等待...");
+				// 发起公允值审批流程
+				let procDefKey = "SGYZ";
+				let data = {}
+				data.fairValue = this.fairValue;
+				let variables = {
+					marketName: this.$store.state.user.tenantName,
+					merchantName: this.$store.state.user.deptName,
+					startUserId: this.$store.state.user.id,
+					formDataJson: {
+						formMain: {
+							merchantId: this.$store.state.user.deptId,
+							thirdId: this.jsonData.carInfoDetails.carId,
+							formDataJson: this.jsonData
+						}
+					}
+				}
+				let createData = {
+					procDefKey,
+					variables
+				};
+				setCreate(createData).then((ress) => {
+					this.$modal.closeLoading()
+					this.showOverlay = false;
+					this.$modal.msg("已提交审核");
+					this.$tab.switchTab('/pages/index');
+				}).catch((error) => {
+					this.$modal.closeLoading()
+					this.showOverlay = false;
+					// this.$modal.msgError("发起流程失败");
+				})
+
 			},
+			// 取消合同签章
+			// handleCancel() {
+			// 	this.$tab.navigateBack()
+			// },
 			// 关闭
 			handleClose() {
 				this.$tab.switchTab('/pages/index');

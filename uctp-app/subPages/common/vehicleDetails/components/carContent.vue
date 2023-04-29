@@ -207,9 +207,9 @@
 			<view v-if="!carInfoAll.contractCardNOS.length" class="empty-info">
 				<text>暂无合同</text>
 			</view>
-			<view class="car-button">
+			<!-- <view class="car-button">
 				<u-button v-show="signInShow"  text="签章" color="#FA6400" @click="handleSignature"></u-button>
-			</view>
+			</view> -->
 		</view>
 		<view class="car-fund" v-if="tabCar==2">
 			<!-- <view class="car-upload">
@@ -542,16 +542,16 @@
 					)
 			},
 			// 签章
-			handleSignature() {
-				let {status,id} = this.carInfoAll.carInfo
-				if(status==12){
-					this.$tab.navigateTo('/subPages/home/bycar/agreement?carId='+id)
-				}else{
-					this.$tab.navigateTo('/subPages/home/sellingCar/agreement?carId='+id)
-				}
+			// handleSignature() {
+			// 	let {status,id} = this.carInfoAll.carInfo
+			// 	if(status==12){
+			// 		this.$tab.navigateTo('/subPages/home/bycar/agreement?carId='+id)
+			// 	}else{
+			// 		this.$tab.navigateTo('/subPages/home/sellingCar/agreement?carId='+id)
+			// 	}
 				
 				
-			},
+			// },
 			// rpx转px
 			rpxToPx(rpx) {
 			  const screenWidth = uni.getSystemInfoSync().screenWidth
