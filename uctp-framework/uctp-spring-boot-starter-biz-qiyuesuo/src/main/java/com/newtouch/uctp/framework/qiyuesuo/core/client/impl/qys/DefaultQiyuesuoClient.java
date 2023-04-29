@@ -1,12 +1,16 @@
 package com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SdkClient;
 import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.bean.Stamper;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
+import com.qiyuesuo.sdk.v2.bean.User;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.param.SignParam;
@@ -36,6 +40,26 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     @Override
     protected void doInit() {
         client = new SdkClient(properties.getServerUrl(), properties.getAccessKey(), properties.getAccessSecret());
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<SealListResult> doDefaultSealList(SealListRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<SealListResult> sdkResponse = JSONUtils.toQysResponse(response,SealListResult.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<ContractPageResult> doDefaultdeContractPage(ContractPageRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<ContractPageResult> sdkResponse = JSONUtils.toQysResponse(response,ContractPageResult.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
     }
 
     @Override
@@ -165,6 +189,37 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId,
+                                                           Long documentId,
+                                                           Long seaLId,
+                                                           List<String> keywords) {
+        Assert.notNull(contractId, "contractId不能为空");
+        Assert.notNull(documentId, "documentId不能为空");
+        Assert.notNull(seaLId, "seaLId不能为空");
+        Assert.notEmpty(keywords, "keywords不能为空");
+        SignParam param = new SignParam();
+        param.setContractId(contractId);
+        List<Stamper> stampers = ListUtil.list(false);
+        for (int i = 0; i < keywords.size(); i++) {
+            String keyword = keywords.get(i);
+            Stamper stamper = new Stamper();
+            stamper.setKeyword(keyword);
+            stamper.setDocumentId(documentId);
+            if (i == 0) {
+                //Chinese（yyyy 年 mm 月 dd 日（阿拉伯数字））
+                stamper.setDatePattern("Chinese");
+            }
+            //目前默认公章
+            stamper.setType("COMPANY");
+            stamper.setSealId(seaLId);
+            stampers.add(stamper);
+        }
+        param.setStampers(stampers);
+        ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);
+        return this.defaultCompanysign(request);
+    }
+
+    @Override
     public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, String reason) {
         ContractInvalidRequest request = new ContractInvalidRequest(contractId, reason);
         return this.defaultContractInvalid(request);
@@ -186,6 +241,22 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     public QiyuesuoCommonResult<Contract> defaultContractDetail(Long contractId) {
         ContractDetailRequest request = new ContractDetailRequest(contractId);
         return this.defaultContractDetail(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<ContractPageResult> defaultdeContractPage(Long contractId, String contact) {
+        ContractPageRequest request = new ContractPageRequest(contractId,
+                new User(contact, "MOBILE"), "");
+        return this.defaultdeContractPage(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SealListResult> defaultSealList(String tenantName) {
+        SealListRequest request = new SealListRequest();
+        if (StrUtil.isNotBlank(tenantName)) {
+            request.setTenantName(tenantName);
+        }
+        return this.defaultSealList(request);
     }
 
     @Override

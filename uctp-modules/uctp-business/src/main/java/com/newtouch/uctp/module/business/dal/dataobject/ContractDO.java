@@ -41,6 +41,11 @@ public class ContractDO extends TenantBaseDO {
      */
     @JsonSerialize(using= ToStringSerializer.class)
     private Long contractId;
+    /**
+     * 契约锁合同文件id
+     */
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long documentId;
 
     /**
      * 合同名称

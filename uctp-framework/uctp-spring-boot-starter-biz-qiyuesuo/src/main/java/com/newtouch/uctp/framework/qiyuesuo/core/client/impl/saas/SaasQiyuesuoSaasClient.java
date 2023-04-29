@@ -42,6 +42,16 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<SealListResult> doDefaultSealList(SealListRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<ContractPageResult> doDefaultdeContractPage(ContractPageRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Contract> doDefaultContractDetail(ContractDetailRequest request) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -215,6 +225,14 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId,
+                                                           Long documentId,
+                                                           Long seaLId,
+                                                           List<String> keywords) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     public QiyuesuoCommonResult<String> defaultContractInvalid(Long contractId, String reason) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -231,6 +249,16 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 
     @Override
     public QiyuesuoCommonResult<Contract> defaultContractDetail(Long contractId) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<ContractPageResult> defaultdeContractPage(Long contractId, String contact) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SealListResult> defaultSealList(String tenantName) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 

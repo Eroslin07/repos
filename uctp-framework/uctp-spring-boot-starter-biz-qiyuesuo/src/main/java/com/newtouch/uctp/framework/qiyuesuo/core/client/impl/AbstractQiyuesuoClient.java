@@ -161,6 +161,40 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<ContractPageResult> defaultdeContractPage(ContractPageRequest request) {
+        QiyuesuoCommonResult<ContractPageResult> result;
+        try {
+            result = doDefaultdeContractPage(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SealListResult> defaultSealList(SealListRequest request) {
+        QiyuesuoCommonResult<SealListResult> result;
+        try {
+            result = doDefaultSealList(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<SealListResult> doDefaultSealList(SealListRequest request)
+            throws Throwable;
+    protected abstract QiyuesuoCommonResult<ContractPageResult> doDefaultdeContractPage(ContractPageRequest request)
+            throws Throwable;
     protected abstract QiyuesuoCommonResult<Contract> doDefaultContractDetail(ContractDetailRequest request)
             throws Throwable;
     protected abstract QiyuesuoCommonResult<String> doDefaultContractInvalid(ContractInvalidRequest request)

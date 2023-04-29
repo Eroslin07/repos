@@ -746,7 +746,8 @@
 
 				// 是否是子账户
 				isChildAccount: false,
-				fairStatus: null
+				fairStatus: null,
+				gxzStatus: true
 			}
 		},
 		onReady() {
@@ -1197,46 +1198,9 @@
 						this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
-						if ((this.fairValue.value1 * 1) <= (data.sellAmount / 10000) && (data.sellAmount /
-								10000) <= (this.fairValue.value2 * 1)) {
-							this.$modal.closeLoading()
-							this.showOverlay = false;
-							this.$tab.navigateTo('/subPages/home/sellingCar/agreement');
-						} else {
-							// 发起公允值审批流程
-							let procDefKey = "MGYZ";
-							res.data.fairValue = this.fairValue;
-							let variables = {
-								marketName: this.$store.state.user.tenantName,
-								merchantName: this.$store.state.user.deptName,
-								startUserId: this.$store.state.user.id,
-								formDataJson: {
-									formMain: {
-										merchantId: this.$store.state.user.deptId,
-										thirdId: res.data.carInfoDetails.carId,
-										// formDataJson: {
-										// 	carInfo: res.data.carInfo,
-										// 	carInfoDetails: res.data.carInfoDetails
-										// },
-										formDataJson: res.data
-									}
-								}
-							}
-							let createData = {
-								procDefKey,
-								variables
-							};
-							setCreate(createData).then((ress) => {
-								this.$modal.closeLoading()
-								this.showOverlay = false;
-								this.$modal.msg("已提交审核");
-								this.$tab.switchTab('/pages/index');
-							}).catch((error) => {
-								this.$modal.closeLoading()
-								this.showOverlay = false;
-								// this.$modal.msgError("发起流程失败");
-							})
-						}
+						this.$modal.closeLoading()
+						this.showOverlay = false;
+						this.$tab.navigateTo(`/subPages/home/sellingCar/agreement?carId=${res.data.carInfoDetails.carId}&fairValue=${JSON.stringify(this.fairValue)}&data=${JSON.stringify(res.data)}&gxzStatus=${this.gxzStatus}`);
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.closeLoading()
@@ -1273,21 +1237,11 @@
 					let amount = _this.$amount.getDelcommafy(_this.sellerForm.sellAmount);
 					amount = amount / 10000;
 					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-						_this.handleDraft('entrust');
+						_this.gxzStatus = true;
 					} else {
-						uni.showModal({
-							title: '提示',
-							content: '您的卖车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
-							confirmText: '是',
-							cancelText: '否',
-							confirmColor: '#fa6401',
-							success(ress) {
-								if (ress.confirm) {
-									_this.handleDraft('entrust');
-								}
-							}
-						})
+						_this.gxzStatus = false;
 					}
+					_this.handleDraft('entrust');
 				})
 			},
 			// 点击卖家信息保存
