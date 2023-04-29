@@ -9,7 +9,7 @@
 					</zb-dropdown-menu>
 				</view>
 				<view class="charts-box">
-					<qiun-data-charts style="position:absolute;z-index:1;top:0;left:0" type="column" :opts="opts" :chartData="chartData" />
+					<qiun-data-charts style="position:absolute;z-index:1;top:0;left:0" type="column" :opts="opts" :canvas2d="true" canvasId="canvans7" :chartData="chartData" />
 				</view>
 			</view>
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"

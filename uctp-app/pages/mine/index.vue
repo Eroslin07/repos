@@ -27,16 +27,16 @@
 					</view>
 				</view>
 				<view class="flex authentication-box">
-					<view class="flex authentication" :class="type=='1'?'active':''">
+					<view class="flex authentication active" v-if="type=='1'">
 						<image
-							:src="type=='1'?'../../static/images/mine/slices-active.png':'../../static/images/mine/slices.png'"
+							src="../../static/images/mine/slices-active.png"
 							mode="" style="width: 32rpx;height: 32rpx;">
 						</image>
 						<text>企业 ></text>
 					</view>
-					<view class=" flex authentication" :class="type=='2'?'active':''">
+					<view class=" flex authentication active" v-if="type=='2'">
 						<image
-							:src="type=='2'?'../../static/images/mine/slices-active.png':'../../static/images/mine/slices.png'"
+							src="../../static/images/mine/slices-active.png"
 							mode="" style="width: 32rpx;height: 32rpx;"></image>
 						<text>个人 ></text>
 					</view>
@@ -150,7 +150,7 @@
 			},
 			// 退出登录
 			handleLogout() {
-				this.$modal.confirm('确定注销并退出系统吗？').then(() => {
+				this.$modal.confirm('确定退出系统吗？').then(() => {
 					this.$store.dispatch('LogOut').then(() => {
 						this.$tab.reLaunch('/pages/index')
 					})
