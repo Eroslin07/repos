@@ -120,13 +120,13 @@
 						</view>
 					</u-form-item>
 					<u-form-item label="登记证号" :required="true" prop="certificateNo" borderBottom>
-						<u--input v-model="carForm.certificateNo" border="none" placeholder="请输入登记证号"></u--input>
+						<u--input v-model="carForm.certificateNo" type="number" border="none" placeholder="请输入登记证号"></u--input>
 					</u-form-item>
 					<u-form-item label="颜色" :required="true" prop="colour" borderBottom>
 						<u--input v-model="carForm.colour" border="none" placeholder="请输入颜色"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" :required="true" prop="mileage" borderBottom>
-						<u-input v-model="carForm.mileage" border="none" placeholder="请输入里程数">
+						<u-input v-model="carForm.mileage" type="number" border="none" placeholder="请输入里程数">
 							<template slot="suffix">
 								<view style="color: #fd6601;">万公里</view>
 							</template>
@@ -273,7 +273,7 @@
 						<u--input v-model="sellerForm.sellerAdder" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="sellerTel" borderBottom>
-						<u--input v-model="sellerForm.sellerTel" border="none" placeholder="请输入11位手机号"></u--input>
+						<u--input v-model="sellerForm.sellerTel" type="number" border="none" placeholder="请输入11位手机号"></u--input>
 					</u-form-item>
 					<u-form-item label="第三方姓名" :required="true" prop="thirdSellerName" borderBottom
 						v-if="sellerForm.collection == 1">
@@ -332,7 +332,7 @@
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;width: 100%" v-if="item.name == 'vehicleKey'">
-								<u-input v-model="carForm.key" :disabled="disabledKey"
+								<u-input v-model="carForm.key" type="number" :disabled="disabledKey"
 									disabledColor="#ffffff" placeholder="请输入" border="none">
 									<template slot="suffix">
 										<view>组</view>
@@ -1395,7 +1395,7 @@
 				} else {
 					uni.showModal({
 						title: '提示',
-						content: '您的收车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+						content: '您的收车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
 						confirmText: '是',
 						cancelText: '否',
 						confirmColor: '#fa6401',

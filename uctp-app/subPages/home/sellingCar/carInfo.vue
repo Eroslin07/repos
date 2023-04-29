@@ -243,7 +243,7 @@
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px; flex:1">
-								<u-input v-model="carForm.key" :disabled="isDisabledKey"
+								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
 									v-if="item.name == 'vehicleKey'" disabledColor="#ffffff" placeholder="请输入"
 									border="none">
 									<template slot="suffix">
@@ -1275,7 +1275,7 @@
 					} else {
 						uni.showModal({
 							title: '提示',
-							content: '您的卖车价格偏离了市场公允价值，若是继续则会提交市场，由市场方介入审核。是否继续发起。',
+							content: '您的卖车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
 							confirmText: '是',
 							cancelText: '否',
 							confirmColor: '#fa6401',
