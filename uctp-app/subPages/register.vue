@@ -2,7 +2,8 @@
 	<view class="register">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="注册账号" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
-		<u-modal :show="showModal" :content='content' showCancelButton @confirm="handleConfirm" @cancel="handleCancel"></u-modal>
+		<u-modal :show="showModal" :content='content' showCancelButton @confirm="handleConfirm"
+			@cancel="handleCancel"></u-modal>
 		<!-- 信息填写 -->
 		<view>
 			<u--form labelPosition="left" :model="registerForm" :rules="rules" ref="valiForm" labelWidth="120px">
@@ -13,36 +14,20 @@
 						<view class="image">
 							<u-grid col="2">
 								<u-grid-item>
-									<u-upload
-										v-if="fileList1.length"
-										:fileList="fileList1"
-										@delete="deletePic"
-										name="1"
-										width="150"
-									></u-upload>
-									<image v-else src="/static/images/home/ghm.png"
-										mode="widthFix" style="width: 150px;" @click="handleOcr(1, 'idCard')"></image>
-									<image
-										v-if="fileList1.length == 0"
-										src="../static/images/take.png"
-										class="icon-image"
-										@click="handleOcr(1, 'idCard')"></image>
+									<u-upload v-if="fileList1.length" :fileList="fileList1" @delete="deletePic" name="1"
+										width="150"></u-upload>
+									<image v-else src="/static/images/home/ghm.png" mode="widthFix"
+										style="width: 150px;" @click="handleOcr(1, 'idCard')"></image>
+									<image v-if="fileList1.length == 0" src="../static/images/take.png"
+										class="icon-image" @click="handleOcr(1, 'idCard')"></image>
 								</u-grid-item>
 								<u-grid-item>
-									<u-upload
-										v-if="fileList2.length"
-										:fileList="fileList2"
-										@delete="deletePic"
-										name="2"
-										width="150"
-									></u-upload>
-									<image v-else src="/static/images/home/rxm.png"
-										mode="widthFix" style="width: 150px;" @click="handleOcr(2, 'idCard')"></image>
-									<image
-										v-if="fileList2.length == 0"
-										src="../static/images/take.png"
-										class="icon-image"
-										@click="handleOcr(2, 'idCard')"></image>
+									<u-upload v-if="fileList2.length" :fileList="fileList2" @delete="deletePic" name="2"
+										width="150"></u-upload>
+									<image v-else src="/static/images/home/rxm.png" mode="widthFix"
+										style="width: 150px;" @click="handleOcr(2, 'idCard')"></image>
+									<image v-if="fileList2.length == 0" src="../static/images/take.png"
+										class="icon-image" @click="handleOcr(2, 'idCard')"></image>
 								</u-grid-item>
 							</u-grid>
 						</view>
@@ -71,35 +56,27 @@
 					<view style="color: #f56c6c;" v-if="cardStatus2">请上传营业执照</view>
 					<u-form-item label=" " borderBottom>
 						<view class="image" style="position: relative;">
-							<u-upload
-								v-if="fileList3.length"
-								:fileList="fileList3"
-								@delete="deletePic"
-								name="3"
-								width="150"
-							></u-upload>
-							<image v-else src="/static/images/home/yyzz.png"
-								mode="widthFix" style="width: 150px;" @click="handleOcr(3, 'business')"></image>
-							<image
-								v-if="fileList3.length == 0"
-								src="../static/images/take.png"
-								class="icon-image"
-								style="left: 75px;"
+							<u-upload v-if="fileList3.length" :fileList="fileList3" @delete="deletePic" name="3"
+								width="150"></u-upload>
+							<image v-else src="/static/images/home/yyzz.png" mode="widthFix" style="width: 150px;"
 								@click="handleOcr(3, 'business')"></image>
+							<image v-if="fileList3.length == 0" src="../static/images/take.png" class="icon-image"
+								style="left: 75px;" @click="handleOcr(3, 'business')"></image>
 						</view>
 					</u-form-item>
 					<u-form-item label="营业执照号" :required="true" prop="taxNum" borderBottom>
 						<u--input v-model="registerForm.taxNum" border="none" placeholder="请输入营业执照号"></u--input>
 					</u-form-item>
 					<u-form-item label="公司名称" :required="true" prop="businessName" borderBottom>
-						<u--input v-model="registerForm.businessName" disabledColor="#ffffff"
-							placeholder="请输入公司名称" border="none"></u--input>
+						<u--input v-model="registerForm.businessName" disabledColor="#ffffff" placeholder="请输入公司名称"
+							border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="法定代表人" :required="true" prop="legal_representative" borderBottom>
 						<u--input v-model="registerForm.legal_representative" disabledColor="#ffffff"
 							placeholder="请输入法定代表人" border="none"></u--input>
 					</u-form-item>
-					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom @click="showSex = true">
+					<u-form-item label="市场所在地" :required="true" prop="marketLocationValue" borderBottom
+						@click="showSex = true">
 						<u--input v-model="registerForm.marketLocationValue" disabled disabledColor="#ffffff"
 							placeholder="请选择市场场地编号" border="none"></u--input>
 						<u-icon slot="right" name="arrow-right"></u-icon>
@@ -111,10 +88,12 @@
 						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
 					</u-form-item>
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
-						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号" @change="handleChange"></u--input>
+						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号"
+							@change="handleChange"></u--input>
 					</u-form-item>
 					<u-form-item label="保证金充值卡号" :required="true" prop="bondBankAccount" borderBottom>
-						<u--input v-model="registerForm.bondBankAccount" border="none" placeholder="请输入保证金充值卡号" @change="handleChange1"></u--input>
+						<u--input v-model="registerForm.bondBankAccount" border="none" placeholder="请输入保证金充值卡号"
+							@change="handleChange1"></u--input>
 						<view slot="right" name="arrow-right">
 							<u-icon name="error-circle" @click="handleCircle"></u-icon>
 						</view>
@@ -149,9 +128,14 @@
 </template>
 
 <script>
+	const bankLenght = [8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 25, 26, 27]
 	import config from '@/config'
-	import { urlTobase64 } from '@/utils/ruoyi.js'
-	import { showConfirm } from '@/utils/common'
+	import {
+		urlTobase64
+	} from '@/utils/ruoyi.js'
+	import {
+		showConfirm
+	} from '@/utils/common'
 	import {
 		register,
 		getTenantlist,
@@ -160,7 +144,9 @@
 		getBusinessLicense,
 		deleteImage
 	} from '@/api/register'
-	import { setCreate } from '@/api/home'
+	import {
+		setCreate
+	} from '@/api/home'
 	export default {
 		data() {
 			return {
@@ -179,23 +165,23 @@
 				// 营业执照
 				fileList3: [],
 				registerForm: {
-					phone: "",               // 手机号
-					captcha: "",             // 验证码
-					name: "",                // 姓名
-					idCard: "",              // 身份证号
-					idCardUrl: [],           // 身份证图片
-					businessLicense: [],     // 营业执照
-					taxNum: "",              // 营业执照号
-					businessName: "",        // 公司名称
-					legal_representative: "",// 法定代表人
-					marketLocation: "",      // 市场所在地id
+					phone: "", // 手机号
+					captcha: "", // 验证码
+					name: "", // 姓名
+					idCard: "", // 身份证号
+					idCardUrl: [], // 身份证图片
+					businessLicense: [], // 营业执照
+					taxNum: "", // 营业执照号
+					businessName: "", // 公司名称
+					legal_representative: "", // 法定代表人
+					marketLocation: "", // 市场所在地id
 					marketLocationValue: "", // 市场所在地
-					address: "",             // 联系地址
-					bankName: "",            // 开户行
-					bankAccount: "",         // 对公银行账号
-					bondBankAccount: "",     // 保证金充值卡号
-					password: "",            // 密码
-					confirmPassword: ""      // 确认密码
+					address: "", // 联系地址
+					bankName: "", // 开户行
+					bankAccount: "", // 对公银行账号
+					bondBankAccount: "", // 保证金充值卡号
+					password: "", // 密码
+					confirmPassword: "" // 确认密码
 				},
 				// 校验规则
 				rules: {
@@ -238,11 +224,11 @@
 							let iphoneReg = (
 								/^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
 							);
-							if(!iphoneReg.test(value)){
+							if (!iphoneReg.test(value)) {
 								return false;
 							}
 						},
-						message:"身份证格式不正确",
+						message: "身份证格式不正确",
 						trigger: ['blur', 'change']
 					}],
 					taxNum: {
@@ -275,7 +261,14 @@
 						message: '请填写对公银行账号',
 						trigger: ['blur', 'change']
 					}, {
-						pattern: /^(\d{4}\s){3}\d{4}$|^(\d{4}\s){4}\d{3}$/,
+						validator: (rule, value, callback) => {
+							const str = value.replace(/\s*/g, "")
+							if (bankLenght.includes((str.length))) {
+								return true
+							} else {
+								return false
+							}
+						},
 						type: 'string',
 						required: true,
 						message: '请填写正确的银行卡号',
@@ -299,7 +292,14 @@
 						message: '请填写保证金充值卡号',
 						trigger: ['blur', 'change']
 					}, {
-						pattern: /^(\d{4}\s){3}\d{4}$|^(\d{4}\s){4}\d{3}$/,
+						validator: (rule, value, callback) => {
+							const str = value.replace(/\s*/g, "")
+							if (bankLenght.includes((str.length))) {
+								return true
+							} else {
+								return false
+							}
+						},
 						type: 'string',
 						required: true,
 						message: '请填写正确的卡号',
@@ -320,7 +320,8 @@
 						trigger: ['blur', 'change']
 					}, {
 						asyncValidator: (rules, value, callback) => {
-							if (this.registerForm.confirmPassword && value != this.registerForm.confirmPassword) {
+							if (this.registerForm.confirmPassword && value != this.registerForm
+								.confirmPassword) {
 								callback(new Error('两次密码校验不一致'))
 							}
 							return uni.$u.test.object({
@@ -396,10 +397,10 @@
 			},
 			handleCircle() {
 				uni.showModal({
-				  title: '提示',
+					title: '提示',
 					showCancel: false,
-				  content: '提供的浦发银行个人卡号实名认证需与身份证一致。',
-				  confirmText: '知道了',
+					content: '提供的浦发银行个人卡号实名认证需与身份证一致。',
+					confirmText: '知道了',
 					confirmColor: '#fa6401'
 				})
 			},
@@ -447,23 +448,27 @@
 						})
 						if (index == 1 || index == 2) {
 							// 识别身份证
-							_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ..._this[`fileList${index}`]];
+							_this.registerForm.idCardUrl = [..._this.registerForm.idCardUrl, ..._this[
+								`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
-								getIdCard({ IDCardUrl: str }).then((ress) => {
+								getIdCard({
+									IDCardUrl: str
+								}).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.idcard_number_type == -1) {
 										_this.$modal.msg("请上传正确且清晰的身份证照照片");
 										_this[`fileList${index}`] = [];
 									} else {
 										if (data.words_result['公民身份号码']) {
-											_this.registerForm.idCard = data.words_result['公民身份号码'].words;
+											_this.registerForm.idCard = data.words_result['公民身份号码']
+												.words;
 											_this.registerForm.name = data.words_result['姓名'].words;
 										}
 										if (data.words_result['失效日期']) {
 											if (_this.date > data.words_result['失效日期'].words) {
 												showConfirm("您的身份证已过期，请您处理后再进行注册。").then(res => {
-												  _this.handleCancel();
+													_this.handleCancel();
 													return;
 												})
 											}
@@ -481,16 +486,21 @@
 							_this.registerForm.businessLicense = _this[`fileList${index}`];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
-								getBusinessLicense({ businessLicense: str }).then((ress) => {
+								getBusinessLicense({
+									businessLicense: str
+								}).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.error_msg) {
 										_this.$modal.msg("请上传正确且清晰的营业执照照片");
 										_this[`fileList${index}`] = [];
 									} else {
 										if (data.words_result['单位名称']) {
-											_this.registerForm.businessName = data.words_result['单位名称'].words;
-											_this.registerForm.taxNum = data.words_result['社会信用代码'].words;
-											_this.registerForm.legal_representative = data.words_result['法人'].words;
+											_this.registerForm.businessName = data.words_result['单位名称']
+												.words;
+											_this.registerForm.taxNum = data.words_result['社会信用代码']
+												.words;
+											_this.registerForm.legal_representative = data
+												.words_result['法人'].words;
 											_this.registerForm.address = data.words_result['地址'].words;
 										}
 										if (i == res.tempFilePaths.length - 1) {
@@ -528,13 +538,14 @@
 								if (data) {
 									for (let i = 0; i < data.length; i++) {
 										let item = _this[`fileList${index}`][fileListLen]
-										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
-											status: 'success',
-											message: '',
-											url: data[i].url,
-											id: data[i].id,
-											path: data[i].path
-										}))
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(
+											item, {
+												status: 'success',
+												message: '',
+												url: data[i].url,
+												id: data[i].id,
+												path: data[i].path
+											}))
 										fileListLen++;
 									}
 								} else {
@@ -553,7 +564,9 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({ id: event.file.id }).then((res) => {
+				deleteImage({
+					id: event.file.id
+				}).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
 					if (event.name == 3) {
@@ -605,17 +618,21 @@
 						// captcha: this.registerForm.captcha,
 						name: this.registerForm.name,
 						idCard: this.registerForm.idCard,
-						idCardUrl: list.map((item) => { return item.id }),
+						idCardUrl: list.map((item) => {
+							return item.id
+						}),
 						taxNum: this.registerForm.taxNum,
-						businessLicense: this.fileList3.map((item) => { return item.id }),
+						businessLicense: this.fileList3.map((item) => {
+							return item.id
+						}),
 						marketLocation: this.registerForm.marketLocation,
 						marketLocationValue: this.registerForm.marketLocationValue,
 						address: this.registerForm.address,
-						bankNumber: this.registerForm.bankAccount.replace(/\s*/g,""),
+						bankNumber: this.registerForm.bankAccount.replace(/\s*/g, ""),
 						businessName: this.registerForm.businessName,
 						legal_representative: this.registerForm.legal_representative,
 						bankName: this.registerForm.bankName,
-						bondBankAccount: this.registerForm.bondBankAccount.replace(/\s*/g,""),
+						bondBankAccount: this.registerForm.bondBankAccount.replace(/\s*/g, ""),
 					}
 					if (data.idCardUrl.length != 2) {
 						this.$modal.msg("需要上传两张图片");
@@ -640,18 +657,21 @@
 								}
 							}
 						}
-						let createData = { procDefKey, variables };
+						let createData = {
+							procDefKey,
+							variables
+						};
 						setCreate(createData).then((ress) => {
 							this.$modal.closeLoading()
 							this.showOverlay = false;
 							let _this = this;
 							uni.showModal({
-							  title: '提示',
+								title: '提示',
 								showCancel: false,
-							  content: '您的注册信息已提交市场方进行审核，审核通过后将短信通知您。',
-							  confirmText: '知道了',
+								content: '您的注册信息已提交市场方进行审核，审核通过后将短信通知您。',
+								confirmText: '知道了',
 								confirmColor: '#fa6401',
-								success: function (res) {
+								success: function(res) {
 									if (res.confirm) {
 										// #ifndef MP-WEIXIN
 										clearInterval(this.timer);
@@ -692,7 +712,7 @@
 	page {
 		background-color: #ffffff;
 	}
-	
+
 	.register {
 		border-top: 1px solid #f3f3f3;
 		padding-bottom: 80px;
@@ -702,6 +722,7 @@
 	/deep/ .uni-card--border {
 		border-bottom: none;
 	}
+
 	/* #endif */
 
 	.text {
@@ -732,12 +753,12 @@
 			border-radius: 10px;
 		}
 	}
-	
+
 	.fenge {
 		height: 20px;
 		background-color: #fafafa;
 	}
-	
+
 	.footer {
 		width: 100%;
 		position: fixed;
@@ -745,7 +766,7 @@
 		background-color: #fff;
 		padding-bottom: 10px;
 		z-index: 999;
-		
+
 		.button {
 			width: 80%;
 			margin-top: 10px;
@@ -753,11 +774,11 @@
 			color: #fff;
 		}
 	}
-	
+
 	.image {
 		width: 100%;
 	}
-	
+
 	/deep/ .image .u-upload__button {
 		display: none;
 	}
