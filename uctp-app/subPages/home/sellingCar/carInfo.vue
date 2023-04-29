@@ -176,10 +176,10 @@
 							</u-radio>
 						</u-radio-group>
 					</u-form-item>
-					<!-- <u-form-item label="转入地车辆管理所名称" :required="true" prop="transManageName" borderBottom>
-						<u--input v-model="sellerForm.transManageName" border="none" placeholder="请输入转入地车辆管理所名称">
+					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
+						<u--input v-model="sellerForm.deposit" border="none" placeholder="请输入定金">
 						</u--input>
-					</u-form-item> -->
+					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
 							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
@@ -667,7 +667,8 @@
 					buyerIdCardUrl: [],
 					buyerName: '',
 					buyerAdder: '',
-					buyerTel: ''
+					buyerTel: '',
+					deposit:'0'
 				},
 				// 卖家信息校验规则
 				sellerRules: {
@@ -1174,6 +1175,7 @@
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.carForm.sellType,
+					deposit:this.carForm.deposit,
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
