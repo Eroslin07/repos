@@ -88,11 +88,11 @@
 						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
 					</u-form-item>
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
-						<u--input v-model="registerForm.bankAccount" border="none" placeholder="请输入对公银行账号"
+						<u--input v-model="registerForm.bankAccount" type="number" border="none" placeholder="请输入对公银行账号"
 							@change="handleChange"></u--input>
 					</u-form-item>
 					<u-form-item label="保证金充值卡号" :required="true" prop="bondBankAccount" borderBottom>
-						<u--input v-model="registerForm.bondBankAccount" border="none" placeholder="请输入保证金充值卡号"
+						<u--input v-model="registerForm.bondBankAccount" type="number" border="none" placeholder="请输入保证金充值卡号"
 							@change="handleChange1"></u--input>
 						<view slot="right" name="arrow-right">
 							<u-icon name="error-circle" @click="handleCircle"></u-icon>
