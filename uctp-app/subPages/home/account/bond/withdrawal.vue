@@ -83,7 +83,7 @@
 				}
 				getWithdraw(data).then((res) => {
 					this.$modal.msg("提现成功");
-					this.$tab.redirectTo('/subPages/home/account/bond/bond');
+					this.$tab.navigateBack();
 					// this.$tab.redirectTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
 				})
 			},

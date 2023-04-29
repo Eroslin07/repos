@@ -148,7 +148,7 @@
 				}
 				getPresent(data).then((res) => {
 					this.$modal.msg("利润提现流程发起成功");
-					this.$tab.redirectTo('/subPages/home/account/profit/profit');
+					this.$tab.navigateBack();
 					// this.$tab.redirectTo('/subPages/home/account/profit/progress');
 				})
 			},
