@@ -180,8 +180,7 @@
 								<!-- #ifndef APP-NVUE -->
 								<u-index-anchor :text="indexList[index]"></u-index-anchor>
 								<!-- #endif -->
-								<view class="list-cell" v-for="(cell, index1) in item" :key="index1"
-									@click="handleBrand(cell)">
+								<view class="list-cell" v-for="(cell, index1) in item" :key="index1" @click="handleBrand(cell)">
 									{{cell.name}}
 								</view>
 							</u-index-item>
@@ -1188,12 +1187,6 @@
 				}
 				this.seriesList = [];
 				getCarSeriesList(data).then((res) => {
-					for (let j = 0; j < 2; j++) {
-						res.series_list.push({
-							series_name: '无',
-							series_id: null
-						})
-					}
 					this.seriesList = res.series_list;
 				})
 			},
@@ -1238,12 +1231,6 @@
 				}
 				this.seriesList = [];
 				getCarSeriesList(data1).then((res) => {
-					for (let j = 0; j < 2; j++) {
-						res.series_list.push({
-							series_name: '无',
-							series_id: null
-						})
-					}
 					this.seriesList = res.series_list;
 					this.showModel = true;
 					this.brandShow = false;

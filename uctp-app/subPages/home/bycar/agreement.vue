@@ -2,20 +2,20 @@
 	<view class="agreement">
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full>
 			<view class="contract-box">
-				<view class="text"  @click="handleViewContract('2')">
-					<image src="../../../static/images/bycar/coll-contract.png" class="hetong_image"></image>
-					<view style="margin-top: 20px;">
-						<u-checkbox-group v-model="contractValue">
-							<u-checkbox labelColor="#fa6400" :label="contractName" name="收购协议">
-							</u-checkbox>
-						</u-checkbox-group>
-					</view>
-				</view>
 				<view class="text" @click="handleViewContract('1')">
 					<image src="../../../static/images/bycar/entrust.png" class="hetong_image"></image>
 					<view style="margin-top: 20px;">
 						<u-checkbox-group v-model="entrustValue">
 							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托收购协议">
+							</u-checkbox>
+						</u-checkbox-group>
+					</view>
+				</view>
+				<view class="text" @click="handleViewContract('2')">
+					<image src="../../../static/images/bycar/coll-contract.png" class="hetong_image"></image>
+					<view style="margin-top: 20px;">
+						<u-checkbox-group v-model="contractValue">
+							<u-checkbox labelColor="#fa6400" :label="contractName" name="收购协议">
 							</u-checkbox>
 						</u-checkbox-group>
 					</view>
@@ -92,10 +92,10 @@
 				let data = {
 					...this.contractDtail.find(v => v.contractType == '1')
 				}
-				getQiyuesuo(data).then((res) => {
+				getQiyuesuo(data.contractId).then((res) => {
 					this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
 				}).catch(() => {
-					this.$modal.msg('加载失败！')
+					// this.$modal.msg('加载失败！')
 				})
 			},
 			// 取消合同签章
@@ -144,8 +144,8 @@
 	}
 
 	.hetong_image {
-		width: 80rpx;
-		height: 80rpx;
+		width: 185rpx;
+		height: 160rpx;
 	}
 
 	.text {
