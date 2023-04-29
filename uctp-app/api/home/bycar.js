@@ -36,12 +36,20 @@ export function setSellerInfo(data) {
 	})
 }
 
-// 合同签章
+// 合同签章(旧)
+// export function getQiyuesuo(data) {
+// 	return request({
+// 		url: '/uctp/qys/send',
+// 		'method': 'POST',
+// 		data
+// 	})
+// }
+
+// 合同签章(新)
 export function getQiyuesuo(data) {
 	return request({
-		url: '/uctp/qys/send',
-		'method': 'POST',
-		data
+		url: '/uctp/qys/company/sign/' + data,
+		'method': 'POST'
 	})
 }
 
