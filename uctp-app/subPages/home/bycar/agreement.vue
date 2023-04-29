@@ -140,8 +140,7 @@
 				this.$modal.loading("提交中，请耐心等待...");
 				// 发起公允值审批流程
 				let procDefKey = "SGYZ";
-				let data = {}
-				data.fairValue = this.fairValue;
+				this.jsonData.fairValue = this.fairValue;
 				let variables = {
 					marketName: this.$store.state.user.tenantName,
 					merchantName: this.$store.state.user.deptName,

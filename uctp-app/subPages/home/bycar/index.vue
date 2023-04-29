@@ -295,12 +295,12 @@
 					</u-form-item>
 					<u-form-item label="银行卡号" :required="true" prop="bankCard" borderBottom
 						v-if="sellerForm.collection == 0">
-						<u--input v-model="sellerForm.bankCard" border="none" placeholder="请输入银行卡号"
+						<u--input v-model="sellerForm.bankCard" type="number" border="none" placeholder="请输入银行卡号"
 							@change="handleChange"></u--input>
 					</u-form-item>
 					<u-form-item label="第三方银行卡号" :required="true" prop="thirdBankCard" borderBottom
 						v-if="sellerForm.collection == 1">
-						<u--input v-model="sellerForm.thirdBankCard" border="none" placeholder="请输入银行卡号"
+						<u--input v-model="sellerForm.thirdBankCard" type="number" border="none" placeholder="请输入银行卡号"
 							@change="handleChange"></u--input>
 					</u-form-item>
 				</u--form>
@@ -1475,7 +1475,7 @@
 						this.$modal.closeLoading()
 						this.showOverlay = false;
 						this.$tab.navigateTo(
-							`/subPages/home/bycar/agreement?carId=${res.data.carInfoDetails.carId}&data=${JSON.stringify(res.data)}&fairValue=${JSON.stringify(this.fairValue)}&available=${this.available}`);
+							`/subPages/home/bycar/agreement?carId=${res.data.carInfoDetails.carId}&data=${JSON.stringify(res.data)}&fairValue=${JSON.stringify(this.fairValue)}&available=${this.available}&fairVisible=${this.fairVisible}`);
 					} else {
 						// 保存卖家草稿信息返回首页
 						this.$modal.closeLoading()
