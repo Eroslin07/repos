@@ -140,16 +140,15 @@ public class QysConfigController {
     }
 
     @PostMapping("/send")
-    @Operation(summary ="发起契约锁合同")
+    @Operation(summary = "发起契约锁合同")
     public CommonResult<String> send(@Valid @RequestBody QYSContractVO qysContractVO) {
-        String result="";
+        String result = "";
         //这里只发起委托合同
-        if(qysContractVO.getContractType().equals("1")) {
-            result= qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+        if (qysContractVO.getContractType().equals("1")) {
+            result = qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
         }
-
         return success(result);
-}
+    }
     /*public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {
         String result="";
         for (QYSContractVO qysContractVO : VO) {
@@ -175,6 +174,12 @@ public class QysConfigController {
     @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
     public CommonResult<Boolean> userAuth(@RequestParam("userId") @NotNull  Long userId) {
         qysConfigService.userAuth(userId);
+        return success(true);
+    }
+    @PostMapping("/company/sign/{contractId}")
+    @Operation(summary ="公司静默签章")
+    public CommonResult<Boolean> companySign(@PathVariable("contractId") @NotNull  Long contractId) {
+        qysConfigService.companySign(contractId);
         return success(true);
     }
 

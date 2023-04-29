@@ -10,9 +10,13 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
+import com.qiyuesuo.sdk.v2.SdkClient;
 import com.qiyuesuo.sdk.v2.bean.*;
-import com.qiyuesuo.sdk.v2.request.SaaSUserAuthResultRequest;
+import com.qiyuesuo.sdk.v2.json.JSONUtils;
+import com.qiyuesuo.sdk.v2.request.ContractPageRequest;
+import com.qiyuesuo.sdk.v2.response.ContractPageResult;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
+import com.qiyuesuo.sdk.v2.response.SdkResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +47,22 @@ class UctpBusinessApplicationTests {
 
 	@Test
 	void contextLoads() {
-	}
+        String serverUrl = "https://openapi.qiyuesuo.cn";
+        String accessKey = "q4xKsNcFI8";
+        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
+        SdkClient sdkClient = new SdkClient(serverUrl, accessKey, accessSecret);
+// 合同页面
+        ContractPageRequest request = new ContractPageRequest(3089812758837928943L,
+                new User("17380123816", "MOBILE"), "");
+        String response = sdkClient.service(request);
+        SdkResponse<ContractPageResult> responseObj = JSONUtils.toQysResponse(response, ContractPageResult.class);
+        if(responseObj.getCode() == 0) {
+            ContractPageResult result = responseObj.getResult();
+            System.out.println("合同页面地址为:{}"+result.getPageUrl());
+        } else {
+            System.out.println(JSONUtil.toJsonStr(responseObj));
+        }
+    }
 
     @Test
     void sendContract(){
@@ -61,7 +80,7 @@ class UctpBusinessApplicationTests {
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
         platformSignatory.setTenantName("广东光耀汽车公司");
-        platformSignatory.setReceiver(new User( "17380123817", "MOBILE"));
+        platformSignatory.setReceiver(new User( "17380123816", "MOBILE"));
         draftContract.addSignatory(platformSignatory);
         //丙方
         Signatory initiator2 = new Signatory();
@@ -82,7 +101,7 @@ class UctpBusinessApplicationTests {
         draftContract.setSend(false); // 发起合同
         //2,签字时是丙方是否会自动签章
         QiyuesuoCommonResult<Contract> result = client.defaultDraftSend(draftContract);
-        System.out.println(result.getData());
+        System.out.println(JSONUtil.toJsonStr(result.getData()));
         Contract contract = result.getData();
         ArrayList<TemplateParam> params = ListUtil.toList(new TemplateParam("甲方", "罗聪"),
                 new TemplateParam("乙方", "新致"),
@@ -92,11 +111,9 @@ class UctpBusinessApplicationTests {
                 new TemplateParam("选择3", "□"),
                 new TemplateParam("选择4", "□"));
         QiyuesuoCommonResult<DocumentAddResult> docRes = client.defaultDocumentAddByTemplate(contract.getId(), 3083246899365421080L, params, "二手车收购协议");
-        System.out.println(docRes.getData());
+        System.out.println(JSONUtil.toJsonStr(docRes.getData()));
         QiyuesuoCommonResult<Object> result1 = client.defaultContractSend(contract.getId());
         System.out.println(result1.getData());
-        String contact = "";
-        SaaSUserAuthResultRequest request = new SaaSUserAuthResultRequest(new User("10020033044", "MOBILE"));
     }
 
     @Test

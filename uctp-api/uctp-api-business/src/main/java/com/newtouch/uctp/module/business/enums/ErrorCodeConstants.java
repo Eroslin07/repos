@@ -25,8 +25,9 @@ public interface ErrorCodeConstants {
     ErrorCode QYS_CONTRACTID_NOT_EXISTS = new ErrorCode(1005000103, "契约锁必要参数[contractId]不存在");
     ErrorCode QYS_BUSINESS_TYPE_NOT_EXISTS = new ErrorCode(1005000104, "契约锁业务分类不存在");
     ErrorCode QYS_FILE_URL_NOT_NULL = new ErrorCode(1005000105, "契约锁:输出路径不能为空");
-    ErrorCode QYS_CONFIG_NOT_EXISTS = new ErrorCode(1005000106, "契约锁不存在");
+    ErrorCode QYS_CONFIG_NOT_EXISTS = new ErrorCode(1005000106, "数据异常,契约锁不存在");
     ErrorCode QYS_CONFIG_AUTH_ERROR = new ErrorCode(1005000107, "契约锁未做认证授权");
+    ErrorCode QYS_CONFIG_ENTERPRISE_NOT_EXISTS = new ErrorCode(1005000108, "请先在契约锁平台配置公章");
     ErrorCode QYS_CALLBACK_NOT_EXISTS = new ErrorCode(1005000150, "契约锁回调日志不存在");
     ErrorCode QYS_CONFIG_NOT_AUTH = new ErrorCode(1005000151, "企业未做契约锁认证");
     ErrorCode QYS_CONFIG_PARAM_ERROR = new ErrorCode(1005000152, "参数异常");

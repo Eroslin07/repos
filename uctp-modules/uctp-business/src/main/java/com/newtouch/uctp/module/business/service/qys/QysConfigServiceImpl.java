@@ -687,6 +687,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                     buyContrsctDo.setContractType(2);
                     buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
                     buyContrsctDo.setBusinessId(usersDO.getDeptId());
+                    buyContrsctDo.setDocumentId(documentId);
                     //存合同草稿合同到表
                     contractMapper.insert(buyContrsctDo);
 
@@ -761,6 +762,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 buyContrsctDo.setContractType(4);
                 buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
                 buyContrsctDo.setBusinessId(usersDO.getDeptId());
+                buyContrsctDo.setDocumentId(documentId);
                 contractMapper.insert(buyContrsctDo);
 
                 try {
@@ -799,6 +801,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         qysContractVO.setContractType("2");
         qysContractVO.setCarId(carId);
         qysContractVO.setContractId(contractId);
+//        qysContractVO.
         //正常合同放入
         qysContractVOList.add(qysContractVO);
 
@@ -844,6 +847,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             buyContrsctDo.setContractType(1);
             buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
             buyContrsctDo.setBusinessId(usersDO.getDeptId());
+            buyContrsctDo.setDocumentId(documentId);
             //存合同草稿合同到表
             contractMapper.insert(buyContrsctDo);
             qysContractVO.setType("1");
@@ -875,6 +879,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             buyContrsctDo.setContractType(3);
             buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
             buyContrsctDo.setBusinessId(usersDO.getDeptId());
+            buyContrsctDo.setDocumentId(documentId);
             //存合同草稿合同到表
             contractMapper.insert(buyContrsctDo);
             qysContractVO.setType("2");
@@ -993,6 +998,9 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void userAuth(Long userId){
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
+        if (ObjectUtil.isNull(userRespDTO)) {
+            throw exception(CAR_INFO_NOT_EXISTS);
+        }
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
         QysConfigDO configDO = qysConfigMapper.selectById(1);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
@@ -1010,7 +1018,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("type", "1").build();
         noticeService.saveNotice(map);
         //发送消息，做认证后结果查询
-        userAuthProducer.sendUserAuthMessage(userId,urls.get(0),UserAuthProducer.TWO_MINUTES);
+        userAuthProducer.sendUserAuthMessage(userId,userRespDTO.getMobile(),UserAuthProducer.TWO_MINUTES);
     }
 
     @Override
@@ -1069,12 +1077,6 @@ public class QysConfigServiceImpl implements QysConfigService {
             //设置当前登录人信息，免得保存报错
             List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
             WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(configDO.getCreator()));
-//            if (CollUtil.isEmpty(adminUserRespDTOs)) {
-//                //是在找不到
-//                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,"admin");
-//            }else {
-//                WebFrameworkUtils.getRequest().setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID,adminUserRespDTOs.get(0).getId());
-//            }
             //保存回调信息
             qysCallbackService.saveDO(json,
                     QysCallBackType.COMPANY_AUTH.value(),configDO.getBusinessId());
@@ -1136,6 +1138,55 @@ public class QysConfigServiceImpl implements QysConfigService {
         return qysConfigMapper.selectOne("BUSINESS_ID", businessId);
     }
 
+    @Override
+    @Transactional
+    public void companySign(Long contractId) {
+        ContractDO contractDO = contractService.getByContractId(contractId);
+        if (ObjectUtil.isNull(contractDO)) {
+            throw exception(CONTRACT_NOT_EXISTS);
+        }
+        Long businessId = contractDO.getBusinessId();
+        QysConfigDO configDO = qysConfigMapper.selectOne("BUSINESS_ID", businessId);
+        if (ObjectUtil.isNull(configDO)) {
+            throw exception(QYS_CONFIG_NOT_EXISTS);
+        }
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+        //获取签署方公章
+        SealListResult checkedData = client.defaultSealList(configDO.getBusinessName()).getCheckedData();
+        if (checkedData.getTotalCount() == 0) {
+            throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
+        }
+        Long sealId = this.getSealId(checkedData.getList());
+        if (ObjectUtil.isNull(sealId)) {
+            throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
+        }
+
+//        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1650772257324167170L);
+
+        List<String> keywords = ListUtil.list(false);
+        if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
+//            keywords.add("甲方（章）：");
+            keywords.add("甲方：");
+        }
+        if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
+            keywords.add("甲方：");
+        }
+        client.defaultCompanysign(contractId,contractDO.getDocumentId(),sealId,keywords).getCheckedData();
+        configDO.setSealId(sealId);
+        qysConfigMapper.updateById(configDO);
+    }
+
+    private Long getSealId(List<Seal> list){
+        Long seaId = null;
+        for (Seal seal : list) {
+            if (ObjectUtil.equals("ENTERPRISE", seal.getSealType())) {
+                //公章
+                seaId = seal.getId();
+                break;
+            }
+        }
+        return seaId;
+    }
 
     //收车委托合同
     private Contract buildBuyWTContract(DeptDO userDept,DeptDO platformDept) {

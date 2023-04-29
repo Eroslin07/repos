@@ -167,4 +167,10 @@ public interface QysConfigService {
      * @return
      */
     QysConfigDO getByDeptId(Long businessId);
+
+    /**
+     * 静默签章
+     * @param contractId  契约锁合同id
+     */
+    void companySign(Long contractId);
 }
