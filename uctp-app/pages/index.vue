@@ -120,7 +120,79 @@
 					"pageSize": 10,
 				},
 				// 统计数据
-				gatherData: [],
+				gatherData: [{
+								status: 1,
+								num: 0,
+								label: '收车中',
+								child: [{
+									status: '1.1',
+									num: 0,
+									label: '草稿'
+								}, {
+									status: '1.2',
+									num: 0,
+									label: '合同已发起'
+								}, {
+									status: '1.3',
+									num: 0,
+									label: '支付失败'
+								}]
+							},
+							{
+								status: 2,
+								num: 0,
+								label: '代售中',
+								child: [{
+									status: '2.1',
+									num: 0,
+									label: '待过户'
+								}, {
+									status: '2.2',
+									num: 0,
+									label: '未检测'
+								}, {
+									status: '2.3',
+									num: 0,
+									label: '已检测'
+								}]
+							},
+							{
+								status: 3,
+								num: 0,
+								label: '卖车中',
+								child: [{
+									status: '3.1',
+									num: 0,
+									label: '草稿'
+								}, {
+									status: '3.2',
+									num: 0,
+									label: '合同已发起'
+								}, {
+									status: '3.3',
+									num: 0,
+									label: '待支付'
+								}]
+							},
+							{
+								status: 4,
+								num: 0,
+								label: '已售出',
+								child: [{
+									status: '4.1',
+									num: 0,
+									label: '待过户'
+								}, {
+									status: '4.2',
+									num: 0,
+									label: '带分账'
+								}, {
+									status: '4.3',
+									num: 0,
+									label: '已分账'
+								}]
+							}
+						],
 				// 所有子项
 				allChild: [],
 			}
@@ -134,10 +206,10 @@
 			this.type = this.$store.state.user.staffType;
 
 		},
-		onShow(){
+		onShow() {
 			this.getAcount();
 			this.getStatusValue()
-			this.getListData()	
+			this.getListData()
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
@@ -156,121 +228,112 @@
 					console.log(err, 'err')
 				})
 			},
+			formateData(data,list){
+				for(let i=0;i<data.length;i++){
+					if(data[i].label==list[i].label){
+						data[i].num=list[i].num
+						data[i].status=list[i].status
+					}
+					if(list[i].child && list[i].child.length>0){
+						this.formateData(data[i].child,list[i].child)
+					}
+				}
+			},
 			//获取统计数据
 			getAcount() {
 				this.$modal.loading("数据加载中...");
 				getHomeCount().then(res => {
-					this.gatherData = res.data
+					if(res.data && res.data.length>0){
+						this.formateData(this.gatherData,res.data)
+					}
 					res.data.forEach(item => {
 						this.allChild.push(...item.child)
 					})
 				}).catch((error) => {
-					this.gatherData=[]
-					for (let i = 0; i < 4; i++) {
-						this.gatherData.push({
-							// salesStatus: i,
-							status: i++,
-							num: 0,
-							label: '收车中',
-							child: [{
-								status:i+2,
-								num: 0,
-								label: '草稿'
-							}, {
-								status: i+3,
-								num: 0,
-								label: '草稿'
-							}, {
-								status: i+4,
-								num: 0,
-								label: '草稿'
-							}]
-						})
-					}
 				}).finally(() => {
-					this.$modal.closeLoading()
-					uni.stopPullDownRefresh()
-				})
-			},
-			// 获取状态值
-			getStatusValue() {
-				let data = {
-					dictTypes: 'dictTypes=car_status_three,car_status,car_sales_status'
-				}
-				getStatusList(data).then(res => {
-					this.$store.commit('setStatus', res.data)
-				})
-			},
-			// 搜索
-			search(val) {
-				uni.showToast({
-					title: '搜索：' + val,
-					icon: 'none'
-				})
-			},
-			// 清除
-			clear(val) {
-				uni.showToast({
-					title: '清除：' + val,
-					icon: 'none'
-				})
-			},
-			// 我要收车
-			buyCar() {
-				this.$tab.navigateTo('/subPages/home/bycar/index');
-			},
-			// 我要卖车
-			sellingCar() {
-				this.$tab.navigateTo('/subPages/home/sellingCar/index');
-			},
-			// 收车状态
-			tabCarStatus(item, allChild) {
-				this.$tab.navigateTo(
-					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
-				)
-			},
-			// 收车状态子项
-			handleTabItem(item, childStatus, allChild) {
-				this.$tab.navigateTo(
-					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&childStatus=${childStatus}&&allChild=${JSON.stringify(allChild)}`
-				)
-			},
-
-			// 交易动态-背景图标
-			leftImgSrc(item) {
-				let urlArr = [{
-					status: 1,
-					url: '/static/images/index/title-car.png',
-				}, {
-					status: 3,
-					url: '/static/images/index/title-sell.png'
-				}, {
-					status: 2,
-					url: '/static/images/index/title-sale.png'
-				}, {
-					status: 4,
-					url: '/static/images/index/title-saled.png'
-				}, ]
-				return urlArr.find(val => val.status == item.status)?.url
-			},
-
-			// 消息
-			handleMsg() {
-				this.$tab.navigateTo(`/subPages/work/index`)
-			},
-			// 获取顶部导航栏的高度
-			getnavigateBarHeight() {
-				let menuButtonObject = uni.getMenuButtonBoundingClientRect();
-				uni.getSystemInfo({
-					success: res => {
-						this.navigateBarHeight = res.statusBarHeight;
-					},
-					fail(err) {
-						console.log(err);
-					}
-				})
+				this.$modal.closeLoading()
+				uni.stopPullDownRefresh()
+			})
+		},
+		// 获取状态值
+		getStatusValue() {
+			let data = {
+				dictTypes: 'dictTypes=car_status_three,car_status,car_sales_status'
 			}
+			getStatusList(data).then(res => {
+				this.$store.commit('setStatus', res.data)
+			})
+		},
+		// 搜索
+		search(val) {
+			uni.showToast({
+				title: '搜索：' + val,
+				icon: 'none'
+			})
+		},
+		// 清除
+		clear(val) {
+			uni.showToast({
+				title: '清除：' + val,
+				icon: 'none'
+			})
+		},
+		// 我要收车
+		buyCar() {
+			this.$tab.navigateTo('/subPages/home/bycar/index');
+		},
+		// 我要卖车
+		sellingCar() {
+			this.$tab.navigateTo('/subPages/home/sellingCar/index');
+		},
+		// 收车状态
+		tabCarStatus(item, allChild) {
+			this.$tab.navigateTo(
+				`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
+			)
+		},
+		// 收车状态子项
+		handleTabItem(item, childStatus, allChild) {
+			this.$tab.navigateTo(
+				`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&childStatus=${childStatus}&&allChild=${JSON.stringify(allChild)}`
+			)
+		},
+
+		// 交易动态-背景图标
+		leftImgSrc(item) {
+			let urlArr = [{
+				status: 1,
+				url: '/static/images/index/title-car.png',
+			}, {
+				status: 3,
+				url: '/static/images/index/title-sell.png'
+			}, {
+				status: 2,
+				url: '/static/images/index/title-sale.png'
+			}, {
+				status: 4,
+				url: '/static/images/index/title-saled.png'
+			}, ]
+			return urlArr.find(val => val.status == item.status)?.url
+		},
+
+		// 消息
+		handleMsg() {
+			this.$tab.navigateTo(`/subPages/work/index`)
+		},
+		// 获取顶部导航栏的高度
+		getnavigateBarHeight() {
+			let menuButtonObject = uni.getMenuButtonBoundingClientRect();
+			uni.getSystemInfo({
+				success: res => {
+					this.navigateBarHeight = res.statusBarHeight;
+				},
+				fail(err) {
+					console.log(err);
+				}
+			})
 		}
+	}
 	}
 </script>
 
