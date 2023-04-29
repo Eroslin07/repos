@@ -107,6 +107,9 @@
 					showCancel: false,
 					confirmText: '知道了',
 					confirmColor: '#fa6401',
+					success(res){
+						_this.$tab.switchTab('/pages/index');
+					}
 
 				})
 				if (!this.fairVisible) return uni.showModal({
@@ -188,8 +191,6 @@
 					this.isSHowTip = ''
 				})
 			},
-
-
 		}
 	}
 </script>
