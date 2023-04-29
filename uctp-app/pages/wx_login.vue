@@ -73,7 +73,7 @@
 				let _this = this;
 				if (e.detail.errMsg.indexOf('deny') > -1) {
 					uni.showToast({
-						title: "获取手机号失败，请前往手机登录界面",
+						title: "获取手机号失败",
 						icon: "none"
 					})
 					return
@@ -82,7 +82,7 @@
 					 if (typeof encryptedData === 'undefined' || encryptedData == null || encryptedData === '') {
 						//前往手机登录界面
 						uni.showToast({
-							title: "获取手机号失败，请前往手机登录界面",
+							title: "获取手机号失败",
 							icon: "none"
 						})
 						return;
