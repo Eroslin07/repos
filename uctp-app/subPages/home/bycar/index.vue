@@ -215,7 +215,7 @@
 					</u-form-item>
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle"
-							iconStyle="font-size: 16px; color: #e26e1f" text="保证金可用余额150000元" color="#e26e1f"></u--text>
+							iconStyle="font-size: 16px; color: #e26e1f" :text="'保证金可用余额'+$amount.getComdify(available)+'元'" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
 						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'">公允价值审核-退回 ></view>
@@ -381,12 +381,9 @@
 <script>
 	const bankLenght = [8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 25, 26, 27]
 	import config from '@/config'
-	import {
-		getAccessToken
-	} from '@/utils/auth'
-	import {
-		urlTobase64
-	} from '@/utils/ruoyi.js'
+	import { getAccessToken } from '@/utils/auth'
+	import { urlTobase64 } from '@/utils/ruoyi.js'
+	import { getDetail } from '@/api/account/bond.js'
 	import modelList from '@/subPages/home/bycar/modelList.vue'
 	import {
 		getIdCard,
@@ -415,6 +412,8 @@
 		},
 		data() {
 			return {
+				// 可用余额
+				available: 0,
 				// 删除弹框
 				deleteModal: false,
 				vehicleInfor: true,
@@ -767,6 +766,7 @@
 		mounted() {
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
 			this.getAllBrand();
+			this.getAvailableCash();
 		},
 		methods: {
 			back() {
@@ -781,6 +781,11 @@
 						duration: 300
 					});
 				}
+			},
+			getAvailableCash() {
+				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
+					this.available = res.data.availableCash / 100;
+				})
 			},
 			handelKey(value) {
 				if (value.length != 0) {
