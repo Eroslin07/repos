@@ -128,7 +128,8 @@
 								confirmText: '知道了',
 								confirmColor: '#fa6401',
 								success: function (res) {
-									_this.$tab.redirectTo('/subPages/mine/staff/index')
+									uni.$emit('refresh', { refresh: true })
+									_this.$tab.navigateBack()
 								}
 							})
 						})
@@ -142,7 +143,8 @@
 									confirmText: '知道了',
 									confirmColor: '#fa6401',
 									success: function (res) {
-										_this.$tab.redirectTo('/subPages/mine/staff/index')
+										uni.$emit('refresh', { refresh: true })
+										_this.$tab.navigateBack()
 									}
 								})
 							} else {
@@ -153,7 +155,8 @@
 									confirmText: '知道了',
 									confirmColor: '#fa6401',
 									success: function (res) {
-										_this.$tab.redirectTo('/subPages/mine/staff/index')
+										uni.$emit('refresh', { refresh: true })
+										_this.$tab.navigateBack()
 									}
 								})
 							}
@@ -175,7 +178,8 @@
 						confirmText: '知道了',
 						confirmColor: '#fa6401',
 						success: function (res) {
-							_this.$tab.redirectTo('/subPages/mine/staff/index')
+							uni.$emit('refresh', { refresh: true })
+							_this.$tab.navigateBack()
 						}
 					})
 				})

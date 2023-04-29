@@ -74,6 +74,17 @@
 				status: false
 			}
 		},
+		onShow: function() {
+			uni.$on('refresh', (data) => {
+				if (data.refresh) {
+					this.getSummary();
+					this.getList();
+				}
+			});
+		},
+		onUnload: function() {
+			uni.$off('refresh'); // 需要手动解绑自定义事件
+		},
 		mounted() {
 			this.getSummary();
 			this.getList();

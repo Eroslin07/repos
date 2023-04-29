@@ -74,6 +74,16 @@
 				status: false
 			}
 		},
+		onShow: function() {
+			uni.$on('refresh', (data) => {
+				if (data.refresh) {
+					this.getBondDetail();
+				}
+			});
+		},
+		onUnload: function() {
+			uni.$off('refresh'); // 需要手动解绑自定义事件
+		},
 		mounted() {
 			this.$modal.loading("数据加载中，请耐心等待...");
 			this.getBondDetail();
