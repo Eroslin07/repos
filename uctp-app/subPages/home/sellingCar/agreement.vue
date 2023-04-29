@@ -1,13 +1,27 @@
 <template>
 	<view class="agreement">
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full>
-			<view class="text">
-				<image src="../../../static/images/bycar/hetong2.png" class="hetong_image"></image>
-				<view style="margin-top: 20px;"  @click="handleViewContract">
-					<image src="../../../static/images/bycar/hetong1.png" class="form-image" style="width: 16pt;height: 16pt;"></image>
-					<text>{{ contractName ||'《二手车销售协议》'}}</text>
+			<view class="contract-box">
+				<view class="text"  @click="handleViewContract('2')">
+					<image src="../../../static/images/bycar/sell-contract.png" class="hetong_image"></image>
+					<view style="margin-top: 20px;">
+						<u-checkbox-group v-model="contractValue">
+							<u-checkbox labelColor="#fa6400" :label="contractName" name="销售协议">
+							</u-checkbox>
+						</u-checkbox-group>
+					</view>
+				</view>
+				<view class="text" @click="handleViewContract('1')">
+					<image src="../../../static/images/bycar/entrust.png" class="hetong_image"></image>
+					<view style="margin-top: 20px;">
+						<u-checkbox-group v-model="entrustValue">
+							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托收购协议">
+							</u-checkbox>
+						</u-checkbox-group>
+					</view>
 				</view>
 			</view>
+			
 			<!-- 底部按钮 -->
 			<button @click="handleAffirm" class="button" style="background-color: #fff;color: #333;">合同签章</button>
 			<button @click="handleCancel" class="button" style="background-color: #fff;color: #333;">取消合同签章</button>
@@ -32,7 +46,10 @@
 				isSHowTip:'',
 				contractDtail:[],
 				carId:'',
-				contractName:''
+				contractName: '收购协议',
+				entrustName: '委托收购协议',
+				contractValue: [],
+				entrustValue: [],
 			}
 		},
 		components: {
@@ -49,7 +66,8 @@
 				let data = `carId=${this.carId}&&type=2`
 				getContractEcho(data).then(res => {
 					this.contractDtail = res.data
-					this.contractName=res.data.find(v=>v.contractType=='2')?.contractName;
+					this.contractName = res.data.find(v => v.contractType == '2')?.contractName || '收购协议'
+					this.entrustName = res.data.find(v => v.contractType == '1')?.contractName || '委托收购协议'
 				}).catch(err => {
 					this.$modal.msg('获取合同失败')
 				}).finally(()=>{
@@ -58,9 +76,9 @@
 			},
 			
 			// 查看
-			handleViewContract() {
+			handleViewContract(text) {
 				this.$modal.msg('正在加载，请稍等...')
-				let url=this.contractDtail.find(v=>v.contractType=='2')?.url
+				let url=this.contractDtail.find(v=>v.contractType==text)?.url
 				uni.downloadFile({
 					url: url,
 					success: function(res) {
@@ -80,6 +98,7 @@
 			},
 			// 合同签章
 			handleAffirm() {
+				if(!this.contractValue.length || !this.entrustValue.length) return this.$modal.msg('请勾选协议和委托协议！')
 				this.$modal.msg('正在加载，请稍等...')
 				let data={
 					...this.contractDtail.find(v=>v.contractType=='1')
@@ -115,15 +134,20 @@
 		border-bottom: none;
 	}
 	/* #endif */
-	
+	.contract-box {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+	}
 	.hetong_image {
-		width: 66pt;
-		height: 66pt;
+		width: 80rpx;
+		height: 80rpx;
 	}
 	
 	.text {
 		padding: 200rpx 0;
-		font-size: 16px;
+		font-size: 30rpx;
 		text-align: center;
 		color: #fa6400;
 	}

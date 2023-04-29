@@ -30,7 +30,7 @@ public class MsgContentUtil {
         if ("1".equals(map.get("type"))) {
             switch (map.get("contentType")) {
                 case "11"://1
-                    result="【翼龙科技】您在翼龙科技平台的账号注册流程因"+map.get("reason")+"审批未通过，请及时与市场方进行沟通。";//流程调存一条站内，一条短信
+                    result="【翼龙科技】您在翼龙科技平台的账号注册流程因"+map.get("reason")+"审批未通过，请及时与市场方沟通。";//流程调存一条站内，一条短信
                     break;
                 case "12":
                     result="【翼龙科技】恭喜您已经成为翼龙科技平台的一员，请登录翼龙科技小程序进行使用";
@@ -76,13 +76,13 @@ public class MsgContentUtil {
                     break;*/
 //-------
                 case "40":
-                    result = String.format("【翼龙科技】您在车友通注册的主账号已审批通过，请在15分钟内访问%s 完成企业实名认证。", map.get("url"));
+                    result = String.format("【翼龙科技】您在车友通注册的主账号已审批通过，请在15分钟内访问%s 完成企业实名认证。", map.get("url").replaceAll("https://",""));
                     break;
                 case "41":
-                    result = String.format("【翼龙科技】您在车友通的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。", map.get("url"));
+                    result = String.format("【翼龙科技】您在车友通的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。", map.get("url").replaceAll("https://",""));
                     break;
                 case "42":
-                    result = String.format("【翼龙科技】您已完成企业认证，请在15分钟内访问#url#完成个人实名认证。", map.get("url"));
+                    result = String.format("【翼龙科技】您已完成企业认证，请在15分钟内访问#url#完成个人实名认证。", map.get("url").replaceAll("https://",""));
                     break;
                 case "43":
                     result=map.get("url");
