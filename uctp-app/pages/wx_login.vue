@@ -102,8 +102,10 @@
 					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
-					this.$modal.hideMsg()
-					this.showModel = true;
+					if (error == 1002000012) {
+						this.$modal.hideMsg()
+						this.showModel = true;
+					}
 				}).finally(()=>{
 					this.$modal.closeLoading()
 				})
