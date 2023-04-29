@@ -978,6 +978,8 @@
 										_this.upload(res, index);
 									}
 								}
+							}).catch((error) => {
+								_this[`fileList${index}`] = [];
 							})
 						}
 					}

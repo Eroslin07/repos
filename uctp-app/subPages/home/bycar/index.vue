@@ -892,9 +892,15 @@
 												}
 												// 根据品牌查询id
 												_this.carBrandList();
+											}).catch((error) => {
+												_this[`fileList${index}`] = [];
+												_this.carForm.drivingLicenseUrl = [];
 											})
 										}
 									}
+								}).catch((error) => {
+									_this[`fileList${index}`] = [];
+									_this.carForm.drivingLicenseUrl = [];
 								})
 							}
 						} else if (index == 2 || index == 5 || index == 6 || index == 7) {
@@ -947,6 +953,8 @@
 											_this.upload(res, index);
 										}
 									}
+								}).catch((error) => {
+									_this[`fileList${index}`] = [];
 								})
 							}
 						}

@@ -472,6 +472,8 @@
 											_this.upload(res, type, index);
 										}
 									}
+								}).catch((error) => {
+									_this[`fileList${index}`] = [];
 								})
 							}
 						} else if (index == 3) {
@@ -495,6 +497,9 @@
 											_this.upload(res, type, index);
 										}
 									}
+								}).catch((error) => {
+									_this[`fileList${index}`] = [];
+									_this.registerForm.businessLicense = [];
 								})
 							}
 						}
