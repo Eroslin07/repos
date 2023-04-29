@@ -24,8 +24,8 @@
 			
 			<!-- 底部按钮 -->
 			<button @click="handleAffirm" class="button" style="background-color: #fff;color: #333;">合同签章</button>
-			<button @click="handleCancel" class="button" style="background-color: #fff;color: #333;">取消合同签章</button>
-			<button @click="handleClose" class="button">保存并关闭</button>
+			<!-- <button @click="handleCancel" class="button" style="background-color: #fff;color: #333;">取消合同签章</button> -->
+			<button @click="handleClose" class="button">关闭</button>
 		</uni-card>
 		<!-- 提示信息 -->
 		<AbnormalPage v-else :isSHowTip="isSHowTip" />
@@ -38,6 +38,9 @@
 		getCancelContract,
 		getContractEcho
 	} from '@/api/home/bycar.js'
+	import {
+		setCreate
+	} from '@/api/home'
 	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
@@ -50,6 +53,9 @@
 				entrustName: '委托收购协议',
 				contractValue: [],
 				entrustValue: [],
+				fairValue: undefined,
+				carData: undefined,
+				gxzStatus: true,
 			}
 		},
 		components: {
@@ -57,6 +63,9 @@
 		},
 		onLoad(options){
 			this.carId = options.carId
+			this.fairValue = JSON.parse(options.fairValue)
+			this.carData = JSON.parse(options.data)
+			this.gxzStatus = options.gxzStatus
 			this.getContractUrl()
 		},
 		methods: {
@@ -98,17 +107,65 @@
 			},
 			// 合同签章
 			handleAffirm() {
-				if(!this.contractValue.length || !this.entrustValue.length) return this.$modal.msg('请勾选协议和委托协议！')
-				this.$modal.msg('正在加载，请稍等...')
-				let data={
-					...this.contractDtail.find(v=>v.contractType=='1')
-				}
-				getQiyuesuo(data.contractId).then((res) => {
-					if (res.data) {
-						this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
+				let _this = this;
+				if(!_this.contractValue.length || !_this.entrustValue.length) return _this.$modal.msg('请勾选协议和委托协议！')
+				// 判断是否超出公允值
+				if (_this.gxzStatus == false) {
+					uni.showModal({
+						title: '提示',
+						content: '您的卖车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
+						confirmText: '是',
+						cancelText: '否',
+						confirmColor: '#fa6401',
+						success(ress) {
+							if (ress.confirm) {
+								_this.handleDraft();
+							}
+						}
+					})
+				} else {
+					_this.$modal.msg('正在加载，请稍等...')
+					let data={
+						..._this.contractDtail.find(v=>v.contractType=='1')
 					}
-				}).catch(()=>{
-					// this.$modal.msg('加载失败！')
+					getQiyuesuo(data.contractId).then((res) => {
+						if (res.data) {
+							_this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
+						}
+					}).catch(()=>{
+						// this.$modal.msg('加载失败！')
+					})
+				}
+			},
+			// 发起公允值审批流程
+			handleDraft() {
+				let procDefKey = "MGYZ";
+				this.carData.fairValue = this.fairValue;
+				let variables = {
+					marketName: this.$store.state.user.tenantName,
+					merchantName: this.$store.state.user.deptName,
+					startUserId: this.$store.state.user.id,
+					formDataJson: {
+						formMain: {
+							merchantId: this.$store.state.user.deptId,
+							thirdId: this.carData.carInfoDetails.carId,
+							formDataJson: this.carData
+						}
+					}
+				}
+				let createData = {
+					procDefKey,
+					variables
+				};
+				this.$modal.loading("提交中，请耐心等待...");
+				setCreate(createData).then((ress) => {
+					this.$modal.closeLoading()
+					this.showOverlay = false;
+					this.$modal.msg("已提交审核");
+					this.$tab.switchTab('/pages/index');
+				}).catch((error) => {
+					this.$modal.closeLoading()
+					// this.$modal.msgError("发起流程失败");
 				})
 			},
 			// 取消合同签章
