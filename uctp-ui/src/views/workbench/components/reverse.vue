@@ -93,7 +93,7 @@
         <el-col :span="4" class="bg-blue"><span>厂牌型号</span></el-col>
         <el-col :span="4"><span>车辆信息的品牌型号</span></el-col>
         <el-col :span="4" class="bg-blue"><span>转入地车辆管理所名称</span></el-col>
-        <el-col :span="4"><el-input></el-input></el-col>
+        <el-col :span="4"><el-input /></el-col>
       </el-row>
       <el-row>
         <el-col :span="4" class="bg-blue">

@@ -128,5 +128,9 @@ export enum DICT_TYPE {
   TENANT_PACKAGE_TYPE = 'tenant_package_type', //租户套餐类型
 
   SETTLEMENT_INVOICE_STATUS = 'Invoice_status', //发票状态
-  SETTLEMENT_INVOICE_TYPE = 'Invoice_type' //发票类型
+  SETTLEMENT_INVOICE_TYPE = 'Invoice_type', //发票类型
+
+  UCTP_STATUS = 'uctp_status', //发票类型
+  CONTRACT_TEMP_TYPE = 'contract_type', //合同类型
+  CONTRACT_CONTRACT_STATUS = 'contract_status' //合同状态
 }

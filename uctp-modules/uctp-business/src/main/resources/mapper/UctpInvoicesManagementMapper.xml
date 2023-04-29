@@ -20,61 +20,57 @@
         <result property="optimistic" column="REVISION"/>
     </resultMap>
 
-    <sql id="InvoiceVo">
-        select ID,
-               INVOICE_TYPE,
-               BUSINESS,
-               CONTRACT_NO,
-               NAME,
-               AMOUNT_MONEY,
-               TAX,
-               STATUS,
-               TENANT_ID,
-               CREATED_BY,
-               CREATED_TIME,
-               UPDATED_BY,
-               UPDATED_TIME,
-               REVISION
-        from uctp_invoices_management
-    </sql>
-
     <select id="getInvoice" resultMap="invoiceRespVO"
             parameterType="com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceReqVO">
-        <include refid="InvoiceVo"/>
-        <where>
-            <if test="invoiceReqVO.merchant != null and invoiceReqVO.merchant != ''">
-                AND BUSINESS =#{invoiceReqVO.merchant}
-            </if>
-            <if test="invoiceReqVO.type != null and invoiceReqVO.type != ''">
-                AND INVOICE_TYPE =#{invoiceReqVO.type}
-            </if>
-            <if test="invoiceReqVO.status != null and invoiceReqVO.status != ''">
-                AND STATUS =#{invoiceReqVO.status}
-            </if>
-        </where>
-
+        select
+        uc.ID,
+        uc.INVOICE_TYPE,
+        d.name as BUSINESS,
+        uc.CONTRACT_NO,
+        uc.NAME,
+        uc.AMOUNT_MONEY,
+        uc.TAX,
+        uc.STATUS,
+        uc.TENANT_ID,
+        uc.CREATED_BY,
+        uc.CREATED_TIME,
+        uc.UPDATED_BY,
+        uc.UPDATED_TIME,
+        uc.REVISION
+        from uctp_invoices_management uc
+        inner join system_dept d on d.id = uc.BUSINESS
+        <if test="invoiceReqVO.merchant != null and invoiceReqVO.merchant != ''">
+            AND BUSINESS =#{invoiceReqVO.merchant}
+        </if>
+        <if test="invoiceReqVO.type != null and invoiceReqVO.type != ''">
+            AND INVOICE_TYPE =#{invoiceReqVO.type}
+        </if>
+        <if test="invoiceReqVO.status != null and invoiceReqVO.status != ''">
+            AND STATUS =#{invoiceReqVO.status}
+        </if>
     </select>
 
-       <select id="getInvoiceList" resultMap="invoiceRespVO"
-               parameterType="com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceReqVO">
-           select uc.ID,
-                  uc.INVOICE_TYPE,
-                  c.Invoice_type as TYPE_NAME,
-                  uc.BUSINESS,
-                  uc.CONTRACT_NO,
-                  uc.NAME,
-                  uc.AMOUNT_MONEY,
-                  uc.TAX,
-                  uc.STATUS,
-                  co.Invoice_status as STATUS_NAME,
-                  uc.TENANT_ID,
-                  uc.CREATED_BY,
-                  uc.CREATED_TIME,
-                  uc.UPDATED_BY,
-                  uc.UPDATED_TIME,
-                  uc.REVISION
-           from uctp_invoices_management uc
-           inner join uctp_conversion c on uc.INVOICE_TYPE = c.id
-           left join uctp_conversion co on uc.STATUS = co.id
-       </select>
+    <select id="getInvoiceList" resultMap="invoiceRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceReqVO">
+        select uc.ID,
+               uc.INVOICE_TYPE,
+               c.Invoice_type    as TYPE_NAME,
+               d.name as BUSINESS,
+               uc.CONTRACT_NO,
+               uc.NAME,
+               uc.AMOUNT_MONEY,
+               uc.TAX,
+               uc.STATUS,
+               co.Invoice_status as STATUS_NAME,
+               uc.TENANT_ID,
+               uc.CREATED_BY,
+               uc.CREATED_TIME,
+               uc.UPDATED_BY,
+               uc.UPDATED_TIME,
+               uc.REVISION
+        from uctp_invoices_management uc
+                 inner join uctp_conversion c on uc.INVOICE_TYPE = c.id
+                 left join uctp_conversion co on uc.STATUS = co.id
+                 left join system_dept d on d.id = uc.BUSINESS
+    </select>
 </mapper>

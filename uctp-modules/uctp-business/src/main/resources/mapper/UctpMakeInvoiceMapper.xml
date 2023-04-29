@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.configurationMapper.MakeInvoiceMapper">
+    <resultMap id="makeInvoiceRespVO"
+               type="com.newtouch.uctp.module.business.controller.admin.configuration.vo.MakeInvoiceRespVO">
+        <id property="id" column="ID"/>
+        <result property="companyName" column="COMPANY_NAME"/>
+        <result property="taxNum" column="TAX_NUM"/>
+        <result property="represent" column="REPRESENT"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="tel" column="TEL"/>
+        <result property="opening" column="OPENING"/>
+        <result property="name" column="NAME"/>
+        <result property="bank" column="BANK"/>
+        <result property="bankAccount" column="BANK_ACCOUNT"/>
+        <result property="tenantId" column="TENANT_ID"/>
+    </resultMap>
+
+    <sql id="MakeInvoiceVo">
+        select ID,
+               COMPANY_NAME,
+               TAX_NUM,
+               REPRESENT,
+               ADDRESS,
+               TEL,
+               OPENING,
+               NAME,
+               BANK,
+               BANK_ACCOUNT,
+               TENANT_ID
+        from uctp_invoice_title_config
+    </sql>
+
+    <select id="createMakeInvoice"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.MakeInvoiceRespVO"
+            resultMap="makeInvoiceRespVO">
+        select
+        ID,
+        COMPANY_NAME,
+        TAX_NUM,
+        REPRESENT,
+        ADDRESS,
+        TEL,
+        OPENING,
+        NAME,
+        BANK,
+        BANK_ACCOUNT,
+        TENANT_ID
+        from uctp_invoice_title_config
+        <set>
+            <if test="reqVO.companyName != null and reqVO.companyName != ''">COMPANY_NAME = #{reqVO.companyName},</if>
+            <if test="reqVO.taxNum != null and reqVO.taxNum != ''">TAX_NUM = #{reqVO.taxNum},</if>
+            <if test="reqVO.represent != null and reqVO.represent != ''">REPRESENT = #{reqVO.represent},</if>
+            <if test="reqVO.address != null and reqVO.address != ''">ADDRESS = #{reqVO.address},</if>
+            <if test="reqVO.tel != null and reqVO.tel != ''">TEL = #{reqVO.tel},</if>
+            <if test="reqVO.opening != null and reqVO.opening != ''">OPENING = #{reqVO.opening},</if>
+            <if test="reqVO.name != null and reqVO.name != ''">NAME = #{reqVO.name},</if>
+            <if test="reqVO.bank != null and reqVO.bank != ''">BANK = #{reqVO.bank},</if>
+            <if test="reqVO.bankAccount != null and reqVO.bankAccount != ''">BANK_ACCOUNT = #{reqVO.bankAccount},</if>
+        </set>
+    </select>
+
+    <!-- 获取开票设置信息 -->
+    <select id="getMakeInvoice" parameterType="Long" resultMap="makeInvoiceRespVO">
+        <include refid="MakeInvoiceVo"/>
+        where TENANT_ID = #{tenantId}
+    </select>
+
+    <!-- 编辑开票信息信息 -->
+    <select id="updateMakeInvoice" resultMap="makeInvoiceRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.MakeInvoiceUpdateReqVO">
+        update uctp_invoice_title_config
+        <set>
+            <if test="reqVO.companyName != null and reqVO.companyName != ''">COMPANY_NAME = #{reqVO.companyName},</if>
+            <if test="reqVO.taxNum != null and reqVO.taxNum != ''">TAX_NUM = #{reqVO.taxNum},</if>
+            <if test="reqVO.represent != null and reqVO.represent != ''">REPRESENT = #{reqVO.represent},</if>
+            <if test="reqVO.address != null and reqVO.address != ''">ADDRESS = #{reqVO.address},</if>
+            <if test="reqVO.tel != null and reqVO.tel != ''">TEL = #{reqVO.tel},</if>
+            <if test="reqVO.opening != null and reqVO.opening != ''">OPENING = #{reqVO.opening},</if>
+            <if test="reqVO.name != null and reqVO.name != ''">NAME = #{reqVO.name},</if>
+            <if test="reqVO.bank != null and reqVO.bank != ''">BANK = #{reqVO.bank},</if>
+            <if test="reqVO.bankAccount != null and reqVO.bankAccount != ''">BANK_ACCOUNT = #{reqVO.bankAccount},</if>
+        </set>
+        where ID = #{reqVO.id}
+    </select>
+</mapper>
