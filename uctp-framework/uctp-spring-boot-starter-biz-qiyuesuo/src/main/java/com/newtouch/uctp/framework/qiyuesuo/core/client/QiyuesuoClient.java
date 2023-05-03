@@ -161,4 +161,9 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<SealListResult> defaultSealList(String tenantName);
+
+
+
+
+
 }
