@@ -19,6 +19,7 @@ import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
 import com.newtouch.uctp.module.business.api.transfer.CarTransferApi;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
@@ -56,6 +57,10 @@ public class BpmCarTransferServiceImpl implements BpmCarTransferService {
         if (ObjectUtil.isNull(carId) || !StringUtils.hasText(procDefKey)) {
             throw new IllegalArgumentException("车辆ID、流程业务标识不能为空。");
         }
+        if (!(ObjectUtil.equals(BpmDefTypeEnum.SCGH.name(), procDefKey) || ObjectUtil.equals(BpmDefTypeEnum.MCGH.name(), procDefKey))) {
+            throw new IllegalArgumentException("procDefKey参数不正确，请根据业务场景传递正确的参数。（SCGH-收车过户、MCGH-卖车过户）。");
+        }
+
         CarInfoDO carInfoDO = carInfoMapper.findCarInfoByCarId(carId);
         if (ObjectUtil.isNull(carInfoDO)) {
             throw new IllegalArgumentException("未能通过车辆ID查询到车辆信息。");

@@ -24,9 +24,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
+import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
+import com.newtouch.uctp.module.bpm.dal.mysql.car.ContractMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
@@ -67,6 +69,8 @@ public class BpmGlobalHandleListener {
     private UserMapper userMapper;
     @Resource
     private RepositoryService repositoryService;
+    @Resource
+    private ContractMapper contractMapper;
 
     /**
      * 流程创建时处理
@@ -147,6 +151,9 @@ public class BpmGlobalHandleListener {
                 carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
                 carInfoMapper.updateById(carInfoDO);
+                // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+                ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 1);
+                qysConfigApi.companySign(contractDO.getContractId());
                 noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
@@ -161,6 +168,9 @@ public class BpmGlobalHandleListener {
                 carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
                 carInfoMapper.updateById(carInfoDO);
+                // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+                ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 3);
+                qysConfigApi.companySign(contractDO.getContractId());
                 noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
             }
         }

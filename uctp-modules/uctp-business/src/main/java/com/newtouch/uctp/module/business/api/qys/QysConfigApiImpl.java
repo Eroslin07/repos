@@ -37,4 +37,10 @@ public class QysConfigApiImpl implements QysConfigApi{
         qysConfigService.userAuth(userId);
         return success(Boolean.TRUE);
     }
+
+    @Override
+    public CommonResult<Boolean> companySign(Long contractId) {
+        qysConfigService.companySign(contractId);
+        return success(Boolean.TRUE);
+    }
 }
