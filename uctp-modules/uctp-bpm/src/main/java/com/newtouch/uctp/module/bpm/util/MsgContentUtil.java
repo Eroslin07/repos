@@ -29,7 +29,7 @@ public class MsgContentUtil {
         if ("1".equals(map.get("type"))) {
             switch (map.get("contentType")) {
                 case "11"://1
-                    result="【翼龙科技】您在翼龙科技平台的账号注册流程因"+map.get("reason")+"审批未通过，请及时与市场方进行沟通。";//流程调存一条站内，一条短信
+                    result="【翼龙科技】您在车友通的账号注册流程因"+map.get("reason")+"审批未通过，请及时与市场方沟通。";//流程调存一条站内，一条短信
                     break;
                 case "12":
                     result="【翼龙科技】恭喜您已经成为翼龙科技平台的一员，请登录翼龙科技小程序进行使用";
@@ -54,7 +54,8 @@ public class MsgContentUtil {
                 case "26"://2
                     result="【翼龙科技】您的"+buyType+"车合同"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家已超过10分钟未签署，请及时与"+buyType+"家沟通。";
                     break;
-
+//http://59.80.30.152:20084
+             //   https://code.newtouch.com/Fu7iRdwS/uctp-cloud.git
               /*  case "31"://5
                     result="【翼龙科技】您的卖车价格"+amount+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
                     break;

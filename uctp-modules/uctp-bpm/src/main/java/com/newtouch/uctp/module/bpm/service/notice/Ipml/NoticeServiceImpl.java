@@ -41,7 +41,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
-    @GlobalTransactional
+   // @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map
