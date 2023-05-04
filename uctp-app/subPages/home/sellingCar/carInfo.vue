@@ -177,7 +177,7 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number">
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number" @focus="depositFocus" @blur="depositBlur">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -1095,6 +1095,16 @@
 			handleFocus() {
 				let amount = this.$amount.getDelcommafy(this.sellerForm.sellAmount);
 				this.$set(this.sellerForm, 'sellAmount', amount);
+			},
+			//定金获取焦点
+			depositFocus(){
+				let amount = this.$amount.getDelcommafy(this.sellerForm.deposit);
+				this.$set(this.sellerForm, 'deposit', amount);
+			},
+			//顶级失焦
+			depositBlur(){
+				let amount = this.$amount.getComdify(this.sellerForm.deposit);
+				this.$set(this.sellerForm, 'deposit', amount);
 			},
 			// 删除
 			handleDelete() {
