@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.bpm.service.task;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
@@ -16,8 +17,8 @@ import java.util.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.flowable.bpmn.model.FlowElement;
-import org.flowable.bpmn.model.UserTask;
+import org.flowable.bpmn.model.Process;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
@@ -28,6 +29,7 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,8 @@ import com.newtouch.uctp.framework.common.util.date.DateUtils;
 import com.newtouch.uctp.framework.common.util.number.NumberUtils;
 import com.newtouch.uctp.framework.common.util.object.PageUtils;
 import com.newtouch.uctp.framework.mybatis.core.util.MyBatisUtils;
+import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
+import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmTaskConvert;
@@ -54,6 +58,7 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.definition.BpmProcessDefinitionExtMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.task.BpmTaskExtMapper;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import com.newtouch.uctp.module.bpm.service.message.BpmMessageService;
@@ -507,7 +512,9 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             bpmFormMainVO.setFormDataJson(JSON.parseObject(new String(bpmFormMainDO.getFormDataJson())));
         }
         HashMap<String, Object> formDataJsonVariable = new HashMap<>();
-        formDataJsonVariable.put("formMain", bpmFormMainVO);
+        Map<String, Object> formMainMap = BeanUtil.beanToMap(bpmFormMainVO, false, false);
+        formMainMap.put("formDataJson", bpmFormMainVO.getFormDataJson().getInnerMap());
+        formDataJsonVariable.put("formMain", formMainMap);
         variablesNew.put("formDataJson", formDataJsonVariable);
         bpmTaskApproveFormRespVO.setVariables(variablesNew);
 
@@ -554,5 +561,93 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         if (true) {
             throw new RuntimeException("11");
         }
+    }
+
+    @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
+    public void payWaitingSubmitTask(Long businessKey, String submitType, String reason) {
+        if (!(ObjectUtil.equals(submitType, "pass") || ObjectUtil.equals(submitType, "disagree"))) {
+            throw new RuntimeException("提交类型不支持，提交失败。");
+        }
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectBpmFormMainById(businessKey);
+        if (ObjectUtil.isNull(bpmFormMainDO) || ObjectUtil.notEqual(bpmFormMainDO.getStatus(), 1)) {
+            throw new RuntimeException("流程已不在审批中，提交失败。");
+        }
+        if (ObjectUtil.equals(BpmDefTypeEnum.LRTX.name(), bpmFormMainDO.getBusiType())
+                || ObjectUtil.equals(BpmDefTypeEnum.SKZH.name(), bpmFormMainDO.getBusiType())) {
+            List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmFormMainDO.getProcInstId()).active().list();
+            if (CollectionUtils.isEmpty(taskList)) {
+                throw new RuntimeException("未查找到[支付等待完成]的任务节点任务，提交失败。");
+            }
+            Process process = repositoryService.getBpmnModel(bpmFormMainDO.getProcDefId()).getMainProcess();
+            String payWaitingNodeTaskId = "";
+            String assignee = "";
+            String nodeId = "";
+            for (int i = 0; i < taskList.size(); i++) {
+                TaskEntity taskEntity = (TaskEntity) taskList.get(i);
+                if (ObjectUtil.equals(this.getTaskNodeExtPropByKey(process, taskEntity.getTaskDefinitionKey(), "nodeSymbol"), "payWaiting")) {
+                    payWaitingNodeTaskId = taskEntity.getId();
+                    assignee = taskEntity.getAssignee();
+                    nodeId = taskEntity.getTaskDefinitionKey();
+                    break;
+                }
+            }
+            if (!StringUtils.hasText(payWaitingNodeTaskId)) {
+                throw new RuntimeException("未查找到[支付等待完成]的任务节点任务，提交失败。");
+            }
+            if (!StringUtils.hasText(assignee)) {
+                throw new RuntimeException("[支付等待完成]的任务节点任务的办理人为空，提交失败。");
+            }
+            String finalAssignee = assignee;
+            String finalPayWaitingNodeTaskId = payWaitingNodeTaskId;
+            String finalNodeId = nodeId;
+            TenantUtils.execute(bpmFormMainDO.getTenantId(), () -> {
+                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(finalAssignee));
+                BpmTaskApproveFormRespVO bpmTaskApproveFormRespVO = this.getTaskFormInfo(finalPayWaitingNodeTaskId, String.valueOf(businessKey));
+                Map<String, Object> variables = bpmTaskApproveFormRespVO.getVariables();
+                variables.put("approvalType", ObjectUtil.equals(submitType, "pass") ? "pass" : "disagree");
+                variables.put("reason", StringUtils.hasText(reason) ? reason : (ObjectUtil.equals(submitType, "pass") ? "支付成功" : "支付失败"));
+                variables.put("nodeId", finalNodeId);
+                BpmTaskApproveReqVO reqVO = new BpmTaskApproveReqVO();
+                reqVO.setId(finalPayWaitingNodeTaskId);
+                reqVO.setReason(reason);
+                reqVO.setVariables(variables);
+                this.approveTaskV2(Long.valueOf(finalAssignee), reqVO);
+            });
+        } else {
+            throw new IllegalStateException("暂不支持该业务类型后台提交流程");
+        }
+
+        System.out.println("提交流程处理结束");
+    }
+
+    private String getTaskNodeExtPropByKey(Process process, String taskDefinitionKey, String extPropKey) {
+        FlowElement flowElement = process.getFlowElement(taskDefinitionKey);
+        Map<String, List<ExtensionElement>> extensionElements = flowElement.getExtensionElements();
+        if (CollectionUtils.isEmpty(extensionElements)) {
+            return null;
+        }
+        List<ExtensionElement> properties = extensionElements.get("properties");
+        if (CollectionUtils.isEmpty(properties)) {
+            return null;
+        }
+        Map<String, List<ExtensionElement>> childElements = properties.get(0).getChildElements();
+        if (CollectionUtils.isEmpty(childElements)) {
+            return null;
+        }
+        List<ExtensionElement> property = childElements.get("property");
+
+        for (ExtensionElement extElement:property) {
+            Map<String, List<ExtensionAttribute>> attributes = extElement.getAttributes();
+            if (CollectionUtils.isEmpty(attributes)) {
+                continue;
+            }
+            if (ObjectUtil.equals(attributes.get("name").get(0).getValue(), extPropKey)) {
+                return attributes.get("value").get(0).getValue();
+            }
+        }
+
+        return null;
     }
 }

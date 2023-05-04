@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author helong
@@ -16,7 +16,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class PayFailedCreateBpmDTO {
     @Schema(description = "支付侧合同号ID（对应契约锁的合同ID）")
-    @NotEmpty(message = "支付侧合同号ID（对应契约锁的合同ID）不能为空")
+    @NotNull(message = "支付侧合同号ID（对应契约锁的合同ID）不能为空")
     private Long contractId;
     @Schema(description = "变量实例")
     private Map<String, Object> variables = new HashMap<String, Object>();

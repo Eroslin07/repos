@@ -46,4 +46,9 @@ public interface BpmFormMainMapper extends BaseMapperX<BpmFormMainDO> {
     @ResultType(Map.class)
     @Select("select * from system_users where id = #{id}")
     Map<String, Object> findUserByIdToMap(@Param("id") Long id);
+
+    @InterceptorIgnore(tenantLine = "true")
+    @ResultType(BpmFormMainDO.class)
+    @Select("select * from bpm_form_main where id = #{id}")
+    BpmFormMainDO selectBpmFormMainById(@Param("id") Long id);
 }
