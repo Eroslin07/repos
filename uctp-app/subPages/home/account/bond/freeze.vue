@@ -71,6 +71,7 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
+			this.pageNo = 1;
 			this.getList();
 		},
 		// 触底加载
