@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
+import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import com.newtouch.uctp.module.bpm.annotation.WfEntity;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 
@@ -23,7 +23,7 @@ import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 @NoArgsConstructor
 @AllArgsConstructor
 @WfEntity(alias = "formMain", isMainEntity = true, mapperClass = BpmFormMainMapper.class)
-public class BpmFormMainDO extends BaseDO {
+public class BpmFormMainDO extends TenantBaseDO {
     /**
      * 业务ID
      */

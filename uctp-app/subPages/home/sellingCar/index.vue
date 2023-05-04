@@ -99,6 +99,7 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
+			this.formData.pageNo = 1;
 			this.getList(this.formData)
 		},
 		// 触底刷新
@@ -174,6 +175,7 @@
 					title: '搜索：' + val,
 					icon: 'none'
 				})
+				this.formData.pageNo = 1;
 				this.getList(this.formData);
 			},
 			// 清除

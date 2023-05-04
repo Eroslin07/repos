@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.bpm.api.payfailed.dto.PayFailedCreateBpmDTO;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.payfailed.PayFailedService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
@@ -30,9 +31,13 @@ public class PayFailedController {
     @Resource
     private PayFailedService payFailedService;
 
-    @PostMapping("/v3/create")
+    @PostMapping("/create")
     @Operation(summary = "根据流程定义标识（业务类型）新建流程")
     public CommonResult<String> createProcessInstanceByKey(@Valid @RequestBody PayFailedCreateBpmDTO createReqVO) {
-        return success(payFailedService.createBpm(createReqVO.getContractId(), "SKZH", createReqVO.getVariables()));
+        return success(payFailedService.createBpm(createReqVO.getContractId(), BpmDefTypeEnum.SKZH.name(), createReqVO.getVariables()));
     }
+
+
+
+
 }
