@@ -170,7 +170,7 @@
 								></text></view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
-						<u-radio-group v-model="sellerForm.sellType" placement="row">
+						<u-radio-group v-model="sellerForm.sellType" placement="row" activeColor="#fd6404">
 							<u-radio :customStyle="{marginBottom: '8px'}" v-for="(item, index) in sexs" :key="index"
 								:label="item.label" :name="item.value">
 							</u-radio>
