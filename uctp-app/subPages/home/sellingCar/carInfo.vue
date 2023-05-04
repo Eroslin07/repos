@@ -240,6 +240,7 @@
 					</view>
 					<view class="text"><text style="color:#f00">*</text> 车辆手续及备件</view>
 				</view>
+				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="changeValue">
@@ -315,7 +316,7 @@
 					</view>
 
 					<u-radio-group v-model="feesForm.vehicle" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="租金相关" :required="true" prop="rent"></u-form-item>
+						<u-form-item label="租金相关" :required="true" prop="vehicle"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="vehicleA"></u-radio>
 							<text>“轿车200元/天”</text>
@@ -335,7 +336,7 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.transfer" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="交易过户费" :required="true" prop="business"></u-form-item>
+						<u-form-item label="交易过户费" :required="true" prop="transfer"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="transferA"></u-radio>
 							<text>销售车辆首次交易过户费(平台过户买方指定过户人)</text>
@@ -351,7 +352,7 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.loss" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="车辆折损费用" :required="true" prop="damage"></u-form-item>
+						<u-form-item label="车辆折损费用" :required="true" prop="loss"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="lossA"></u-radio>
 							<text>依据本协议第二条车辆价款的5%支付车辆折损费用</text>
@@ -363,7 +364,7 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.testing" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="第三方检测费用" :required="true" prop="check"></u-form-item>
+						<u-form-item label="第三方检测费用" :required="true" prop="testing"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="testingA"></u-radio>
 							<text>全车检测费用</text>
@@ -640,6 +641,7 @@
 						trigger: ['blur', 'change']
 					}
 				},
+				chebi: false,
 				//其他
 				other: '',
 				fairValue: {
@@ -1124,8 +1126,15 @@
 			},
 			// 下一步
 			handleStep() {
+				if (this.carForm.checkboxValue.length == 0) {
+					this.chebi = true;
+				} else {
+					this.chebi = false;
+				}
 				this.$refs.feesForm.validate().then(res => {
-					this.handleDraft('step');
+					if (this.chebi == false) {
+						this.handleDraft('step');
+					}
 				})
 			},
 			// 点击车辆信息保存
