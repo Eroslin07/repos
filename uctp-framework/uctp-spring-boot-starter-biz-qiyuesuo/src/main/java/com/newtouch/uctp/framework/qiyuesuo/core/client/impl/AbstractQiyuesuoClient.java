@@ -6,6 +6,7 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.bean.Employee;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 import org.springframework.stereotype.Component;
@@ -190,6 +191,24 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         }
         return result;
     }
+
+    @Override
+    public QiyuesuoCommonResult<Employee> defaultEmployeeCreate(EmployeeCreateRequest request) {
+        QiyuesuoCommonResult<Employee> result;
+        try {
+            result = doDefaultEmployeeCreate(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<Employee> doDefaultEmployeeCreate(EmployeeCreateRequest request)
+            throws Throwable;
 
     protected abstract QiyuesuoCommonResult<SealListResult> doDefaultSealList(SealListRequest request)
             throws Throwable;

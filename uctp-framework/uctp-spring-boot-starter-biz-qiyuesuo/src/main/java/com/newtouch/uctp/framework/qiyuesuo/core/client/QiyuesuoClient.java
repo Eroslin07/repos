@@ -1,6 +1,7 @@
 package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import com.qiyuesuo.sdk.v2.bean.Contract;
+import com.qiyuesuo.sdk.v2.bean.Employee;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.ContractPageResult;
@@ -162,8 +163,17 @@ public interface QiyuesuoClient {
      */
     QiyuesuoCommonResult<SealListResult> defaultSealList(String tenantName);
 
-
-
-
-
+    /**
+     * 获取公司下的印章列表
+     * @param request 契约锁需要的参数
+     * @return
+     */
+    QiyuesuoCommonResult<Employee> defaultEmployeeCreate(EmployeeCreateRequest request);
+    /**
+     * 获取公司下的印章列表
+     * @param name 员工名字
+     * @param contact 电话
+     * @return
+     */
+    QiyuesuoCommonResult<Employee> defaultEmployeeCreate(String name,String contact);
 }

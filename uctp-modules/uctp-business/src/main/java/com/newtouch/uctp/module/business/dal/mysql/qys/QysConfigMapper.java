@@ -37,7 +37,6 @@ public interface QysConfigMapper extends BaseMapperX<QysConfigDO> {
 
     default List<QysConfigDO> selectListAuth(){
         return selectList(new QueryWrapperX<QysConfigDO>()
-                .isNotNull("SERVER_URL")
                 .isNotNull("ACCESS_KEY")
                 .isNotNull("ACCESS_SECRET"));
     }

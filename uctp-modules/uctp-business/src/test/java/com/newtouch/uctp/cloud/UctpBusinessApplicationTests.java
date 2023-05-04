@@ -48,12 +48,12 @@ class UctpBusinessApplicationTests {
 	@Test
 	void contextLoads() {
         String serverUrl = "https://openapi.qiyuesuo.cn";
-        String accessKey = "q4xKsNcFI8";
-        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
+        String accessKey = "8aScPl53pm";
+        String accessSecret = "AI4nTFk5jA48JkmztTZUSnIbyKJGSK";
         SdkClient sdkClient = new SdkClient(serverUrl, accessKey, accessSecret);
 // 合同页面
-        ContractPageRequest request = new ContractPageRequest(3089812758837928943L,
-                new User("17380123816", "MOBILE"), "");
+        ContractPageRequest request = new ContractPageRequest(3089865133669815096L,
+                new User("17396202169", "MOBILE"), "");
         String response = sdkClient.service(request);
         SdkResponse<ContractPageResult> responseObj = JSONUtils.toQysResponse(response, ContractPageResult.class);
         if(responseObj.getCode() == 0) {
