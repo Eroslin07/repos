@@ -26,14 +26,18 @@
 					<u-grid col="2">
 						<u-grid-item>
 							<uni-card @click="handleCollection">
-								<u--text style="font-size:12px;" prefixIcon="level"
-									iconStyle="font-size: 30px; color: #e26e1f" text="收车合同"></u--text>
+								<view style="color: #333;font-size: 15px;">
+									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
+									<text>收车合同</text>
+								</view>
 							</uni-card>
 						</u-grid-item>
 						<u-grid-item>
 							<uni-card @click="handleLookEntrust">
-								<u--text style="font-size:12px;" prefixIcon="level"
-									iconStyle="font-size: 30px; color: #e26e1f" text="委托合同"></u--text>
+								<view style="color: #333;font-size: 15px;">
+									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
+									<text>委托合同</text>
+								</view>
 							</uni-card>
 						</u-grid-item>
 					</u-grid>
