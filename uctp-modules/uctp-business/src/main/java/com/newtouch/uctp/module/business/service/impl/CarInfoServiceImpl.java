@@ -396,7 +396,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         List<String> carPicList = Lists.newArrayList();
         List<String> drivingPicList = Lists.newArrayList();
         List<String> registerPicList = Lists.newArrayList();
-        List<String> idCardsPicList = Lists.newArrayList();
+        List<AppSimpleFileVO> idCardsPicList = Lists.newArrayList();
         for (FileRespDTO dto : fileList) {
 //            1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证
             switch (dto.getFileType()){
@@ -411,7 +411,7 @@ public class CarInfoServiceImpl implements CarInfoService {
                     registerPicList.add(dto.getUrl());
                     break;
                 case "5":
-                    idCardsPicList.add(dto.getUrl());
+                    idCardsPicList.add(new AppSimpleFileVO(dto));
                     break;
                 default:
                     break;

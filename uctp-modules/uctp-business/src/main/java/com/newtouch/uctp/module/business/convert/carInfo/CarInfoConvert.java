@@ -33,6 +33,6 @@ public interface  CarInfoConvert {
             @Mapping(source = "carInfoDetailsDO.mileage",target = "mileage"),
             @Mapping(source = "carInfoDetailsDO.firstRegistDate",target = "firstRegistDate")
     })
-    AppSellCarInfoRespVO convertSell(CarInfoDO carInfo, List<String> carPicList, List<String> drivingPicList, List<String> registerPicList,List<String> idCardsPicList, CarInfoDetailsDO carInfoDetailsDO);
+    AppSellCarInfoRespVO convertSell(CarInfoDO carInfo, List<String> carPicList, List<String> drivingPicList, List<String> registerPicList,List<AppSimpleFileVO> idCardsPicList, CarInfoDetailsDO carInfoDetailsDO);
 
 }

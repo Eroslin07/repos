@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
+import com.google.common.collect.Lists;
 import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
 import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareParts;
 import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareSell;
@@ -24,8 +25,8 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private List<String> carPicList;
     @Schema(description = "行驶证列表")
     private List<String> drivingPicList;
-     @Schema(description = "身份证图片列表")
-    private List<String> idCardsPicList;
+    @Schema(description = "买家身份证图片(卖车时)")
+    private List<AppSimpleFileVO> idCardsPicList = Lists.newArrayList();
     @Schema(description = "机动车登记证书列表")
     private List<String> registerPicList;
     @Schema(description = "预计费用(单位：元)")
