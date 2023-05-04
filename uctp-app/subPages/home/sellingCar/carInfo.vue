@@ -814,6 +814,7 @@
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.deposit = res.data.deposit || 0
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
+        this.sellerForm.sellAmount = res.data.sellAmount
 				this.fairStatus = res.data.bpmStatus;
 
 				let obj;
