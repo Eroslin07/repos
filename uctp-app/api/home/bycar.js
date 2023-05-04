@@ -37,21 +37,21 @@ export function setSellerInfo(data) {
 }
 
 // 合同签章(旧)
-// export function getQiyuesuo(data) {
-// 	return request({
-// 		url: '/uctp/qys/send',
-// 		'method': 'POST',
-// 		data
-// 	})
-// }
-
-// 合同签章(新)
 export function getQiyuesuo(data) {
 	return request({
-		url: '/uctp/qys/company/sign/' + data,
-		'method': 'POST'
+		url: '/uctp/qys/send',
+		'method': 'POST',
+		data
 	})
 }
+
+// 合同签章(新)
+// export function getQiyuesuo(data) {
+// 	return request({
+// 		url: '/uctp/qys/company/sign/' + data,
+// 		'method': 'POST'
+// 	})
+// }
 
 // 取消合同签章
 export function getCancelContract() {
