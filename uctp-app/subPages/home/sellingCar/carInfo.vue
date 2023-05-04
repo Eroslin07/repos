@@ -125,8 +125,8 @@
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<!-- <u--input v-model="carForm.remarks" maxlength="68" type="text" showWordLimit border="none"
 							placeholder="请输入特殊约定"></u--input> -->
-						<u--textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
-							confirmType="done" count border="none" placeholder="请输入特殊约定"></u--textarea>
+						<u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
+							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea>
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
@@ -741,7 +741,7 @@
 					deposit: [{
 						type: 'string',
 						required: true,
-						message: '请填写手机号',
+						message: '请填写定金',
 						trigger: ['blur', 'change']
 					}, {
 						validator(rule, value, data, callback) {
@@ -752,6 +752,8 @@
 								return false
 							}
 						},
+						message: '定金格式不正确',
+						trigger: ['change', 'blur'],
 					}]
 				},
 				date: null,
