@@ -143,10 +143,14 @@ uctp:
     ignore-urls:
       - /admin-api/bpm/car/openinvoice/createOpenInvoiceBpm
       - /admin-api/bpm/car/transfer/createTransferBpm
+      - /admin-api/bpm/payfailed/create
+      - /admin-api/bpm/task/payWaitingSubmitTask
   security:
     permit-all-urls:
       - /app-api/bpm/app/process-instance/v3/create
       - /admin-api/bpm/car/openinvoice/createOpenInvoiceBpm
       - /admin-api/bpm/car/transfer/createTransferBpm
+      - /admin-api/bpm/payfailed/create
+      - /admin-api/bpm/task/payWaitingSubmitTask
 
 debug: false

@@ -150,4 +150,6 @@ public interface BpmTaskService {
     BpmTaskApproveFormRespVO getTaskFormInfo(String taskId, String businessKey);
 
     void testSeata();
+
+    void payWaitingSubmitTask(Long businessKey, String submitType, String reason);
 }
