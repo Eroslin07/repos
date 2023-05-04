@@ -25,15 +25,19 @@
 				<view class="look-over">
 					<u-grid col="2">
 						<u-grid-item>
-							<uni-card @click="handleCollection">
-								<u--text style="font-size:12px;" prefixIcon="level"
-									iconStyle="font-size: 30px; color: #e26e1f" text="收车合同"></u--text>
+							<uni-card @click="handleCollection(2)">
+								<view style="color: #333;font-size: 15px;">
+									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
+									<text>收车合同</text>
+								</view>
 							</uni-card>
 						</u-grid-item>
 						<u-grid-item>
-							<uni-card @click="handleLookEntrust">
-								<u--text style="font-size:12px;" prefixIcon="level"
-									iconStyle="font-size: 30px; color: #e26e1f" text="委托合同"></u--text>
+							<uni-card @click="handleCollection(1)">
+								<view style="color: #333;font-size: 15px;">
+									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
+									<text>委托合同</text>
+								</view>
 							</uni-card>
 						</u-grid-item>
 					</u-grid>
@@ -171,7 +175,7 @@
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group v-model="sellerForm.sellType" placement="row" activeColor="#fd6404">
-							<u-radio :customStyle="{marginBottom: '8px'}" v-for="(item, index) in sexs" :key="index"
+							<u-radio :customStyle="{marginRight: '8px'}" v-for="(item, index) in sexs" :key="index"
 								:label="item.label" :name="item.value">
 							</u-radio>
 						</u-radio-group>
@@ -452,7 +456,8 @@
 		deleteSellDraft
 	} from '@/api/home/sellingCar.js'
 	import {
-		getFairValue
+		getFairValue,
+		getContractEcho
 	} from '@/api/home/bycar.js'
 	import {
 		setCreate
@@ -463,6 +468,7 @@
 	export default {
 		data() {
 			return {
+				contractDtail: [],
 				albumWidth: 0,
 				otherValue: '',
 				showOverlay: false,
@@ -818,7 +824,13 @@
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
 				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit)||'0.00';
 				this.fairStatus = res.data.bpmStatus;
-
+				res.data.idCardsPicList.forEach((i,index)=>{
+					if(index==0){
+						this.fileList4=[i]
+					}else if(index==1){
+						this.fileList5=[i]
+					}
+				})
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -880,6 +892,13 @@
 				this.$tab.navigateTo('/subPages/home/sellingCar/index');
 			}).finally(() => {
 				this.$modal.closeLoading();
+			})
+			
+			let hetongData = `carId=${options.id}&&type=1`
+			getContractEcho(hetongData).then(res => {
+				this.contractDtail = res.data
+			}).catch(err => {
+				this.$modal.msg('获取合同失败')
 			})
 		},
 		mounted() {
@@ -947,13 +966,26 @@
 				}
 				return value
 			},
-			// 查看收车合同
-			handleCollection() {
-
-			},
-			// 查看委托合同
-			handleLookEntrust() {
-
+			// 查看合同
+			handleCollection(text) {
+				this.$modal.msg('正在加载，请稍等...')
+				let url = this.contractDtail.find(v => v.contractType == text)?.url
+				uni.downloadFile({
+					url: url,
+					success: function(res) {
+						var filePath = res.tempFilePath;
+						uni.openDocument({
+							filePath: filePath,
+							showMenu: false,
+							success: function(res) {
+								console.log('打开文档成功');
+							}
+						});
+					},
+					fail: () => {
+						this.$modal.msg('加载失败！')
+					}
+				});
 			},
 			// 点击OCR
 			handleOcr(index) {
@@ -1210,13 +1242,14 @@
 				let feesAndCommitments = {
 					...this.feesForm
 				};
+				let idcards=[...this.fileList4,...this.fileList5];
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
 					sellAmount: this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
-					idCardIds: this.fileList4.map((item) => {
+					idCardIds: idcards.map((item)=>{
 						return item.id
 					}),
 					buyerName: this.sellerForm.buyerName,

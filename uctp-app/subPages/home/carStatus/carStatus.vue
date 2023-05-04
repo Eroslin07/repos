@@ -4,7 +4,7 @@
 		<u-navbar :title="title" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 
 		<u-search class="search" v-model="formData.searchValue" :showAction="false" @search="search" @clear="clear"
-			placeholder="请输入商户/车辆型号/单号">
+			placeholder="请输入客户/车架号(VIN)/品牌">
 		</u-search>
 		<!-- tab导航 -->
 		<view id="tabBox" class="">
