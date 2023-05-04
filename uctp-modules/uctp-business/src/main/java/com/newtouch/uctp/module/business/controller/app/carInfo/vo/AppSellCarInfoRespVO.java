@@ -84,4 +84,9 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String buyerName;
     @Schema(description = "买家地址")
     private String buyerAdder;
+    @Schema(description = "定金")
+    private String deposit;
+    @Schema(description = "尾款")
+    private String balancePayment;
+
 }
