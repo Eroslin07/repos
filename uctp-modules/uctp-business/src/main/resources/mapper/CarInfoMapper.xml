@@ -54,11 +54,11 @@
             a.DELETED = 0
             and a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
-                <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
-                and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue}
-                or b.BUYER_NAME like #{pageVO.searchValue}
-                or a.SELLER_NAME like #{pageVO.searchValue})
+                <bind name="searchVal" value="'%'+pageVO.searchValue+'%'"/>
+                and (a.VIN like #{searchVal}
+                or a.BRAND like #{searchVal}
+                or b.BUYER_NAME like #{searchVal}
+                or b.SELLER_NAME like #{searchVal})
             </if>
             <if test="pageVO.salesStatus != null">
                 and a.SALES_STATUS = #{pageVO.salesStatus}
@@ -85,11 +85,11 @@
             a.DELETED = 0
             and a.BUSINESS_ID = #{pageVO.businessId}
             <if test="pageVO.searchValue != null and pageVO.searchValue != ''">
-                <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
-                and (a.VIN like #{pageVO.searchValue}
-                or a.BRAND like #{pageVO.searchValue}
-                or b.BUYER_NAME like #{pageVO.searchValue}
-                or a.SELLER_NAME like #{pageVO.searchValue})
+                <bind name="searchVal" value="'%'+pageVO.searchValue+'%'"/>
+                and (a.VIN like #{searchVal}
+                or a.BRAND like #{searchVal}
+                or b.BUYER_NAME like #{searchVal}
+                or a.SELLER_NAME like #{searchVal})
             </if>
             <if test="pageVO.salesStatus != null">
                 and a.SALES_STATUS = #{pageVO.salesStatus}
