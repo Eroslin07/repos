@@ -89,7 +89,7 @@
                 and (a.VIN like #{searchVal}
                 or a.BRAND like #{searchVal}
                 or b.BUYER_NAME like #{searchVal}
-                or a.SELLER_NAME like #{searchVal})
+                or b.SELLER_NAME like #{searchVal})
             </if>
             <if test="pageVO.salesStatus != null">
                 and a.SALES_STATUS = #{pageVO.salesStatus}
