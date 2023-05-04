@@ -43,6 +43,8 @@ public class AppSellCarInfoReqVO {
     private Integer sellType;
     @Schema(description = "定金")
     private BigDecimal deposit;
+    @Schema(description = "尾款")
+    private BigDecimal balancePayment;
     @Schema(description = "身份证正反面图片id")
     private List<Long> IdCardIds;
     @Schema(description = "转入地车辆管理所名称")

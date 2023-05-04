@@ -128,6 +128,10 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private BigDecimal deposit;
     /**
+     * 尾款
+     */
+    private BigDecimal balancePayment;
+    /**
      * 使用年限至
      */
     private LocalDateTime scrapDate;

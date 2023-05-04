@@ -545,9 +545,10 @@ public class CarInfoServiceImpl implements CarInfoService {
         // 更新卖车填写数据
         CarInfoDO carInfo = carInfoMapper.selectById(reqVO.getId());
         carInfo.setRemarks( reqVO.getRemarks() );
-        carInfo.setSellAmount( reqVO.getSellAmount() );
         carInfo.setSellType( reqVO.getSellType() );
-        carInfo.setDeposit(reqVO.getDeposit());
+        carInfo.setSellAmount( reqVO.getSellAmount() );//卖车金额
+        carInfo.setDeposit(reqVO.getDeposit());//定金
+        carInfo.setBalancePayment(reqVO.getSellAmount().subtract(reqVO.getDeposit()));//尾款=卖车金额-定金
         carInfo.setOther(reqVO.getOther());
         //此时状态为 买车中草稿
         carInfo.setSalesStatus(CarStatus.SELL.value());
