@@ -396,6 +396,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         List<String> carPicList = Lists.newArrayList();
         List<String> drivingPicList = Lists.newArrayList();
         List<String> registerPicList = Lists.newArrayList();
+        List<String> idCardsPicList = Lists.newArrayList();
         for (FileRespDTO dto : fileList) {
 //            1车辆图片 2行驶证 3登记证书 4卖家身份证 5买家身份证
             switch (dto.getFileType()){
@@ -409,11 +410,14 @@ public class CarInfoServiceImpl implements CarInfoService {
                 case "3":
                     registerPicList.add(dto.getUrl());
                     break;
+                case "5":
+                    idCardsPicList.add(dto.getUrl());
+                    break;
                 default:
                     break;
             }
         }
-        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,carInfoDetailsDO);
+        AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,idCardsPicList,carInfoDetailsDO);
         return carInfoRespVO;
     }
 
@@ -545,8 +549,10 @@ public class CarInfoServiceImpl implements CarInfoService {
         // 更新卖车填写数据
         CarInfoDO carInfo = carInfoMapper.selectById(reqVO.getId());
         carInfo.setRemarks( reqVO.getRemarks() );
-        carInfo.setSellAmount( reqVO.getSellAmount() );
         carInfo.setSellType( reqVO.getSellType() );
+        carInfo.setSellAmount( reqVO.getSellAmount() );//卖车金额
+        carInfo.setDeposit(reqVO.getDeposit());//定金
+        carInfo.setBalancePayment(reqVO.getSellAmount().subtract(reqVO.getDeposit()));//尾款=卖车金额-定金
         carInfo.setOther(reqVO.getOther());
         //此时状态为 买车中草稿
         carInfo.setSalesStatus(CarStatus.SELL.value());

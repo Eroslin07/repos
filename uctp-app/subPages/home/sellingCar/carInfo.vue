@@ -125,8 +125,8 @@
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<!-- <u--input v-model="carForm.remarks" maxlength="68" type="text" showWordLimit border="none"
 							placeholder="请输入特殊约定"></u--input> -->
-						<u--textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
-							confirmType="done" count border="none" placeholder="请输入特殊约定"></u--textarea>
+						<u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
+							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea>
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
@@ -153,8 +153,8 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus" @blur="handleBlur"
-							placeholder="请输入卖车金额">
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
+							@blur="handleBlur" placeholder="请输入卖车金额">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -170,15 +170,19 @@
 								></text></view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
-						<u-radio-group v-model="sellerForm.sellType" placement="row">
+						<u-radio-group v-model="sellerForm.sellType" placement="row" activeColor="#fd6404">
 							<u-radio :customStyle="{marginBottom: '8px'}" v-for="(item, index) in sexs" :key="index"
 								:label="item.label" :name="item.value">
 							</u-radio>
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u--input v-model="sellerForm.deposit" border="none" placeholder="请输入定金">
-						</u--input>
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number"
+							@focus="depositFocus" @blur="depositBlur">
+							<template slot="suffix">
+								<view>元</view>
+							</template>
+						</u-input>
 					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
@@ -237,12 +241,13 @@
 					</view>
 					<view class="text"><text style="color:#f00">*</text> 车辆手续及备件</view>
 				</view>
+				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="changeValue">
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
-							<view style="margin-left: 10px; flex:1">
+							<view style="margin-left: 10px;width: 100%">
 								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
 									v-if="item.name == 'vehicleKey'" disabledColor="#ffffff" placeholder="请输入"
 									border="none">
@@ -312,62 +317,62 @@
 					</view>
 
 					<u-radio-group v-model="feesForm.vehicle" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="租金相关" :required="true" prop="rent"></u-form-item>
+						<u-form-item label="租金相关" :required="true" prop="vehicle"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="vehicleA"></u-radio>
-							<text>“轿车200元/天”</text>
+							<text @click="feesForm.vehicle = 'vehicleA'">“轿车200元/天”</text>
 						</u-form-item>
 						<u-form-item borderBottom style="display:flex">
 							<u-radio name="vehicleB"></u-radio>
-							<text>“商务车400元/天”</text>
+							<text @click="feesForm.vehicle = 'vehicleB'">“商务车400元/天”</text>
 						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="vehicleC"></u-radio>
-							<text>“豪车1000元/天”(本协议第二条车辆价款在50万(含)以上)</text>
+							<text @click="feesForm.vehicle = 'vehicleC'">“豪车1000元/天”(本协议第二条车辆价款在50万(含)以上)</text>
 						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="vehicleD"></u-radio>
-							<text>平台无需承担</text>
+							<text @click="feesForm.vehicle = 'vehicleD'">平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.transfer" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="交易过户费" :required="true" prop="business"></u-form-item>
+						<u-form-item label="交易过户费" :required="true" prop="transfer"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="transferA"></u-radio>
-							<text>销售车辆首次交易过户费(平台过户买方指定过户人)</text>
+							<text @click="feesForm.transfer = 'transferA'">销售车辆首次交易过户费(平台过户买方指定过户人)</text>
 						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="transferB"></u-radio>
-							<text>销售车辆二次交易过户费(该车辆现户主过户车商指定过户人)</text>
+							<text @click="feesForm.transfer = 'transferB'">销售车辆二次交易过户费(该车辆现户主过户车商指定过户人)</text>
 						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="transferC"></u-radio>
-							<text>平台无需承担</text>
+							<text @click="feesForm.transfer = 'transferC'">平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.loss" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="车辆折损费用" :required="true" prop="damage"></u-form-item>
+						<u-form-item label="车辆折损费用" :required="true" prop="loss"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="lossA"></u-radio>
-							<text>依据本协议第二条车辆价款的5%支付车辆折损费用</text>
+							<text @click="feesForm.loss = 'lossA'">依据本协议第二条车辆价款的5%支付车辆折损费用</text>
 						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="lossB"></u-radio>
-							<text>平台无需承担</text>
+							<text @click="feesForm.loss = 'lossB'">平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.testing" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="第三方检测费用" :required="true" prop="check"></u-form-item>
+						<u-form-item label="第三方检测费用" :required="true" prop="testing"></u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="testingA"></u-radio>
-							<text>全车检测费用</text>
+							<text @click="feesForm.testing = 'testingA'">全车检测费用</text>
 						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="testingB"></u-radio>
-							<text>平台无需承担</text>
+							<text @click="feesForm.testing = 'testingB'">平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 					<!-- <u-form-item label="其他"></u-form-item> -->
@@ -637,6 +642,7 @@
 						trigger: ['blur', 'change']
 					}
 				},
+				chebi: false,
 				//其他
 				other: '',
 				fairValue: {
@@ -668,7 +674,7 @@
 					buyerName: '',
 					buyerAdder: '',
 					buyerTel: '',
-					deposit:'0'
+					deposit: '0.00'
 				},
 				// 卖家信息校验规则
 				sellerRules: {
@@ -734,6 +740,23 @@
 						},
 						message: '手机号格式不正确',
 						trigger: ['change', 'blur'],
+					}],
+					deposit: [{
+						type: 'string',
+						required: true,
+						message: '请填写定金',
+						trigger: ['blur', 'change']
+					}, {
+						validator(rule, value, data, callback) {
+							const num = value * 1
+							if (num >= 0) {
+								return true
+							} else {
+								return false
+							}
+						},
+						message: '定金格式不正确',
+						trigger: ['change', 'blur'],
 					}]
 				},
 				date: null,
@@ -779,17 +802,23 @@
 			getSellCarInfo({
 				id: options.id
 			}).then((res) => {
+				if (!res.data.other) res.data.other = ''
 				this.carForm = res.data;
 				this.carForm.scrapDate = parseTime(this.carForm.scrapDate);
 				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
-				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
 				// 收车金额
+				this.sellerForm.sellType = res.data.sellType;
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
-				
+				this.sellerForm.buyerName = res.data.buyerName
+				this.sellerForm.buyerAdder = res.data.buyerAdder
+				this.sellerForm.buyerTel = res.data.buyerTel
+				this.sellerForm.buyerIdCard = res.data.buyerIdCard
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit)||'0.00';
 				this.fairStatus = res.data.bpmStatus;
-				
+
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -839,7 +868,7 @@
 				} else {
 					this.isDisabledAcc = true
 				}
-				
+
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
@@ -860,9 +889,9 @@
 			filterMoney(val) {
 				if (val) {
 					let money = that.$amount.getComdify(val - 0)
-					console.log(money,'money')
+					console.log(money, 'money')
 					return money ? money : 0
-				}else{
+				} else {
 					return 0
 				}
 
@@ -957,7 +986,9 @@
 							`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
-							getIdCard({ IDCardUrl: str }).then((ress) => {
+							getIdCard({
+								IDCardUrl: str
+							}).then((ress) => {
 								let data = JSON.parse(ress.data);
 								if (data.idcard_number_type == -1) {
 									_this.$modal.msg("请上传正确且清晰的身份证照照片 ");
@@ -965,7 +996,8 @@
 								} else {
 									if (data.words_result['公民身份号码']) {
 										_this.sellerForm.buyerAdder = data.words_result['住址'].words;
-										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
+										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码']
+											.words;
 										_this.sellerForm.buyerName = data.words_result['姓名'].words;
 									}
 									if (data.words_result['失效日期']) {
@@ -1071,6 +1103,16 @@
 				let amount = this.$amount.getDelcommafy(this.sellerForm.sellAmount);
 				this.$set(this.sellerForm, 'sellAmount', amount);
 			},
+			//定金获取焦点
+			depositFocus() {
+				let amount = this.$amount.getDelcommafy(this.sellerForm.deposit);
+				this.$set(this.sellerForm, 'deposit', amount);
+			},
+			//顶级失焦
+			depositBlur() {
+				let amount = this.$amount.getComdify(this.sellerForm.deposit);
+				this.$set(this.sellerForm, 'deposit', amount);
+			},
 			// 删除
 			handleDelete() {
 				this.deleteModal = true;
@@ -1087,8 +1129,15 @@
 			},
 			// 下一步
 			handleStep() {
+				if (this.carForm.checkboxValue.length == 0) {
+					this.chebi = true;
+				} else {
+					this.chebi = false;
+				}
 				this.$refs.feesForm.validate().then(res => {
-					this.handleDraft('step');
+					if (this.chebi == false) {
+						this.handleDraft('step');
+					}
 				})
 			},
 			// 点击车辆信息保存
@@ -1161,7 +1210,6 @@
 				let feesAndCommitments = {
 					...this.feesForm
 				};
-
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
@@ -1174,8 +1222,8 @@
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
-					sellType: this.carForm.sellType,
-					deposit:this.carForm.deposit,
+					sellType: this.sellerForm.sellType,
+					deposit: this.$amount.getDelcommafy(this.sellerForm.deposit),
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
@@ -1202,7 +1250,9 @@
 						// 保存买家信息并确认发起
 						this.$modal.closeLoading()
 						this.showOverlay = false;
-						this.$tab.navigateTo(`/subPages/home/sellingCar/agreement?carId=${res.data.carInfoDetails.carId}&fairValue=${JSON.stringify(this.fairValue)}&data=${JSON.stringify(res.data)}&gxzStatus=${this.gxzStatus}`);
+						this.$tab.navigateTo(
+							`/subPages/home/sellingCar/agreement?carId=${res.data.carInfoDetails.carId}&fairValue=${JSON.stringify(this.fairValue)}&data=${JSON.stringify(res.data)}&gxzStatus=${this.gxzStatus}`
+						);
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.closeLoading()
@@ -1280,9 +1330,9 @@
 			padding: 10px 0;
 		}
 
-		/deep/ .u-form-item__body__right__content__slot.data-v-067e4733 {
+		/deep/ .u-form-item__body__right__content__slot {
 			flex-direction: row;
-
+			width: 100%;
 		}
 
 		/* #endif */

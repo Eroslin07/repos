@@ -164,16 +164,37 @@ public interface QiyuesuoClient {
     QiyuesuoCommonResult<SealListResult> defaultSealList(String tenantName);
 
     /**
-     * 获取公司下的印章列表
+     * 添加员工
      * @param request 契约锁需要的参数
      * @return
      */
     QiyuesuoCommonResult<Employee> defaultEmployeeCreate(EmployeeCreateRequest request);
     /**
-     * 获取公司下的印章列表
+     * 添加员工
      * @param name 员工名字
      * @param contact 电话
      * @return
      */
     QiyuesuoCommonResult<Employee> defaultEmployeeCreate(String name,String contact);
+    /**
+     * 移除员工
+     * @param request 契约锁需要的参数
+     * @return
+     */
+    QiyuesuoCommonResult<Employee> defaultEmployeeRemove(EmployeeRemoveRequest request);
+    /**
+     * 移除员工
+     * @param name 联系类型：MOBILE（手机号），EMAIL（邮箱），EMPLOYEEID（员工 ID）
+     * @param contact 联系方式
+     *
+     * @return
+     */
+    QiyuesuoCommonResult<Employee> defaultEmployeeRemove(String name,String contact);
+
+    /**
+     * 管理员工角色
+     * @param request 契约锁需要的参数
+     * @return
+     */
+    QiyuesuoCommonResult<Object> defaultRoleManage(RoleManagementRequest request);
 }

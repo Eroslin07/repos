@@ -1206,6 +1206,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         }
     }
 
+
     private Long getSealId(List<Seal> list) {
         Long seaId = null;
         for (Seal seal : list) {

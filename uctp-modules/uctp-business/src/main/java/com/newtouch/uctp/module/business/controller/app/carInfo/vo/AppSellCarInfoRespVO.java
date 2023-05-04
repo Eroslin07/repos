@@ -24,6 +24,8 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private List<String> carPicList;
     @Schema(description = "行驶证列表")
     private List<String> drivingPicList;
+     @Schema(description = "身份证图片列表")
+    private List<String> idCardsPicList;
     @Schema(description = "机动车登记证书列表")
     private List<String> registerPicList;
     @Schema(description = "预计费用(单位：元)")
@@ -84,4 +86,9 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String buyerName;
     @Schema(description = "买家地址")
     private String buyerAdder;
+    @Schema(description = "定金")
+    private String deposit;
+    @Schema(description = "尾款")
+    private String balancePayment;
+
 }

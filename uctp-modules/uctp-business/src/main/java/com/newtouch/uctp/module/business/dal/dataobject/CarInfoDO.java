@@ -122,6 +122,15 @@ public class CarInfoDO extends TenantBaseDO {
      * 卖车方式
      */
     private Integer sellType;
+
+    /**
+     * 定金
+     */
+    private BigDecimal deposit;
+    /**
+     * 尾款
+     */
+    private BigDecimal balancePayment;
     /**
      * 使用年限至
      */

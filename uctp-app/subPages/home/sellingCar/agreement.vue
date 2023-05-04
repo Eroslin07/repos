@@ -128,7 +128,7 @@
 					let data={
 						..._this.contractDtail.find(v=>v.contractType=='1')
 					}
-					getQiyuesuo(data.contractId).then((res) => {
+					getQiyuesuo(data).then((res) => {
 						if (res.data) {
 							_this.$modal.msg("合同以签章");
 							_this.$tab.switchTab('/pages/index');

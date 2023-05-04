@@ -40,6 +40,26 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Object> doDefaultRoleManage(RoleManagementRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Object> sdkResponse = JSONUtils.toQysResponse(response,Object.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<Employee> doDefaultEmployeeRemove(EmployeeRemoveRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Employee> sdkResponse = JSONUtils.toQysResponse(response,Employee.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Employee> doDefaultEmployeeCreate(EmployeeCreateRequest request) throws Throwable {
         String response = this.client.service(request);
         SdkResponse<Employee> sdkResponse = JSONUtils.toQysResponse(response,Employee.class);
@@ -271,6 +291,13 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         User user = new User(name, contact, "MOBILE");
         EmployeeCreateRequest request = new EmployeeCreateRequest(user, null);
         return this.defaultEmployeeCreate(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Employee> defaultEmployeeRemove(String name, String contact) {
+        User user = new User(name, contact, "MOBILE");
+        EmployeeRemoveRequest request = new EmployeeRemoveRequest(user);
+        return this.defaultEmployeeRemove(request);
     }
 
     @Override
