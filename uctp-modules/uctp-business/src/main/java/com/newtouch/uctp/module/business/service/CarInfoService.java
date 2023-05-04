@@ -1,16 +1,15 @@
 package com.newtouch.uctp.module.business.service;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
+
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 车辆主表 Service 接口
@@ -69,7 +68,12 @@ public interface CarInfoService {
     void delCarInfoWithCollect(Long id);
 
 
-
+    /**
+     * 根据合同编号获取收车金额
+     * @param contractId
+     * @return
+     */
+    BigDecimal getAmountByContract(Long contractId);
 
     /**
      * 获得车辆主表
@@ -122,7 +126,7 @@ public interface CarInfoService {
      */
     AppSellCarInfoRespVO getSellCarInfo(Long id);
 
-    Map getCarInfoByVIN(String vin);
+    Map getCarInfoByVIN(String vin,Long businessId);
 
     /**
      * 根据车辆id回显车辆信息
@@ -221,5 +225,11 @@ public interface CarInfoService {
      * @param carId 车辆ID
      * @return
      */
-    CarTransferInfoVO getTransferInfo(Long carId);
+    CarTransferInfoVO getTransferInfo(Long carId, String procDefKey);
+
+    CarInvoiceInfoVO getForwardInvoiceInfo(Long contractId);
+
+    CarInvoiceInfoVO getReverseInvoiceInfo(Long contractId);
+
+    void update(CarInfoDO carInfo);
 }

@@ -215,9 +215,12 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public String createProcessInstanceByKey(Long userId, String processDefinitionKey, Map<String, Object> variables) {
+        log.info("-------------------- begin createProcessInstanceByKey --------------------");
+        log.info("userId:" + userId + ",processDefinitionKey:" + processDefinitionKey);
         if (CollectionUtils.isEmpty(variables)) {
             variables = new HashMap<String, Object>();
         }
+        log.info("variables:" + JSON.toJSONString(variables));
         Long businessKey = IdUtil.getSnowflakeNextId();
         if (ObjectUtil.isNotEmpty(variables.get("businessKey"))) {
             businessKey = Long.valueOf(StrUtil.toStringOrNull(variables.get("businessKey")));
@@ -226,9 +229,20 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (ObjectUtil.isNotEmpty(bpmFormMainDO) && bpmFormMainDO.getStatus() != 0) {
             throw exception(PROCESS_BUSI_RUNING);
         }
-        if (userId == null) {
-            userId = Long.valueOf(variables.get("startUserId") + "");
+        if (ObjectUtil.isNull(userId) && ObjectUtil.isNotNull(variables.get("startUserId"))) {
+            userId = Long.valueOf(variables.get("startUserId").toString());
         }
+        if (ObjectUtil.isNull(userId)) {
+            throw  new ServiceException(1009003003, "流程发起人不能为空。");
+        }
+        Map<String, Object> userMap = bpmFormMainMapper.findUserByIdToMap(userId);
+        if (CollectionUtils.isEmpty(userMap)) {
+            throw  new ServiceException(1009003003, "流程发起人不能为空。");
+        }
+        variables.put("businessKey", businessKey);
+        variables.put("startUserName", userMap.get("nickname"));
+        variables.put("startUserMobile", userMap.get("mobile"));
+
         identityService.setAuthenticatedUserId(String.valueOf(userId));
 
         // 1.获得流程定义
@@ -261,6 +275,8 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
             formMainDataObject.put(this.matchMapKey(formMainDataObject, "formDataJson"), null);
         }
         formDataJsonVariable.put(workFlowMainEntityAlias, formMainDataObject);
+        log.info("variables:" + JSON.toJSONString(variables));
+        log.info("formDataJsonVariable:" + JSON.toJSONString(formDataJsonVariable));
         this.bpmFormDataService.saveDataObject(businessKey, formDataJsonVariable);
 
         // 4.发起流程
@@ -513,7 +529,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
 
         // 补全流程实例的拓展表
         processInstanceExtMapper.updateByProcessInstanceId(new BpmProcessInstanceExtDO().setProcessInstanceId(instance.getId())
-                .setFormVariables(variables));
+                .setFormVariables(new HashMap<>()));
         return instance.getId();
     }
 

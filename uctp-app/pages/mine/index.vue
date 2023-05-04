@@ -14,27 +14,30 @@
 					<view v-if="!avatar" class="cu-avatar xl round bg-white" @click="handleToAvatar">
 						<view class="iconfont icon-people text-gray icon"></view>
 					</view>
-					<image v-if="avatar" @click="handleToAvatar" :src="avatar" class="cu-avatar xl round"
+					<!-- <image v-if="avatar" @click="handleToAvatar" :src="avatar" class="cu-avatar xl round"
 						mode="widthFix">
-					</image>
-					<view v-if="!name" @click="handleToLogin" class="login-tip">
+					</image> -->
+					<view v-if="!user.name" @click="handleToLogin" class="login-tip">
 						点击登录
 					</view>
-					<view v-if="name" @click="handleToInfo" class="user-info">
+					<view v-if="user.name" @click="handleToInfo" class="user-info">
 						<view class="u_title">
-							用户名：{{ name }}
+							用户名：{{ user.name }}
 						</view>
 					</view>
 				</view>
 				<view class="flex authentication-box">
-					<view class="flex authentication">
-						<image src="../../static/images/mine/slices.png" mode="" style="width: 32rpx;height: 32rpx;">
+					<view class="flex authentication active" v-if="type=='1'">
+						<image
+							src="../../static/images/mine/slices-active.png"
+							mode="" style="width: 32rpx;height: 32rpx;">
 						</image>
 						<text>企业 ></text>
 					</view>
-					<view class=" flex authentication active">
-						<image src="../../static/images/mine/slices-active.png" mode=""
-							style="width: 32rpx;height: 32rpx;"></image>
+					<view class=" flex authentication active" v-if="type=='2'">
+						<image
+							src="../../static/images/mine/slices-active.png"
+							mode="" style="width: 32rpx;height: 32rpx;"></image>
 						<text>个人 ></text>
 					</view>
 				</view>
@@ -49,14 +52,14 @@
 						<view>个人信息</view>
 					</view>
 				</view>
-				<view class="list-cell list-cell-arrow" @click="handleToStaff">
+				<view class="list-cell list-cell-arrow" @click="handleToStaff" v-if="type=='1'">
 					<view class="menu-item-box">
 						<image src="../../static/images/mine/staff.png"
 							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
 						<view>员工管理</view>
 					</view>
 				</view>
-				<view class="list-cell list-cell-arrow" @click="handleToStore">
+				<!-- <view class="list-cell list-cell-arrow" @click="handleToStore">
 					<view class="menu-item-box">
 						<view class="iconfont icon-user menu-icon"></view>
 						<view>门店管理</view>
@@ -79,7 +82,7 @@
 						<view class="iconfont icon-setting menu-icon"></view>
 						<view>登录设置</view>
 					</view>
-				</view>
+				</view> -->
 			</view>
 		</view>
 		<view class="cu-list menu">
@@ -89,6 +92,8 @@
 				</view>
 			</view>
 		</view>
+		<!-- 自定义tabbar -->
+		<tab-bar :name="type == 1 ? 3 : 1" :type="type"></tab-bar>
 	</view>
 </template>
 
@@ -98,7 +103,7 @@
 	export default {
 		data() {
 			return {
-				name: this.$store.state.user.name,
+				user: this.$store.state.user,
 				version: getApp().globalData.config.appInfo.version
 			}
 		},
@@ -108,12 +113,15 @@
 			},
 			windowHeight() {
 				return uni.getSystemInfoSync().windowHeight - 50
+			},
+			type() {
+				return this.$store.state.user.staffType
 			}
 		},
 		methods: {
 			// 个人信息
 			handleToInfo() {
-				this.$tab.navigateTo('/subPages/mine/info/index')
+				this.$tab.navigateTo(`/subPages/mine/info/index`)
 			},
 			// 员工管理
 			handleToStaff() {
@@ -142,7 +150,7 @@
 			},
 			// 退出登录
 			handleLogout() {
-				this.$modal.confirm('确定注销并退出系统吗？').then(() => {
+				this.$modal.confirm('确定退出系统吗？').then(() => {
 					this.$store.dispatch('LogOut').then(() => {
 						this.$tab.reLaunch('/pages/index')
 					})
@@ -164,7 +172,7 @@
 	.mine-container {
 		.my_image {
 			width: 100%;
-			height: 220pt;
+			height: 524rpx;
 		}
 
 		.header-section {

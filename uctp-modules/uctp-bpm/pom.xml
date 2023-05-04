@@ -127,15 +127,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-excel</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- freemarker模板引擎基础 begin -->
         <dependency>

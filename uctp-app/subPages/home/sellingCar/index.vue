@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="selling-list-container">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要卖车" @leftClick="back" border safeAreaInsetTop fixed placeholder></u-navbar>
 		<view class="search_header">
@@ -8,7 +8,7 @@
 				placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
 		<!-- status==22 未检测 -->
-		<view style="margin-top: 85px;">
+		<view v-if="!isSHowTip">
 			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)"
 				style="margin-top: 10px;">
 				<uni-row :gutter="20">
@@ -22,9 +22,9 @@
 						</view>
 					</uni-col>
 					<uni-col :span="15">
-						<h3 class="right-title">{{tab.model || '宝马-宝马×12021款 sDrive20Li 时尚型'}}</h3>
+						<h3 class="right-title">{{tab.model || '暂无'}}</h3>
 						<!-- <view class="fs12">VIN：{{tab.vin}}</view> -->
-						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || 0}} 万公里</view>
+						<view class="right-mile">{{'2023-04' || '暂无'}} | {{tab.mileage || '——'}} 万公里</view>
 						<view class="right-price">收车价：
 							<text v-if="tab.isSHowMoney">{{tab.vehicleReceiptAmount | handleMoney}} 万元</text>
 							<text v-else>***元</text>
@@ -37,14 +37,18 @@
 					</uni-col>
 				</uni-row>
 			</uni-card>
+			<!-- 加载 -->
+			<u-loadmore :status="loadStatus" />
 		</view>
+		<!-- 提示信息 -->
+		<AbnormalPage v-else :isSHowTip="isSHowTip"/>
+		
 		<u-modal :show="show" :showCancelButton="true" confirmText="上传检测报告" cancelText="取消" @confirm="handleConfirm"
 			@cancel="handleCancel">
 			<view>请先对该车辆进行检测处理，再进行卖车。</view>
 		</u-modal>
-
-		<!-- 加载 -->
-		<u-loadmore :status="loadStatus" />
+		
+		
 	</view>
 </template>
 
@@ -55,6 +59,7 @@
 	import {
 		parseTime
 	} from '@/utils/ruoyi.js'
+	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
 			return {
@@ -71,7 +76,11 @@
 				show: false,
 				// 加载图标
 				loadStatus: 'loadmore',
+				isSHowTip:'',
 			}
+		},
+		components: {
+			AbnormalPage
 		},
 		filters:{
 			handleMoney(val){
@@ -105,13 +114,18 @@
 		methods: {
 			// 页面返回
 			back() {
-				this.$tab.reLaunch('/pages/index');
+				this.$tab.switchTab('/pages/index');
 			},
 			// 获取list
 			getList(obj) {
 				this.tabList = [];
-				this.$modal.loading("数据加载中...");
+				this.isSHowTip='onLoading'
 				getSellPage(obj).then((res) => {
+					if(res.data.total){
+						this.isSHowTip=''
+					}else{
+						this.isSHowTip='noData'
+					}
 					this.tabList = res.data.list.map(val => {
 						val.createTime = parseTime(val.createTime || Number(new Date()))
 						this.$set(val, 'isSHowMoney', false)
@@ -121,13 +135,18 @@
 					this.total = res.data.total
 					if (this.total > 10) {
 						this.loadStatus = 'loadmore'
-					} else {
+					} else{
 						this.loadStatus = 'nomore'
 					}
-				}).catch(() => {
-					this.loadStatus = 'nomore'
+				}).catch((err) => {
+					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+						this.isSHowTip = 'webError'
+					} else {
+						this.isSHowTip = 'sysError'
+					}
 				}).finally(() => {
 					this.$modal.closeLoading()
+					uni.stopPullDownRefresh()
 				})
 
 			},
@@ -196,17 +215,15 @@
 </script>
 
 <style lang="scss" scoped>
+	.selling-list-container{
+		height:100%;
+	}
 	.tip-text {
 		margin-bottom: 10px;
 		font-size: 12px;
 	}
 
 	.search_header {
-		position: fixed;
-		top: 44px;
-		/* #ifdef MP-WEIXIN */
-		top: 0;
-		/* #endif */
 		width: 100%;
 		padding: 10px;
 		font-size: 16px;
@@ -225,7 +242,7 @@
 
 	.car-image {
 		width: 100%;
-		height: 100px;
+		height: 100%;
 		border-radius: 8px;
 	}
 

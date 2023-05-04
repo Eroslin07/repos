@@ -43,6 +43,14 @@ public interface AccountCashService {
     AccountCashRespVO withdraw(TransactionRecordReqVO transactionRecordReqVO);
 
     /**
+     * 保证金提取-扣除
+     *
+     * @param tradeRecordNo 银行流水号
+     * @return 扣除结果
+     */
+    Boolean changeWithdrawState(String tradeRecordNo);
+
+    /**
      * 保证金预占-冻结
      *
      * @param transactionRecordReqVO 账户号/交易金额/交易合同号
@@ -64,7 +72,7 @@ public interface AccountCashService {
      * @param transactionRecordReqVO 账户号
      * @return 待回填保证金金额，单位-分
      */
-    Integer difference(TransactionRecordReqVO transactionRecordReqVO);
+    Long difference(TransactionRecordReqVO transactionRecordReqVO);
 
     /**
      * 保证金回填

@@ -73,12 +73,26 @@ dubbo:
 --- #################### MQ 消息队列相关配置 ####################
 spring:
   cloud:
+    # Spring Cloud Stream 配置项，对应 BindingServiceProperties 类
     stream:
+      function:
+        definition: userAuthConsumer;
+      # Binding 配置项，对应 BindingProperties Map
+      bindings:
+        userAuth-out-0:
+          destination: business_user_auth
+        userAuthConsumer-in-0:
+          destination: business_user_auth
+          group: business_user_auth_consumer_group
+      # Spring Cloud Stream RocketMQ 配置项
       rocketmq:
         # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
         binder:
-          name-server: 61.172.179.54:29876 # RocketMQ Namesrv 地址
-      binding-retry-interval: 7200 # 消息绑定重试间隔时间，单位：秒，默认为 30 秒。考虑到本地可能不启动 RocketMQ 服务，设置为 2 小时
+          name-server: 127.0.0.1:9876 # RocketMQ Namesrv 地址
+        default: # 默认 bindings 全局配置
+          producer: # RocketMQ Producer 配置项，对应 RocketMQProducerProperties 类
+            group: business_producer_group # 生产者分组
+            send-type: SYNC # 发送模式，SYNC 同步
 
 --- #################### 定时任务相关配置 ####################
 
@@ -149,6 +163,7 @@ uctp:
       - /app-api/uctp/qys/callback/status
       - /app-api/uctp/qys/callback/login
       - /app-api/uctp/qys/callback/certification
+      - /app-api/uctp/qys/callback/privilege
     ignore-tables:
       - infra_file
       - uctp_qys_callback
@@ -164,5 +179,9 @@ uctp:
       - /app-api/uctp/qys/callback/status
       - /app-api/uctp/qys/callback/login
       - /app-api/uctp/qys/callback/certification
+      - /app-api/uctp/qys/callback/privilege
 
 debug: false
+
+qys:
+  server-url: @qys.server-url@ #获取契约锁请求地址

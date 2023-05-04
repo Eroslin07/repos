@@ -1,32 +1,14 @@
 <template>
   <ContentWrap>
-    <!-- <XModal
-      v-model="carVisible"
-      :title="dialogTitle"
-      :fullscreen="true"
-      :showFooter="false"
-      @close="closeDialog"
-    > -->
     <el-container>
-      <!-- <el-header class="header">{{
-        (baseInfoData.data.variables.marketName || '') +
-        (baseInfoData.data.variables.merchantName || '') +
-        '收车价格超公允值审批流程'
-      }}</el-header> -->
       <el-main>
         <div>
           <div style="font-size: 16px" class="title">
             <span>单号：{{ baseInfoData.data.serialNo }}</span>
-            <span>商户经办人：{{ '张三' }}</span>
-            <span>商户电话：{{ '13333333333' }}</span>
+            <span>商户经办人：{{ baseInfoData.data.variables.startUserName }}</span>
+            <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
           </div>
-          <!-- <div class="btn"> -->
-          <!-- <el-button type="danger" @click="closeDialog">关闭</el-button> -->
-          <!-- <el-button type="primary" v-if="type == 'need'" @click="passBtn">通过</el-button>
-            <el-button v-if="type == 'need'" @click="returnBtn">退回</el-button> -->
-          <!-- </div> -->
         </div>
-        <!-- <el-card class="content-box"> -->
         <div class="content-box">
           <h3 style="font-weight: bold; color: #333333; line-height: 36px">车辆基础信息</h3>
           <div>
@@ -188,10 +170,12 @@
               </el-col>
               <el-col :span="2" class="bg-yell">里程数：</el-col>
               <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .mileage
-                }}</div>
+                <div
+                  >{{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                      .mileage
+                  }}万公里</div
+                >
               </el-col>
               <el-col :span="2" class="bg-yell">使用年限至：</el-col>
               <el-col :span="4">
@@ -240,10 +224,14 @@
             <el-row>
               <el-col :span="2" class="bg-yell">收车金额：</el-col>
               <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                    .vehicleReceiptAmount
-                }}</div>
+                <div
+                  >{{
+                    moneyFormat(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
+                        .vehicleReceiptAmount
+                    )
+                  }}元</div
+                >
               </el-col>
               <el-col :span="2" class="bg-yell">公允值范围：</el-col>
               <el-col :span="4">
@@ -251,10 +239,10 @@
                   >{{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue
                       ?.value1
-                  }}元—{{
+                  }}万元—{{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue
                       ?.value2
-                  }}元</div
+                  }}万元</div
                 >
               </el-col>
               <el-col :span="2" class="bg-yell">付款方式：</el-col>
@@ -277,10 +265,10 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="2" class="bg-yell">身份证</el-col>
-              <el-col :span="4">
+              <el-col :span="2" class="bg-yell">身份证：</el-col>
+              <el-col :span="10">
                 <div style="display: flex; align-items: center">
-                  <span class="identify" v-if="identifyShow">
+                  <span class="identify identify-eye" v-if="identifyShow">
                     {{
                       baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
                         0,
@@ -299,13 +287,13 @@
                       .sellerIdCard
                   }}</span>
                   <Icon
-                    style="margin-right: 3px"
+                    style="margin-right: 5px"
                     icon="ep:view"
                     v-if="identifyShow"
                     @click="identifyShow = !identifyShow"
                   />
                   <Icon
-                    style="margin-right: 3px"
+                    style="margin-right: 5px"
                     icon="ep:hide"
                     v-else
                     @click="identifyShow = !identifyShow"
@@ -330,19 +318,23 @@
                     .sellerName
                 }}</div>
               </el-col>
-              <el-col :span="2" class="bg-yell">联系地址：</el-col>
-              <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .sellerAdder
-                }}</div>
-              </el-col>
               <el-col :span="2" class="bg-yell">联系电话：</el-col>
               <el-col :span="4">
                 <div>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
                     .sellerTel
                 }}</div>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2" class="bg-yell">联系地址：</el-col>
+              <el-col :span="22">
+                <div>
+                  {{
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                      .sellerAdder
+                  }}</div
+                >
               </el-col>
             </el-row>
             <el-row>
@@ -402,6 +394,8 @@
                     .thirdSellerName
                 }}</div>
               </el-col>
+            </el-row>
+            <el-row>
               <el-col
                 :span="2"
                 class="bg-yell"
@@ -425,20 +419,15 @@
               </el-col>
             </el-row>
           </div>
-          <!-- </el-card> -->
         </div>
       </el-main>
     </el-container>
-    <!-- </XModal> -->
   </ContentWrap>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
 import { allSchemas } from '../toDoList/toDoList.data'
 import { defineProps } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-// import type { FormExpose } from '@/components/Form'
-// const { t } = useI18n() // 国际化
-// const message = useMessage() // 消息弹窗
 
 // 详情
 import { baseInfoData } from '@/views/workbench/basInfoValue'
@@ -448,15 +437,10 @@ const [] = useXTable({
 })
 
 const actionType = ref('detail') // 操作按钮的类型
-// const dialogVisible = ref(true) // 是否显示弹出层
-// const dialogTitle = ref('收车价格超公允值待办') // 弹出层标题
-// const formRef = ref<FormExpose>() // 表单 Ref
 
 // 设置标题
 const setDialogTile = (type: string) => {
-  // dialogTitle.value = t('action.' + type)
   actionType.value = type
-  // dialogVisible.value = true
 }
 //时间戳转日期
 const formatDate = (time: string) => {
@@ -470,6 +454,12 @@ const formatDate = (time: string) => {
   } else {
     return ''
   }
+}
+//千分位校验
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
 }
 // 详情
 let mainValue = reactive({
@@ -500,32 +490,11 @@ const fileD = computed(() => {
 })
 const identifyShow = ref(true)
 
-// const emit = defineEmits(['closeCarDialog'])
 const props = defineProps({
-  // carVisible: propTypes.bool.def(false),
   type: propTypes.bool.def(undefined)
 })
 
-// const carVisible = computed(() => {
-//   return props.carVisible
-// })
-
 console.log(setDialogTile, props)
-
-// 关闭弹框
-// const closeDialog = () => {
-//   emit('closeCarDialog')
-// }
-
-// 通过
-// const passBtn = () => {
-//   emit('closeCarDialog')
-// }
-
-// 退回
-// const returnBtn = () => {
-//   emit('closeCarDialog')
-// }
 </script>
 <style lang="scss" scoped>
 .title {
@@ -575,6 +544,6 @@ console.log(setDialogTile, props)
 }
 .identify {
   display: inline-block;
-  width: 136px;
+  width: 140px;
 }
 </style>

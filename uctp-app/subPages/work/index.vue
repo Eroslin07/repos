@@ -1,7 +1,9 @@
 <template>
 	<view class="work-container">
-		<u-swipe-action>
-			<u-swipe-action-item :options="item.options" v-for="(item) in listData" :key="item.id"
+		<!-- 加载异常组件 -->
+		<AbnormalPage v-if="isSHowTip" :isSHowTip="isSHowTip" />
+		<u-swipe-action v-else>
+			<u-swipe-action-item :options="item.options" v-for="(item,index) in listData" :key="item.id"
 				@click="handleSwipe(item,index)">
 				<uni-list-chat :avatar-circle="true" :badgeText="item.status=='1'?'':'dot'" badgePositon="left"
 					:title="item.title" :avatar="msgAvatar(item)" :note="item.content" :time="item.createTime" clickable
@@ -12,7 +14,6 @@
 
 		<u-modal :show="modalShow" :title="title" :content='content' showCancelButton @cancel="modalShow=false"
 			@confirm="handleConfirm"></u-modal>
-
 	</view>
 </template>
 
@@ -26,11 +27,11 @@
 	import {
 		parseTime
 	} from '@/utils/ruoyi.js'
-	import cellGroup from '../../uni_modules/uview-ui/libs/config/props/cellGroup'
+	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
 			return {
-				businessId:this.$store.state.user.deptId,
+				businessId: this.$store.state.user.deptId,
 				// 列表
 				listData: [],
 				imageArr: [{
@@ -86,18 +87,24 @@
 				title: '',
 				content: '此操作将删除该条数据，是否确认？',
 				// 删除的值
-				deleteItem: {}
+				deleteItem: {},
+
+				isSHowTip: '',
 			}
 		},
-		onShow() {
+		components: {
+			AbnormalPage,
+		},
+		onLoad() {
 			this.getListData()
 		},
-		// onLoad() {
-		// 	this.getListData()
-		// },
+		onPullDownRefresh() {
+			this.getListData()
+		},
 		methods: {
-			// 获取列表数据
+			// 获取消息列表
 			getListData() {
+				this.isSHowTip = "onLoading"
 				let options = [{
 					text: '删除',
 					style: {
@@ -106,17 +113,29 @@
 				}]
 				getNoticesApi(this.businessId).then(res => {
 					if (res.data.length) {
+						this.isSHowTip = '';
 						this.listData = res.data.map(item => {
 							this.$set(item, 'options', options);
 							this.$set(item, 'swipeShow', false);
 							item.createTime = parseTime(item.createTime);
 							return item
 						})
+					} else {
+						this.isSHowTip = 'noData'
 					}
 				}).catch(err => {
 					console.log(err, 'err')
+					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+						this.isSHowTip = 'webError'
+					} else {
+						this.isSHowTip = 'sysError'
+					}
+
+				}).finally(() => {
+					uni.stopPullDownRefresh()
 				})
 			},
+
 			// 图标
 			msgAvatar(item) {
 				let obj = this.imageArr.find(v => v.label == item.title)
@@ -163,6 +182,10 @@
 </script>
 
 <style lang="scss">
+	.work-container {
+		height: 100%;
+	}
+
 	/deep/ .uni-list-chat__header {
 		border: none !important;
 	}

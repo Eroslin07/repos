@@ -26,6 +26,9 @@ public class AppCarInfoBaseVO {
     @Schema(description = "收车金额")
     private BigDecimal vehicleReceiptAmount;
 
+    @Schema(description = "卖车金额")
+    private BigDecimal sellAmount;
+
     @Schema(description = "备注")
     private String remarks;
 

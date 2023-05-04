@@ -6,14 +6,9 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.bean.Contract;
-import com.qiyuesuo.sdk.v2.request.DocumentAddByTemplateRequest;
-import com.qiyuesuo.sdk.v2.request.SaaSUserAuthPageRequest;
-import com.qiyuesuo.sdk.v2.request.SaasCompanyAuthPageUrlRequest;
-import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
-import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
+import com.qiyuesuo.sdk.v2.request.*;
+import com.qiyuesuo.sdk.v2.response.*;
+import org.springframework.stereotype.Component;
 
 /**
  * 契约锁客户端的抽象类，提供模板方法，减少子类的冗余代码
@@ -22,6 +17,7 @@ import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
  * @since 2021/2/1 9:28
  */
 //@Slf4j
+ @Component
 public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, QiyuesuoSaasClient {
     /**
      * 契约锁渠道配置
@@ -31,6 +27,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
      * 错误码枚举类
      */
     protected final QiyuesuoCodeMapping codeMapping;
+
 
     public AbstractQiyuesuoClient(QiyuesuoChannelProperties properties, QiyuesuoCodeMapping codeMapping) {
         this.properties = properties;
@@ -119,6 +116,91 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<Object> defaultCompanysign(ContractSignCompanyRequest request) {
+        QiyuesuoCommonResult<Object> result;
+        try {
+            result = doDefaultCompanysign(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<String> defaultContractInvalid(ContractInvalidRequest request) {
+        QiyuesuoCommonResult<String> result;
+        try {
+            result = doDefaultContractInvalid(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractDetail(ContractDetailRequest request) {
+        QiyuesuoCommonResult<Contract> result;
+        try {
+            result = doDefaultContractDetail(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<ContractPageResult> defaultdeContractPage(ContractPageRequest request) {
+        QiyuesuoCommonResult<ContractPageResult> result;
+        try {
+            result = doDefaultdeContractPage(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SealListResult> defaultSealList(SealListRequest request) {
+        QiyuesuoCommonResult<SealListResult> result;
+        try {
+            result = doDefaultSealList(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<SealListResult> doDefaultSealList(SealListRequest request)
+            throws Throwable;
+    protected abstract QiyuesuoCommonResult<ContractPageResult> doDefaultdeContractPage(ContractPageRequest request)
+            throws Throwable;
+    protected abstract QiyuesuoCommonResult<Contract> doDefaultContractDetail(ContractDetailRequest request)
+            throws Throwable;
+    protected abstract QiyuesuoCommonResult<String> doDefaultContractInvalid(ContractInvalidRequest request)
+            throws Throwable;
+    protected abstract QiyuesuoCommonResult<Object> doDefaultCompanysign(ContractSignCompanyRequest request)
+            throws Throwable;
     protected abstract QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId)
             throws Throwable;
     protected abstract QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract)
@@ -174,6 +256,42 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request) {
+        QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> result;
+        try {
+            result = doSaasSealSignAuthUrl(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<SaaSUserAuthResult> saasUserAuthResult(SaaSUserAuthResultRequest request) {
+        QiyuesuoCommonResult<SaaSUserAuthResult> result;
+        try {
+            result = doSaasUserAuthResult(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<SaaSUserAuthResult> doSaasUserAuthResult(SaaSUserAuthResultRequest request)
+            throws Throwable;
+
+    protected abstract QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> doSaasSealSignAuthUrl(SaaSSealSignAuthUrlRequest request)
+            throws Throwable;
+
     protected abstract QiyuesuoCommonResult<SaaSPrivilegeUrlResult> doSaasPrivilegeUrl(SaasPrivilegeUrlRequest request)
             throws Throwable;
 
@@ -183,4 +301,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
 
     protected abstract QiyuesuoCommonResult<SaaSCompanyAuthPageResult> doSaasCompanyAuthPageUrl(SaasCompanyAuthPageUrlRequest request)
             throws Throwable;
+
+
+
 }

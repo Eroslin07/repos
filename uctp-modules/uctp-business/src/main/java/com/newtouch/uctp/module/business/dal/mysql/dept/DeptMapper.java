@@ -1,9 +1,12 @@
 package com.newtouch.uctp.module.business.dal.mysql.dept;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -46,8 +49,7 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
                 .eqIfPresent(DeptDO::getTaxNum,taxNum));
     }
 
-    default List<DeptDO> selectByName(String name) {
-        return selectList(new LambdaQueryWrapperX<DeptDO>()
-                .eqIfPresent(DeptDO::getName,name));
-    }
+    @InterceptorIgnore(tenantLine = "true")
+    @Select("select * from system_dept where name=#{name} and tax_num = #{taxNum} and DELETED = 0")
+    DeptDO findByNameAndTaxNum(@Param("name") String name, @Param("taxNum") String taxNum);
 }

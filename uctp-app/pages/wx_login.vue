@@ -1,21 +1,22 @@
 <template>
 	<view class="normal-login-container">
 		<!-- 自定义导航栏 -->
-		<u-navbar>
+		<u-navbar safeAreaInsetTop fixed placeholder>
 			<view class="u-nav-slot" slot="left">
 				<view class="bank-logo"></view>
 			</view>
 		</u-navbar>
 		
 		<view class="logo-content align-center justify-center flex">
-			<h2 class="title" style="color: #000;font-weight: normal;font-style: normal;margin-top: 20%;">结算中心</h2>
+			<h2 class="title" style="color: #333;font-weight: bold;font-style: normal;margin-top: 15%;font-size: 28px;">车友通结算中心</h2>
 		</view>
 		<view class="logo-content align-center justify-center flex">
-			<h3 class="title" style="margin-right: 50%;">助力车商</h3>
+			<view class="weitu"></view>
+			<!-- <h3 class="title" style="margin-right: 50%;">助力车商</h3> -->
 		</view>
-		<view class="logo-content align-center justify-center flex">
+		<!-- <view class="logo-content align-center justify-center flex">
 			<h3 class="fxnw">经纪转经销</h3>
-		</view>
+		</view> -->
 		
 		<view class="action-btn">
 			<u-checkbox-group v-model="value">
@@ -32,17 +33,15 @@
 </template>
 
 <script>
+	import { getWxToken } from '@/api/login'
 	export default {
 		data() {
 			return {
 				showModel: false,
 				content: '您的手机号尚未在平台注册，是否要注册?',
-				value: [],
+				value: [''],
 				show: true,
-				// 小程序ID
-				appId: 'wx9decec45b7374b90',
 				wxcode: '',
-				sessionKey: null,
 				phone: null
 			}
 		},
@@ -54,26 +53,6 @@
 				success(res) {
 					_this.wxcode = res.code;
 				}
-			})
-			const params = {
-				appId: _this.appId,
-				secret: '2cb430095c143228a44488a87350f974', // 小程序秘钥
-				grant_type: 'client_credential',
-				js_code: _this.wxcode
-			}
-			uni.request({
-				method: 'GET',
-				url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${params.appId}&secret=${params.secret}`,
-			}).then((res) => {
-				if (res.errcode) {
-					uni.showToast({
-						title: '获取用户信息失败',
-						icon: 'none',
-						duration: 2000
-					});
-					return
-				}
-				_this.sessionKey = res[1].data.access_token
 			})
 			// #endif
 		},
@@ -94,7 +73,7 @@
 				let _this = this;
 				if (e.detail.errMsg.indexOf('deny') > -1) {
 					uni.showToast({
-						title: "获取手机号失败，请前往手机登录界面",
+						title: "获取手机号失败",
 						icon: "none"
 					})
 					return
@@ -103,31 +82,15 @@
 					 if (typeof encryptedData === 'undefined' || encryptedData == null || encryptedData === '') {
 						//前往手机登录界面
 						uni.showToast({
-							title: "获取手机号失败，请前往手机登录界面",
+							title: "获取手机号失败",
 							icon: "none"
 						})
 						return;
 					}
 				}
-				uni.request({
-					method: 'POST',
-					url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${_this.sessionKey}`,
-					data: {
-						code: e.detail.code
-					}
-				}).then((res) => {
-					if (res.errcode) {
-						uni.showToast({
-							title: '获取用户信息失败',
-							icon: 'none',
-							duration: 2000
-						});
-						return
-					}
-					_this.phone = res[1].data.phone_info.phoneNumber;
-					console.log(_this.phone)
-					return
-					_this.$store.dispatch('GetPhone', _this.phone);
+				getWxToken({ code: e.detail.code }).then((res) => {
+					_this.phone = res.data;
+					_this.$store.commit('SET_PHONE', _this.phone);
 					_this.phoneLogin();
 				})
 			},
@@ -136,10 +99,15 @@
 			  this.$modal.loading("登录中，请耐心等待...")
 			  // 执行登录
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
-					this.$modal.closeLoading()
+					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
-					this.showModel = true;
+					if (error == 1002000012) {
+						this.$modal.hideMsg()
+						this.showModel = true;
+					}
+				}).finally(()=>{
+					this.$modal.closeLoading()
 				})
 			},
 			// 登录成功后，处理函数
@@ -156,7 +124,7 @@
 			// 确认
 			handleConfirm() {
 				this.showModel = false;
-				this.$tab.navigateTo('/subPages/register');
+				this.$tab.navigateTo('/subPages/registerNotice');
 			}
 		}
 	}
@@ -183,6 +151,18 @@
 			width: 100%;
 			font-size: 21px;
 			text-align: center;
+			
+			.weitu {
+				margin-top: 20%;
+				/* #ifdef MP-WEIXIN */
+				margin-top: 28%;
+				/* #endif */
+				width: 296rpx;
+				height: 172rpx;
+				background-image: url('../static/images/weitu.png');
+				background-repeat: no-repeat;
+				background-size: 100% 100%;
+			}
 
 			.title {
 				padding-top: 10%;
@@ -207,7 +187,7 @@
 	
 	.action-btn {
 		padding: 20px;
-		margin-top: 50%;
+		margin-top: 30%;
 		height: 200px;
 	}
 	

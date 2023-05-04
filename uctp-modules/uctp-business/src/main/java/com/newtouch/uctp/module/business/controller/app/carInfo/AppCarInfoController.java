@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo;
 
+import com.alibaba.fastjson.JSONArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
@@ -161,8 +163,8 @@ public class AppCarInfoController {
     @GetMapping("/getCarInfoByVIN")
     @Operation(summary = "根据VIN获取回显车辆信息")
     @Parameter(name = "VIN", description = "编号", required = true, example = "1024")
-    public CommonResult<Map> getCarInfoByVIN(@RequestParam("VIN") String VIN) {
-        return success(carInfoService.getCarInfoByVIN(VIN));
+    public CommonResult<Map> getCarInfoByVIN(@RequestParam("VIN") String VIN,@RequestParam("deptId") Long deptId) {
+        return success(carInfoService.getCarInfoByVIN(VIN,deptId));
     }
 
     @GetMapping("/getCarInfoByID")
@@ -193,7 +195,7 @@ public class AppCarInfoController {
 
     @GetMapping("/getCardByID")
     @Operation(summary = "车辆卡片信息")
-    @Parameter(name = "ID", description = "车辆id", required = true, example = "1024")
+    @Parameter(name = "ID", description = "车辆id", required = true, example = "1650085024672796674")
     public CommonResult<AppCarInfoCardRespVO> getCardByID(@RequestParam("ID") Long ID) {
         return success(carInfoService.getCardByID(ID));
     }
@@ -344,6 +346,22 @@ public class AppCarInfoController {
     }
 */
 
+    @PostMapping("/getAllCarBrandList")
+    @PermitAll
+    @Operation(summary = "所有品牌查询")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public JSONArray getAllCarBrandList() {
+        JSONArray jsonArray = new JSONArray();
+        try {
+            String url = "http://testapi.che300.com/service/getCarBrandList";
+            String token = "61f499b086392005f92009b91f8f966a";
+            jsonArray = UctpCarInfoSearchUtils.getCarBrandList(token,  url);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return jsonArray;
+    }
+
     @PostMapping("/getCarBrandList")
     @PermitAll
     @Operation(summary = "品牌查询")
@@ -485,7 +503,7 @@ public class AppCarInfoController {
     @GetMapping("/getTransferInfo")
     @Operation(summary = "根据车辆ID获取流程所需的过户信息")
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
-    public CommonResult<CarTransferInfoVO> getTransferInfo(@RequestParam("carId") Long carId){
-        return success(carInfoService.getTransferInfo(carId));
+    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey){
+        return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId, procDefKey)));
     }
 }

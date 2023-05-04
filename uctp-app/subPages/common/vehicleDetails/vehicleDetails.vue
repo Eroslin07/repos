@@ -1,13 +1,13 @@
 <template>
 	<view class="car-info">
-		<uni-card :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
 				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
-						<text>卖车中-合同已发起</text>
-						<text :class="{bcClor:isTest}">检</text>
-						<text :class="{bcClor:isTransfer}">户</text>
+						<text>{{firstStatus}}-{{secondStatus}}</text>
+						<text :class="{bcClor:isShowTest}">检</text>
+						<text :class="{bcClor:isShowTransfer}">户</text>
 					</view>
 					<view class="indicator-num">
 						<text class="indicator-num__text">{{ currentNum + 1 }}/{{ carsList.length }}</text>
@@ -16,53 +16,57 @@
 			</u-swiper>
 			<view class="car-content">
 				<view class="car-title">
-					<text>{{carInfo.model}}</text>
+					<text>{{carInfoAll.carInfo.model}}</text>
 				</view>
 				<view class="car-vin">
 					<text>车架号（VIN）</text>
-					<text>{{carInfo.vin}}</text>
+					<text>{{carInfoAll.carInfo.vin}}</text>
 				</view>
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>{{ carInfoDetails.remitType}}</text>
+						<text>{{ carInfoAll.carInfoDetails.remitType || '暂无'}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>{{carInfo.paymentType}}</text>
+						<text>{{carInfoAll.carInfo.paymentType || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>在库时长</text>
-						<text>{{carInfoDetails.days }}天</text>
+						<text>{{carInfoAll.carInfoDetails.days || 0 }}天</text>
 					</view>
 					<view class="car-item">
 						<text>首次上牌</text>
-						<text>{{carInfoDetails.firstRegistDate}}</text>
+						<text>{{carInfoAll.carInfoDetails.firstRegistDate || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>{{carInfoDetails.mileage}}万公里</text>
+						<text>{{carInfoAll.carInfoDetails.mileage || 0}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>经办人</text>
-						<text>{{carInfoDetails.creator}}</text>
+						<text>{{carInfoAll.carInfo.creator || '暂无'}}</text>
 					</view>
 				</view>
 			</view>
-			<view class="car-status">
+			<view class="car-status" id="carStatus">
 				<u-tabs :list="tabsData" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
-			<ca-content :tabCar="tabCar" :allDetails="allDetails" @changeTest="changeTest"></ca-content>
+			<ca-content ref="contractInfo" :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest"
+				@changeTest="changeTest">
+			</ca-content>
 		</uni-card>
+		<!-- 提示信息 -->
+		<AbnormalPage v-else :isSHowTip="isSHowTip" />
 	</view>
 </template>
 
@@ -71,17 +75,27 @@
 	import {
 		getCarInfoById
 	} from '@/api/cost/carInfo.js'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
+	import store from '@/store/index.js'
+	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		components: {
-			caContent
+			caContent,
+			AbnormalPage
 		},
 		data() {
 			return {
-				// 基础数据
-				carInfo: {},
-				carInfoDetails: {},
-				allDetails:{},
-				currentNum: '0',
+				//卡片详情
+				carInfoAll: {
+					carInfo: {},
+					carInfoDetails: {},
+					contractCardVOS: [],
+					contractCardNOS: [],
+					fileF: [],
+				},
+				currentNum: 0,
 				carUpload: true,
 				carsList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -102,7 +116,7 @@
 						name: '发票信息'
 					},
 				],
-				tabCar: '0',
+				tabCar: 0,
 				uploadeList: [],
 				listData: [{
 						title: '车辆信息',
@@ -139,35 +153,101 @@
 					}
 				],
 				// 是否检测
-				isTest: true,
-				// 是否过户
-				isTransfer: false,
+				carUpload: false,
 
 				// 父组件传过来的值
 				fatherProps: null,
+
+				// 是否展示系统异常
+				isSHowTip: '',
 			};
 		},
 
 		onLoad(props) {
-			console.log(props, 'this.fatherProps.id')
-			this.getCarDetails('1650072138860851201')
+			// console.log(props, 'this.fatherProps.id')
+			let id = JSON.parse(props.item)?.id || '1650085024672796674'
+			this.getCarDetails(id)
+		},
+		computed: {
+			firstStatus() {
+				let statusValue = store.state.allStatus.statusValue
+				if (statusValue[this.carInfoAll.carInfo.salesStatus]) {
+					return statusValue[this.carInfoAll.carInfo.salesStatus]
+				} else {
+					return '暂无'
+				}
+			},
+			secondStatus() {
+				let statusValue = store.state.allStatus.statusValue
+				if (statusValue[this.carInfoAll.carInfo.status]) {
+					return statusValue[this.carInfoAll.carInfo.status]
+				} else {
+					return '暂无'
+				}
+
+			},
+			isShowTest() {
+				if (this.carInfoAll.fileF.length > 0 || this.carUpload) {
+					return true
+				} else {
+					return false
+				}
+			},
+			isShowTransfer() {
+				let arr = [22, 23, 42, 43]
+				let flag = arr.indexOf(this.carInfoAll.carInfo.status)
+				if (flag > 0) {
+					return true
+				} else {
+					return false
+				}
+			}
 		},
 		methods: {
 			// 获取数据
 			getCarDetails(id) {
+				this.isSHowTip = 'onLoading'
 				let data = {
 					ID: id
 				}
 				getCarInfoById(data).then(res => {
-					this.carInfo = res.data.carInfo;
-					this.carInfoDetails = res.data.carInfoDetails;
-					this.allDetails=res.data;
-					this.$set(this.carInfoDetails,'days',this.getDays(res.data.carInfoDetails.createTime))
+					if (Object.keys(res.data)?.length) {
+						this.isSHowTip = ''
+					} else {
+						this.isSHowTip = 'noData'
+					}
+					this.carInfoAll = res.data
+					let {
+						carInfo: {
+							scrapDate,
+							annualInspectionDate,
+							insuranceEndData
+						}
+					} = res.data
+					this.carInfoAll.carInfo.scrapDate = parseTime(scrapDate, '{y}-{m}-{d}')
+					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
+					this.carInfoAll.carInfo.insuranceEndData = parseTime(insuranceEndData, '{y}-{m}-{d}')
+					this.carsList = this.carInfoAll.fileA.map(v => v.url);
+					// 库存天数
+					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
+						.createTime))
+				}).catch((err) => {
+					this.$modal.hideMsg();
+					if (err == '后端接口连接异常' || err == '系统接口请求超时') {
+						this.isSHowTip = 'webError'
+					} else {
+						this.isSHowTip = 'sysError'
+					}
 				})
 			},
+			// 切换tab
 			changeTab(item) {
 				console.log(item)
 				this.tabCar = item.index
+				if (item.index != 2) {
+					this.$refs.contractInfo.eyeIsShow = false
+				}
+
 			},
 
 			// 删除图片
@@ -198,14 +278,13 @@
 				}
 			},
 			changeTest(val) {
-				console.log(val)
-				this.isTest = val
+				this.carUpload = val
 			},
 
 			// 时间戳转天
 			getDays(value = 0) {
 				let currentTime = new Date().getTime();
-				return (currentTime - val) / 3600 / 24
+				return Math.floor((currentTime - value) / 1000 / 3600 / 24)
 			}
 		}
 	}
@@ -213,12 +292,28 @@
 
 <style lang="scss" scoped>
 	.car-info {
-		overflow: hidden;
+		height: 100%;
+
+		.img-error {
+			width: 246rpx;
+			height: 208rpx;
+			margin-top: 514rpx;
+			margin-left: 50%;
+			transform: translateX(-50%);
+		}
+
+		.error-tip {
+			padding-top: 18rpx;
+			text-align: center;
+			font-size: 24rpx;
+			color: #999;
+		}
 	}
 
 	.header-text {
-		width: 334rpx;
-		height: 52rpx;
+		// width: 334rpx;
+		// height: 52rpx;
+		padding: 6rpx 8rpx;
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 28rpx;
 		display: flex;
@@ -243,6 +338,7 @@
 		>text:last-child {
 			width: 40rpx;
 			height: 40rpx;
+			margin-left: 10rpx;
 			text-align: center;
 			border-radius: 50%;
 			background: rgba(109, 114, 120, 0.6)
@@ -436,5 +532,9 @@
 
 	::v-deep .uni-card--border {
 		border-bottom: none;
+	}
+
+	::v-deep #carStatus .u-tabs__wrapper__nav__item {
+		padding: 0 !important;
 	}
 </style>

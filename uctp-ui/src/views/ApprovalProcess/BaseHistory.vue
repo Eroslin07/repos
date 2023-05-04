@@ -1,8 +1,8 @@
 <template>
   <el-card class="box-card" v-loading="tasksLoad">
-    <el-col :span="16">
+    <el-col :span="24">
       <div class="block">
-        <el-timeline>
+        <el-timeline class="titmline-box">
           <el-timeline-item
             v-for="(item, index) in tasks"
             :key="index"

@@ -1,21 +1,22 @@
 <template>
 	<view class="container">
+		<!-- 自定义导航栏 -->
+		<u-navbar title="员工管理" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<view class="xinzeng" @click="handleAdd">
-			<u-icon class="" color="#FA6400" name="plus" style="font-size: 16px;"></u-icon>
+			<u-icon name="plus" color="#FA6400" size="28rpx "></u-icon>
 			<text>新增</text>
 		</view>
 		<view class="user_list">
 			<u-swipe-action>
-				<u-swipe-action-item v-for="(item, index) in list" :key="index" :options="options1"
-					@click="removeItem(item)" >
-					<view class="user flex" @click="handleClick(index)">
+				<u-swipe-action-item v-for="item in list" :key="item.id" :options="options1" @click="removeItem(item)">
+					<view class="user flex" @click="handleClick(item)">
 						<view>
-							<text :class="item.status ? 'ren' : 'wei'">认</text>
+							<text :class="item.registStatus == 0 ? 'ren' : 'wei'">认</text>
 							<text>{{ item.name }}</text>
 							<text>{{ item.phone }}</text>
 						</view>
 						<view>
-							<text v-if="item.status" class="zhengchang">正常</text>
+							<text v-if="item.status == 0" class="zhengchang">正常</text>
 							<text v-else class="tingyong">停用</text>
 						</view>
 					</view>
@@ -26,6 +27,7 @@
 </template>
 
 <script>
+	import { getAccountList, deleteAccount } from "@/api/system/mine"
 	export default {
 		data() {
 			return {
@@ -35,41 +37,52 @@
 						backgroundColor: '#f56c6c'
 					}
 				}],
-				list: [{
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: true
-				}, {
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: true
-				}, {
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: true
-				}, {
-					phone: '15328756761',
-					name: '李四',
-					time: '2023-03-15',
-					status: false
-				}]
+				list: []
 			}
 		},
+		onShow: function() {
+			uni.$on('refresh', (data) => {
+				if (data.refresh) {
+					this.getList();
+				}
+			});
+		},
+		onUnload: function() {
+			uni.$off('refresh'); // 需要手动解绑自定义事件
+		},
+		mounted() {
+			this.getList();
+		},
+		onPullDownRefresh(){
+			this.getList()
+		},
 		methods: {
+			back() {
+				this.$tab.switchTab(`/pages/mine/index`)
+			},
+			// 获取子账户列表
+			getList() {
+				getAccountList({ deptId: this.$store.state.user.deptId }).then((res) => {
+					this.list = res.data
+					uni.stopPullDownRefresh()
+				})
+			},
 			handleAdd() {
 				// 新增员工
 				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=add`)
 			},
-			handleClick(i) {
+			handleClick(item) {
 				// 修改员工
-				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit`)
+				this.$tab.navigateTo(`/subPages/mine/staff/addStaff?type=edit&data=`+encodeURIComponent(JSON.stringify(item)))
 			},
 			// 删除
-			removeItem(item){
-				console.log(item)
+			removeItem(item) {
+				this.$modal.confirm('确定删除该员工吗？').then(() => {
+					deleteAccount({ userId: item.id }).then((res) => {
+						this.$modal.msg("删除成功")
+						this.getList();
+					})
+				})
 			}
 		}
 	}
@@ -89,7 +102,10 @@
 			color: #FA6400;
 
 			text {
+				width: 56rpx;
+				height: 40rpx;
 				padding-left: 12rpx;
+				line-height: 40rpx;
 			}
 		}
 

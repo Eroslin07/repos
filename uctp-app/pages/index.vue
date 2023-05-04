@@ -3,9 +3,11 @@
 		<!-- 自定义导航栏 -->
 		<u-navbar title="车友通">
 			<view class="u-nav-slot" slot="left">
-				<image @click="handleMsg" style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png"
-					class="form-image">
-				</image>
+				<uni-badge class="uni-badge-left-margin" :text="msgsValue" absolute="rightTop" size="small">
+					<image @click="handleMsg" style="width:22px;height:22px;" src="../static/images/home/xiaoxi.png"
+						class="form-image">
+					</image>
+				</uni-badge>
 			</view>
 		</u-navbar>
 		<!-- 解决窗体沉浸，内容被导航栏遮盖问题 -->
@@ -62,7 +64,7 @@
 				<view class="right-content">
 					<u-row style="height:68px;">
 						<u-col span="4" v-for="child in item.child" :key="child.status"
-							@click="handleTabItem(item,child,allChild)">
+							@click="handleTabItem(item,child.status,allChild)">
 							<view class="align-center">
 								<text>{{child.label}}</text>
 								<uni-icons type="right" size="12" color="#656C6E"></uni-icons>
@@ -77,20 +79,32 @@
 		</view>
 		<!-- 加载图标 -->
 		<!-- <u-loadmore :status="status" loadingText="努力加载中..." /> -->
+		<!-- 自定义tabbar -->
+		<tab-bar :name="0" :type="type"></tab-bar>
 	</view>
 </template>
 
 <script>
 	import {
 		getHomePageList,
-		getHomeCount
+		getHomeCount,
+		getStatusList
 	} from '@/api/home.js'
-	import cellGroup from "../uni_modules/uview-ui/libs/config/props/cellGroup";
+	import {
+		getNoticesApi,
+	} from '@/api/work/message.js'
+	import {
+		parseTime
+	} from '@/utils/ruoyi.js'
 	export default {
 		data() {
 			return {
+				type: 0,
+				businessId: this.$store.state.user.deptId,
 				// 导航栏高度
 				navigateBarHeight: 0,
+				// 消息数字角标
+				msgsValue: 0,
 				// 轮播
 				swiperList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -106,127 +120,220 @@
 					"pageSize": 10,
 				},
 				// 统计数据
-				gatherData: [],
+				gatherData: [{
+								status: 1,
+								num: 0,
+								label: '收车中',
+								child: [{
+									status: '1.1',
+									num: 0,
+									label: '草稿'
+								}, {
+									status: '1.2',
+									num: 0,
+									label: '合同已发起'
+								}, {
+									status: '1.3',
+									num: 0,
+									label: '支付失败'
+								}]
+							},
+							{
+								status: 2,
+								num: 0,
+								label: '代售中',
+								child: [{
+									status: '2.1',
+									num: 0,
+									label: '待过户'
+								}, {
+									status: '2.2',
+									num: 0,
+									label: '未检测'
+								}, {
+									status: '2.3',
+									num: 0,
+									label: '已检测'
+								}]
+							},
+							{
+								status: 3,
+								num: 0,
+								label: '卖车中',
+								child: [{
+									status: '3.1',
+									num: 0,
+									label: '草稿'
+								}, {
+									status: '3.2',
+									num: 0,
+									label: '合同已发起'
+								}, {
+									status: '3.3',
+									num: 0,
+									label: '待支付'
+								}]
+							},
+							{
+								status: 4,
+								num: 0,
+								label: '已售出',
+								child: [{
+									status: '4.1',
+									num: 0,
+									label: '待过户'
+								}, {
+									status: '4.2',
+									num: 0,
+									label: '带分账'
+								}, {
+									status: '4.3',
+									num: 0,
+									label: '已分账'
+								}]
+							}
+						],
 				// 所有子项
-				allChild: []
-
+				allChild: [],
 			}
 		},
 		onLoad: function() {
-			this.getAcount();
 			/* #ifdef MP-WEIXIN */
 			this.getnavigateBarHeight();
 			/* #endif */
 			uni.startPullDownRefresh();
+			uni.hideTabBar();
+			this.type = this.$store.state.user.staffType;
+
+		},
+		onShow() {
+			this.getAcount();
+			this.getStatusValue()
+			this.getListData()
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
 			this.getAcount();
+			this.getStatusValue();
+			this.getListData();
 		},
 		methods: {
+			// 获取消息列表数据
+			getListData() {
+				getNoticesApi(this.businessId).then(res => {
+					if (res.data.length) {
+						this.msgsValue = res.data.filter(v => v.status === '0').length
+					}
+				}).catch(err => {
+					console.log(err, 'err')
+				})
+			},
+			formateData(data,list){
+				for(let i=0;i<data.length;i++){
+					if(data[i].label==list[i].label){
+						data[i].num=list[i].num
+						data[i].status=list[i].status
+					}
+					if(list[i].child && list[i].child.length>0){
+						this.formateData(data[i].child,list[i].child)
+					}
+				}
+			},
 			//获取统计数据
 			getAcount() {
 				this.$modal.loading("数据加载中...");
 				getHomeCount().then(res => {
-					this.gatherData = res.data
+					if(res.data && res.data.length>0){
+						this.formateData(this.gatherData,res.data)
+					}
 					res.data.forEach(item => {
 						this.allChild.push(...item.child)
 					})
 				}).catch((error) => {
-					for (let i = 0; i < 4; i++) {
-						this.gatherData.push({
-							// salesStatus: i,
-							status: i + 1,
-							num: 0,
-							label: '收车中',
-							child: [{
-								status: 11,
-								num: 1,
-								label: '草稿'
-							}, {
-								status: 11,
-								num: 1,
-								label: '草稿'
-							}, {
-								status: 11,
-								num: 1,
-								label: '草稿'
-							}]
-						})
-					}
-				}).finally(()=>{
-					this.$modal.closeLoading()
-					uni.stopPullDownRefresh()
-				})
-			},
-
-			// 搜索
-			search(val) {
-				uni.showToast({
-					title: '搜索：' + val,
-					icon: 'none'
-				})
-			},
-			// 清除
-			clear(val) {
-				uni.showToast({
-					title: '清除：' + val,
-					icon: 'none'
-				})
-			},
-			// 我要收车
-			buyCar() {
-				this.$tab.navigateTo('/subPages/home/bycar/index');
-			},
-			// 我要卖车
-			sellingCar() {
-				this.$tab.navigateTo('/subPages/home/sellingCar/index');
-			},
-			// 收车中
-			tabCarStatus(item,allChild) {
-				this.$tab.navigateTo(`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`)
-			},
-			handleTabItem(item, child,allChild) {
-				this.$tab.navigateTo(
-					`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&child=${JSON.stringify(child)}&&allChild=${JSON.stringify(allChild)}`
-					)
-			},
-
-			// 消息动态-背景图标
-			leftImgSrc(item) {
-				let urlArr = [{
-					status: 1,
-					url: '/static/images/index/title-car.png',
-				}, {
-					status: 3,
-					url: '/static/images/index/title-sell.png'
-				}, {
-					status: 2,
-					url: '/static/images/index/title-sale.png'
-				}, {
-					status: 4,
-					url: '/static/images/index/title-saled.png'
-				}, ]
-				return urlArr.find(val => val.status == item.status)?.url
-			},
-
-			// 消息
-			handleMsg() {
-				this.$tab.navigateTo('/subPages/work/index')
-			},
-			// 获取顶部导航栏的高度
-			getnavigateBarHeight() {
-				let menuButtonObject = uni.getMenuButtonBoundingClientRect();
-				uni.getSystemInfo({
-					success: res => {
-						this.navigateBarHeight = res.statusBarHeight;
-					},
-					fail(err) {
-						console.log(err);
-					}
-				})
+				}).finally(() => {
+				this.$modal.closeLoading()
+				uni.stopPullDownRefresh()
+			})
+		},
+		// 获取状态值
+		getStatusValue() {
+			let data = {
+				dictTypes: 'dictTypes=car_status_three,car_status,car_sales_status'
 			}
+			getStatusList(data).then(res => {
+				this.$store.commit('setStatus', res.data)
+			})
+		},
+		// 搜索
+		search(val) {
+			uni.showToast({
+				title: '搜索：' + val,
+				icon: 'none'
+			})
+		},
+		// 清除
+		clear(val) {
+			uni.showToast({
+				title: '清除：' + val,
+				icon: 'none'
+			})
+		},
+		// 我要收车
+		buyCar() {
+			this.$tab.navigateTo('/subPages/home/bycar/index');
+		},
+		// 我要卖车
+		sellingCar() {
+			this.$tab.navigateTo('/subPages/home/sellingCar/index');
+		},
+		// 收车状态
+		tabCarStatus(item, allChild) {
+			this.$tab.navigateTo(
+				`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
+			)
+		},
+		// 收车状态子项
+		handleTabItem(item, childStatus, allChild) {
+			this.$tab.navigateTo(
+				`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&childStatus=${childStatus}&&allChild=${JSON.stringify(allChild)}`
+			)
+		},
+
+		// 交易动态-背景图标
+		leftImgSrc(item) {
+			let urlArr = [{
+				status: 1,
+				url: '/static/images/index/title-car.png',
+			}, {
+				status: 3,
+				url: '/static/images/index/title-sell.png'
+			}, {
+				status: 2,
+				url: '/static/images/index/title-sale.png'
+			}, {
+				status: 4,
+				url: '/static/images/index/title-saled.png'
+			}, ]
+			return urlArr.find(val => val.status == item.status)?.url
+		},
+
+		// 消息
+		handleMsg() {
+			this.$tab.navigateTo(`/subPages/work/index`)
+		},
+		// 获取顶部导航栏的高度
+		getnavigateBarHeight() {
+			let menuButtonObject = uni.getMenuButtonBoundingClientRect();
+			uni.getSystemInfo({
+				success: res => {
+					this.navigateBarHeight = res.statusBarHeight;
+				},
+				fail(err) {
+					console.log(err);
+				}
+			})
 		}
+	}
 	}
 </script>
 
@@ -360,7 +467,7 @@
 					border-bottom-left-radius: 12rpx;
 					overflow: hidden;
 					text-align: center;
-					font-size: 20rpx;
+					font-size: 28rpx;
 					// background: url('/static/images/bc.jpg') no-repeat;
 					// background-size: 100% 100%;
 					// background-color: #2A93EC;

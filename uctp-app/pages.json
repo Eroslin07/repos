@@ -1,13 +1,11 @@
 {
-	"pages": [
-		// 	{
-		// 	"path": "pages/wx_login",
-		// 	"style": {
-		// 		"navigationBarTitleText": "登录",
-		// 		"navigationStyle": "custom"
-		// 	}
-		// },
-		{
+	"pages": [{
+			"path": "pages/wx_login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		}, {
 			"path": "pages/login",
 			"style": {
 				"navigationBarTitleText": "登录",
@@ -29,7 +27,9 @@
 			"path": "pages/account/index",
 			"style": {
 				"navigationBarTitleText": "资金管理",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 150
 			}
 		}, {
 			"path": "pages/mine/index",
@@ -50,7 +50,13 @@
 		}, {
 			"path": "register",
 			"style": {
-				"navigationBarTitleText": "注册账号"
+				"navigationBarTitleText": "注册账号",
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "registerNotice",
+			"style": {
+				"navigationBarTitleText": "用户协议及隐私"
 				// "navigationStyle": "custom"
 			}
 		}, {
@@ -86,7 +92,8 @@
 		}, {
 			"path": "work/index",
 			"style": {
-				"navigationBarTitleText": "消息"
+				"navigationBarTitleText": "消息",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "work/infoDetail",
@@ -257,7 +264,9 @@
 		}, {
 			"path": "mine/staff/index",
 			"style": {
-				"navigationBarTitleText": "员工管理"
+				"navigationBarTitleText": "员工管理",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "mine/staff/addStaff",
@@ -344,6 +353,12 @@
 				// "enablePullDownRefresh": false
 			}
 		}, {
+			"path": "common/vehicleDetails/components/clientInfo",
+			"style": {
+				"navigationBarTitleText": "卖家信息"
+				// "enablePullDownRefresh": false
+			}
+		}, {
 			"path": "common/webview/userAgreement",
 			"style": {
 				"navigationBarTitleText": "用户协议"
@@ -356,7 +371,8 @@
 		}, {
 			"path": "home/carStatus/carStatus",
 			"style": {
-				"navigationBarTitleText": "收车中",
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
 				"onReachBottomDistance": 150,
 				"enablePullDownRefresh": true
 			}
@@ -368,25 +384,25 @@
 		"borderStyle": "white",
 		"backgroundColor": "#ffffff",
 		"list": [{
-			"pagePath": "pages/index",
-			"iconPath": "static/images/tabbar/homepage_.png",
-			"selectedIconPath": "static/images/tabbar/homepage.png",
-			"text": "首页"
+			"pagePath": "pages/index"
+			// "iconPath": "static/images/tabbar/homepage_.png",
+			// "selectedIconPath": "static/images/tabbar/homepage.png",
+			// "text": "首页"
 		}, {
-			"pagePath": "pages/cost/index",
-			"iconPath": "static/images/tabbar/feiyong.png",
-			"selectedIconPath": "static/images/tabbar/feiyong_.png",
-			"text": "费用分析"
+			"pagePath": "pages/cost/index"
+			// "iconPath": "static/images/tabbar/feiyong.png",
+			// "selectedIconPath": "static/images/tabbar/feiyong_.png",
+			// "text": "费用分析"
 		}, {
-			"pagePath": "pages/account/index",
-			"iconPath": "static/images/tabbar/message.png",
-			"selectedIconPath": "static/images/tabbar/message_.png",
-			"text": "资金管理"
+			"pagePath": "pages/account/index"
+			// "iconPath": "static/images/tabbar/message.png",
+			// "selectedIconPath": "static/images/tabbar/message_.png",
+			// "text": "资金管理"
 		}, {
-			"pagePath": "pages/mine/index",
-			"iconPath": "static/images/tabbar/mine.png",
-			"selectedIconPath": "static/images/tabbar/mine_.png",
-			"text": "我的"
+			"pagePath": "pages/mine/index"
+			// "iconPath": "static/images/tabbar/mine.png",
+			// "selectedIconPath": "static/images/tabbar/mine_.png",
+			// "text": "我的"
 		}]
 	},
 	"globalStyle": {

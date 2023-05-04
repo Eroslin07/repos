@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.QueryWrapperX;
+import com.newtouch.uctp.module.system.controller.admin.auth.vo.AddAccountRespVO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,4 +27,11 @@ public interface UserExtMapper extends BaseMapperX<UserExtDO> {
         return selectList(new LambdaQueryWrapperX<UserExtDO>()
                 .likeIfPresent(UserExtDO::getIdCard,IDCard));
     }
+
+    default List<UserExtDO> selectByUserId(Long userId) {
+        return selectList(new LambdaQueryWrapperX<UserExtDO>()
+                .eqIfPresent(UserExtDO::getUserId,userId));
+    }
+
+    List<AddAccountRespVO> getAccountList(@Param("deptId") Long deptId);
 }

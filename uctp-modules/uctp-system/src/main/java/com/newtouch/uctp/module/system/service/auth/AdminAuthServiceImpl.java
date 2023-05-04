@@ -10,6 +10,7 @@ import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
 import com.newtouch.uctp.framework.common.util.validation.ValidationUtils;
 import com.newtouch.uctp.module.business.api.file.BusinessFileApi;
 import com.newtouch.uctp.module.business.api.file.dto.FileInsertReqDTO;
+import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import com.newtouch.uctp.module.system.api.sms.SmsCodeApi;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
@@ -19,6 +20,8 @@ import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
+import com.newtouch.uctp.module.system.dal.mysql.user.AdminUserMapper;
+import com.newtouch.uctp.module.system.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.system.enums.logger.LoginLogTypeEnum;
 import com.newtouch.uctp.module.system.enums.logger.LoginResultEnum;
 import com.newtouch.uctp.module.system.enums.oauth2.OAuth2ClientConstants;
@@ -33,8 +36,10 @@ import com.newtouch.uctp.module.system.service.user.UserExtService;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
 import com.xingyuv.captcha.service.CaptchaService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +88,13 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private UserExtService userExtService;
     @Resource
     private BusinessFileApi businessFileApi;
+    @Resource
+    private UserExtMapper userExtMapper;
+    @Resource
+    private AdminUserMapper adminUserMapper;
+    @Resource
+    @Lazy
+    private QysConfigApi qysConfigApi;
 
     /**
      * 验证码的开关，默认为 true
@@ -130,7 +142,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public AuthLoginRespVO wxLogin(AuthWxLoginReqVO reqVO) {
-        AdminUserDO user = userService.getUserByMobile(reqVO.getUsername());
+        AdminUserDO user = userService.selectByMobileAndStatus(reqVO.getUsername(),0);
         //查询该手机号是否注册
         if(null==user){
             throw exception(AUTH_MOBILE_NOT_EXIST);
@@ -140,7 +152,34 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
-    @Transactional
+    public AuthUserInfoRespVO getUserInfo(Long userId) {
+        AuthUserInfoRespVO infoRespVO = new AuthUserInfoRespVO();
+        UserExtDO userExtDO=new UserExtDO();
+        AdminUserDO user = userService.getUser(userId);
+        DeptDO dept = deptService.getDept(user.getDeptId());
+        //拿到父级
+        DeptDO parentDept = deptService.selectByParent(String.valueOf(dept.getTenantId()), 0L);
+        List<UserExtDO> userExtDOS = userExtMapper.selectByUserId(userId);
+        if(userExtDOS.size()>0){
+            userExtDO = userExtDOS.get(0);
+        }
+        infoRespVO.setNickname(user.getNickname());
+        infoRespVO.setIdCard(userExtDO.getIdCard());
+        infoRespVO.setPhone(user.getMobile());
+        infoRespVO.setTaxNum(dept.getTaxNum());
+        infoRespVO.setDeptName(dept.getName());
+        infoRespVO.setLegalRepresentative(dept.getLegalRepresentative());
+        infoRespVO.setTenantName(parentDept.getName());
+        infoRespVO.setBankName(userExtDO.getBankName());
+        infoRespVO.setBankAccount(userExtDO.getBankAccount());
+        infoRespVO.setBondBankAccount(userExtDO.getBondBankAccount());
+        infoRespVO.setAddress(dept.getAddress());
+        return infoRespVO;
+    }
+
+    @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public Map registerAccount(AuthRegisterReqVO reqVO) {
         //查询是否有未注册数据，有则删除
         List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 2);
@@ -192,6 +231,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             deptDO.setTaxNum(reqVO.getTaxNum());
             deptDO.setAddress(reqVO.getAddress());
             deptDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
+            deptDO.setLegalRepresentative(reqVO.getLegal_representative());
 //            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
             deptDO.setSort(2);
             deptDO.setStatus(2);//未激活
@@ -205,7 +245,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             userDO.setNickname(reqVO.getName());
             userDO.setDeptId(deptDO.getId());//商户id
             userDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
-            userDO.setStatus(2);//未激活
+            userDO.setStatus(1);
             userService.insertUser(userDO);
 
             //用户扩展表
@@ -216,7 +256,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             extDO.setBankAccount(reqVO.getBankNumber());//对公银行账号
             extDO.setBondBankAccount(reqVO.getBondBankAccount());//保证金充值账号
             extDO.setStaffType("1");//主账号
-            extDO.setStatus(2);
+            extDO.setStatus(1);//未激活
             extDO.setTenantId(Long.valueOf(reqVO.getMarketLocation()));
             userExtService.insertUser(extDO);
 
@@ -245,6 +285,74 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             throw exception(AUTH_REGISTER_ERROR);
         }
         return map;
+    }
+
+    @Override
+    public Map addAccount(AddAccountReqVO reqVO) {
+        HashMap<Object, Object> map = new HashMap<>();
+        AdminUserDO userDO = new AdminUserDO();
+        UserExtDO userExtDO = new UserExtDO();
+        if(null==reqVO.getId()){
+            try {
+                userDO.setUsername(reqVO.getPhone());
+                userDO.setMobile(reqVO.getPhone());
+                userDO.setNickname(reqVO.getName());
+                userDO.setStatus(1);
+                userDO.setDeptId(reqVO.getDeptId());
+                userDO.setTenantId(reqVO.getTenantId());
+                userService.insertUser(userDO);
+
+                userExtDO.setUserId(userDO.getId());
+                userExtDO.setStaffType("2");
+                userExtDO.setStatus(1);
+                userExtDO.setBusinessId(reqVO.getDeptId());
+                userExtDO.setTenantId(reqVO.getTenantId());
+                userExtDO.setIdCard(reqVO.getIdCard());
+                userExtService.insertUser(userExtDO);
+                map.put("success","0");
+                CommonResult<Boolean> result = qysConfigApi.userAuth(userDO.getId());
+            }catch (Exception e){
+                throw exception(AUTH_ADDACCOUNT_ERROR);
+            }
+        }else{
+            try {
+                AdminUserDO user = userService.getUser(reqVO.getId());
+                UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
+                user.setNickname(reqVO.getName());
+                user.setStatus(Integer.valueOf(reqVO.getStatus()));
+                //如果身份证&身份证变更，修改为未激活（未认证）
+                if(userExtDOS.getIdCard().equals(reqVO.getIdCard()) &&user.getMobile().equals(reqVO.getPhone())){
+                    adminUserMapper.updateById(user);
+                    userExtMapper.updateById(userExtDOS);
+                }else{
+                    userExtDOS.setIdCard(reqVO.getIdCard());
+                    userExtDOS.setStatus(1);
+
+                    user.setUsername(reqVO.getPhone());
+                    user.setMobile(reqVO.getPhone());
+                    userExtDOS.setStatus(1);
+                    adminUserMapper.updateById(user);
+                    userExtMapper.updateById(userExtDOS);
+                    CommonResult<Boolean> booleanCommonResult = qysConfigApi.userAuth(userDO.getId());
+                }
+
+            }catch (Exception e){
+                throw exception(AUTH_UPDATEACCOUNT_ERROR);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public int deleteAccount(Long id) {
+        adminUserMapper.deleteById(id);
+        return userExtMapper.deleteByUserId(id);
+    }
+
+    @Override
+    public List<AddAccountRespVO> getAccountList(Long deptId) {
+
+        return userExtMapper.getAccountList(deptId);
     }
 
     @Override

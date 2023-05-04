@@ -15,6 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = UctpQIyuesuoSaasTests.class)
 public class UctpQIyuesuoSaasTests {
+
+//    @Resource
+//    private QysConfigService qysConfigService;
     private static SaasQiyuesuoSaasClient client;
 
     @BeforeAll
@@ -36,25 +39,25 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void companyAuth() {
-        String applicanInfo = "{\"name\":\"阿卡丽\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("拳头科技公司", applicanInfo);
+        String applicanInfo = "{\"name\":\"马丽\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}";
+        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("拳头大科技公司", applicanInfo);
         System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(),0);
+        Assert.equals(result.getCode(), 0);
     }
 
     @Test
     void personAuth() {
         QiyuesuoCommonResult<SaaSUserAuthPageResult> result = client.saasUserAuthPage("17396202169");
         System.out.println(result.getData().getAuthUrl());
-        Assert.equals(result.getCode(),0);
+        Assert.equals(result.getCode(), 0);
     }
 
     @Test
     void privilegeUrl() {
         SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
-        QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3086857342332129453L, "17396202169");
+        QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3088322841008022468L, "17380123816");
         System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(),0);
+        Assert.equals(result.getCode(), 0);
     }
 
 

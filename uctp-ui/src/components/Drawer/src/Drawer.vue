@@ -12,9 +12,7 @@
       class="drawerSelf"
       :with-header="false"
     >
-      <template #header>
-        <!-- <h3 :id="titleId" :class="titleClass">{{ drawerTitle }}</h3> -->
-      </template>
+      <template #header> </template>
       <template #default>
         <div class="header">
           <div
@@ -31,7 +29,11 @@
             <el-button plain type="primary" @click="submitBtn('同意')" v-if="!completedVisible"
               >同意</el-button
             >
-            <el-button plain type="success" @click="submitBtn('不同意')" v-if="!completedVisible"
+            <el-button
+              plain
+              type="success"
+              @click="submitBtn('不同意')"
+              v-if="!completedVisible && noVisible"
               >不同意</el-button
             >
             <!-- <el-button plain type="danger">作废</el-button> -->
@@ -96,6 +98,7 @@ const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])
 // const emit = defineEmits(['handleUpdataList'])
 const activeName = ref('BaseInfo')
+const statusList = ['SCKP', 'MCGH', 'SCKP', 'SKZH', 'MCKP']
 const comps = shallowRef([
   {
     label: '基本信息',
@@ -122,10 +125,6 @@ const props = defineProps({
     type: String,
     default: 'rtl'
   },
-  drawerTitle: {
-    type: String,
-    default: '收车合同审批-节点3'
-  },
   status: {
     type: String,
     default: ''
@@ -133,6 +132,9 @@ const props = defineProps({
 })
 const drawerVisible = computed(() => {
   return props.visible
+})
+const noVisible = computed(() => {
+  return !statusList.includes(props.status)
 })
 function tabChange(name) {
   tabName.value = name
@@ -159,6 +161,7 @@ const dialogSubmit = () => {
     variables: baseInfoData.data.variables
   }
   data.variables.approvalType = dialogText.value == '同意' ? 'pass' : 'disagree'
+  data.variables.nodeId = baseInfoData.data.nodeId
   data.variables = detailAPI
     .putApproveAPI(data)
     .then(() => {

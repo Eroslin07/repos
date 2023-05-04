@@ -1,10 +1,7 @@
 package com.newtouch.uctp.module.business.service.account;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitQueryReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.vo.ProfitSummaryRespVO;
+import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
@@ -33,23 +30,20 @@ public class AccountProfitServiceTest {
     private RedissonClient redissonClient;
 
     private String accountNo = "666";
-    private String contractNo = "23002";
+    private String contractNo = "28001";
 
     @Test
     public void testRecorded() {
-        Integer vehicleReceiptAmount = 100;
-        Integer carSalesAmount = 200;
+        Long vehicleReceiptAmount = 100L;
+        Long carSalesAmount = 200L;
         List<CostDTO> costs = new ArrayList<>();
         CostDTO c = new CostDTO();
-        c.setAmount(1);
+        c.setAmount(1L);
         c.setType("FEE_1");
         costs.add(c);
         CostDTO c2 = new CostDTO();
-        c2.setAmount(2);
+        c2.setAmount(2L);
         c2.setType("FEE_2");
-        c2.setPromptPayment(true);
-        c2.setBankNo("622000000");
-        c2.setBankName("张三");
         costs.add(c2);
 
         List<TaxDTO> taxes = new ArrayList<>();
@@ -108,22 +102,30 @@ public class AccountProfitServiceTest {
 
     @Test
     public void testProfitPresent() {
-        Long id = accountProfitService.profitPresent(accountNo, 1L, 5, null);
+        List<ProfitPresentInvoiceReqVO> invoiceFiles = new ArrayList<>();
+        ProfitPresentInvoiceReqVO invoiceReqVO1 = new ProfitPresentInvoiceReqVO();
+        invoiceReqVO1.setFileId("1");
+        invoiceReqVO1.setFileUrl("http://127.0.0.1/1.jpg");
+        ProfitPresentInvoiceReqVO invoiceReqVO2 = new ProfitPresentInvoiceReqVO();
+        invoiceReqVO2.setFileId("2");
+        invoiceReqVO2.setFileUrl("http://127.0.0.1/2.jpg");
+        invoiceFiles.add(invoiceReqVO1);
+        invoiceFiles.add(invoiceReqVO2);
+
+        Long id = accountProfitService.profitPresent(accountNo, 3L, 1L, invoiceFiles);
         Assertions.assertNotNull(id);
     }
 
     @Test
     public void testAuditProfitPressentReject() throws InterruptedException {
-        accountProfitService.auditProfitPressent(1647853199840743426L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
-        accountProfitService.auditProfitPressent(1647853199840743426L, ProfitPressentAuditOpinion.AUDIT_REJECT);
+        accountProfitService.auditProfitPressent("1647853199840743426", ProfitPressentAuditOpinion.AUDIT_REJECT);
     }
 
     @Test
     public void testAuditProfitPressentApproved() throws InterruptedException {
-        accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_PROCESSING);
         Thread.sleep(10);
-        accountProfitService.auditProfitPressent(1647855387535155202L, ProfitPressentAuditOpinion.AUDIT_APPROVED);
+        accountProfitService.auditProfitPressent("1647855387535155202", ProfitPressentAuditOpinion.AUDIT_APPROVED);
     }
 
     @Test

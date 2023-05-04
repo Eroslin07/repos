@@ -3,6 +3,7 @@ import storage from '@/utils/storage'
 import constant from '@/utils/constant'
 import { login, wxLogin, logout, getInfo } from '@/api/login'
 import { setToken, removeToken } from '@/utils/auth'
+import tarBarUserType from '@/utils/tabBar.js';
 
 const baseUrl = config.baseUrl
 
@@ -13,12 +14,13 @@ const user = {
     avatar: storage.get(constant.avatar),
     roles: storage.get(constant.roles),
     permissions: storage.get(constant.permissions),
-    phone: uni.getStorageSync('PHONE'),
+    phone: uni.getStorageSync('PHONE') || storage.get(constant.phone),
     deptId: uni.getStorageSync('DEPT_ID') || storage.get(constant.deptId),
     tenantId: uni.getStorageSync('TENANT_ID') || storage.get(constant.tenantId),
     deptName: uni.getStorageSync('SET_DEPTNAME') || storage.get(constant.deptName),
     tenantName: uni.getStorageSync('SET_TENANTNAME') || storage.get(constant.tenantName),
-    accountNo: '55555555'
+    accountNo: '55555555',
+    staffType:uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
   },
 
   mutations: {
@@ -68,6 +70,11 @@ const user = {
       storage.set(constant.tenantName, tenantName)
       uni.setStorageSync('SET_TENANTNAME', tenantName)
     },
+	SET_STAFFTYPE: (state, staffType) => {
+	  state.staffType = staffType
+	  storage.set(constant.staffType, staffType)
+	  uni.setStorageSync('SET_STAFFTYPE', staffType)
+	},
   },
 
   actions: {
@@ -125,6 +132,7 @@ const user = {
           commit('SET_TENANTID', tenantId)
           commit('SET_TENANTNAME', user.tenantName)
           commit('SET_ID', user.id)
+          commit('SET_STAFFTYPE', user.staffType)
           resolve(res)
         }).catch(error => {
           reject(error)
@@ -145,11 +153,6 @@ const user = {
           reject(error)
         })
       })
-    },
-
-    // 保存手机号
-    GetPhone({ commit, state }) {
-      commit('SET_PHONE', state)
     }
   }
 }

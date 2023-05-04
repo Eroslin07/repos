@@ -7,9 +7,9 @@ public interface MerchantAccountService {
 
     MerchantAccountDO queryByAccountNo(String accountNo);
 
-    int updateCash(String accountNo, Integer tranAmount, Integer revision, int type);
+    int updateCash(String accountNo, Long tranAmount, Integer revision, int type);
 
-    int changeCash(String accountNo, Integer tranAmount, Integer revision, String tradeType);
+    MerchantAccountDO changeCash(String accountNo, Long tranAmount, Integer revision, String tradeType);
 
     /**
      * 加锁更新

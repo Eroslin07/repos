@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -42,6 +41,11 @@ public class ContractDO extends TenantBaseDO {
      */
     @JsonSerialize(using= ToStringSerializer.class)
     private Long contractId;
+    /**
+     * 契约锁合同文件id
+     */
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long documentId;
 
     /**
      * 合同名称
@@ -80,25 +84,12 @@ public class ContractDO extends TenantBaseDO {
     /**
      * 签约时间
      */
-    private LocalDateTime signingData;
+    private LocalDateTime signingDate;
+
 
     /**
-     * 创建人
+     * 合同编码
      */
-    private String creator;
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新人
-     */
-    private String updater;
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
+    private String code;
 
 }

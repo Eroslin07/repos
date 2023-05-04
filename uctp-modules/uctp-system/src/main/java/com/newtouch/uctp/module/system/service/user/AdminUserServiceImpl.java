@@ -5,20 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
@@ -43,6 +29,17 @@ import com.newtouch.uctp.module.system.service.dept.DeptService;
 import com.newtouch.uctp.module.system.service.dept.PostService;
 import com.newtouch.uctp.module.system.service.permission.PermissionService;
 import com.newtouch.uctp.module.system.service.tenant.TenantService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.convertList;
@@ -230,6 +227,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public AdminUserDO selectByMobileAndStatus(String mobile,int status) {
+        return userMapper.selectByMobileAndStatus(mobile,status);
+    }
+
+    @Override
     public List<AdminUserDO> selectIsExist(String mobile,Integer status) {
         return userMapper.selectIsExist(mobile,status);
     }
@@ -241,7 +243,11 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public AdminUserDO getUser(Long id) {
-        return userMapper.selectById(id);
+        AdminUserDO adminUserDO = userMapper.selectById(id);
+        if (ObjectUtil.isNull(adminUserDO)) {
+            throw exception(USER_NOT_EXISTS);
+        }
+        return adminUserDO;
     }
 
     @Override

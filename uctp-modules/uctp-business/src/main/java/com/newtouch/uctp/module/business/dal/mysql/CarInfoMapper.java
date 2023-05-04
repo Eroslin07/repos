@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,9 +37,10 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
     Page<AppHomeCarInfoRespVO> selectAppHomePage(@Param("pg") Page<AppHomeCarInfoRespVO> page,
                                                  @Param("pageVO") AppHomeCarInfoPageReqVO pageVO);
 
-    default List<Map<String, Object>> selectCarCountGroupByStatus(){
+    default List<Map<String, Object>> selectCarCountGroupByStatus(Long deptId){
         return selectMaps(new QueryWrapper<CarInfoDO>()
                 .select("SALES_STATUS statusOne","STATUS statusTwo","count(*) num")
+                .eq("BUSINESS_ID", deptId)
                 .groupBy("SALES_STATUS","STATUS")
                 .orderByAsc(Arrays.asList("SALES_STATUS","STATUS"))
         );
@@ -75,16 +77,26 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
         return selectOne(CarInfoDO::getVin,vin,CarInfoDO::getStatus,status);
     };
 
-    default  List<CarInfoDO> selectIsSell(String vin,Integer statusThree){
+    default  List<CarInfoDO> selectIsSell(String vin,Integer statusThree,Long deptId){
         return selectList(new LambdaQueryWrapperX<CarInfoDO>()
                 .likeIfPresent(CarInfoDO::getVin,vin)
+                .eq(CarInfoDO::getBusinessId,deptId)
                 .ne(CarInfoDO::getStatusThree, statusThree)
         );
     };
 
-    default List<CarInfoDO> selectIsExist(String vin, Integer salesStatus,Integer status){//salesStatus一级状态  status二级状态
+    default List<CarInfoDO> selectIsExist(String vin,Integer status,Integer statusThree){//  status二级状态
         return selectList(new LambdaQueryWrapperX<CarInfoDO>()
                 .likeIfPresent(CarInfoDO::getVin,vin)
+                .ne(CarInfoDO::getStatus, status)
+                .ne(CarInfoDO::getStatusThree, statusThree)
+        );
+    }
+
+    default List<CarInfoDO> selectIsExist(String vin,Long businessId, Integer salesStatus,Integer status){//salesStatus一级状态  status二级状态
+        return selectList(new LambdaQueryWrapperX<CarInfoDO>()
+                .likeIfPresent(CarInfoDO::getVin,vin)
+                .eqIfPresent(CarInfoDO::getBusinessId,businessId)
                 .eqIfPresent(CarInfoDO::getSalesStatus, salesStatus)
                 .eqIfPresent(CarInfoDO::getStatus, status)
         );

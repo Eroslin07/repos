@@ -9,11 +9,11 @@
 				<u-form-item label="手机号" prop="phone" borderBottom>
 					<u--input v-model="staffForm.phone" border="none" placeholder="请输入11位手机号"></u--input>
 				</u-form-item>
-				<u-form-item label="身份证号" prop="IDNumber" borderBottom>
-					<u--input v-model="staffForm.IDNumber" border="none" placeholder="请输入身份证号"></u--input>
+				<u-form-item label="身份证号" prop="idCard" borderBottom>
+					<u--input v-model="staffForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
 				</u-form-item>
 				<u-form-item label="是否停用" prop="status" borderBottom>
-					<uni-data-checkbox v-model="staffForm.status" selectedColor="#FA6400"
+					<uni-data-checkbox v-model="staffForm.status" :disabled="type == 'add'" selectedColor="#FA6400"
 						:localdata="statusList"></uni-data-checkbox>
 				</u-form-item>
 			</u--form>
@@ -40,15 +40,17 @@
 </template>
 
 <script>
+	import { setAccount, getAuth } from "@/api/system/mine"
 	export default {
 		data() {
 			return {
 				staffForm: {
 					name: '',
 					phone: '',
-					IDNumber: '',
+					idCard: '',
 					status: '0'
 				},
+				oldData: {},
 				rules: {
 					name: {
 						type: 'string',
@@ -62,7 +64,7 @@
 						message: '请填写手机号',
 						trigger: ['blur']
 					},
-					IDNumber: {
+					idCard: {
 						type: 'string',
 						required: true,
 						message: '请填写身份证号',
@@ -87,39 +89,99 @@
 		},
 		onLoad(options) {
 			console.log(options)
+			if (options.data) {
+				this.oldData = {};
+				this.staffForm = JSON.parse(decodeURIComponent(options.data));
+				this.oldData = JSON.parse(decodeURIComponent(options.data));
+			}
+			if (options.type == 'add') {
+				uni.setNavigationBarTitle({
+				    title: "新增员工"
+				});
+			} else if (options.type == 'edit') {
+				uni.setNavigationBarTitle({
+				    title: "修改员工"
+				});
+			}
 			this.type = options.type
 		},
 		methods: {
 			// 保存
 			handleSave() {
+				let _this = this;
 				this.$refs.staffForm.validate().then(res => {
-					if (this.type == 'add') {
-						uni.showModal({
-							title: '提示',
-							showCancel: false,
-							content: '您的员工已新增完成并已触发实名认证短信，请及时提醒您的员工进行认证，认证时效为15分钟。',
-							confirmText: '知道了',
-							confirmColor: '#fa6401'
+					let data = {
+						id: _this.type == 'add' ? null : _this.staffForm.id,
+						name: _this.staffForm.name,
+						phone: _this.staffForm.phone,
+						idCard: _this.staffForm.idCard,
+						status: _this.staffForm.status,
+						deptId: _this.type == 'add' ? _this.$store.state.user.deptId : _this.staffForm.deptId,
+						tenantId: _this.type == 'add' ? _this.$store.state.user.tenantId : _this.staffForm.tenantId,
+					}
+					if (_this.type == 'add') {
+						setAccount(data).then((res) => {
+							uni.showModal({
+								title: '提示',
+								showCancel: false,
+								content: '您的员工已新增完成并已触发实名认证短信，请及时提醒您的员工进行认证，认证时效为15分钟。',
+								confirmText: '知道了',
+								confirmColor: '#fa6401',
+								success: function (res) {
+									uni.$emit('refresh', { refresh: true })
+									_this.$tab.navigateBack()
+								}
+							})
 						})
 					}else{
-						uni.showModal({
-							title: '提示',
-							showCancel: false,
-							content: '您的员工已修改完成。',
-							confirmText: '知道了',
-							confirmColor: '#fa6401'
+						setAccount(data).then((res) => {
+							if (_this.oldData.phone != data.phone || _this.oldData.idCard != data.idCard) {
+								uni.showModal({
+									title: '提示',
+									showCancel: false,
+									content: '您的员工经检测改动了手机号和身份证号信息，现已重新触发实名认证短信，认证时效为15分钟。',
+									confirmText: '知道了',
+									confirmColor: '#fa6401',
+									success: function (res) {
+										uni.$emit('refresh', { refresh: true })
+										_this.$tab.navigateBack()
+									}
+								})
+							} else {
+								uni.showModal({
+									title: '提示',
+									showCancel: false,
+									content: '您的员工已修改完成。',
+									confirmText: '知道了',
+									confirmColor: '#fa6401',
+									success: function (res) {
+										uni.$emit('refresh', { refresh: true })
+										_this.$tab.navigateBack()
+									}
+								})
+							}
 						})
 					}
 				})
 			},
 			//重新认证
 			handleauthentication() {
-				uni.showModal({
-					title: '提示',
-					showCancel: false,
-					content: '您已重新触发实名认证短信，请及时提醒您的员工进行认证，认证时效为15分钟。',
-					confirmText: '知道了',
-					confirmColor: '#fa6401'
+				let _this = this;
+				let data = {
+					userId: _this.staffForm.id
+				}
+				getAuth(data).then((res) => {
+					uni.showModal({
+						title: '提示',
+						showCancel: false,
+						content: '您已重新触发实名认证短信，请及时提醒您的员工进行认证，认证时效为15分钟。',
+						confirmText: '知道了',
+						confirmColor: '#fa6401',
+						success: function (res) {
+							uni.$emit('refresh', { refresh: true })
+							_this.$tab.navigateBack()
+						}
+					})
 				})
 			}
 		}

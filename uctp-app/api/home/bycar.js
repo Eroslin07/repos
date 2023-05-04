@@ -9,6 +9,15 @@ export function getVehicleLicense(data) {
 	})
 }
 
+// 识别行驶证
+export function getVehicleRegistrationCertificate(data) {
+	return request({
+		url: '/system/appAuth/orcVehicleRegistrationCertificate',
+		'method': 'POST',
+		'data': data
+	})
+}
+
 // 保存车辆信息
 export function setCarInfo(data) {
 	return request({
@@ -27,12 +36,20 @@ export function setSellerInfo(data) {
 	})
 }
 
-// 合同签章
-export function getQiyuesuo(params) {
+// 合同签章(旧)
+// export function getQiyuesuo(data) {
+// 	return request({
+// 		url: '/uctp/qys/send',
+// 		'method': 'POST',
+// 		data
+// 	})
+// }
+
+// 合同签章(新)
+export function getQiyuesuo(data) {
 	return request({
-		url: '/uctp/qys/send',
-		'method': 'POST',
-		params
+		url: '/uctp/qys/company/sign/' + data,
+		'method': 'POST'
 	})
 }
 
@@ -59,6 +76,14 @@ export function getCarBrandList(data) {
 		url: '/uctp/car-info/getCarBrandList',
 		'method': 'POST',
 		'data': data
+	})
+}
+
+// 查询所有品牌
+export function getAllCarBrandList() {
+	return request({
+		url: '/uctp/car-info/getAllCarBrandList',
+		'method': 'POST'
 	})
 }
 
@@ -104,5 +129,13 @@ export function delCarInfoWithCollect(data) {
 		url: '/uctp/car-info/delCarInfoWithCollect',
 		'method': 'DELETE',
 		params: data
+	})
+}
+
+// 查看合同
+export function getContractEcho(data) {
+	return request({
+		url: `/uctp/qys/ContractEcho?${data}`,
+		'method': 'POST',
 	})
 }

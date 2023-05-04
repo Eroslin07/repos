@@ -1,42 +1,41 @@
 <template>
 	<view class="whole">
 		<u-sticky bgColor="#fff">
-			<view style="border-bottom: 1px solid #f5f5f5;">
+			<view style="border-bottom: 1px solid #f5f5f5;display: flex;width: 100%">
 				<u-tabs :list="list" lineColor="#FA6400" @change="handleChange"></u-tabs>
 			</view>
-			
-			<view v-for="(item, index) in list" :key="index">
-				<view v-if="tabCur === index" style="padding: 10px;">
-					<view v-if="indexList[index].length != 0">
-						<u-list style="height: 100%;">
-							<u-list-item v-for="(item, tabIndex) in indexList[index]" :key="tabIndex">
-								<view @click="handleClick(item.tradeType, item)" style="line-height: 30px;">
-									<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
-										<u-col span="8">
-											<view class="title">{{ item.tradeTypeText }}</view>
-											<view class="note">{{ item.tradeDate }}</view>
-										</u-col>
-										<u-col span="4">
-											<view class="title" style="text-align: right;">
-												<text v-if="item.profitLossTypeText == '收入'">+</text>
-												<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
-												{{ $amount.getComdify(item.amount / 100 || 0) }} >
-											</view>
-										</u-col>
-									</u-row>
-								</view>
-							</u-list-item>
-						</u-list>
-						
-						<u-loadmore :status="status" loadingText="努力加载中..." />
-					</view>
-					<view v-else  class="empty-page">
-						<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
-						<text class="empty-text" v-if="status2">暂无数据</text>
-					</view>
+		</u-sticky>
+		<view v-for="(item, index) in list" :key="index">
+			<view v-if="tabCur === index" style="padding: 10px;">
+				<view v-if="indexList[index].length != 0">
+					<u-list style="height: 100%;">
+						<u-list-item v-for="(item, tabIndex) in indexList[index]" :key="tabIndex">
+							<view @click="handleClick(item.tradeType, item)" style="line-height: 30px;">
+								<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
+									<u-col span="8">
+										<view class="title">{{ item.tradeTypeText }}</view>
+										<view class="note">{{ item.tradeDate }}</view>
+									</u-col>
+									<u-col span="4">
+										<view class="title" style="text-align: right;">
+											<text v-if="item.profitLossTypeText == '收入'">+</text>
+											<!-- <text v-if="item.profitLossTypeText == '支出'">-</text> -->
+											{{ $amount.getComdify(item.amount / 100 || 0) }} >
+										</view>
+									</u-col>
+								</u-row>
+							</view>
+						</u-list-item>
+					</u-list>
+					
+					<u-loadmore :status="status[index]" loadingText="努力加载中..." />
+				</view>
+				<view v-else  class="empty-page">
+					<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
+					<text class="empty-text" v-if="status2">暂无数据</text>
 				</view>
 			</view>
-		</u-sticky>
+		</view>
 	</view>
 </template>
 
@@ -60,7 +59,11 @@
 					'1': [],
 					'2': []
 				},
-				status: 'loadmore',
+				status: {
+					'0': 'loadmore',
+					'1': 'loadmore',
+					'2': 'loadmore'
+				},
 				timer: null,
 				tabCur: 0,
 				tab: {
@@ -104,10 +107,10 @@
 				clearTimeout(this.timer)
 			}
 			if (this.indexList[this.tabCur].length == this.tab[this.tabCur].total) {
-				this.status = 'nomore';
+				this.status[this.tabCur] = 'nomore';
 				return
 			}
-			this.status = 'loading';
+			this.status[this.tabCur] = 'loading';
 			this.timer = setTimeout(() => {
 				this.tab[this.tabCur].pageNo += 1;
 				this.status2 = false;
@@ -154,14 +157,14 @@
 					this.indexList[this.tabCur] = res.data.list;
 					this.tab[this.tabCur].total = res.data.total;
 					if (this.tab[this.tabCur].total > 10) {
-						this.status = 'loadmore'
+						this.status[this.tabCur] = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
 					this.$modal.closeLoading();
 				}).catch((error) => {
-					this.status = 'nomore'
+					this.status[this.tabCur] = 'nomore'
 					this.status2 = true;
 					this.$modal.closeLoading();
 				})
@@ -177,9 +180,9 @@
 					this.indexList[this.tabCur] = [...this.indexList[this.tabCur], ...res.data.list];
 					this.tab[this.tabCur].total = res.data.total;
 					if (this.tab[this.tabCur].total > this.indexList[this.tabCur].length) {
-						this.status = 'loadmore'
+						this.status[this.tabCur] = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
 				})
@@ -196,15 +199,15 @@
 					this.indexList[this.tabCur] = res.data.list;
 					this.tab[this.tabCur].total = res.data.total;
 					if (this.tab[this.tabCur].total > 10) {
-						this.status = 'loadmore'
+						this.status[this.tabCur] = 'loadmore'
 					} else {
-						this.status = 'nomore'
+						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
 				}).catch((error) => {
-					this.status = 'nomore'
+					this.status[this.tabCur] = 'nomore'
 					this.status2 = true;
 					this.$modal.closeLoading();
 					uni.stopPullDownRefresh();
@@ -262,6 +265,14 @@
 	
 	/deep/ .u-tabs__wrapper__nav__item  {
 		width: 33%;
+	}
+	
+	/deep/ .u-tabs {
+		width: 100% !important;
+	}
+	
+	/deep/ .u-list {
+		height: auto !important;
 	}
 	
 	.note {

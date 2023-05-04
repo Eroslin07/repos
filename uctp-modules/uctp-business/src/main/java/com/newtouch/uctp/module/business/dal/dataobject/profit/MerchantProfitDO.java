@@ -21,6 +21,7 @@ public class MerchantProfitDO extends BaseDO {
 
     @TableId
     private Long id; // 主键标识
+    private String businessKey; // 业务id
     private Long accountId; // 账户标识（暂不写值）
     private String accountNo; // 商户账户号
     private String profitLossType; // 损益类型
@@ -31,9 +32,10 @@ public class MerchantProfitDO extends BaseDO {
     private String tradeTo; // 交易去向
     private String tradeToText; // 交易去向中文名称
     private String contractNo; // 交易合同号
-    private Integer profit; // 利润
-    private Integer profitBalance; // 利润余额
-    private Integer cashBack; // 待回填保证金额度
+    private Long profit; // 利润
+    private Long profitBalance; // 利润余额
+    private Long cashBack; // 待回填保证金额度
+    private Long vehicleReceiptAmount; // 收车款
     private String bankNo; // 提现银行卡号
     private String bankName;// 提现银行名称
     private String presentState;// 提现状态

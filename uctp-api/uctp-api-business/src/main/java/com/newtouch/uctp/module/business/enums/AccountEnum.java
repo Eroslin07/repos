@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.enums;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public enum AccountEnum {
     PROFIT_LOSS_TYPE_IGNORE("10021003", "不计入"),
 
     //支付渠道
-    PAY_CHANNEL_BANK("10031001", "兴业银行"),
+    PAY_CHANNEL_BANK("10031001", "浦发银行"),
     PAY_CHANNEL_PLATFORM("10031002", "平台"),
 
     //交易去向
@@ -83,7 +84,29 @@ public enum AccountEnum {
 
     // 待回填保证金：明细类型
     CASH_BACK_TYPE_WAIT("10121001", "待回填保证金"),
-    CASH_BACK_TYPE_PROFIT_DEDUCTION("10121002", "利润抵扣额度");
+    CASH_BACK_TYPE_PROFIT_DEDUCTION("10121002", "利润抵扣额度"),
+
+    //银行返回码
+    TRAN_TYPE_RECHARGE_CASH("10131001", "保证金-充值"),
+    TRAN_TYPE_PRESENT_CASH("10131002", "提现-保证金"),
+    TRAN_TYPE_PRESENT_PROFIT("10131003", "提现-利润"),
+    TRAN_TYPE_SELL_CAR("10131004", "商户卖车款"),
+    TRAN_TYPE_BY_CAR("10131005", "商户收车款"),
+
+    BUSINESS_TYPE_CASH("10141001","个人-保证金"),
+    BUSINESS_TYPE_PROFIT("10141002","对公-利润"),
+
+    //银行返回码
+    BANK_RESULT_CODE_SUCCESS("0000", "交易成功"),
+    BANK_RESULT_CODE_PROCESSING("1000", "交易处理中"),
+    BANK_RESULT_CODE_UNKNOWN("0001", "未知错误"),
+    BANK_RESULT_CODE_PARAM_CHECK_FAIL("0002", "参数校验失败"),
+    BANK_RESULT_CODE_FAIL("0003", "异步交易失败"),
+
+    // 银行卡业务类型
+    BANK_NO_CASH("1", "保证金充值银行卡"),
+    BANK_NO_PROFIT("2", "利润提现对公银行卡");
+
 
     private String key;
     private String value;
@@ -102,14 +125,25 @@ public enum AccountEnum {
     }
 
     public static Map<String, String> accountEnumMap;
+    public static Map<String, String> bankResultCodeMap;
+
 
     static {
         accountEnumMap = Arrays.stream(AccountEnum.values())
                 .collect(Collectors.toMap(AccountEnum::getKey, AccountEnum::getValue, (o1, o2) -> o1));
+
+        //
+        bankResultCodeMap = new HashMap<>();
+        bankResultCodeMap.put(BANK_RESULT_CODE_SUCCESS.key, TRAN_STATE_SUCCESS.key);
+        bankResultCodeMap.put(BANK_RESULT_CODE_PROCESSING.key, TRAN_STATE_DURING.key);
+        bankResultCodeMap.put(BANK_RESULT_CODE_UNKNOWN.key, TRAN_STATE_FAIL.key);
+        bankResultCodeMap.put(BANK_RESULT_CODE_PARAM_CHECK_FAIL.key, TRAN_STATE_FAIL.key);
+        bankResultCodeMap.put(BANK_RESULT_CODE_FAIL.key, TRAN_STATE_FAIL.key);
+
     }
 
     public static String getName(String key) {
-        if (key == null || key.trim().equals("")){
+        if (key == null || key.trim().equals("")) {
             return null;
         }
 

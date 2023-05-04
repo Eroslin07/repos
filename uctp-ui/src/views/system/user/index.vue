@@ -61,6 +61,7 @@
             v-model="row.status"
             :active-value="0"
             :inactive-value="1"
+            :before-change="beforeChange"
             @change="handleStatusChange(row)"
           />
         </template>
@@ -434,23 +435,34 @@ const submitForm = async () => {
     }
   })
 }
+const switchState = ref(false)
+const beforeChange = () => {
+  switchState.value = true
+  return switchState.value
+}
 // 改变用户状态操作
 const handleStatusChange = async (row: UserApi.UserVO) => {
-  const text = row.status === CommonStatusEnum.ENABLE ? '启用' : '停用'
-  message
-    .confirm('确认要"' + text + '""' + row.username + '"用户吗?', t('common.reminder'))
-    .then(async () => {
-      row.status =
-        row.status === CommonStatusEnum.ENABLE ? CommonStatusEnum.ENABLE : CommonStatusEnum.DISABLE
-      await UserApi.updateUserStatusApi(row.id, row.status)
-      message.success(text + '成功')
-      // 刷新列表
-      await reload()
-    })
-    .catch(() => {
-      row.status =
-        row.status === CommonStatusEnum.ENABLE ? CommonStatusEnum.DISABLE : CommonStatusEnum.ENABLE
-    })
+  if (switchState.value) {
+    const text = row.status === CommonStatusEnum.ENABLE ? '启用' : '停用'
+    message
+      .confirm('确认要"' + text + '""' + row.username + '"用户吗?', t('common.reminder'))
+      .then(async () => {
+        row.status =
+          row.status === CommonStatusEnum.ENABLE
+            ? CommonStatusEnum.ENABLE
+            : CommonStatusEnum.DISABLE
+        await UserApi.updateUserStatusApi(row.id, row.status)
+        message.success(text + '成功')
+        // 刷新列表
+        await reload()
+      })
+      .catch(() => {
+        row.status =
+          row.status === CommonStatusEnum.ENABLE
+            ? CommonStatusEnum.DISABLE
+            : CommonStatusEnum.ENABLE
+      })
+  }
 }
 // 重置密码
 const handleResetPwd = (row: UserApi.UserVO) => {

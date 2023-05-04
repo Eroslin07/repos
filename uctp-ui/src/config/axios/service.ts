@@ -6,7 +6,7 @@ import axios, {
   InternalAxiosRequestConfig
 } from 'axios'
 
-import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import qs from 'qs'
 import { config } from '@/config/axios/config'
 import { getAccessToken, getRefreshToken, getTenantId, removeToken, setToken } from '@/utils/auth'
@@ -188,7 +188,7 @@ service.interceptors.response.use(
         // hard coding：忽略这个提示，直接登出
         console.log(msg)
       } else {
-        ElNotification.error({ title: msg })
+        ElMessage.error(msg)
       }
       return Promise.reject('error')
     } else {

@@ -1,10 +1,12 @@
 package com.newtouch.uctp.module.business.service.qys;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
@@ -75,7 +77,7 @@ public interface QysConfigService {
      * @param content 内容
      * @return
      */
-    String certification(String signature, String timestamp, String content) throws Exception;
+    String callbackCertification(String signature, String timestamp, String content) throws Exception;
     /**
      * 电子签回调接口->6）合同状态回调地址：跟踪企业签约文件的签署状态和进度；
      * @param signature 签名
@@ -89,7 +91,7 @@ public interface QysConfigService {
      * @param ticket 加密内容
      * @return
      */
-    Map<String, Object> verification(String ticket) throws Exception;
+    Map<String, Object> verification(String ticket);
     /**
      * 电子签回调接口 ->8）平台登录地址：若选择单点登录集成方案，用于单点登录集成Ticket校验失败的重定向地址；
      * @param signature 签名
@@ -99,13 +101,18 @@ public interface QysConfigService {
      */
     String login(String signature, String timestamp, String content) throws Exception;
 
-    void test();
+    void test(Long id,Integer type) throws Exception;
 
     /**
      * 发送契约锁合同
      * @param carId 车辆Id
      */
-    void send(Long carId,String type);
+    String send(Long carId,String type,Long contractId,String contractType);
+    /**
+     * 发送契约锁合同
+     * @param carId 车辆Id
+     */
+    List<QYSContractVO> ContractEcho(Long carId, String type);
 
     /**
      * 获取到契约锁单点登录地址
@@ -129,8 +136,41 @@ public interface QysConfigService {
     void userAuth(Long userId);
 
     /**
-     * 企业授权
+     * 用户认证消息
+     * @param message 用户认证消息
+     * @return
      */
-    void privilegeUrl();
+    void userAuthResult(UserAuthMessage message);
+    /**
+     * 企业授权
+     *
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content   内容
+     * @return
+     */
+    String callBackPrivilege(String signature, String timestamp, String content) throws Exception;
+    /**
+     * 印章授权静默签
+     *
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param content   内容
+     * @return
+     */
+    String callBackSealSignAuth(String signature, String timestamp, String content) throws Exception;
 
+
+    /**
+     *  通过部门Id获取契约锁配置
+     * @param businessId 业务表id（部门表Id）
+     * @return
+     */
+    QysConfigDO getByDeptId(Long businessId);
+
+    /**
+     * 静默签章
+     * @param contractId  契约锁合同id
+     */
+    void companySign(Long contractId);
 }

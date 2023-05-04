@@ -4,6 +4,7 @@ import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +40,17 @@ public interface AdminAuthService {
      */
     AuthLoginRespVO wxLogin(@Valid AuthWxLoginReqVO reqVO);
 
+    AuthUserInfoRespVO getUserInfo(Long userId);
+
+
     Map registerAccount(AuthRegisterReqVO reqVO);
+
+
+    Map addAccount(AddAccountReqVO reqVO);
+
+    int deleteAccount(Long id);
+
+    List<AddAccountRespVO> getAccountList(Long deptId);
 
     /**
      * 基于 token 退出登录

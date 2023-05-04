@@ -140,8 +140,13 @@ uctp:
       - bpm_task_assign_rule
       - bpm_process_definition_ext
       - bpm_process_instance_ext
+    ignore-urls:
+      - /admin-api/bpm/car/openinvoice/createOpenInvoiceBpm
+      - /admin-api/bpm/car/transfer/createTransferBpm
   security:
     permit-all-urls:
       - /app-api/bpm/app/process-instance/v3/create
+      - /admin-api/bpm/car/openinvoice/createOpenInvoiceBpm
+      - /admin-api/bpm/car/transfer/createTransferBpm
 
 debug: false

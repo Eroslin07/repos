@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.infra.api.file;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
+import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.infra.enums.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,17 +53,25 @@ public interface FileApi {
     default String createFile(@RequestParam("name") String name,
                               @RequestParam("path") String path,
                               @RequestParam("content") byte[] content) {
-        return createFile(new FileCreateReqDTO().setName(name).setPath(path).setContent(content)).getCheckedData();
+        return createFile(new FileCreateReqDTO().setName(name).setPath(path).setContent(content)).getCheckedData().getUrl();
     }
 
     @PostMapping(PREFIX + "/create")
     @Operation(summary = "保存文件，并返回文件的访问路径")
-    CommonResult<String> createFile(@Valid @RequestBody FileCreateReqDTO createReqDTO);
+    CommonResult<FileDTO> createFile(@Valid @RequestBody FileCreateReqDTO createReqDTO);
 
 
 
     @PostMapping(PREFIX + "/list")
     @Operation(summary = "获取文件列表")
     CommonResult<List<FileRespDTO>> fileList(@Valid @RequestParam(value = "ids") List<Long> ids);
+
+
+    @PostMapping(PREFIX + "/createNew")
+    @Operation(summary = "保存文件，并返回文件实体")
+    CommonResult<FileDTO>  createFileNew(@Valid @RequestBody FileCreateReqDTO createReqDTO);
+
+
+
 
 }

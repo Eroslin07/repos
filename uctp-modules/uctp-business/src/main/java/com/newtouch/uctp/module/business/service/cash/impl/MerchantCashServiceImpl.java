@@ -1,11 +1,15 @@
 package com.newtouch.uctp.module.business.service.cash.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantCashMapper;
+import com.newtouch.uctp.module.business.dal.mysql.TransactionRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.service.cash.MerchantCashService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +23,7 @@ import java.util.List;
 @Service
 @Validated
 @Slf4j
-public class MerchantCashServiceImpl implements MerchantCashService {
+public class MerchantCashServiceImpl  extends ServiceImpl<MerchantCashMapper, MerchantCashDO> implements MerchantCashService {
 
     @Resource
     private MerchantCashMapper merchantCashMapper;
@@ -37,7 +41,7 @@ public class MerchantCashServiceImpl implements MerchantCashService {
 
     @Override
     @Transactional
-    public MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Integer tranAmount, String type, String tradeRecordNo, String contractNo) {
+    public MerchantCashDO insertCash(MerchantAccountDO merchantAccountDO, Long tranAmount, String type, String tradeRecordNo, String contractNo) {
         MerchantCashDO merchantCashDO = new MerchantCashDO();
 
         merchantCashDO.setAccountBalance(merchantAccountDO.getCash() + merchantAccountDO.getProfit());
@@ -61,7 +65,6 @@ public class MerchantCashServiceImpl implements MerchantCashService {
                 merchantCashDO.setTranRecordNo(tradeRecordNo);
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 merchantCashDO.setPresentState(AccountConstants.PRESENT_CASH_SUCCESS);
-
                 break;
             case AccountConstants.TRADE_TYPE_PREEMPTION:
                 merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_PLATFORM);
@@ -77,7 +80,15 @@ public class MerchantCashServiceImpl implements MerchantCashService {
                 merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
                 merchantCashDO.setContractNo(contractNo);
                 break;
+            case AccountConstants.TRADE_TYPE_WITHDRAWING:
+                merchantCashDO.setPayChannel(AccountConstants.PAY_CHANNEL_DEFAULT);
+                merchantCashDO.setProfitLossType(AccountConstants.PROFIT_LOSS_TYPE_DISBURSEMENT);
+                merchantCashDO.setTranRecordNo(tradeRecordNo);
+                merchantCashDO.setTradeTo(AccountConstants.TRADE_TO_MY_CASH);
+                merchantCashDO.setPresentState(AccountConstants.PRESENT_CASH_PROCESSING);
+                break;
         }
+        log.info("新增保证金变更记录:{}", JSON.toJSONString(merchantCashDO));
         this.insert(merchantCashDO);
         return merchantCashDO;
     }

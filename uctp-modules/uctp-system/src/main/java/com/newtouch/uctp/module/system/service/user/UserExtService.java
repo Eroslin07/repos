@@ -33,4 +33,6 @@ public interface UserExtService {
     int deleteByUserId(Long userId);
 
     List<UserExtDO> selectByIDCard(String IDCard);
+
+    List<UserExtDO> selectByUserId(Long IDCard);
 }

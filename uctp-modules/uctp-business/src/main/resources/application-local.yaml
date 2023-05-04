@@ -35,8 +35,8 @@ spring:
         max-evictable-idle-time-millis: 900000 # 配置一个连接在池中最大生存的时间，单位：毫秒
         validation-query: SELECT 1 FROM DUAL # 配置检测连接是否有效
         test-while-idle: true
-        test-on-borrow: false
-        test-on-return: false
+        test-on-borrow: true
+        test-on-return: true
       primary: master
       datasource:
         master:
@@ -78,6 +78,14 @@ spring:
         min-idle: 0
 
 --- #################### MQ 消息队列相关配置 ####################
+spring:
+  cloud:
+    stream:
+      rocketmq:
+        # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
+        binder:
+          name-server: 61.172.179.54:29876 # RocketMQ Namesrv 地址
+      binding-retry-interval: 7200 # 消息绑定重试间隔时间，单位：秒，默认为 30 秒。考虑到本地可能不启动 RocketMQ 服务，设置为 2 小时
 
 --- #################### 定时任务相关配置 ####################
 
@@ -140,3 +148,6 @@ uctp:
   error-code: # 错误码相关配置项
     enable: false
   demo: false # 关闭演示模式
+
+qys:
+  server-url: @qys.server-url@ #获取契约锁请求地址

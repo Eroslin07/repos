@@ -1,23 +1,23 @@
 <template>
   <div class="baseinfo-container">
     <!-- 商户主账号审批待办 -->
-    <MerchantApprovalPending v-if="status == 'ZHSQ'" :type="'need'" />
+    <MerchantApprovalPending v-if="status == 'ZHSQ'" />
     <!-- 收车价格超公允值待办 -->
-    <CollectCarPending v-if="status == 'SGYZ'" :type="'need'" />
+    <CollectCarPending v-if="status == 'SGYZ'" />
     <!-- 反向二手车统一发票待办 -->
-    <Reverse v-if="status == 'SCKP'" :type="'need'" />
+    <Reverse v-if="status == 'SCKP'" />
     <!-- 车辆是否已过户至平台 -->
-    <VehicleReceiptTransfer v-if="status == 'SCGH'" :type="'need'" />
+    <VehicleReceiptTransfer v-if="status == 'SCGH'" />
     <!-- 支付失败待办 -->
-    <Payment v-if="status == 'SCKZH'" :type="'need'" />
+    <Payment v-if="status == 'SKZH'" />
     <!-- 正向二手车统一发票和增值税发票待办 -->
-    <ForwardDirection v-if="status == 'MCKP'" :type="'need'" />
+    <ForwardDirection v-if="status == 'MCKP'" />
     <!-- 卖车价格超公允值待办 -->
-    <SellCarPending v-if="status == 'MGYZ'" :type="'need'" />
+    <SellCarPending v-if="status == 'MGYZ'" />
     <!-- 利润提取代办 -->
-    <Profit v-if="status == 'LRTQ'" :type="'need'" />
+    <Profit v-if="status == 'LRTX'" />
     <!-- 车辆是否已过户至买家 -->
-    <VehicleTransferBuyer v-if="status == 'MCGH'" :type="need" />
+    <VehicleTransferBuyer v-if="status == 'MCGH'" />
   </div>
 </template>
 <script setup lang="ts">

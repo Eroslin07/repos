@@ -10,9 +10,11 @@
 				<u-input
 					border="none"
 					v-model="amount"
-					type="number"
+					type="digit"
+					:focus="true"
 					clearable
 					:customStyle="{'height': '50px'}"
+					@input="handleInput"
 					fontSize="24px"
 				>
 					<u--text
@@ -52,14 +54,26 @@
 			});
 		},
 		methods: {
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 确定
 			handleDefine() {
 				if (this.amount == "" || !this.amount) {
 					this.$modal.msg("请输入需要提现的金额");
 					return
 				}
-				if (this.amount > this.$amount.getDelcommafy(this.allAmount)) {
-					this.$modal.msg("提现金额大于可用利润余额，请重新输入提现金额");
+				if (parseFloat(this.amount) > parseFloat(this.$amount.getDelcommafy(this.allAmount))) {
+					this.$modal.msg("提现金额大于可用保证金余额，请重新输入提现金额");
 					return
 				}
 				let data = {
@@ -69,8 +83,9 @@
 				}
 				getWithdraw(data).then((res) => {
 					this.$modal.msg("提现成功");
-					this.$tab.navigateTo('/subPages/home/account/bond/bond');
-					// this.$tab.navigateTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
+					uni.$emit('refresh', { refresh: true });
+					this.$tab.navigateBack();
+					// this.$tab.redirectTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
 				})
 			},
 			// 点击全部提现

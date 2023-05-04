@@ -32,6 +32,15 @@ export function wxLogin(phone) {
 	})
 }
 
+// 获取微信授权token
+export function getWxToken(data) {
+	return request({
+		url: '/system/appAuth/wxToken',
+		'method': 'GET',
+		params: data
+	})
+}
+
 // 获取用户详细信息
 export function getInfo() {
 	return request({

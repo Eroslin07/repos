@@ -5,7 +5,7 @@
 		<uni-card>
 			<view>
 				<view>充值金额</view>
-				<u-input border="none" v-model="amount" type="number" clearable :customStyle="{'height': '50px'}" fontSize="24px">
+				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable :customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
@@ -58,6 +58,18 @@
 			back() {
 				this.$tab.redirectTo('/subPages/home/account/bond/bond');
 			},
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 确定
 			handleDefine() {
 				if (this.amount == '' || !this.amount) {
@@ -70,7 +82,8 @@
 					}
 					getRecharge(data).then((res) => {
 						this.$modal.msg("充值成功");
-						this.$tab.navigateTo('/subPages/home/account/bond/bond');
+						uni.$emit('refresh', { refresh: true });
+						this.$tab.navigateBack();
 					})
 					// this.show = true;
 				}
@@ -88,7 +101,8 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					uni.$emit('refresh', { refresh: true });
+					this.$tab.navigateBack();
 				})
 			},
 			// 云闪付
@@ -100,7 +114,8 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
-					this.$tab.navigateTo('/subPages/home/account/bond/progress');
+					uni.$emit('refresh', { refresh: true });
+					this.$tab.navigateBack();
 				})
 			}
 		}

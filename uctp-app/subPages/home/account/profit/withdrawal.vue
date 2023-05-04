@@ -10,9 +10,11 @@
 				<u-input
 					border="none"
 					v-model="amount"
-					type="number"
+					type="digit"
+					:focus="true"
 					clearable
 					:customStyle="{'height': '50px'}"
+					@input="handleInput"
 					fontSize="24px"
 				>
 					<u--text
@@ -67,6 +69,18 @@
 			this.allAmount = options.amount;
 		},
 		methods: {
+			// 输入金额回调
+			handleInput(val) {
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.amount = arr.join('.');
+						}
+					})
+				}
+			},
 			// 删除图片
 			deletePic(event) {
 				deleteImage({ id: event.file.id }).then((res) => {
@@ -122,7 +136,7 @@
 					this.$modal.msg("请上传利润发票");
 					return
 				}
-				if (this.amount > this.allAmount / 100) {
+				if (parseFloat(this.amount) > parseFloat(this.allAmount / 100)) {
 					this.$modal.msg("提现金额大于可用利润余额，请重新输入提现金额");
 					return
 				}
@@ -134,8 +148,9 @@
 				}
 				getPresent(data).then((res) => {
 					this.$modal.msg("利润提现流程发起成功");
-					this.$tab.navigateTo('/subPages/home/account/profit/profit');
-					// this.$tab.navigateTo('/subPages/home/account/profit/progress');
+					uni.$emit('refresh', { refresh: true });
+					this.$tab.navigateBack();
+					// this.$tab.redirectTo('/subPages/home/account/profit/progress');
 				})
 			},
 			// 点击全部提现

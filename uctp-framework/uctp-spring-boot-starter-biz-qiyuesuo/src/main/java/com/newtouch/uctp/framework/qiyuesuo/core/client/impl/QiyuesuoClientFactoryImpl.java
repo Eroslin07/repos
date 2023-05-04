@@ -26,7 +26,10 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
      * key：渠道编号，使用 {@link QiyuesuoChannelProperties#getId()}
      */
     private final ConcurrentMap<Long, AbstractQiyuesuoClient> channelIdClients = new ConcurrentHashMap<>();
-
+    /**
+     * 契约锁请求地址
+     */
+    private String serverUrl;
     /**
      * 契约锁客户端 Map
      * key：渠道编码，使用 {@link QiyuesuoChannelProperties#getCode()} ()}
@@ -36,7 +39,7 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
      */
 //    private final ConcurrentMap<String, AbstractQiyuesuoClient> channelCodeClients = new ConcurrentHashMap<>();
 
-    public QiyuesuoClientFactoryImpl() {
+    public QiyuesuoClientFactoryImpl(String serverUrl) {
         // 初始化 channelCodeClients 集合
 //        Arrays.stream(QiyuesuoChannelEnum.values()).forEach(channel -> {
 //            // 创建一个空的 QiyuesuoChannelProperties 对象
@@ -46,11 +49,13 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
 //            AbstractQiyuesuoClient client = createQiyuesuoClient(properties);
 //            channelCodeClients.put(channel.getCode(), client);
 //        });
+        this.serverUrl = serverUrl;
     }
 
     private AbstractQiyuesuoClient createQiyuesuoClient(QiyuesuoChannelProperties properties) {
         QiyuesuoChannelEnum channelEnum = QiyuesuoChannelEnum.getByCode(properties.getCode());
         Assert.notNull(channelEnum, String.format("渠道类型(%s) 为空", channelEnum));
+        properties.setServerUrl(this.serverUrl);
         // 创建客户端
         switch (channelEnum) {
             case DEFAULT: return new DefaultQiyuesuoClient(properties);

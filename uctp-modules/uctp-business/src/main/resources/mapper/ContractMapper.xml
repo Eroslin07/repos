@@ -33,5 +33,33 @@
          on ucm.NUMBER =ubf.MAIN_ID
          where ucm.NUMBER =#{contractID}
     </select>
+    <select id="getContractOneBuyType" resultType="com.newtouch.uctp.module.business.dal.dataobject.ContractDO">
+        select
+            CAR_ID as            carId
+            ,CONTRACT_ID as            contractId
+            ,CONTRACT_NAME as            contractName
+            ,FIRST_PARTY as            firstParty
+            ,SECOND_PARTY as            secondParty
+            ,SIGN_UP_AMOUNT as            signUpAmount
+            ,STATUS
+            ,CONTRACT_TYPE as            contractType
+            ,TENANT_ID as            tenantId
+            ,CREATOR
+            ,CREATE_TIME as            createTime
+            ,SIGNING_DATE as            signingDate
+            ,UPDATER as            updater
+            ,UPDATE_TIME as            updateTime
+            ,BUSINESS_ID as            businessId
+            ,DELETED
+         from uctp_contract
+         where CAR_ID =#{carId} and CONTRACT_TYPE=#{contractType} and STATUS in('0','1','2')
+    </select>
+
+
+    <update id="updateContractByContractId" >
+        update
+            uctp_contract set STATUS=#{status}
+        where CONTRACT_ID=#{contractId}
+    </update>
 
 </mapper>

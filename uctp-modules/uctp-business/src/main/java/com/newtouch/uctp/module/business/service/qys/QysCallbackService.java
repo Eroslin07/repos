@@ -4,6 +4,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysCallbackUpdateReqVO;
+import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysCallbackDO;
 
 import javax.validation.Valid;
@@ -70,6 +71,11 @@ public interface QysCallbackService {
      * @param type 类型
      * @return
      */
-    public List<QysCallbackDO> getByMainIdAndType(Long mainId, Integer type);
+    List<QysCallbackDO> getByMainIdAndType(Long mainId, Integer type);
+
+    /**
+     * 保存契约锁回调的数据
+     */
+    void saveDO(String content, Integer type, Long deptId);
 
 }

@@ -24,3 +24,12 @@ export const setCreate = (data) => {
 		data
 	})
 }
+
+// 获得车辆状态
+export const  getStatusList=(data)=>{
+	return request({
+		url:`/system/dict-data/list-map`,
+		method:'GET',
+		params:data
+	})
+}

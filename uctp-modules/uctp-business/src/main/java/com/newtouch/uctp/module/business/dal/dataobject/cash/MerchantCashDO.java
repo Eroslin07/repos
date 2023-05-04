@@ -27,7 +27,7 @@ public class MerchantCashDO extends BaseDO {
 
     private String tranRecordNo;//支付流水
 
-    private Integer payAmount;//支付金额
+    private Long payAmount;//支付金额
 
     private String tradeType;//交易类型
 
@@ -35,7 +35,7 @@ public class MerchantCashDO extends BaseDO {
 
     private String contractNo;//交易合同号
 
-    private Integer accountBalance;//账户余额
+    private Long accountBalance;//账户余额
 
     private String presentState;//提现状态
 

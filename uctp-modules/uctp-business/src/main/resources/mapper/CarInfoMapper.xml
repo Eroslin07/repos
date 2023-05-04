@@ -37,7 +37,8 @@
         b.BUYER_NAME as firstParty,
         b.SELLER_NAME as secondParty,
         d.url as url,
-        a.CREATE_TIME as createTime
+        a.CREATE_TIME as createTime,
+        a.SELL_AMOUNT as sellAmount
     </sql>
 
 
@@ -56,8 +57,11 @@
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
                 or a.BRAND like #{pageVO.searchValue}
-                or a.BUYER_NAME like #{pageVO.searchValue}
+                or b.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
+            </if>
+            <if test="pageVO.salesStatus != null">
+                and a.SALES_STATUS = #{pageVO.salesStatus}
             </if>
             <if test="pageVO.status != null">
                 and a.STATUS = #{pageVO.status}
@@ -84,7 +88,7 @@
                 <bind name="pageVO.searchValue" value="'%'+pageVO.searchValue+'%'"/>
                 and (a.VIN like #{pageVO.searchValue}
                 or a.BRAND like #{pageVO.searchValue}
-                or a.BUYER_NAME like #{pageVO.searchValue}
+                or b.BUYER_NAME like #{pageVO.searchValue}
                 or a.SELLER_NAME like #{pageVO.searchValue})
             </if>
             <if test="pageVO.salesStatus != null">

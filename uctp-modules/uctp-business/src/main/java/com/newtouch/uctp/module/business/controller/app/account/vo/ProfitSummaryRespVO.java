@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class ProfitSummaryRespVO {
     @Schema(description = "利润余额（单位为：分）")
-    private Integer profit;
+    private Long profit;
     @Schema(description = "利润-冻结余额（单位为：分）")
-    private Integer freezeProfit;
+    private Long freezeProfit;
     @Schema(description = "待回填保证金（单位为：分）")
-    private Integer cashBack;
+    private Long cashBack;
 }

@@ -11,6 +11,7 @@ import com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO;
 import com.newtouch.uctp.module.system.dal.dataobject.permission.RoleDO;
 import com.newtouch.uctp.module.system.dal.dataobject.tenant.TenantDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,9 @@ public interface AuthConvert {
             .build();
     }
 
-    default AuthPermissionInfoRespVO convert(AdminUserDO user, DeptDO dept, TenantDO tenant, List<RoleDO> roleList, List<MenuDO> menuList) {
+    default AuthPermissionInfoRespVO convert(AdminUserDO user, UserExtDO userExt,DeptDO dept, TenantDO tenant) {
         return AuthPermissionInfoRespVO.builder()
-                .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId()).deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar()).build())
-                .roles(convertSet(roleList, RoleDO::getCode))
-                .permissions(convertSet(menuList, MenuDO::getPermission))
+                .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).staffType(userExt.getStaffType()).nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId()).deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar()).build())
                 .build();
     }
 

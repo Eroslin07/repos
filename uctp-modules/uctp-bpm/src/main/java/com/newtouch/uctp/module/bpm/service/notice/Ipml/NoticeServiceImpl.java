@@ -1,6 +1,19 @@
 package com.newtouch.uctp.module.bpm.service.notice.Ipml;
 
 
+import com.newtouch.uctp.module.bpm.util.MsgSendUtil;
+import io.seata.spring.annotation.GlobalTransactional;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
@@ -11,14 +24,6 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.notice.NoticeInfoDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.notice.NoticeMapper;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.util.MsgContentUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 
 /**
@@ -36,6 +41,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
+    @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map
@@ -59,6 +65,16 @@ public class NoticeServiceImpl implements NoticeService {
             infoDO.setUrl(map.get("url"));
         }
         infoDO.setPushStatus("0");
+        //短信发送
+        if (type.equals("1")){
+            Map<String, String> message = MsgSendUtil.sendMessage(map);
+            if (message.get("flags").equals("FALSE")){
+                infoDO.setErrorMsg(message.get("msg"));
+                infoDO.setErrorNum(message.get("errorNum"));
+                infoDO.setPushStatus("1");
+            }
+        }
+
         infoDO.setType(type);
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
@@ -91,10 +107,17 @@ public class NoticeServiceImpl implements NoticeService {
         if (map.get("type").equals("0")&&map.get("url")!=null) {
             infoDO.setUrl(map.get("url"));
         }
-        //默认状态为未推送
+        //默认状态为推送成功
         infoDO.setPushStatus("0");
         infoDO.setType(map.get("type"));
-
+        if (map.get("type").equals("1")){
+            Map<String, String> message = MsgSendUtil.sendMessage(map);
+            if (message.get("flags").equals("FALSE")){
+                infoDO.setErrorMsg(message.get("msg"));
+                infoDO.setErrorNum(message.get("errorNum"));
+                infoDO.setPushStatus("1");
+            }
+        }
         String result="写入数据失败";
         int insert = noticeMapper.insert(infoDO);
         if (insert>0) {
@@ -126,6 +149,7 @@ public class NoticeServiceImpl implements NoticeService {
                 if (carInfo.getVehicleReceiptAmount()!=null) {
                     map.put("vehicleReceiptAmount", carInfo.getVehicleReceiptAmount().toString());
                 }
+                map.put("buyType","1");//收车
                 map.put("phone",carInfoDetails.getSellerTel());
                 map.put("url","/subPages/home/bycar/agreement?type='1'&carId="+carInfoDetails.getCarId());
             }else if(contentType.equals("22")){
@@ -133,11 +157,13 @@ public class NoticeServiceImpl implements NoticeService {
                 if (carInfo.getSellAmount()!=null) {
                     map.put("sellAmount", carInfo.getSellAmount().toString());
                 }
+                map.put("buyType","2");//卖车
                 map.put("phone",carInfoDetails.getBuyerTel());
                 map.put("url","/subPages/home/sellingCar/agreement?type='1'&carId="+carInfoDetails.getCarId());
             }
 
-        }else if(type.equals("1")){
+        }
+        else if(type.equals("1")){
             CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON)jsonObject.get("carInfoDetails"),CarInfoDetailsDO.class);
             CarInfoDO carInfo = JSON.toJavaObject((JSON)jsonObject.get("carInfo"),CarInfoDO.class);
 
@@ -147,6 +173,7 @@ public class NoticeServiceImpl implements NoticeService {
             if (contentType.equals("21")){
                 map.put("type","0");
                 map.put("contentType","11");
+                map.put("buyType","1");
                 map.put("phone",carInfoDetails.getSellerTel());
                 if (carInfo.getVehicleReceiptAmount()!=null) {
                     map.put("vehicleReceiptAmount", carInfo.getVehicleReceiptAmount().toString());
@@ -158,6 +185,7 @@ public class NoticeServiceImpl implements NoticeService {
             }else if (contentType.equals("31")){
                 map.put("type","0");
                 map.put("contentType","21");
+                map.put("buyType","2");
                 if (carInfo.getSellAmount()!=null) {
                     map.put("sellAmount", carInfo.getSellAmount().toString());
                 }

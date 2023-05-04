@@ -16,6 +16,7 @@ public interface ErrorCodeConstants {
     ErrorCode CAR_INFO_DETAILS_NOT_EXISTS = new ErrorCode(1005000012, "车辆明细不存在");
     ErrorCode CAR_INFO_SELL_AMOUNT_ERROR = new ErrorCode(1005000013, "卖车金额必须大于收车金额");
     ErrorCode CAR_INFO_STATUS_ERROR = new ErrorCode(1005000014, "车辆状态异常");
+    ErrorCode CAR_INFO_EXIST_OTHER = new ErrorCode(1005000015, "车辆已在其他车行进行销售");
 
 
     // ========== business 契约锁错误 1005000100 ==========
@@ -24,9 +25,12 @@ public interface ErrorCodeConstants {
     ErrorCode QYS_CONTRACTID_NOT_EXISTS = new ErrorCode(1005000103, "契约锁必要参数[contractId]不存在");
     ErrorCode QYS_BUSINESS_TYPE_NOT_EXISTS = new ErrorCode(1005000104, "契约锁业务分类不存在");
     ErrorCode QYS_FILE_URL_NOT_NULL = new ErrorCode(1005000105, "契约锁:输出路径不能为空");
-    ErrorCode QYS_CONFIG_NOT_EXISTS = new ErrorCode(1005000106, "契约锁不存在");
-
+    ErrorCode QYS_CONFIG_NOT_EXISTS = new ErrorCode(1005000106, "数据异常,契约锁不存在");
+    ErrorCode QYS_CONFIG_AUTH_ERROR = new ErrorCode(1005000107, "契约锁未做认证授权");
+    ErrorCode QYS_CONFIG_ENTERPRISE_NOT_EXISTS = new ErrorCode(1005000108, "请先在契约锁平台配置公章");
     ErrorCode QYS_CALLBACK_NOT_EXISTS = new ErrorCode(1005000150, "契约锁回调日志不存在");
+    ErrorCode QYS_CONFIG_NOT_AUTH = new ErrorCode(1005000151, "企业未做契约锁认证");
+    ErrorCode QYS_CONFIG_PARAM_ERROR = new ErrorCode(1005000152, "参数异常");
     // ========== business 资金错误 1005000200 ==========
     ErrorCode ACC_ACCOUNT_NO_NOT_NULL = new ErrorCode(1005000201, "商户号不能为空");
     ErrorCode ACC_CONTRACT_NO_NOT_NULL = new ErrorCode(1005000202, "交易合同号不能为空");
@@ -45,4 +49,12 @@ public interface ErrorCodeConstants {
 
     ErrorCode USERS_INFO_ERROR = new ErrorCode(1005000215, "用户信息不存在");
     ErrorCode DEPT_INFO_ERROR = new ErrorCode(1005000216, "部门信息不存在");
+
+
+    ErrorCode FILL_ERROR = new ErrorCode(1005000216, "系统文件表对应信息不存在");
+    // ========== business 合同错误 1005000300 ==========
+    ErrorCode CONTRACT_NOT_EXISTS = new ErrorCode(1005000300, "合同不存在");
+    ErrorCode CONTRACT_TYPE_UNKNOWN = new ErrorCode(1005000301, "未知合同类型");
+
+
 }

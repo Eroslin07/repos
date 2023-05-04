@@ -9,7 +9,7 @@
 					</zb-dropdown-menu>
 				</view>
 				<view class="charts-box">
-					<qiun-data-charts style="position:absolute;z-index:1;top:0;left:0" type="column" :opts="opts" :chartData="chartData" />
+					<qiun-data-charts style="position:absolute;z-index:1;top:0;left:0" type="column" :opts="opts" :canvas2d="true" canvasId="canvans7" :chartData="chartData" />
 				</view>
 			</view>
 			<u-search v-model="searchValue" :showAction="false" @search="search" @clear="clear"
@@ -51,6 +51,8 @@
 				</view>
 			</uni-card>
 		</uni-card>
+		<!-- 自定义tabbar -->
+		<tab-bar :name="1" :type="type"></tab-bar>
 	</view>
 </template>
 
@@ -59,6 +61,7 @@
 	export default {
 		data() {
 			return {
+				type: 0,
 				// 商户账户号
 				accountNo: this.$store.state.user.accountNo,
 				// 日期
@@ -101,6 +104,7 @@
 			}
 		},
 		onLoad() {
+			this.type = this.$store.state.user.staffType;
 			let currentMonth = new Date().getMonth() + 1;
 			let currentQuarter = Math.floor((currentMonth % 3 == 0) ? (currentMonth / 3) : (currentMonth / 3 + 1));
 			let currentValue = (String(this.endYear) + currentQuarter) * 1
@@ -191,7 +195,7 @@
 					accountNo: this.accountNo,
 					quarter
 				}
-				getCostList(data).then((res) => {
+				// getCostList(data).then((res) => {
 					setTimeout(() => {
 						let res = {
 							categories: ["1月", "2月", "3月"],
@@ -207,7 +211,7 @@
 						};
 						this.chartData = JSON.parse(JSON.stringify(res));
 					}, 500);
-				})
+				// })
 			},
 
 			//查看车辆明细

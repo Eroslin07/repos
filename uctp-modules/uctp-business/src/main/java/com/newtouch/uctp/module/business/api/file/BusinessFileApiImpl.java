@@ -1,15 +1,18 @@
 package com.newtouch.uctp.module.business.api.file;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.business.api.file.dto.FileInsertReqDTO;
-import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
-import com.newtouch.uctp.module.business.service.BusinessFileService;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.file.dto.FileInsertReqDTO;
+import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
+import com.newtouch.uctp.module.business.service.BusinessFileService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -33,7 +36,10 @@ public class BusinessFileApiImpl implements BusinessFileApi {
             businessFileDO.setMainId(Long.valueOf(reqDTO.getMainId()));//主表id
             businessFileDO.setFileType(reqDTO.getType());//图片类型
             businessFileDO.setTenantId(reqDTO.getTenantId());
+
             businessFileService.insert(businessFileDO);
+            System.out.println("===============插入图片中间表================Id:" + businessFileDO.getId());
+            System.out.println(JSONObject.toJSON(businessFileDO));
         }
         return success("提交成功");
     }

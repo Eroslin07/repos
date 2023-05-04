@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.business.controller.app.qys;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigRespVO;
@@ -88,7 +89,14 @@ public class QysConfigController {
     public String callbackCertification(@RequestParam String signature,
                            @RequestParam String timestamp,
                            @RequestParam String content) throws Exception {
-        return qysConfigService.certification(signature, timestamp, content);
+        return qysConfigService.callbackCertification(signature, timestamp, content);
+    }
+    @PostMapping("/callback/privilege")
+    @Operation(summary = "saas模式契约锁回调-企业授权")
+    public String callbackPrivilege(@RequestParam String signature,
+                                        @RequestParam String timestamp,
+                                        @RequestParam String content) throws Exception {
+        return qysConfigService.callBackPrivilege(signature, timestamp, content);
     }
     @PostMapping("/callback/status")
     @Operation(summary = "saas模式契约锁回调-合同状态")
@@ -116,7 +124,7 @@ public class QysConfigController {
             "COMPANY_INFO_SETUP_PAGE（”公司设置页面“）。\n" +
             "H5页面仅支持CONTRACT_LIST_PAGE、CONTRACT_DETAIL_PAGE、INDEX_PAGE\n" +
             "以个人身份单点登录时，仅支持指定以上页面说明中，非公司开头的页面\n")
-    @Parameter(name = "ContractId", description = "合同id", required = true, example = "如果pageType是CONTRACT_DETAIL_PAGE，必填")
+    @Parameter(name = "contractId", description = "合同id", required = true, example = "如果pageType是CONTRACT_DETAIL_PAGE，必填")
     public CommonResult<String> ssoUrl(@RequestParam String pageType,
                                        @RequestParam Long contractId) throws Exception {
         String ssoUrl = qysConfigService.getSsoUrl(pageType,contractId);
@@ -132,12 +140,33 @@ public class QysConfigController {
     }
 
     @PostMapping("/send")
-    @Operation(summary ="发起契约锁合同")
+    @Operation(summary = "发起契约锁合同")
+    public CommonResult<String> send(@Valid @RequestBody QYSContractVO qysContractVO) {
+        String result = "";
+        //这里只发起委托合同
+        if (qysContractVO.getContractType().equals("1")) {
+            result = qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+        }
+        return success(result);
+    }
+    /*public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {
+        String result="";
+        for (QYSContractVO qysContractVO : VO) {
+            //这里只发起委托合同
+            if(qysContractVO.getContractType().equals("1")) {
+                result= qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+            }
+        }
+
+        return success(result);
+    }*/
+
+    @PostMapping("/ContractEcho")
+    @Operation(summary ="合同回显")
     @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
     @Parameter(name = "type", description = "收车或卖车（1：收车，2：卖车）", required = true, example = "1")
-    public CommonResult<Boolean> send(@RequestParam("carId") @NotNull  Long carId,@RequestParam("type") String type) {
-        qysConfigService.send(carId,type);
-        return success(true);
+    public CommonResult<List<QYSContractVO>> ContractEcho(@RequestParam("carId") @NotNull  Long carId, @RequestParam("type") String type) {
+        return success(qysConfigService.ContractEcho(carId,type));
     }
 
     @PostMapping("/user/auth")
@@ -147,13 +176,21 @@ public class QysConfigController {
         qysConfigService.userAuth(userId);
         return success(true);
     }
+    @PostMapping("/company/sign/{contractId}")
+    @Operation(summary ="公司静默签章")
+    public CommonResult<Boolean> companySign(@PathVariable("contractId") @NotNull  Long contractId) {
+        qysConfigService.companySign(contractId);
+        return success(true);
+    }
 
 
     @GetMapping("/test")
     @Operation(summary ="测试Id")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public CommonResult<Long> testId(@RequestParam("id") @NotNull Long id) {
-        qysConfigService.test();
+    @Parameter(name = "type", description = "类型", required = true, example = "1024")
+    public CommonResult<Long> testId(@RequestParam("id") @NotNull Long id,
+                                     @RequestParam("type") @NotNull Integer type) throws Exception {
+        qysConfigService.test(id,type);
         return success(id);
     }
 

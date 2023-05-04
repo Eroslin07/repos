@@ -12,9 +12,9 @@ public interface MerchantAccountMapper extends BaseMapper<MerchantAccountDO> {
 
     MerchantAccountDO queryByAccountNo(@Param("accountNo") String accountNo);
 
-    int updateCash(@Param("accountNo") String accountNo, @Param("tranAmount") Integer tranAmount, @Param("revision") Integer revision, @Param("type") int type);
+    int updateCash(@Param("accountNo") String accountNo, @Param("tranAmount") Long tranAmount, @Param("revision") Integer revision, @Param("type") int type);
 
-    int withdrawCash(@Param("accountNo") String accountNo, @Param("tranAmount") Integer tranAmount);
+    int withdrawCash(@Param("accountNo") String accountNo, @Param("tranAmount") Long tranAmount);
 
     MerchantAccountDO selectForUpdateByAccountNo(@Param("accountNo") String accountNo);
 }

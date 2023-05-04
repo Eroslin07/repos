@@ -16,6 +16,7 @@
 					</view>
 				</u-index-item>
 			</template>
+			<view class="kong"></view>
 		</u-index-list>
 	</view>
 </template>
@@ -100,5 +101,9 @@
 	
 	/deep/ .u-index-list__letter {
 		display: none;
+	}
+	
+	.kong {
+		height: 88px;
 	}
 </style>
