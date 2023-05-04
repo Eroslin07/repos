@@ -134,7 +134,7 @@ public class BpmGlobalHandleListener {
             }else if ("disagree".equals(approvalType)){
                 // 删除用户
                 JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
-                AdminUserDO adminUserDO = userMapper.selectOne("phone", jsonObject.get("phone"));
+                AdminUserDO adminUserDO = userMapper.selectOne("mobile", jsonObject.get("phone"));
                 userService.deleteUser(adminUserDO.getId());
                 // 注册失败
                 noticeService.saveTaskNotice("1", "11", reason, bpmFormMainVO);
