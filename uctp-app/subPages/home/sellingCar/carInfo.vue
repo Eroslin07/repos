@@ -25,7 +25,7 @@
 				<view class="look-over">
 					<u-grid col="2">
 						<u-grid-item>
-							<uni-card @click="handleCollection">
+							<uni-card @click="handleCollection(2)">
 								<view style="color: #333;font-size: 15px;">
 									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
 									<text>收车合同</text>
@@ -33,7 +33,7 @@
 							</uni-card>
 						</u-grid-item>
 						<u-grid-item>
-							<uni-card @click="handleLookEntrust">
+							<uni-card @click="handleCollection(1)">
 								<view style="color: #333;font-size: 15px;">
 									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
 									<text>委托合同</text>
@@ -456,7 +456,8 @@
 		deleteSellDraft
 	} from '@/api/home/sellingCar.js'
 	import {
-		getFairValue
+		getFairValue,
+		getContractEcho
 	} from '@/api/home/bycar.js'
 	import {
 		setCreate
@@ -467,6 +468,7 @@
 	export default {
 		data() {
 			return {
+				contractDtail: [],
 				albumWidth: 0,
 				otherValue: '',
 				showOverlay: false,
@@ -885,6 +887,13 @@
 			}).finally(() => {
 				this.$modal.closeLoading();
 			})
+			
+			let hetongData = `carId=${options.id}&&type=1`
+			getContractEcho(hetongData).then(res => {
+				this.contractDtail = res.data
+			}).catch(err => {
+				this.$modal.msg('获取合同失败')
+			})
 		},
 		mounted() {
 			this.date = uni.$u.timeFormat(Number(new Date()), 'yyyymmdd');
@@ -951,13 +960,26 @@
 				}
 				return value
 			},
-			// 查看收车合同
-			handleCollection() {
-
-			},
-			// 查看委托合同
-			handleLookEntrust() {
-
+			// 查看合同
+			handleCollection(text) {
+				this.$modal.msg('正在加载，请稍等...')
+				let url = this.contractDtail.find(v => v.contractType == text)?.url
+				uni.downloadFile({
+					url: url,
+					success: function(res) {
+						var filePath = res.tempFilePath;
+						uni.openDocument({
+							filePath: filePath,
+							showMenu: false,
+							success: function(res) {
+								console.log('打开文档成功');
+							}
+						});
+					},
+					fail: () => {
+						this.$modal.msg('加载失败！')
+					}
+				});
 			},
 			// 点击OCR
 			handleOcr(index) {
