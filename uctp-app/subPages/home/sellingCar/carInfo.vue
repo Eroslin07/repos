@@ -153,8 +153,8 @@
 						</u-input>
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus" @blur="handleBlur"
-							placeholder="请输入卖车金额">
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
+							@blur="handleBlur" placeholder="请输入卖车金额">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -177,8 +177,11 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u--input v-model="sellerForm.deposit" border="none" placeholder="请输入定金">
-						</u--input>
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number">
+							<template slot="suffix">
+								<view>元</view>
+							</template>
+						</u-input>
 					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view
@@ -242,7 +245,7 @@
 						@change="changeValue">
 						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
-							<view style="margin-left: 10px; flex:1">
+							<view style="margin-left: 10px;width: 100%">
 								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
 									v-if="item.name == 'vehicleKey'" disabledColor="#ffffff" placeholder="请输入"
 									border="none">
@@ -668,7 +671,7 @@
 					buyerName: '',
 					buyerAdder: '',
 					buyerTel: '',
-					deposit:'0'
+					deposit: '0'
 				},
 				// 卖家信息校验规则
 				sellerRules: {
@@ -734,6 +737,21 @@
 						},
 						message: '手机号格式不正确',
 						trigger: ['change', 'blur'],
+					}],
+					deposit: [{
+						type: 'string',
+						required: true,
+						message: '请填写手机号',
+						trigger: ['blur', 'change']
+					}, {
+						validator(rule, value, data, callback) {
+							const num =value*1
+							if(num>=0){
+								return true
+							}else{
+								return false
+							}
+						},
 					}]
 				},
 				date: null,
@@ -787,9 +805,9 @@
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
-				
+
 				this.fairStatus = res.data.bpmStatus;
-				
+
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -839,7 +857,7 @@
 				} else {
 					this.isDisabledAcc = true
 				}
-				
+
 				this.showOverlay = false;
 			}).catch((error) => {
 				this.$modal.msg("查询失败");
@@ -860,9 +878,9 @@
 			filterMoney(val) {
 				if (val) {
 					let money = that.$amount.getComdify(val - 0)
-					console.log(money,'money')
+					console.log(money, 'money')
 					return money ? money : 0
-				}else{
+				} else {
 					return 0
 				}
 
@@ -957,7 +975,9 @@
 							`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
-							getIdCard({ IDCardUrl: str }).then((ress) => {
+							getIdCard({
+								IDCardUrl: str
+							}).then((ress) => {
 								let data = JSON.parse(ress.data);
 								if (data.idcard_number_type == -1) {
 									_this.$modal.msg("请上传正确且清晰的身份证照照片 ");
@@ -965,7 +985,8 @@
 								} else {
 									if (data.words_result['公民身份号码']) {
 										_this.sellerForm.buyerAdder = data.words_result['住址'].words;
-										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
+										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码']
+											.words;
 										_this.sellerForm.buyerName = data.words_result['姓名'].words;
 									}
 									if (data.words_result['失效日期']) {
@@ -1161,7 +1182,6 @@
 				let feesAndCommitments = {
 					...this.feesForm
 				};
-
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
@@ -1174,8 +1194,8 @@
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
-					sellType: this.carForm.sellType,
-					deposit:this.carForm.deposit,
+					sellType: this.sellerForm.sellType,
+					deposit: this.sellerForm.deposit,
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
@@ -1202,7 +1222,9 @@
 						// 保存买家信息并确认发起
 						this.$modal.closeLoading()
 						this.showOverlay = false;
-						this.$tab.navigateTo(`/subPages/home/sellingCar/agreement?carId=${res.data.carInfoDetails.carId}&fairValue=${JSON.stringify(this.fairValue)}&data=${JSON.stringify(res.data)}&gxzStatus=${this.gxzStatus}`);
+						this.$tab.navigateTo(
+							`/subPages/home/sellingCar/agreement?carId=${res.data.carInfoDetails.carId}&fairValue=${JSON.stringify(this.fairValue)}&data=${JSON.stringify(res.data)}&gxzStatus=${this.gxzStatus}`
+						);
 					} else {
 						// 保存车辆草稿信息返回首页
 						this.$modal.closeLoading()
@@ -1280,9 +1302,9 @@
 			padding: 10px 0;
 		}
 
-		/deep/ .u-form-item__body__right__content__slot.data-v-067e4733 {
+		/deep/ .u-form-item__body__right__content__slot {
 			flex-direction: row;
-
+			width: 100%;
 		}
 
 		/* #endif */
