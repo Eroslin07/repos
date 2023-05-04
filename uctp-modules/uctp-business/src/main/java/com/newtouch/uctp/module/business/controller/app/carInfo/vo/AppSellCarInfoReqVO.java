@@ -41,6 +41,8 @@ public class AppSellCarInfoReqVO {
     @Schema(description = "收款方式")
 //    @NotNull(message = "收款方式不能为空")
     private Integer sellType;
+    @Schema(description = "定金")
+    private BigDecimal deposit;
     @Schema(description = "身份证正反面图片id")
     private List<Long> IdCardIds;
     @Schema(description = "转入地车辆管理所名称")
