@@ -745,10 +745,10 @@
 						trigger: ['blur', 'change']
 					}, {
 						validator(rule, value, data, callback) {
-							const num =value*1
-							if(num>=0){
+							const num = value * 1
+							if (num >= 0) {
 								return true
-							}else{
+							} else {
 								return false
 							}
 						},
@@ -800,12 +800,16 @@
 				this.carForm = res.data;
 				this.carForm.scrapDate = parseTime(this.carForm.scrapDate);
 				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
-				this.carForm.sellType = 0;
 				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
 				// 收车金额
+				this.sellerForm.sellType = res.data.sellType;
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
-
+				this.sellerForm.buyerName = res.data.buyerName
+				this.sellerForm.buyerAdder = res.data.buyerAdder
+				this.sellerForm.buyerTel = res.data.buyerTel
+				this.sellerForm.deposit = res.data.deposit || 0
+				this.sellerForm.buyerIdCard = res.data.buyerIdCard
 				this.fairStatus = res.data.bpmStatus;
 
 				let obj;
