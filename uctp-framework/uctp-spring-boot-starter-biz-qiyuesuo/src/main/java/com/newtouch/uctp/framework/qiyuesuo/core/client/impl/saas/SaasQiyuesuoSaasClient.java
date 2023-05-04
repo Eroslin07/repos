@@ -8,10 +8,7 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoCli
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultCodeMapping;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SaaSSdkClient;
-import com.qiyuesuo.sdk.v2.bean.Company;
-import com.qiyuesuo.sdk.v2.bean.Contract;
-import com.qiyuesuo.sdk.v2.bean.TemplateParam;
-import com.qiyuesuo.sdk.v2.bean.User;
+import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.*;
@@ -39,6 +36,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     @Override
     protected void doInit() {
         client = new SaaSSdkClient(properties.getAccessKey(), properties.getAccessSecret(),properties.getServerUrl());
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<Employee> doDefaultEmployeeCreate(EmployeeCreateRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
     @Override
@@ -259,6 +261,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 
     @Override
     public QiyuesuoCommonResult<SealListResult> defaultSealList(String tenantName) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Employee> defaultEmployeeCreate(String name, String contact) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 

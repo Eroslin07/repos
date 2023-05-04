@@ -7,10 +7,7 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SdkClient;
-import com.qiyuesuo.sdk.v2.bean.Contract;
-import com.qiyuesuo.sdk.v2.bean.Stamper;
-import com.qiyuesuo.sdk.v2.bean.TemplateParam;
-import com.qiyuesuo.sdk.v2.bean.User;
+import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.param.SignParam;
@@ -40,6 +37,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     @Override
     protected void doInit() {
         client = new SdkClient(properties.getServerUrl(), properties.getAccessKey(), properties.getAccessSecret());
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<Employee> doDefaultEmployeeCreate(EmployeeCreateRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Employee> sdkResponse = JSONUtils.toQysResponse(response,Employee.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
     }
 
     @Override
@@ -257,6 +264,13 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
             request.setTenantName(tenantName);
         }
         return this.defaultSealList(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Employee> defaultEmployeeCreate(String name, String contact) {
+        User user = new User(name, contact, "MOBILE");
+        EmployeeCreateRequest request = new EmployeeCreateRequest(user, null);
+        return this.defaultEmployeeCreate(request);
     }
 
     @Override
