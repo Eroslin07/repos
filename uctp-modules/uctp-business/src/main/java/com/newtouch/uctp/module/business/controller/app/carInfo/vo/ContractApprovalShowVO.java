@@ -15,6 +15,10 @@ public class ContractApprovalShowVO {
      */
     private Long contractId;
     /**
+     * 合同编码
+     */
+    private String contractCode;
+    /**
      * 合同名称
      */
     private String contractName;

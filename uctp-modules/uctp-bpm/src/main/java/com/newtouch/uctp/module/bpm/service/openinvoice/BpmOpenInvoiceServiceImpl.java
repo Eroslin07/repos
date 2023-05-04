@@ -1,6 +1,5 @@
 package com.newtouch.uctp.module.bpm.service.openinvoice;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +12,13 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
+import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.ContractMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
@@ -61,11 +60,11 @@ public class BpmOpenInvoiceServiceImpl implements BpmOpenInvoiceService {
         if (ObjectUtil.isNull(contractId) || !StringUtils.hasText(procDefKey)) {
             throw new IllegalArgumentException("合同号ID、流程业务标识不能为空。");
         }
-        Map contractMap = MapUtil.toCamelCaseMap(contractMapper.findContractByContractIdToMap(contractId));
-        if (CollectionUtils.isEmpty(contractMap)) {
+        ContractDO contractDO = contractMapper.selectByContractId(contractId);
+        if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getId()) || ObjectUtil.isNull(contractDO.getCarId())) {
             throw new IllegalArgumentException("未能通过合同号ID查询到车辆信息。");
         }
-        Long carId = ObjectUtil.isNull(contractMap.get("carId")) ? null : Long.valueOf(contractMap.get("carId") + "");
+        Long carId = contractDO.getCarId();
         CarInfoDO carInfoDO = carInfoMapper.findCarInfoByCarId(carId);
         if (ObjectUtil.isNull(carInfoDO)) {
             throw new IllegalArgumentException("未能通过车辆ID查询到车辆信息。");
@@ -73,8 +72,8 @@ public class BpmOpenInvoiceServiceImpl implements BpmOpenInvoiceService {
         Long tenantId = carInfoDO.getTenantId();
         AtomicReference<String> formMainId = new AtomicReference<>("");
         TenantUtils.execute(tenantId, () -> {
-            String updater = carInfoDO.getUpdater();
-            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(updater));
+            String creator = carInfoDO.getCreator();
+            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(creator));
             JSONObject invoiceJson = new JSONObject();
             if (ObjectUtil.equals(BpmDefTypeEnum.MCKP.name(), procDefKey)) {
                 invoiceJson = carTransferApi.getForwardInvoiceInfo(contractId).getCheckedData();
@@ -83,7 +82,7 @@ public class BpmOpenInvoiceServiceImpl implements BpmOpenInvoiceService {
             }
 
             TenantRespDTO tenantRespDTO = tenantApi.getTenant(tenantId).getCheckedData();
-            AdminUserRespDTO adminUserRespDTO = adminUserApi.getUser(Long.valueOf(updater)).getCheckedData();
+            AdminUserRespDTO adminUserRespDTO = adminUserApi.getUser(Long.valueOf(creator)).getCheckedData();
             DeptRespDTO deptRespDTO = deptApi.getDept(adminUserRespDTO.getDeptId()).getCheckedData();
             Map<String, Object> variables = new HashMap<String, Object>();
             variables.put("marketName", tenantRespDTO.getName());

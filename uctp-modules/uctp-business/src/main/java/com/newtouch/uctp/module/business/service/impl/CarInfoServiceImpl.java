@@ -2,6 +2,23 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
@@ -24,20 +41,6 @@ import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
 import com.newtouch.uctp.module.system.enums.DictTypeConstants;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
@@ -894,7 +897,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
             contractList.add(this.getContractApprovalShowInfo(carId, 1));
             contractList.add(this.getContractApprovalShowInfo(carId, 2));
-            String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+            String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractCode()) ? String.valueOf(contractList.get(1).getContractCode()) : "";
             carTransferInfoVO.setContractCode(contractCode);
             carTransferInfoVO.setContractList(contractList);
             CarInvoiceInfoVO carInvoiceInfo = this.getReverseInvoiceInfo(Long.valueOf(contractCode));
@@ -904,7 +907,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
             contractList.add(this.getContractApprovalShowInfo(carId, 3));
             contractList.add(this.getContractApprovalShowInfo(carId, 4));
-            String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+            String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractCode()) ? String.valueOf(contractList.get(1).getContractCode()) : "";
             carTransferInfoVO.setContractCode(contractCode);
             carTransferInfoVO.setContractList(contractList);
             CarInvoiceInfoVO carInvoiceInfo = this.getForwardInvoiceInfo(Long.valueOf(contractCode));
@@ -929,7 +932,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         // 卖车过户
         contractList.add(this.getContractApprovalShowInfo(carId, 3));
         contractList.add(this.getContractApprovalShowInfo(carId, 4));
-        String contractCode = ObjectUtil.isNotNull(contractList.get(3).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+        String contractCode = ObjectUtil.isNotNull(contractList.get(3).getContractCode()) ? String.valueOf(contractList.get(1).getContractCode()) : "";
         //正向给买方开具
         carInvoiceInfoVO.setBuyerName(invoiceDetail.getBuyerName());
         carInvoiceInfoVO.setContractCode(contractCode);
@@ -949,7 +952,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
         contractList.add(this.getContractApprovalShowInfo(carId, 1));
         contractList.add(this.getContractApprovalShowInfo(carId, 2));
-        String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? String.valueOf(contractList.get(1).getContractId()) : "";
+        String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractCode()) ? String.valueOf(contractList.get(1).getContractCode()) : "";
         //反向给卖方开具
         carInvoiceInfoVO.setSellerName(invoiceDetail.getSellerName());
         carInvoiceInfoVO.setContractCode(contractCode);
@@ -1056,6 +1059,7 @@ public class CarInfoServiceImpl implements CarInfoService {
             return contractApprovalShowVO;
         }
         contractApprovalShowVO.setContractId(contractDO.getContractId());
+        contractApprovalShowVO.setContractCode(contractDO.getCode());
         contractApprovalShowVO.setContractName(contractDO.getContractName());
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getContractId());
         if (!CollectionUtils.isEmpty(fileList)) {
