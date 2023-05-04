@@ -177,7 +177,8 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number" @focus="depositFocus" @blur="depositBlur">
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number"
+							@focus="depositFocus" @blur="depositBlur">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -673,7 +674,7 @@
 					buyerName: '',
 					buyerAdder: '',
 					buyerTel: '',
-					deposit: '0'
+					deposit: '0.00'
 				},
 				// 卖家信息校验规则
 				sellerRules: {
@@ -801,6 +802,7 @@
 			getSellCarInfo({
 				id: options.id
 			}).then((res) => {
+				if (!res.data.other) res.data.other = ''
 				this.carForm = res.data;
 				this.carForm.scrapDate = parseTime(this.carForm.scrapDate);
 				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
@@ -812,9 +814,9 @@
 				this.sellerForm.buyerName = res.data.buyerName
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
-				this.sellerForm.deposit = res.data.deposit || 0
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-        this.sellerForm.sellAmount = res.data.sellAmount
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit)||'0.00';
 				this.fairStatus = res.data.bpmStatus;
 
 				let obj;
@@ -1102,12 +1104,12 @@
 				this.$set(this.sellerForm, 'sellAmount', amount);
 			},
 			//定金获取焦点
-			depositFocus(){
+			depositFocus() {
 				let amount = this.$amount.getDelcommafy(this.sellerForm.deposit);
 				this.$set(this.sellerForm, 'deposit', amount);
 			},
 			//顶级失焦
-			depositBlur(){
+			depositBlur() {
 				let amount = this.$amount.getComdify(this.sellerForm.deposit);
 				this.$set(this.sellerForm, 'deposit', amount);
 			},
@@ -1221,7 +1223,7 @@
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.sellerForm.sellType,
-					deposit: this.sellerForm.deposit,
+					deposit: this.$amount.getDelcommafy(this.sellerForm.deposit),
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
