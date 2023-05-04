@@ -84,7 +84,6 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -254,7 +253,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                     configDO.setCompanyId(Long.valueOf(companyId));
                     configDO.setBusinessId(deptDO.getId());
                     configDO.setBusinessName(deptDO.getName());
-                    qysConfigMapper.insert(configDO);
+                    if (ObjectUtil.isNull(configDO.getId())) {
+                        qysConfigMapper.insert(configDO);
+                    } else {
+                        qysConfigMapper.updateById(configDO);
+                    }
                     deptDO.setAuth(Integer.valueOf(status));
                     deptMapper.updateById(deptDO);
                     //保存回调信息
@@ -901,6 +904,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //模版参数
             template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "1",buyWTCode);
             contractId = checkContract.getId();
+            log.info("=================收车委托合同ID，{}",contractId);
             //选模版
             // 旧模板 3088683424274190651L
             // 二手车委托收购协议-全款方式V1.0   3089851249420403111L
@@ -1323,8 +1327,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         //模板参数
         //draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置`
         draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置`w
+        //创建人
+        draftContract.setCreator(new User("17396202169","MOBILE"));
         draftContract.setSend(false); //发起合同
-        log.info("发起收车委托合同草稿参数：{}",draftContract);
+        log.info("发起收车委托合同草稿参数：{}",JSON.toJSONString(draftContract));
         return draftContract;
     }
 
@@ -1357,6 +1363,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         draftContract.addSignatory(persoanlSignatory);
         //模板参数
         draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置`
+        //创建人
+        draftContract.setCreator(new User("17396202169","MOBILE"));
         draftContract.setSend(false); //发起合同
         log.info("发起卖车委托合同草稿参数：{}",draftContract);
         return draftContract;
@@ -1432,8 +1440,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         //收车
 
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        //创建人
+        draftContract.setCreator(new User("17396202169","MOBILE"));
         draftContract.setSend(false); //发起合同
-        log.info("发起收车合同草稿参数：{}",draftContract);
         return draftContract;
     }
 
@@ -1469,6 +1478,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         //模板参数
         //卖车
         draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        //创建人
+        draftContract.setCreator(new User("17396202169","MOBILE"));
         draftContract.setSend(false); //发起合同
         log.info("发起卖车合同草稿参数：{}",draftContract);
         return draftContract;

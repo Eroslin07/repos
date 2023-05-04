@@ -107,7 +107,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         if(null!=createReqVO.getId()){
             //保存之前查看是否存在草稿
             List<CarInfoDO> carInfoDOS = carInfoMapper.selectIsExist(createReqVO.getVin(),businessId, 1, 11);
-            infoDO = carInfoDOS.get(0);
+            if (CollUtil.isNotEmpty(carInfoDOS)) {
+                infoDO = carInfoDOS.get(0);
+            }
             Long id = infoDO.getId();
             detailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
 

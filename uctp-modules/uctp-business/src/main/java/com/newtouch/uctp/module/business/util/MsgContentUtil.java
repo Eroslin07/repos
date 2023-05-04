@@ -79,13 +79,13 @@ public class MsgContentUtil {
                     result = String.format("【翼龙科技】您在车友通注册的主账号已审批通过，请在15分钟内访问%s 完成企业实名认证。", map.get("url").replaceAll("https://",""));
                     break;
                 case "41":
-                    result = String.format("【翼龙科技】您在车友通的子账号已注册完成，请在15分钟内访问#url# 完成个人实名认证。", map.get("url").replaceAll("https://",""));
+                    result = String.format("【翼龙科技】您在车友通的子账号已注册完成，请在15分钟内访问%s 完成个人实名认证。", map.get("url").replaceAll("https://",""));
                     break;
                 case "42":
-                    result = String.format("【翼龙科技】您已完成企业认证，请在15分钟内访问#url#完成个人实名认证。", map.get("url").replaceAll("https://",""));
+                    result = String.format("【翼龙科技】您已完成企业认证，请在15分钟内访问%s完成个人实名认证。", map.get("url").replaceAll("https://",""));
                     break;
                 case "43":
-                    result=map.get("url");
+                    result = String.format("【翼龙科技】电子签章平台需要您进行一键签署授权，请访问%s完成授权操作。", map.get("url").replaceAll("https://",""));
                     break;
                 default:
                     result="无匹配模版";
