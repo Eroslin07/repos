@@ -39,6 +39,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Employee> doDefaultEmployeeRemove(EmployeeRemoveRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Employee> doDefaultEmployeeCreate(EmployeeCreateRequest request) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -267,6 +272,21 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     @Override
     public QiyuesuoCommonResult<Employee> defaultEmployeeCreate(String name, String contact) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Employee> defaultEmployeeRemove(String name, String contact) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Object> defaultRoleManage(RoleManagementRequest request) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<Object> doDefaultRoleManage(RoleManagementRequest request) throws Throwable {
+        return null;
     }
 
 //    @Override

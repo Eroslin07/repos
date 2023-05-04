@@ -74,4 +74,11 @@ public interface ContractService {
      * @return
      */
     ContractDO getByContractId(Long contractId);
+
+    /**
+     * 根据类型生成合同
+     * @param type
+     * @return
+     */
+    String GenerateCode(Integer type);
 }

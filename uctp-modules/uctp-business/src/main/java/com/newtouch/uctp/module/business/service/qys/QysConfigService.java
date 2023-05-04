@@ -173,4 +173,5 @@ public interface QysConfigService {
      * @param contractId  契约锁合同id
      */
     void companySign(Long contractId);
+
 }

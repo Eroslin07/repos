@@ -156,7 +156,7 @@ public class ContractServiceImpl implements ContractService {
         return appContractarVO;
     }
 
-    private String GenerateCode(Integer type){
+    public String GenerateCode(Integer type){
         String busiTypeCode = "";
         switch (type){
 //            1收车委托合同   2收车合同  3卖车委托合同  4卖车合同

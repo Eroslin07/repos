@@ -207,6 +207,42 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<Employee> defaultEmployeeRemove(EmployeeRemoveRequest request) {
+        QiyuesuoCommonResult<Employee> result;
+        try {
+            result = doDefaultEmployeeRemove(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Object> defaultRoleManage(RoleManagementRequest request) {
+        QiyuesuoCommonResult<Object> result;
+        try {
+            result = doDefaultRoleManage(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<Object> doDefaultRoleManage(RoleManagementRequest request)
+            throws Throwable;
+
+    protected abstract QiyuesuoCommonResult<Employee> doDefaultEmployeeRemove(EmployeeRemoveRequest request)
+            throws Throwable;
+
     protected abstract QiyuesuoCommonResult<Employee> doDefaultEmployeeCreate(EmployeeCreateRequest request)
             throws Throwable;
 
