@@ -141,7 +141,7 @@
 							{
 								status: 2,
 								num: 0,
-								label: '代售中',
+								label: '待售中',
 								child: [{
 									status: '2.1',
 									num: 0,
@@ -185,7 +185,7 @@
 								}, {
 									status: '4.2',
 									num: 0,
-									label: '带分账'
+									label: '待分账'
 								}, {
 									status: '4.3',
 									num: 0,
