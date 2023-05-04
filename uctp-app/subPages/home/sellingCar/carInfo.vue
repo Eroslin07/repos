@@ -175,7 +175,7 @@
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group v-model="sellerForm.sellType" placement="row" activeColor="#fd6404">
-							<u-radio :customStyle="{marginBottom: '8px'}" v-for="(item, index) in sexs" :key="index"
+							<u-radio :customStyle="{marginRight: '8px'}" v-for="(item, index) in sexs" :key="index"
 								:label="item.label" :name="item.value">
 							</u-radio>
 						</u-radio-group>
@@ -824,7 +824,13 @@
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
 				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit)||'0.00';
 				this.fairStatus = res.data.bpmStatus;
-
+				res.data.idCardsPicList.forEach((i,index)=>{
+					if(index==0){
+						this.fileList4=[i]
+					}else if(index==1){
+						this.fileList5=[i]
+					}
+				})
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -1236,13 +1242,14 @@
 				let feesAndCommitments = {
 					...this.feesForm
 				};
+				let idcards=[...this.fileList4,...this.fileList5];
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
 					sellAmount: this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
-					idCardIds: this.fileList4.map((item) => {
+					idCardIds: idcards.map((item)=>{
 						return item.id
 					}),
 					buyerName: this.sellerForm.buyerName,
