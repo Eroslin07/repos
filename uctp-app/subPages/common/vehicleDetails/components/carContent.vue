@@ -39,21 +39,21 @@
 				<view class="car-details">
 					<view class="car-item">
 						<text>发动机编号</text>
-						<text>{{carInfoAll.carInfo.engineNum}}</text>
+						<text>{{carInfoAll.carInfo.engineNum || '暂无'}}</text>
 					</view>
 					<view class="car-item">
 						<text>首次登录日期</text>
-						<text>{{carInfoAll.carInfoDetails.firstRegistDate}}</text>
+						<text>{{carInfoAll.carInfoDetails.firstRegistDate || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>车牌号</text>
-						<text>{{carInfoAll.carInfo.plateNum}}</text>
+						<text>{{carInfoAll.carInfo.plateNum || '暂无'}}</text>
 					</view>
 					<view class="car-item">
 						<text>使用性质</text>
-						<text>{{carInfoAll.carInfoDetails.natureOfOperat}}</text>
+						<text>{{carInfoAll.carInfoDetails.natureOfOperat || '暂无'}}</text>
 					</view>
 				</view>
 			</view>
@@ -74,37 +74,37 @@
 				<view class="car-details">
 					<view class="car-item">
 						<text>登记证号</text>
-						<text>{{carInfoAll.carInfoDetails.certificateNo}}</text>
+						<text>{{carInfoAll.carInfoDetails.certificateNo || '暂无'}}</text>
 					</view>
 					<view class="car-item">
 						<text>颜色</text>
-						<text>{{carInfoAll.carInfoDetails.colour}}</text>
+						<text>{{carInfoAll.carInfoDetails.colour || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>里程数</text>
-						<text>{{carInfoAll.carInfoDetails.mileage}}万公里</text>
+						<text>{{carInfoAll.carInfoDetails.mileage || '暂无'}}万公里</text>
 					</view>
 					<view class="car-item">
 						<text>使用年限至</text>
-						<text>{{carInfoAll.carInfo.scrapDate}}</text>
+						<text>{{carInfoAll.carInfo.scrapDate || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>年检签章有效期</text>
-						<text>{{carInfoAll.carInfo.annualInspectionDate}}</text>
+						<text>{{carInfoAll.carInfo.annualInspectionDate || '暂无'}}</text>
 					</view>
 					<view class="car-item">
 						<text>保险险种</text>
-						<text>{{carInfoAll.carInfo.insurance}}</text>
+						<text>{{carInfoAll.carInfo.insurance || '暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
 					<view class="car-item">
 						<text>保险期至</text>
-						<text>{{carInfoAll.carInfo.insuranceEndData}}</text>
+						<text>{{carInfoAll.carInfo.insuranceEndData || '暂无'}}</text>
 					</view>
 				</view>
 			</view>
@@ -385,8 +385,11 @@
 		},
 		filters: {
 			transMoney(val) {
-				console.log(that.$amount.getComdify(val), 888)
-				return that.$amount.getComdify(val)
+				if(val){
+				    return that.$amount.getComdify(val)
+				}else{
+					return 0
+				}
 			}
 		},
 		computed:{
