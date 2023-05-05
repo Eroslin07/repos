@@ -42,5 +42,5 @@ public class MakeInvoiceRespVO {
     private String bankAccount;
 
     @Schema(description = "租户编号")
-    private Integer tenantId;
+    private Long tenantId;
 }

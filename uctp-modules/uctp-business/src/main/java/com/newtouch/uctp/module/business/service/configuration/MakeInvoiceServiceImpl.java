@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.business.service.configuration;
 
+import com.newtouch.uctp.framework.security.core.LoginUser;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.admin.configuration.vo.MakeInvoiceRespVO;
 import com.newtouch.uctp.module.business.controller.admin.configuration.vo.MakeInvoiceUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.mysql.configurationMapper.MakeInvoiceMapper;
@@ -24,6 +26,9 @@ public class MakeInvoiceServiceImpl implements MakeInvoiceService{
     /** 新建配置信息 */
     @Override
     public void createMakeInvoice(MakeInvoiceRespVO reqVO) {
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        Long tenantId = loginUser.getTenantId();
+        reqVO.setTenantId(tenantId);
         makeMapper.createMakeInvoice(reqVO);
     }
 

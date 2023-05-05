@@ -51,7 +51,8 @@ import {
   getMakeInvoiceApi,
   updateMakeInvoiceApi
 } from '@/api/configuration/invoice'
-
+import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 const title = ref('')
 
 const data = reactive({
@@ -78,7 +79,9 @@ const message = useMessage() // 消息弹窗
 
 /** 查询项目列表 */
 const getList = async () => {
-  const res = await getMakeInvoiceApi(150)
+  var newVar = wsCache.get(CACHE_KEY.USER)
+  console.log(newVar.user.id)
+  const res = await getMakeInvoiceApi(newVar.user.id)
   console.log(res)
   if (res != null) {
     form.value = res
@@ -92,7 +95,6 @@ const handle = async () => {
     title.value = 'edit'
   } else {
     const id = form.value.id
-    console.log('id = ', id)
     const res = await getMakeInvoiceApi(id)
     console.log(res)
     console.log('修改配置信息')

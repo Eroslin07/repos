@@ -34,19 +34,7 @@
     <select id="createMakeInvoice"
             parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.MakeInvoiceRespVO"
             resultMap="makeInvoiceRespVO">
-        select
-        ID,
-        COMPANY_NAME,
-        TAX_NUM,
-        REPRESENT,
-        ADDRESS,
-        TEL,
-        OPENING,
-        NAME,
-        BANK,
-        BANK_ACCOUNT,
-        TENANT_ID
-        from uctp_invoice_title_config
+        insert into uctp_invoice_title_config
         <set>
             <if test="reqVO.companyName != null and reqVO.companyName != ''">COMPANY_NAME = #{reqVO.companyName},</if>
             <if test="reqVO.taxNum != null and reqVO.taxNum != ''">TAX_NUM = #{reqVO.taxNum},</if>
@@ -57,6 +45,7 @@
             <if test="reqVO.name != null and reqVO.name != ''">NAME = #{reqVO.name},</if>
             <if test="reqVO.bank != null and reqVO.bank != ''">BANK = #{reqVO.bank},</if>
             <if test="reqVO.bankAccount != null and reqVO.bankAccount != ''">BANK_ACCOUNT = #{reqVO.bankAccount},</if>
+            <if test="reqVO.tenantId != null and reqVO.tenantId != ''">TENANT_ID = #{reqVO.tenantId},</if>
         </set>
     </select>
 
