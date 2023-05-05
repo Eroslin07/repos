@@ -36,8 +36,4 @@ public class PayFailedController {
     public CommonResult<String> createProcessInstanceByKey(@Valid @RequestBody PayFailedCreateBpmDTO createReqVO) {
         return success(payFailedService.createBpm(createReqVO.getContractId(), BpmDefTypeEnum.SKZH.name(), createReqVO.getVariables()));
     }
-
-
-
-
 }

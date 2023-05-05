@@ -26,7 +26,7 @@
 					<u-grid col="2">
 						<u-grid-item>
 							<uni-card @click="handleCollection(2)">
-								<view style="color: #333;font-size: 15px;">
+								<view style="color: #333;font-size: 28rpx;">
 									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
 									<text>收车合同</text>
 								</view>
@@ -34,7 +34,7 @@
 						</u-grid-item>
 						<u-grid-item>
 							<uni-card @click="handleCollection(1)">
-								<view style="color: #333;font-size: 15px;">
+								<view style="color: #333;font-size: 28rpx;">
 									<image src="../../../static/images/bycar/hetong3.png" class="form-image"></image>
 									<text>委托合同</text>
 								</view>
@@ -1420,6 +1420,7 @@
 				background-image: linear-gradient(to right, #fcbb2b, #ed6c21);
 				background-color: #fff;
 				color: #fff;
+				font-size: 30rpx;
 			}
 		}
 	}
