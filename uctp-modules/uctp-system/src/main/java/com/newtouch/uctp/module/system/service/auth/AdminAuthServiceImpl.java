@@ -99,6 +99,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Lazy
     private QysConfigApi qysConfigApi;
     @Resource
+    @Lazy
     private QiyuesuoClientFactory qiyuesuoClientFactory;
 
     /**

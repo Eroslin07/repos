@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.business.api.qys;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.business.api.qys.dto.QysConfigDTO;
+import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -47,7 +48,6 @@ public class QysConfigApiImpl implements QysConfigApi{
     @Override
     public CommonResult<QysConfigDTO> getByDeptId(Long deptId) {
         QysConfigDO configDO = qysConfigService.getByDeptId(deptId);
-//        return success(QysConfigConvert.INSTANCE.convert02(configDO));
-        return success(new QysConfigDTO());
+        return success(QysConfigConvert.INSTANCE.convert02(configDO));
     }
 }
