@@ -40,7 +40,7 @@ public class TransactionRecordDO implements Serializable {
 
     private Long tranAmount;
 
-    private String tranStatus;
+    private String tranState;
 
     private String bankResultCode;
 
