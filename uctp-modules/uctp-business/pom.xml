@@ -44,6 +44,11 @@
             <artifactId>uctp-modules-bpm</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-api-business</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!-- 业务组件 -->
         <dependency>
