@@ -53,10 +53,7 @@ import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 import com.newtouch.uctp.module.business.mq.producer.UserAuthProducer;
 import com.newtouch.uctp.module.business.service.*;
-import com.newtouch.uctp.module.business.util.Byte2StrUtil;
-import com.newtouch.uctp.module.business.util.ContractUtil;
-import com.newtouch.uctp.module.business.util.ShortUrlsUtil;
-import com.newtouch.uctp.module.business.util.UppercaseUtil;
+import com.newtouch.uctp.module.business.util.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
@@ -74,6 +71,7 @@ import com.qiyuesuo.sdk.v2.request.EmployeeRemoveRequest;
 import com.qiyuesuo.sdk.v2.response.*;
 import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
+import com.qiyuesuo.sdk.v2.utils.StringUtils;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -1665,6 +1663,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //收车委托合同
             if ("1".equals(type)) {
                 params.add(new TemplateParam("合同编号", code));
+                if (StringUtils.isEmpty(platformDept.getName()))
                 params.add(new TemplateParam("受托人", platformDept.getName()));
                 params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
                 params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
@@ -1677,7 +1676,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
                 params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
                 params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
-
+                
                 params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
                 params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
                 params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
@@ -1686,13 +1685,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
                 params.add(new TemplateParam("车架号码", carInfo.getVin()));
-                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
-                params.add(new TemplateParam("使用年限", String.valueOf(carInfo.getScrapDate())));
-                params.add(new TemplateParam("年检签证有效期", String.valueOf(carInfo.getAnnualInspectionDate())));
+                params.add(new TemplateParam("行驶里程", NullReplaceUtil.nullReplace(String.valueOf(carInfoDetailsDO.getMileage()))));
+                params.add(new TemplateParam("使用年限", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getScrapDate()))));
+                params.add(new TemplateParam("年检签证有效期", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getAnnualInspectionDate()))));
                 params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
                 params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
                 params.add(new TemplateParam("收车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-                params.add(new TemplateParam("收车金额小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("收车金额小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("甲方收款银行", invoiceTitleDO.getBank()));
                 params.add(new TemplateParam("甲方收款账号", invoiceTitleDO.getBankAccount()));
                 params.add(new TemplateParam("甲方收款名称", invoiceTitleDO.getCompanyName()));
@@ -1722,19 +1721,19 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
                 params.add(new TemplateParam("车架号码", carInfo.getVin()));
-                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
-                // params.add(new TemplateParam("使用年限",String.valueOf(carInfo.getScrapDate())));
-                params.add(new TemplateParam("年检签证有效期", String.valueOf(carInfo.getAnnualInspectionDate())));
+                params.add(new TemplateParam("行驶里程", NullReplaceUtil.nullReplace(String.valueOf(carInfoDetailsDO.getMileage()))));
+                // params.add(new TemplateParam("使用年限",NullReplaceUtil.nullReplace(String.valueOf(carInfo.getScrapDate())));
+                params.add(new TemplateParam("年检签证有效期", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getAnnualInspectionDate()))));
                 params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
                 params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
-                params.add(new TemplateParam("卖车金额小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("卖车金额小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("卖车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
                 params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getDeposit()))));
                 params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
-                params.add(new TemplateParam("剩余车款小写", String.valueOf(carInfo.getBalancePayment())));
+                params.add(new TemplateParam("剩余车款小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getBalancePayment()))));
             } else if ("21".equals(type)) {
                 //卖车委托合同-按揭付款
                 params.add(new TemplateParam("合同编号", code));
@@ -1759,18 +1758,18 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
                 params.add(new TemplateParam("车架号码", carInfo.getVin()));
-                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
-                // params.add(new TemplateParam("使用年限",String.valueOf(carInfo.getScrapDate())));
-                params.add(new TemplateParam("年检签证有效期", String.valueOf(carInfo.getAnnualInspectionDate())));
+                params.add(new TemplateParam("行驶里程", NullReplaceUtil.nullReplace(String.valueOf(carInfoDetailsDO.getMileage()))));
+                // params.add(new TemplateParam("使用年限",NullReplaceUtil.nullReplace(String.valueOf(carInfo.getScrapDate()))));
+                params.add(new TemplateParam("年检签证有效期", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getAnnualInspectionDate()))));
                 params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
                 params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
-                params.add(new TemplateParam("卖车金额小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("卖车金额小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("卖车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
 
                 params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getDeposit()))));
 //            params.add(new TemplateParam("尾款大写", "0"));
 //            params.add(new TemplateParam("尾款小写", "0"));
             } else if ("3".equals(type)) {
@@ -1798,11 +1797,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
                 params.add(new TemplateParam("车架号码", carInfo.getVin()));
-                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("行驶里程", NullReplaceUtil.nullReplace(String.valueOf(carInfoDetailsDO.getMileage()))));
                 params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareParts(proceduresAndSpareParts)));
 
                 params.add(new TemplateParam("车辆总价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-                params.add(new TemplateParam("车辆总价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车辆总价小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 //  params.add(new TemplateParam("付款方式", "全款"));
             } else if ("4".equals(type)) {
                 //卖车合同-直接付款
@@ -1831,7 +1830,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
                 params.add(new TemplateParam("车架号码", carInfo.getVin()));
-                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("行驶里程", NullReplaceUtil.nullReplace(String.valueOf(carInfoDetailsDO.getMileage()))));
                 params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareSell(proceduresAndSpareSell)));
 
                 params.add(new TemplateParam("确认", conditionA));
@@ -1844,11 +1843,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                     params.add(new TemplateParam("其他约定", "无"));
                 }
                 params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getDeposit()))));
                 params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
-                params.add(new TemplateParam("剩余车款小写", String.valueOf(carInfo.getBalancePayment())));
+                params.add(new TemplateParam("剩余车款小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getBalancePayment()))));
 
                 params.add(new TemplateParam("车辆使用租金", vehicle));
                 params.add(new TemplateParam("交易过户费", transfer));
@@ -1883,7 +1882,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
                 params.add(new TemplateParam("车架号码", carInfo.getVin()));
-                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("行驶里程", NullReplaceUtil.nullReplace(String.valueOf(carInfoDetailsDO.getMileage()))));
                 params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareSell(proceduresAndSpareSell)));
                 params.add(new TemplateParam("确认", conditionA));
                 params.add(new TemplateParam("是非事故车", conditionB));
@@ -1895,9 +1894,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                     params.add(new TemplateParam("其他约定", "无"));
                 }
                 params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getDeposit()))));
                 // params.add(new TemplateParam("定金大写", "0"));
                 //params.add(new TemplateParam("定金小写", "0"));
                 params.add(new TemplateParam("车辆使用租金", vehicle));
