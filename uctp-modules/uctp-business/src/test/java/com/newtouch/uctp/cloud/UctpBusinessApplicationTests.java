@@ -38,8 +38,8 @@ class UctpBusinessApplicationTests {
         properties.setId(2L);
         properties.setCode(QiyuesuoChannelEnum.DEFAULT.getCode());
 //        ("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO")
-        properties.setAccessKey("oRTUX7pZTm");
-        properties.setAccessSecret("CmcsdN8ohLQAERytkFxjFInpXI1nEW");
+        properties.setAccessKey("q4xKsNcFI8");
+        properties.setAccessSecret("qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
         properties.setServerUrl("https://openapi.qiyuesuo.cn");
         client = new DefaultQiyuesuoClient(properties);
         client.init();
@@ -50,8 +50,8 @@ class UctpBusinessApplicationTests {
         String serverUrl = "https://openapi.qiyuesuo.cn";
 //        String accessKey = "8aScPl53pm";
 //        String accessSecret = "AI4nTFk5jA48JkmztTZUSnIbyKJGSK";
-        String accessKey = "oRTUX7pZTm";
-        String accessSecret = "CmcsdN8ohLQAERytkFxjFInpXI1nEW";
+        String accessKey = "q4xKsNcFI8";
+        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
         SdkClient sdkClient = new SdkClient(serverUrl, accessKey, accessSecret);
 // 合同页面
         ContractPageRequest request = new ContractPageRequest(3091669222128951367l,

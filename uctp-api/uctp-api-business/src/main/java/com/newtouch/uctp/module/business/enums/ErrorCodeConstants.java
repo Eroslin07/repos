@@ -31,6 +31,7 @@ public interface ErrorCodeConstants {
     ErrorCode QYS_CALLBACK_NOT_EXISTS = new ErrorCode(1005000150, "契约锁回调日志不存在");
     ErrorCode QYS_CONFIG_NOT_AUTH = new ErrorCode(1005000151, "企业未做契约锁认证");
     ErrorCode QYS_CONFIG_PARAM_ERROR = new ErrorCode(1005000152, "参数异常");
+    ErrorCode QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL = new ErrorCode(1005000153, "契约锁合同下载失败");
     // ========== business 资金错误 1005000200 ==========
     ErrorCode ACC_ACCOUNT_NO_NOT_NULL = new ErrorCode(1005000201, "商户号不能为空");
     ErrorCode ACC_CONTRACT_NO_NOT_NULL = new ErrorCode(1005000202, "交易合同号不能为空");

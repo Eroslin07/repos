@@ -9,6 +9,7 @@ import com.qiyuesuo.sdk.v2.response.ContractPageResult;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import com.qiyuesuo.sdk.v2.response.SealListResult;
 
+import java.io.FileOutputStream;
 import java.util.List;
 
 /**
@@ -225,4 +226,13 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name,String foot,String enterpriseCode);
+
+    /**
+     * 合同文档下载
+     *
+     * @param fos 输出流
+     * @param documentId 文档id
+     * @return
+     */
+    QiyuesuoCommonResult<Boolean> defaultDocumentDownload(FileOutputStream fos, Long documentId);
 }

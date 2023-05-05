@@ -12,6 +12,8 @@ import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 import org.springframework.stereotype.Component;
 
+import java.io.FileOutputStream;
+
 /**
  * 契约锁客户端的抽象类，提供模板方法，减少子类的冗余代码
  *
@@ -252,6 +254,25 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         }
         return result;
     }
+
+    @Override
+    public QiyuesuoCommonResult<Boolean> defaultDocumentDownload(FileOutputStream fos, Long documentId) {
+        QiyuesuoCommonResult<Boolean> result;
+        try {
+            DocumentDownloadRequest request = new DocumentDownloadRequest(documentId);
+            result = doDefaultDocumentDownload(request,fos);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<Boolean> doDefaultDocumentDownload(DocumentDownloadRequest request,FileOutputStream fos)
+            throws Throwable;
 
     protected abstract QiyuesuoCommonResult<Seal> doDefaultSealAutoCreate(SealAutoCreateRequest request)
             throws Throwable;

@@ -15,6 +15,7 @@ import com.qiyuesuo.sdk.v2.param.SignParam;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +39,15 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     @Override
     protected void doInit() {
         client = new SdkClient(properties.getServerUrl(), properties.getAccessKey(), properties.getAccessSecret());
+    }
+
+    @Override
+    protected QiyuesuoCommonResult<Boolean> doDefaultDocumentDownload(DocumentDownloadRequest request, FileOutputStream fos) throws Throwable {
+        this.client.download(request,fos);
+        return QiyuesuoCommonResult.build("0".toString()
+                , ""
+                , true
+                , codeMapping);
     }
 
     @Override
