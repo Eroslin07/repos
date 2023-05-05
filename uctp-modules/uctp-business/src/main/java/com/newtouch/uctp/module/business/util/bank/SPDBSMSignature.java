@@ -266,19 +266,22 @@ public class SPDBSMSignature {
         }
 
         try {
-            resBody = new String(response.body().bytes(), "UTF-8");
-            String sg = new String(response.header("X-SPDB-SIGNATURE").getBytes(), "UTF-8");
-            System.out.println("响应报文：" + resBody);
+            if (response != null) {
+                resBody = new String(response.body().bytes(), "UTF-8");
+                String sg = new String(response.header("X-SPDB-SIGNATURE").getBytes(), "UTF-8");
+                System.out.println("响应报文：" + resBody);
 
 
-            String digest = SHA1.digest(resBody);
-            byte[] bytes = digest.getBytes(charset);
+                String digest = SHA1.digest(resBody);
+                byte[] bytes = digest.getBytes(charset);
 
-            byte[] signatureBytes = ByteUtils.fromHexString(new String(DatatypeConverter.parseBase64Binary(sg)));
-            SM2Sign sm2Sign = SM2SignVerify.validateSign(ByteUtils.fromHexString(spdbPublicKey), bytes, signatureBytes);
+                byte[] signatureBytes = ByteUtils.fromHexString(new String(DatatypeConverter.parseBase64Binary(sg)));
+                SM2Sign sm2Sign = SM2SignVerify.validateSign(ByteUtils.fromHexString(spdbPublicKey), bytes, signatureBytes);
 
-            boolean validateSign = sm2Sign.isVerify();
-            System.out.println("验签结果：" + validateSign);
+                boolean validateSign = sm2Sign.isVerify();
+                System.out.println("验签结果：" + validateSign);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

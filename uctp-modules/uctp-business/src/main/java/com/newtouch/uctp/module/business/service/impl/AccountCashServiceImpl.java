@@ -102,7 +102,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         List<Long> withdrawIds = new ArrayList<>();
         //List<String> tranRecordNos = new ArrayList<>();
         for (MerchantCashDO merchantCashDO : list) {
-            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType())) {
+            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashDO.getTradeType())) {
                 //保证金提取明细ID，后续填充保证金提取流程明细
                 withdrawIds.add(merchantCashDO.getId());
 
@@ -192,7 +192,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         MerchantBankDO merchantBankDO = merchantBankService.getOne(
                 new LambdaQueryWrapperX<MerchantBankDO>()
                         .eq(MerchantBankDO::getAccountNo, accountNo)
-                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH)
+                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH.getKey())
                         .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
 
         if (merchantBankDO == null || StringUtils.isEmpty(merchantBankDO.getBankNo())) {
@@ -200,9 +200,9 @@ public class AccountCashServiceImpl implements AccountCashService {
         }
 
         TransactionRecordDO transactionRecordDO = transactionService.outGold(merchantBankDO.getBankNo(), tranAmount, AccountEnum.TRAN_TYPE_PRESENT_CASH.getKey(), transactionRecordReqVO.getContractNo());
-        if (transactionRecordDO.getTranStatus().equals(AccountConstants.TRAN_STATE_SUCCESS)) {
+        if (transactionRecordDO.getTranState().equals(AccountConstants.TRAN_STATE_SUCCESS)) {
             // 交易成功-当前调用方式为交易中
-        } else if (transactionRecordDO.getTranStatus().equals(AccountConstants.TRAN_STATE_DURING)){
+        } else if (transactionRecordDO.getTranState().equals(AccountConstants.TRAN_STATE_DURING)){
             //交易中
             /**
              * TODO::后续如何判定交易成功，交易成功后需调用
