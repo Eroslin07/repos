@@ -41,6 +41,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Seal> doDefaultSealAutoCreate(SealAutoCreateRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Seal> sdkResponse = JSONUtils.toQysResponse(response,Seal.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Object> doDefaultRoleManage(RoleManagementRequest request) throws Throwable {
         String response = this.client.service(request);
         SdkResponse<Object> sdkResponse = JSONUtils.toQysResponse(response,Object.class);
@@ -311,6 +321,18 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         }
         RoleManagementRequest request = new RoleManagementRequest("SEAL_ADMIN",list);
         return this.defaultRoleManage(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name, String foot, String enterpriseCode) {
+        SealAutoCreateRequest request = new SealAutoCreateRequest();
+        SealImageInfo sealInfo = new SealImageInfo();
+        //目前只有公章
+        sealInfo.setStyle("UNIVERSAL_SEAL");
+        sealInfo.setEnterpriseCode(enterpriseCode);
+        request.setName(name);
+        request.setSealImageInfo(sealInfo);
+        return this.defaultSealAutoCreate(request);
     }
 
 
