@@ -46,42 +46,45 @@ public class NoticeServiceImpl implements NoticeService {
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map
         Map<String ,String> map =getContentMaps(type,contentType,reason,bpmFormMainVO);
-        map.put("type",type);
-        map.put("contentType",contentType);
-        map.put("reason",reason);
-        NoticeInfoDO infoDO=new NoticeInfoDO();
-        infoDO.setId(UUID.randomUUID().toString());
-        //根据不同的内容类型选择不同的内容模版
-        Map<String, String> contentMap = MsgContentUtil.getContent(map);
-        infoDO.setTitle(contentMap.get("title"));
-        infoDO.setContent(contentMap.get("content"));
-        //取上下文租户号
-        Long tenantId = TenantContextHolder.getTenantId();
-        infoDO.setTenantId(tenantId);
-        infoDO.setPhone(map.get("phone"));
-        infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
-        infoDO.setStatus("0");
-        if (type.equals("0")&&map.get("url")!=null) {
-            infoDO.setUrl(map.get("url"));
-        }
-        infoDO.setPushStatus("0");
-        //短信发送
-        if (type.equals("1")){
-            Map<String, String> message = MsgSendUtil.sendMessage(map);
-            if (message.get("flags").equals("FALSE")){
-                infoDO.setErrorMsg(message.get("msg"));
-                infoDO.setErrorNum(message.get("errorNum"));
-                infoDO.setPushStatus("1");
+        if (map.get("bpm").equals("0")) {
+            map.put("type", type);
+            map.put("contentType", contentType);
+            map.put("reason", reason);
+            NoticeInfoDO infoDO = new NoticeInfoDO();
+            infoDO.setId(UUID.randomUUID().toString());
+            //根据不同的内容类型选择不同的内容模版
+            Map<String, String> contentMap = MsgContentUtil.getContent(map);
+            infoDO.setTitle(contentMap.get("title"));
+            infoDO.setContent(contentMap.get("content"));
+            //取上下文租户号
+            Long tenantId = TenantContextHolder.getTenantId();
+            infoDO.setTenantId(tenantId);
+            infoDO.setPhone(map.get("phone"));
+            infoDO.setBusinessId(String.valueOf(bpmFormMainVO.getMerchantId()));
+            infoDO.setStatus("0");
+            if (type.equals("0") && map.get("url") != null) {
+                infoDO.setUrl(map.get("url"));
             }
-        }
+            infoDO.setPushStatus("0");
+            //短信发送
+            if (type.equals("1")) {
+                Map<String, String> message = MsgSendUtil.sendMessage(map);
+                if (message.get("flags").equals("FALSE")) {
+                    infoDO.setErrorMsg(message.get("msg"));
+                    infoDO.setErrorNum(message.get("errorNum"));
+                    infoDO.setPushStatus("1");
+                }
+            }
 
-        infoDO.setType(type);
-        String result="写入数据失败";
-        int insert = noticeMapper.insert(infoDO);
-        if (insert>0) {
-            result = "写入数据成功";
+            infoDO.setType(type);
+            String result = "写入数据失败";
+            int insert = noticeMapper.insert(infoDO);
+            if (insert > 0) {
+                result = "写入数据成功";
+            }
+            return result;
         }
-        return result;
+        return "bpm实体为空，请检查参数";
     }
 
 
@@ -132,77 +135,80 @@ public class NoticeServiceImpl implements NoticeService {
      * 目前就公允价值判断以及注册判断
      * */
     private Map<String,String> getContentMaps(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO){
-        JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
-        Map<String,String> map=new HashMap<>();
-        map.put("type",type);
-        map.put("contentType",contentType);
-        map.put("reason",reason);
-        //公允审批通过判断 type=0，contentType=12 收车通过； type=0，contentType=22 卖车通过；
-        if(type.equals("0")){
-                CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON)jsonObject.get("carInfoDetails"),CarInfoDetailsDO.class);
-                CarInfoDO carInfo = JSON.toJavaObject((JSON)jsonObject.get("carInfo"),CarInfoDO.class);
+        Map<String, String> map = new HashMap<>();
+        if (bpmFormMainVO!=null) {
+            map.put("bpm","0");
+            JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
+            map.put("type", type);
+            map.put("contentType", contentType);
+            map.put("reason", reason);
+            //公允审批通过判断 type=0，contentType=12 收车通过； type=0，contentType=22 卖车通过；
+            if (type.equals("0")) {
+                CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON) jsonObject.get("carInfoDetails"), CarInfoDetailsDO.class);
+                CarInfoDO carInfo = JSON.toJavaObject((JSON) jsonObject.get("carInfo"), CarInfoDO.class);
 
-            //CarInfoDO carInfo = (CarInfoDO) jsonObject.get("carInfo");
+                //CarInfoDO carInfo = (CarInfoDO) jsonObject.get("carInfo");
 
-            //收车公允值通过需要添加跳转路径
-            if (contentType.equals("12")){
-                if (carInfo.getVehicleReceiptAmount()!=null) {
-                    map.put("vehicleReceiptAmount", carInfo.getVehicleReceiptAmount().toString());
+                //收车公允值通过需要添加跳转路径
+                if (contentType.equals("12")) {
+                    if (carInfo.getVehicleReceiptAmount() != null) {
+                        map.put("vehicleReceiptAmount", String.valueOf(carInfo.getVehicleReceiptAmount()));
+                    }
+                    map.put("buyType", "1");//收车
+                    map.put("phone", carInfoDetails.getSellerTel());
+                    map.put("url", "/subPages/home/bycar/agreement?type='1'&carId=" + carInfoDetails.getCarId());
+                } else if (contentType.equals("22")) {
+                    //卖车公允值通过需要添加跳转路径
+                    if (carInfo.getSellAmount() != null) {
+                        map.put("sellAmount", String.valueOf(carInfo.getSellAmount()));
+                    }
+                    map.put("buyType", "2");//卖车
+                    map.put("phone", carInfoDetails.getBuyerTel());
+                    map.put("url", "/subPages/home/sellingCar/agreement?type='1'&carId=" + carInfoDetails.getCarId());
                 }
-                map.put("buyType","1");//收车
-                map.put("phone",carInfoDetails.getSellerTel());
-                map.put("url","/subPages/home/bycar/agreement?type='1'&carId="+carInfoDetails.getCarId());
-            }else if(contentType.equals("22")){
-                //卖车公允值通过需要添加跳转路径
-                if (carInfo.getSellAmount()!=null) {
-                    map.put("sellAmount", carInfo.getSellAmount().toString());
+
+            } else if (type.equals("1")) {
+                CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON) jsonObject.get("carInfoDetails"), CarInfoDetailsDO.class);
+                CarInfoDO carInfo = JSON.toJavaObject((JSON) jsonObject.get("carInfo"), CarInfoDO.class);
+
+                //map.put("businessId",String.valueOf(bpmFormMainVO.getMerchantId()));
+                map.put("phone", jsonObject.getString("phone"));
+                //收车公允审批不通过
+                if (contentType.equals("21")) {
+                    map.put("type", "0");
+                    map.put("contentType", "11");
+                    map.put("buyType", "1");
+                    map.put("phone", carInfoDetails.getSellerTel());
+                    if (carInfo.getVehicleReceiptAmount() != null) {
+                        map.put("vehicleReceiptAmount", String.valueOf(carInfo.getVehicleReceiptAmount()));
+                    }
+                    //公允审批不通过的跳转路径
+                    map.put("url", "/subPages/home/bycar/index?type='1'&carId=" + carInfoDetails.getCarId());
+                    //添加站内消息
+                    saveNotice(map);
+                } else if (contentType.equals("31")) {
+                    map.put("type", "0");
+                    map.put("contentType", "21");
+                    map.put("buyType", "2");
+                    if (carInfo.getSellAmount() != null) {
+                        map.put("sellAmount", String.valueOf(carInfo.getSellAmount()));
+                    }
+                    map.put("phone", carInfoDetails.getBuyerTel());
+                    //卖车公允审批不通过的跳转路径
+                    map.put("url", "/subPages/home/sellingCar/carInfo?type='1'&carId=" + carInfoDetails.getCarId());
+                    //添加站内消息
+                    saveNotice(map);
+                } else if (contentType.equals("12")) {
+                    //注册成功
+                    map.put("phone", jsonObject.getString("phone"));
+                } else if (contentType.equals("11")) {
+                    //注册失败
+                    map.put("phone", jsonObject.getString("phone"));
                 }
-                map.put("buyType","2");//卖车
-                map.put("phone",carInfoDetails.getBuyerTel());
-                map.put("url","/subPages/home/sellingCar/agreement?type='1'&carId="+carInfoDetails.getCarId());
             }
-
+        }else {
+            map.put("bpm","1");
         }
-        else if(type.equals("1")){
-            CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON)jsonObject.get("carInfoDetails"),CarInfoDetailsDO.class);
-            CarInfoDO carInfo = JSON.toJavaObject((JSON)jsonObject.get("carInfo"),CarInfoDO.class);
-
-            //map.put("businessId",bpmFormMainVO.getMerchantId().toString());
-            map.put("phone",jsonObject.getString("phone"));
-            //收车公允审批不通过
-            if (contentType.equals("21")){
-                map.put("type","0");
-                map.put("contentType","11");
-                map.put("buyType","1");
-                map.put("phone",carInfoDetails.getSellerTel());
-                if (carInfo.getVehicleReceiptAmount()!=null) {
-                    map.put("vehicleReceiptAmount", carInfo.getVehicleReceiptAmount().toString());
-                }
-                //公允审批不通过的跳转路径
-                map.put("url","/subPages/home/bycar/index?type='1'&carId="+carInfoDetails.getCarId());
-                //添加站内消息
-                saveNotice(map);
-            }else if (contentType.equals("31")){
-                map.put("type","0");
-                map.put("contentType","21");
-                map.put("buyType","2");
-                if (carInfo.getSellAmount()!=null) {
-                    map.put("sellAmount", carInfo.getSellAmount().toString());
-                }
-                map.put("phone",carInfoDetails.getBuyerTel());
-                //卖车公允审批不通过的跳转路径
-                map.put("url","/subPages/home/sellingCar/carInfo?type='1'&carId="+carInfoDetails.getCarId());
-                //添加站内消息
-                saveNotice(map);
-            } else if (contentType.equals("12")){
-                //注册成功
-                map.put("phone",jsonObject.getString("phone"));
-            } else if (contentType.equals("11")){
-                //注册失败
-                map.put("phone",jsonObject.getString("phone"));
-            }
-        }
-
         return map;
     }
 
@@ -226,7 +232,7 @@ public class NoticeServiceImpl implements NoticeService {
         Long tenantId = TenantContextHolder.getTenantId();
         infoDO.setTenantId(tenantId);
         infoDO.setPhone(jsonObject.getString("phone"));
-        infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
+        infoDO.setBusinessId(String.valueOf(bpmFormMainVO.getMerchantId()));
         infoDO.setStatus("0");
         if (type.equals("0")) {
             //收车公允值通过需要添加跳转路径
@@ -241,7 +247,7 @@ public class NoticeServiceImpl implements NoticeService {
         infoDO.setType(type);
         if (type.equals("1")) {
 
-            map.put("businessId",bpmFormMainVO.getMerchantId().toString());
+            map.put("businessId",String.valueOf(bpmFormMainVO.getMerchantId()));
             map.put("phone",jsonObject.getString("phone"));
             //收车公允审批不通过
             if (contentType.equals("21")){
