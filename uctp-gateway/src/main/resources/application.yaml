@@ -59,6 +59,12 @@ spring:
             - Path=/app-api/uctp/**
           filters:
             - RewritePath=/app-api/uctp/v3/api-docs, /v3/api-docs
+        - id: business-admin-server # 路由的编号
+          uri: grayLb://business-server
+          predicates: # 断言，作为路由的匹配条件，对应 RouteDefinition 数组
+            - Path=/admin-api/uctp/**
+          filters:
+            - RewritePath=/admin-api/uctp/v3/api-docs, /v3/api-docs
       x-forwarded:
         prefix-enabled: false # 避免 Swagger 重复带上额外的 /admin-api/system 前缀
 

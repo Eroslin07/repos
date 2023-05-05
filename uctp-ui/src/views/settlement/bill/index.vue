@@ -15,17 +15,7 @@
           type="warning"
           preIcon="ep:download"
           title="下载"
-          v-hasPermi="['settlement:bill:export']"
-          @click="exportList('用户数据.xls')"
-        />
-      </template>
-      <template #actionbtns_default="{ row }">
-        <!-- 操作：删除 -->
-        <XTextButton
-          preIcon="ep:delete"
-          :title="t('action.del')"
-          v-hasPermi="['settlement:bill:delete']"
-          @click="deleteData(row.id)"
+          @click="exportList('发票数据.xls')"
         />
       </template>
     </XTable>
@@ -33,16 +23,14 @@
 </template>
 <script setup lang="ts" name="Bill">
 import { allSchemas } from './bill.data'
-import * as RoleApi from '@/api/system/role'
-import * as UserApi from '@/api/system/user'
+import * as InvoiceApi from '@/api/settlement/invoice'
 
-const { t } = useI18n() // 国际化
+// const { t } = useI18n() // 国际化
 // 列表相关的变量
 const [registerTable, { exportList }] = useXTable({
   allSchemas: allSchemas,
-  getListApi: RoleApi.getRolePageApi,
-  deleteApi: RoleApi.deleteRoleApi,
-  exportListApi: UserApi.exportUserApi
+  getListApi: InvoiceApi.getInvoice,
+  exportListApi: InvoiceApi.exportTack
 })
 
 // 新增操作
@@ -55,3 +43,4 @@ const handleCreate = () => {}
   overflow-y: scroll;
 }
 </style>
+开户行

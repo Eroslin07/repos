@@ -182,6 +182,10 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.57</version>
         </dependency>
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-spring-boot-starter-excel</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

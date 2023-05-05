@@ -35,5 +35,8 @@ public interface DictTypeConstants {
     String CAR_SERVICE_TRANSFER_SELL = "service_transfer_sell"; // 过户服务费(卖车)
     String CAR_SERVICE_TRANSFER_BUY = "service_transfer_buy"; // 过户服务费(收车)
 
+    String SETTLEMENT_INVOICE_STATUS = "Invoice_status"; //发票状态
+    String SETTLEMENT_INVOICE_TYPE = "Invoice_type"; //发票类型
+
 
 }
