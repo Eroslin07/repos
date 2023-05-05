@@ -45,7 +45,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
         Signatory persoanlSignatory = new Signatory();
         persoanlSignatory.setTenantType("PERSONAL");
         persoanlSignatory.setTenantName("罗聪");
-        persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+        persoanlSignatory.setReceiver(new User("15196636618", "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
         // 乙方平台
         Signatory platformSignatory = new Signatory();
@@ -69,7 +69,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
         draftContract.addTemplateParam(new TemplateParam("选择3","□"));
         draftContract.addTemplateParam(new TemplateParam("选择4","□"));
 
-        draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        draftContract.setCategory(new Category(3091709384787567488L));//业务分类配置
         draftContract.setSend(false); // 发起合同
         QiyuesuoCommonResult<Contract> draft = client.defaultDraftSend(draftContract);
         Contract data = draft.getData();
@@ -80,7 +80,7 @@ class UctpSpringBootStarterBizQiyuesuoApplicationTests {
         urlRequest.setCompanyName("平头哥测试公司");
 //        urlRequest.setRegisterNo("53453135123123123");
         urlRequest.setLegalPerson("平头哥");
-        urlRequest.setApplicantInfo("{\"name\":\"平头哥\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}");
+        urlRequest.setApplicantInfo("{\"name\":\"平头哥\",\"contact\": \"15196636618\",\"contactType\": \"MOBILE\"}");
 
         urlRequest.setLicense(new StreamFile("营业执照", new FileInputStream("d:/R-C.jpg")));
 

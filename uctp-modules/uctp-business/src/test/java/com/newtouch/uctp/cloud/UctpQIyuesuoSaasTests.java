@@ -47,7 +47,7 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void personAuth() {
-        QiyuesuoCommonResult<SaaSUserAuthPageResult> result = client.saasUserAuthPage("17396202169");
+        QiyuesuoCommonResult<SaaSUserAuthPageResult> result = client.saasUserAuthPage("15196636618");
         System.out.println(result.getData().getAuthUrl());
         Assert.equals(result.getCode(), 0);
     }

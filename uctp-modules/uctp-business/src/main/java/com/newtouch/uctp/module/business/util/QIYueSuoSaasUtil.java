@@ -33,7 +33,7 @@ public class QIYueSuoSaasUtil {
             urlRequest.setCompanyName("平头哥测试公司");
 //        urlRequest.setRegisterNo("53453135123123123");
             urlRequest.setLegalPerson("平头哥");
-            urlRequest.setApplicantInfo("{\"name\":\"平头哥\",\"contact\": \"17396202169\",\"contactType\": \"MOBILE\"}");
+            urlRequest.setApplicantInfo("{\"name\":\"平头哥\",\"contact\": \"15196636618\",\"contactType\": \"MOBILE\"}");
 
             urlRequest.setLicense(new StreamFile("营业执照", new FileInputStream("d:/R-C.jpg")));
 
@@ -81,7 +81,7 @@ public class QIYueSuoSaasUtil {
         SaaSSdkClient sdkClient = new SaaSSdkClient(agentToken, agentSecret, serverUrl);
         SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
         urlRequest.setCompanyId(2475607680987074766L);
-        urlRequest.setUser(new User("17396202169", "MOBILE"));
+        urlRequest.setUser(new User("15196636618", "MOBILE"));
         urlRequest.setCreateToken(true);
 //        urlRequest.setCallbackUrl("http://test.qiyuesuo.cn/...");
 //        urlRequest.setSuccessUrl("http://test.qiyuesuo.cn/...");

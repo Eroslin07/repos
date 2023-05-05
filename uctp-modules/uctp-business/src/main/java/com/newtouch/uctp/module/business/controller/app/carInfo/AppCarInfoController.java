@@ -464,7 +464,7 @@ public class AppCarInfoController {
 //        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
 //        QiYueSuoUtil qiYueSuoUtil = new QiYueSuoUtil(url, accessKey, accessSecret);
 //        try {
-//            SdkResponse<Contract> response = qiYueSuoUtil.signSealDraft("二手车","成都新致云服测试公司","罗一秀","13708206115","罗聪","17396202169");
+//            SdkResponse<Contract> response = qiYueSuoUtil.signSealDraft("二手车","成都新致云服测试公司","罗一秀","13708206115","罗聪","15196636618");
 //            Contract result = response.getResult();
 //            Long id = result.getId();
 //            File file = new File("/Users/qinjingjing/app/用户协议.docx");
@@ -472,7 +472,7 @@ public class AppCarInfoController {
 //            qiYueSuoUtil.send(id);
 //            System.out.println(id);
 //            map.put("id",id);
-//            SdkResponse<ContractPageResult> pageResponse = qiYueSuoUtil.gerenateSignUrl(id, "17396202169");
+//            SdkResponse<ContractPageResult> pageResponse = qiYueSuoUtil.gerenateSignUrl(id, "15196636618");
 //            ContractPageResult pageResult = pageResponse.getResult();
 //            String pageUrl = pageResult.getPageUrl();
 //            System.out.println(pageUrl);

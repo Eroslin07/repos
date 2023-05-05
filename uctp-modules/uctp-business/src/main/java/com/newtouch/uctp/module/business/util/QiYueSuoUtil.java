@@ -561,7 +561,7 @@ public class QiYueSuoUtil {
         Signatory persoanlSignatory = new Signatory();
         persoanlSignatory.setTenantType("PERSONAL");
         persoanlSignatory.setTenantName("罗聪");
-        persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+        persoanlSignatory.setReceiver(new User("15196636618", "MOBILE"));
         draftContract.addSignatory(persoanlSignatory);
         // 乙方平台
         Signatory platformSignatory = new Signatory();
@@ -585,7 +585,7 @@ public class QiYueSuoUtil {
         draftContract.addTemplateParam(new TemplateParam("选择3","□"));
         draftContract.addTemplateParam(new TemplateParam("选择4","□"));
 
-        draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        draftContract.setCategory(new Category(3091709384787567488L));//业务分类配置
         draftContract.setSend(false); // 发起合同
         SdkResponse<Contract> draft = qiYueSuoUtil.draft(draftContract, Contract.class);
         if (!draft.getCode().equals(0)) {

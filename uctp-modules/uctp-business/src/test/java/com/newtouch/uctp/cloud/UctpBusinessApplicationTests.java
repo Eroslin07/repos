@@ -76,7 +76,7 @@ class UctpBusinessApplicationTests {
 //        Signatory persoanlSignatory = new Signatory();
 //        persoanlSignatory.setTenantType("PERSONAL");
 //        persoanlSignatory.setTenantName("阿卡丽");
-//        persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+//        persoanlSignatory.setReceiver(new User("15196636618", "MOBILE"));
 //        draftContract.addSignatory(persoanlSignatory);
         // 乙方平台
         Signatory platformSignatory = new Signatory();
@@ -99,7 +99,7 @@ class UctpBusinessApplicationTests {
 //        draftContract.addTemplateParam(new TemplateParam("选择2","☑"));
 //        draftContract.addTemplateParam(new TemplateParam("选择3","□"));
 //        draftContract.addTemplateParam(new TemplateParam("选择4","□"));
-        draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置
+        draftContract.setCategory(new Category(3091707509472301306L));//业务分类配置
         draftContract.setSend(false); // 发起合同
         //2,签字时是丙方是否会自动签章
         QiyuesuoCommonResult<Contract> result = client.defaultDraftSend(draftContract);

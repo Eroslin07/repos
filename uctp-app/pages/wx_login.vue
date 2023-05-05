@@ -98,7 +98,7 @@
 			async phoneLogin(captchaParams) {
 			  this.$modal.loading("登录中，请耐心等待...")
 			  // 执行登录
-				this.$store.dispatch('phoneLogin', this.phone).then(() => {
+				this.$store.dispatch('phoneLogin', '17380123816').then(() => {
 					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {

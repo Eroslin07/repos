@@ -284,7 +284,7 @@ public class BpmGlobalHandleListener {
         bpmFormMainVO.setStatus(bpmFormMainDO.getStatus());
         bpmFormMainVO.setProcDefId(bpmFormMainDO.getProcDefId());
         bpmFormMainVO.setProcInstId(bpmFormMainDO.getProcInstId());
-        bpmFormMainVO.setSerialNo(bpmFormMainDO.getSerialNo());
+            bpmFormMainVO.setSerialNo(bpmFormMainDO.getSerialNo());
         bpmFormMainVO.setTitle(bpmFormMainDO.getTitle());
         bpmFormMainVO.setStartUserId(bpmFormMainDO.getStartUserId());
         bpmFormMainVO.setMerchantId(bpmFormMainDO.getMerchantId());
