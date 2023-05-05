@@ -1527,84 +1527,86 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     private String getProceduresAndSpareParts(ProceduresAndSpareParts parts){
         String result="";
-        if (parts.getDrivingLicense()){
-            result+="有行驶证(正/副)本";
+        if (parts!=null) {
+            if (parts.getDrivingLicense() != null && parts.getDrivingLicense()) {
+                result += "有行驶证(正/副)本";
+            }
+            if (parts.getCarInvoice() != null && parts.getCarInvoice()) {
+                result += "、有购车发票";
+            }
+            if (parts.getRegistrationCertificate() != null && parts.getRegistrationCertificate()) {
+                result += "、有机动车登记证";
+            }
+            if (parts.getPurchaseTax() != null && parts.getPurchaseTax()) {
+                result += "、有购置税完税凭证";
+            }
+            if (parts.getSpareTire() != null && parts.getSpareTire()) {
+                result += "、有备胎";
+            }
+            if (parts.getCarShipTax() != null && parts.getCarShipTax()) {
+                result += "、有车船使用税完税凭证";
+            }
+            if (parts.getHeavyTrafficInsurance() != null && parts.getHeavyTrafficInsurance()) {
+                result += "、有交强险保单";
+            }
+            if (parts.getCommercialInsurance() != null && parts.getCommercialInsurance()) {
+                result += "、有商业险保单";
+            }
+            if (parts.getJack() != null && parts.getJack()) {
+                result += "、有千斤顶";
+            }
+            if (parts.getSpecification() != null && parts.getSpecification()) {
+                result += "、有说明书";
+            }
+            if (parts.getVehicleKey() != null) {
+                result += "、钥匙数量:" + parts.getVehicleKey();
+            }
+            if (parts.getAccidentVehicle() != null) {
+                result += "、" + parts.getVehicleKey();
+            }
         }
-        if (parts.getCarInvoice()){
-            result+="、有购车发票";
-        }
-        if (parts.getRegistrationCertificate()){
-            result+="、有机动车登记证";
-        }
-        if (parts.getPurchaseTax()){
-            result+="、有购置税完税凭证";
-        }
-        if (parts.getSpareTire()){
-            result+="、有备胎";
-        }
-        if (parts.getCarShipTax()){
-            result+="、有车船使用税完税凭证";
-        }
-        if (parts.getHeavyTrafficInsurance()){
-            result+="、有交强险保单";
-        }
-        if (parts.getCommercialInsurance()){
-            result+="、有商业险保单";
-        }
-        if (parts.getJack()){
-            result+="、有千斤顶";
-        }
-        if (parts.getSpecification()){
-            result+="、有说明书";
-        }
-        if (parts.getVehicleKey()!=null){
-            result+="、钥匙数量:"+parts.getVehicleKey();
-        }
-        if (parts.getAccidentVehicle()!=null){
-            result+="、"+parts.getVehicleKey();
-        }
-
         return result;
     }
     private String getProceduresAndSpareSell(ProceduresAndSpareSell parts){
         String result="";
-        if (parts.getDrivingLicense()){
-            result+="有行驶证(正/副)本";
+        if (parts!=null) {
+            if (parts.getDrivingLicense() != null && parts.getDrivingLicense()) {
+                result += "有行驶证(正/副)本";
+            }
+            if (parts.getCarInvoice() != null && parts.getCarInvoice()) {
+                result += "、有购车发票";
+            }
+            if (parts.getRegistrationCertificate() != null && parts.getRegistrationCertificate()) {
+                result += "、有机动车登记证";
+            }
+            if (parts.getPurchaseTax() != null && parts.getPurchaseTax()) {
+                result += "、有购置税完税凭证";
+            }
+            if (parts.getSpareTire() != null && parts.getSpareTire()) {
+                result += "、有备胎";
+            }
+            if (parts.getCarShipTax() != null && parts.getCarShipTax()) {
+                result += "、有车船使用税完税凭证";
+            }
+            if (parts.getHeavyTrafficInsurance() != null && parts.getHeavyTrafficInsurance()) {
+                result += "、有交强险保单";
+            }
+            if (parts.getCommercialInsurance() != null && parts.getCommercialInsurance()) {
+                result += "、有商业险保单";
+            }
+            if (parts.getJack() != null && parts.getJack()) {
+                result += "、有千斤顶";
+            }
+            if (parts.getSpecification() != null && parts.getSpecification()) {
+                result += "、有说明书";
+            }
+            if (parts.getVehicleKey() != null) {
+                result += "、钥匙数量:" + parts.getVehicleKey();
+            }
+            if (parts.getAccidentVehicle() != null) {
+                result += "、" + parts.getVehicleKey();
+            }
         }
-        if (parts.getCarInvoice()){
-            result+="、有购车发票";
-        }
-        if (parts.getRegistrationCertificate()){
-            result+="、有机动车登记证";
-        }
-        if (parts.getPurchaseTax()){
-            result+="、有购置税完税凭证";
-        }
-        if (parts.getSpareTire()){
-            result+="、有备胎";
-        }
-        if (parts.getCarShipTax()){
-            result+="、有车船使用税完税凭证";
-        }
-        if (parts.getHeavyTrafficInsurance()){
-            result+="、有交强险保单";
-        }
-        if (parts.getCommercialInsurance()){
-            result+="、有商业险保单";
-        }
-        if (parts.getJack()){
-            result+="、有千斤顶";
-        }
-        if (parts.getSpecification()){
-            result+="、有说明书";
-        }
-        if (parts.getVehicleKey()!=null){
-            result+="、钥匙数量:"+parts.getVehicleKey();
-        }
-        if (parts.getAccidentVehicle()!=null){
-            result+="、"+parts.getVehicleKey();
-        }
-
         return result;
     }
     //模板参数
@@ -1616,288 +1618,295 @@ public class QysConfigServiceImpl implements QysConfigService {
         VehicleProblem vehicleProblem = carInfoDetailsDO.getVehicleProblem();
         //车辆手续及备件（收车）
         ProceduresAndSpareParts proceduresAndSpareParts = carInfoDetailsDO.getProceduresAndSpareParts();
-        String Parts = getProceduresAndSpareParts(proceduresAndSpareParts);
+       // String Parts = getProceduresAndSpareParts(proceduresAndSpareParts);
         //车辆手续及备件（卖车）
         ProceduresAndSpareSell proceduresAndSpareSell = carInfoDetailsDO.getProceduresAndSpareSell();
-        String Sells = getProceduresAndSpareSell(proceduresAndSpareSell);
+        //String Sells = getProceduresAndSpareSell(proceduresAndSpareSell);
 
-
-        FeesAndCommitments feesAndCommitments = carInfoDetailsDO.getFeesAndCommitments();
-        //车辆使用租金
-        String vehicle=getFeesAndCommitments(feesAndCommitments.getVehicle(),"1");
+        String vehicle = "";
         //车辆过户
-        String transfer=getFeesAndCommitments(feesAndCommitments.getTransfer(),"2");
+        String transfer =  "";
         //车辆折损
-        String loss=getFeesAndCommitments(feesAndCommitments.getLoss(),"3");
+        String loss =  "";
         //第三方检测
-        String testing=getFeesAndCommitments(feesAndCommitments.getTesting(),"4");
-
+        String testing = "";
+        FeesAndCommitments feesAndCommitments = carInfoDetailsDO.getFeesAndCommitments();
+        if (feesAndCommitments!=null) {
+            //车辆使用租金
+             vehicle = getFeesAndCommitments(feesAndCommitments.getVehicle(), "1");
+            //车辆过户
+             transfer = getFeesAndCommitments(feesAndCommitments.getTransfer(), "2");
+            //车辆折损
+             loss = getFeesAndCommitments(feesAndCommitments.getLoss(), "3");
+            //第三方检测
+             testing = getFeesAndCommitments(feesAndCommitments.getTesting(), "4");
+        }
         String conditionA="确认";
         String conditionB="非事故车";
         String conditionC="非泡水车";
         String conditionD="非火烧车";
-
-        if (vehicleProblem.getConditionA()){
-            conditionA="不确认";
+        if (vehicleProblem!=null) {
+            if (vehicleProblem.getConditionA() != null && vehicleProblem.getConditionA()) {
+                conditionA = "不确认";
+            }
+            if (vehicleProblem.getConditionB() != null && vehicleProblem.getConditionB()) {
+                conditionA = "是事故车";
+            }
+            if (vehicleProblem.getConditionC() != null && vehicleProblem.getConditionC()) {
+                conditionA = "是泡水车";
+            }
+            if (vehicleProblem.getConditionD() != null && vehicleProblem.getConditionD()) {
+                conditionA = "是火烧车";
+            }
         }
-        if (vehicleProblem.getConditionB()){
-            conditionA="是事故车";
-        }
-        if (vehicleProblem.getConditionC()){
-            conditionA="是泡水车";
-        }
-        if (vehicleProblem.getConditionD()){
-            conditionA="是火烧车";
-        }
+        if (carInfo!=null&&carInfoDetailsDO!=null&&userDept!=null&&platformDept!=null&invoiceTitleDO!=null&platformUserDO!=null&pUserDO!=null) {
+            //收车委托合同
+            if ("1".equals(type)) {
+                params.add(new TemplateParam("合同编号", code));
+                params.add(new TemplateParam("受托人", platformDept.getName()));
+                params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
+                params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
+                params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
+                //params.add(new TemplateParam("甲方联系电话", "18942820000"));
+                params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
 
+                params.add(new TemplateParam("委托人", userDept.getName()));
+                params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
+                params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
+                params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
+                params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
 
-        //收车委托合同
-        if ("1".equals(type)) {
-            params.add(new TemplateParam("合同编号", code));
-            params.add(new TemplateParam("受托人", platformDept.getName()));
-            params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
-            params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
-            //params.add(new TemplateParam("甲方联系电话", "18942820000"));
-            params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
+                params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
+                params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
+                params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
+                params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
+                params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
+                params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
+                params.add(new TemplateParam("车架号码", carInfo.getVin()));
+                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("使用年限", String.valueOf(carInfo.getScrapDate())));
+                params.add(new TemplateParam("年检签证有效期", String.valueOf(carInfo.getAnnualInspectionDate())));
+                params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
+                params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
+                params.add(new TemplateParam("收车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("收车金额小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("甲方收款银行", invoiceTitleDO.getBank()));
+                params.add(new TemplateParam("甲方收款账号", invoiceTitleDO.getBankAccount()));
+                params.add(new TemplateParam("甲方收款名称", invoiceTitleDO.getCompanyName()));
+                //params.add(new TemplateParam("甲方收款银行", "工商"));
+                //params.add(new TemplateParam("甲方收款账号", "6228 4804 8172 3886 810"));
+            } else if ("2".equals(type)) {
+                //卖车委托合同-直接付款
+                params.add(new TemplateParam("合同编号", code));
 
-            params.add(new TemplateParam("委托人", userDept.getName()));
-            params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
-            params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
-            params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
+                params.add(new TemplateParam("受托人", platformDept.getName()));
+                params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
+                params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
+                params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
+                params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
 
-            params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
-            params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
-            params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
-            params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
-            params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
-            params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
-            params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
-            params.add(new TemplateParam("车架号码", carInfo.getVin()));
-            params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            params.add(new TemplateParam("使用年限", carInfo.getScrapDate().toString()));
-            params.add(new TemplateParam("年检签证有效期", carInfo.getAnnualInspectionDate().toString()));
-            params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
-            params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
-            params.add(new TemplateParam("收车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("收车金额小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("甲方收款银行", invoiceTitleDO.getBank()));
-            params.add(new TemplateParam("甲方收款账号", invoiceTitleDO.getBankAccount()));
-            params.add(new TemplateParam("甲方收款名称", invoiceTitleDO.getCompanyName()));
-            //params.add(new TemplateParam("甲方收款银行", "工商"));
-            //params.add(new TemplateParam("甲方收款账号", "6228 4804 8172 3886 810"));
-        } else if ("2".equals(type)) {
-            //卖车委托合同-直接付款
-            params.add(new TemplateParam("合同编号", code));
+                params.add(new TemplateParam("委托人", userDept.getName()));
+                params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
+                params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
+                params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
+                params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
 
-            params.add(new TemplateParam("受托人", platformDept.getName()));
-            params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
-            params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
-            params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
+                params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
+                params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
+                params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
+                params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
+                params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
+                params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
+                params.add(new TemplateParam("车架号码", carInfo.getVin()));
+                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                // params.add(new TemplateParam("使用年限",String.valueOf(carInfo.getScrapDate())));
+                params.add(new TemplateParam("年检签证有效期", String.valueOf(carInfo.getAnnualInspectionDate())));
+                params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
+                params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
+                params.add(new TemplateParam("卖车金额小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("卖车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
+                params.add(new TemplateParam("剩余车款小写", String.valueOf(carInfo.getBalancePayment())));
+            } else if ("21".equals(type)) {
+                //卖车委托合同-按揭付款
+                params.add(new TemplateParam("合同编号", code));
 
-            params.add(new TemplateParam("委托人", userDept.getName()));
-            params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
-            params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
-            params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
+                params.add(new TemplateParam("受托人", platformDept.getName()));
+                params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
+                params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
+                params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
+                params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
 
-            params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
-            params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
-            params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
-            params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
-            params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
-            params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
-            params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
-            params.add(new TemplateParam("车架号码", carInfo.getVin()));
-            params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            // params.add(new TemplateParam("使用年限",carInfo.getScrapDate().toString()));
-            params.add(new TemplateParam("年检签证有效期", carInfo.getAnnualInspectionDate().toString()));
-            params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
-            params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
-            params.add(new TemplateParam("卖车金额小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("卖车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("车价小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-            params.add(new TemplateParam("定金小写", carInfo.getDeposit().toString()));
-            params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
-            params.add(new TemplateParam("剩余车款小写", carInfo.getBalancePayment().toString()));
-        } else if ("21".equals(type)) {
-            //卖车委托合同-按揭付款
-            params.add(new TemplateParam("合同编号", code));
+                params.add(new TemplateParam("委托人", userDept.getName()));
+                params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
+                params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
+                params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
+                params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
 
-            params.add(new TemplateParam("受托人", platformDept.getName()));
-            params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
-            params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
-            params.add(new TemplateParam("甲方联系地址", platformDept.getAddress()));
+                params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
+                params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
+                params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
+                params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
+                params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
+                params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
+                params.add(new TemplateParam("车架号码", carInfo.getVin()));
+                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                // params.add(new TemplateParam("使用年限",String.valueOf(carInfo.getScrapDate())));
+                params.add(new TemplateParam("年检签证有效期", String.valueOf(carInfo.getAnnualInspectionDate())));
+                params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
+                params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
+                params.add(new TemplateParam("卖车金额小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("卖车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
 
-            params.add(new TemplateParam("委托人", userDept.getName()));
-            params.add(new TemplateParam("乙方营业执照号", userDept.getTaxNum()));
-            params.add(new TemplateParam("乙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", pUserDO.getMobile()));
-            params.add(new TemplateParam("乙方联系地址", userDept.getAddress()));
-
-            params.add(new TemplateParam("车辆牌号", carInfo.getPlateNum()));
-            params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
-            params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
-            params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
-            params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
-            params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
-            params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
-            params.add(new TemplateParam("车架号码", carInfo.getVin()));
-            params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            // params.add(new TemplateParam("使用年限",carInfo.getScrapDate().toString()));
-            params.add(new TemplateParam("年检签证有效期", carInfo.getAnnualInspectionDate().toString()));
-            params.add(new TemplateParam("保险险种", carInfo.getInsurance()));
-            params.add(new TemplateParam("保险有效期", carInfo.getInsuranceEndData()));
-            params.add(new TemplateParam("卖车金额小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("卖车金额大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-
-            params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("车价小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-            params.add(new TemplateParam("定金小写", carInfo.getDeposit().toString()));
+                params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
 //            params.add(new TemplateParam("尾款大写", "0"));
 //            params.add(new TemplateParam("尾款小写", "0"));
-        } else if ("3".equals(type)) {
-            //s收车合同
-            params.add(new TemplateParam("合同编号", code));
-            params.add(new TemplateParam("卖方受托人", carInfoDetailsDO.getSellerName()));
-            params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getSellerIdCard()));
-            params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getSellerName()));
-            params.add(new TemplateParam("甲方联系电话", carInfoDetailsDO.getSellerTel()));
-            params.add(new TemplateParam("甲方联系地址", carInfoDetailsDO.getSellerAdder()));
+            } else if ("3".equals(type)) {
+                //s收车合同
+                params.add(new TemplateParam("合同编号", code));
+                params.add(new TemplateParam("卖方受托人", carInfoDetailsDO.getSellerName()));
+                params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getSellerIdCard()));
+                params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getSellerName()));
+                params.add(new TemplateParam("甲方联系电话", carInfoDetailsDO.getSellerTel()));
+                params.add(new TemplateParam("甲方联系地址", carInfoDetailsDO.getSellerAdder()));
 
-            params.add(new TemplateParam("平台受托人", platformDept.getName()));
-            params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
-            params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", platformDept.getPhone()));
-            params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
+                params.add(new TemplateParam("平台受托人", platformDept.getName()));
+                params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
+                params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
+                params.add(new TemplateParam("乙方联系电话", platformDept.getPhone()));
+                params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
 
-            params.add(new TemplateParam("车商公司名称", userDept.getName()));
-            params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
-            params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("丙方联系电话", userDept.getPhone()));
-            params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
-
-
-            params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
-            params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
-            params.add(new TemplateParam("车架号码", carInfo.getVin()));
-            params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareParts(proceduresAndSpareParts)));
-
-            params.add(new TemplateParam("车辆总价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("车辆总价小写", carInfo.getVehicleReceiptAmount().toString()));
-            //  params.add(new TemplateParam("付款方式", "全款"));
-        } else if ("4".equals(type)) {
-            //卖车合同-直接付款
-            params.add(new TemplateParam("合同编号", code));
-
-            params.add(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
-            params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));
-            params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getBuyerName()));
-            params.add(new TemplateParam("甲方联系电话", carInfoDetailsDO.getBuyerTel()));
-            params.add(new TemplateParam("甲方联系地址", carInfoDetailsDO.getBuyerAdder()));
+                params.add(new TemplateParam("车商公司名称", userDept.getName()));
+                params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
+                params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
+                params.add(new TemplateParam("丙方联系电话", userDept.getPhone()));
+                params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
 
 
-            params.add(new TemplateParam("平台受托人", platformDept.getName()));
-            params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
-            params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", platformUserDO.getMobile()));
-            params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
+                params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
+                params.add(new TemplateParam("车架号码", carInfo.getVin()));
+                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareParts(proceduresAndSpareParts)));
 
-            params.add(new TemplateParam("车商公司名称", userDept.getName()));
-            params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
-            params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("丙方联系电话", pUserDO.getMobile()));
-            params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
+                params.add(new TemplateParam("车辆总价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车辆总价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                //  params.add(new TemplateParam("付款方式", "全款"));
+            } else if ("4".equals(type)) {
+                //卖车合同-直接付款
+                params.add(new TemplateParam("合同编号", code));
+
+                params.add(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
+                params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));
+                params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getBuyerName()));
+                params.add(new TemplateParam("甲方联系电话", carInfoDetailsDO.getBuyerTel()));
+                params.add(new TemplateParam("甲方联系地址", carInfoDetailsDO.getBuyerAdder()));
 
 
-            params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
-            params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
-            params.add(new TemplateParam("车架号码", carInfo.getVin()));
-            params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareSell(proceduresAndSpareSell)));
+                params.add(new TemplateParam("平台受托人", platformDept.getName()));
+                params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
+                params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
+                params.add(new TemplateParam("乙方联系电话", platformUserDO.getMobile()));
+                params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
 
-            params.add(new TemplateParam("确认", conditionA));
-            params.add(new TemplateParam("是非事故车", conditionB));
-            params.add(new TemplateParam("是非泡水车", conditionC));
-            params.add(new TemplateParam("是非火烧车", conditionD));
-            if (carInfo.getOther() != null) {
-                params.add(new TemplateParam("其他约定", carInfo.getRemarks()));
-            } else {
-                params.add(new TemplateParam("其他约定", "无"));
+                params.add(new TemplateParam("车商公司名称", userDept.getName()));
+                params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
+                params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
+                params.add(new TemplateParam("丙方联系电话", pUserDO.getMobile()));
+                params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
+
+
+                params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
+                params.add(new TemplateParam("车架号码", carInfo.getVin()));
+                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareSell(proceduresAndSpareSell)));
+
+                params.add(new TemplateParam("确认", conditionA));
+                params.add(new TemplateParam("是非事故车", conditionB));
+                params.add(new TemplateParam("是非泡水车", conditionC));
+                params.add(new TemplateParam("是非火烧车", conditionD));
+                if (carInfo.getOther() != null) {
+                    params.add(new TemplateParam("其他约定", carInfo.getRemarks()));
+                } else {
+                    params.add(new TemplateParam("其他约定", "无"));
+                }
+                params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
+                params.add(new TemplateParam("剩余车款小写", String.valueOf(carInfo.getBalancePayment())));
+
+                params.add(new TemplateParam("车辆使用租金", vehicle));
+                params.add(new TemplateParam("交易过户费", transfer));
+                params.add(new TemplateParam("车辆折损费用", loss));
+                params.add(new TemplateParam("第三方检测费用", testing));
+                params.add(new TemplateParam("其他", carInfo.getOther()));
+
+            } else if ("41".equals(type)) {
+                //卖车合同-按揭付款
+                params.add(new TemplateParam("合同编号", code));
+
+                params.add(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
+                params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));
+                params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getBuyerName()));
+                params.add(new TemplateParam("甲方联系电话", carInfoDetailsDO.getBuyerTel()));
+                params.add(new TemplateParam("甲方联系地址", carInfoDetailsDO.getBuyerAdder()));
+
+
+                params.add(new TemplateParam("平台受托人", platformDept.getName()));
+                params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
+                params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
+                params.add(new TemplateParam("乙方联系电话", platformUserDO.getMobile()));
+                params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
+
+                params.add(new TemplateParam("车商公司名称", userDept.getName()));
+                params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
+                params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
+                params.add(new TemplateParam("丙方联系电话", pUserDO.getMobile()));
+                params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
+
+
+                params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
+                params.add(new TemplateParam("车架号码", carInfo.getVin()));
+                params.add(new TemplateParam("行驶里程", String.valueOf(carInfoDetailsDO.getMileage())));
+                params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareSell(proceduresAndSpareSell)));
+                params.add(new TemplateParam("确认", conditionA));
+                params.add(new TemplateParam("是非事故车", conditionB));
+                params.add(new TemplateParam("是非泡水车", conditionC));
+                params.add(new TemplateParam("是非火烧车", conditionD));
+                if (carInfo.getOther() != null) {
+                    params.add(new TemplateParam("其他约定", carInfo.getRemarks()));
+                } else {
+                    params.add(new TemplateParam("其他约定", "无"));
+                }
+                params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("车价小写", String.valueOf(carInfo.getVehicleReceiptAmount())));
+                params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
+                params.add(new TemplateParam("定金小写", String.valueOf(carInfo.getDeposit())));
+                // params.add(new TemplateParam("定金大写", "0"));
+                //params.add(new TemplateParam("定金小写", "0"));
+                params.add(new TemplateParam("车辆使用租金", vehicle));
+                params.add(new TemplateParam("交易过户费", transfer));
+                params.add(new TemplateParam("车辆折损费用", loss));
+                params.add(new TemplateParam("第三方检测费用", testing));
+                params.add(new TemplateParam("其他", carInfo.getOther()));
+
+
             }
-            params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("车价小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-            params.add(new TemplateParam("定金小写", carInfo.getDeposit().toString()));
-            params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
-            params.add(new TemplateParam("剩余车款小写", carInfo.getBalancePayment().toString()));
-
-            params.add(new TemplateParam("车辆使用租金", vehicle));
-            params.add(new TemplateParam("交易过户费", transfer));
-            params.add(new TemplateParam("车辆折损费用", loss));
-            params.add(new TemplateParam("第三方检测费用", testing));
-            params.add(new TemplateParam("其他", carInfo.getOther()));
-
-        } else if ("41".equals(type)) {
-            //卖车合同-按揭付款
-            params.add(new TemplateParam("合同编号", code));
-
-            params.add(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
-            params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));
-            params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getBuyerName()));
-            params.add(new TemplateParam("甲方联系电话", carInfoDetailsDO.getBuyerTel()));
-            params.add(new TemplateParam("甲方联系地址", carInfoDetailsDO.getBuyerAdder()));
-
-
-            params.add(new TemplateParam("平台受托人", platformDept.getName()));
-            params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
-            params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
-            params.add(new TemplateParam("乙方联系电话", platformUserDO.getMobile()));
-            params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
-
-            params.add(new TemplateParam("车商公司名称", userDept.getName()));
-            params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
-            params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
-            params.add(new TemplateParam("丙方联系电话", pUserDO.getMobile()));
-            params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
-
-
-            params.add(new TemplateParam("首次登记日期", carInfoDetailsDO.getFirstRegistDate()));
-            params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
-            params.add(new TemplateParam("车架号码", carInfo.getVin()));
-            params.add(new TemplateParam("行驶里程", carInfoDetailsDO.getMileage().toString()));
-            params.add(new TemplateParam("车辆手续及备件", getProceduresAndSpareSell(proceduresAndSpareSell)));
-            params.add(new TemplateParam("确认", conditionA));
-            params.add(new TemplateParam("是非事故车", conditionB));
-            params.add(new TemplateParam("是非泡水车", conditionC));
-            params.add(new TemplateParam("是非火烧车", conditionD));
-            if (carInfo.getOther() != null) {
-                params.add(new TemplateParam("其他约定", carInfo.getRemarks()));
-            } else {
-                params.add(new TemplateParam("其他约定", "无"));
-            }
-            params.add(new TemplateParam("车价大写", UppercaseUtil.convert(carInfo.getVehicleReceiptAmount())));
-            params.add(new TemplateParam("车价小写", carInfo.getVehicleReceiptAmount().toString()));
-            params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
-            params.add(new TemplateParam("定金小写", carInfo.getDeposit().toString()));
-           // params.add(new TemplateParam("定金大写", "0"));
-            //params.add(new TemplateParam("定金小写", "0"));
-            params.add(new TemplateParam("车辆使用租金", vehicle));
-            params.add(new TemplateParam("交易过户费", transfer));
-            params.add(new TemplateParam("车辆折损费用", loss));
-            params.add(new TemplateParam("第三方检测费用", testing));
-            params.add(new TemplateParam("其他", carInfo.getOther()));
-
-
         }
-
         return params;
     }
 
