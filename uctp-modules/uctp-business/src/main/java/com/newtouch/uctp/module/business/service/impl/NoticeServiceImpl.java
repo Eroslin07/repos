@@ -95,77 +95,81 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormResVO bpmFormMainVO) {
-        Map<String ,String> map =new HashMap<>();
-        map.put("type",type);
-        map.put("contentType",contentType);
-        map.put("reason",reason);
-        NoticeInfoDO infoDO=new NoticeInfoDO();
-        JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
-        map.put("vehicleReceiptAmount",jsonObject.getString("vehicleReceiptAmount"));
-        map.put("sellAmount",jsonObject.getString("sellAmount"));
-        map.put("contractId",jsonObject.getString("contractId"));
-        infoDO.setId(UUID.randomUUID().toString());
-        //根据不同的内容类型选择不同的内容模版
-        Map<String, String> contentMap = MsgContentUtil.getContent(map);
-        infoDO.setTitle(contentMap.get("title"));
-        infoDO.setContent(contentMap.get("content"));
-        //取上下文租户号
-        Long tenantId = TenantContextHolder.getTenantId();
-        infoDO.setTenantId(tenantId);
-        infoDO.setPhone(jsonObject.get("phone").toString());
-        infoDO.setBusinessId(bpmFormMainVO.getMerchantId().toString());
-        infoDO.setStatus("0");
-        if (type.equals("0")) {
-            //收车公允值通过需要添加跳转路径
-            if (contentType.equals("12")){
-                infoDO.setUrl("/subPages/home/bycar/agreement");
-                map.put("buyType","1");
-            }else if(contentType.equals("22")){
-            //卖车公允值通过需要添加跳转路径
-                infoDO.setUrl("/subPages/home/sellingCar/agreement");
-                map.put("buyType","12");
+        if (bpmFormMainVO!=null) {
+            Map<String, String> map = new HashMap<>();
+            map.put("type", type);
+            map.put("contentType", contentType);
+            map.put("reason", reason);
+            NoticeInfoDO infoDO = new NoticeInfoDO();
+            JSONObject jsonObject = bpmFormMainVO.getFormDataJson();
+            map.put("vehicleReceiptAmount", jsonObject.getString("vehicleReceiptAmount"));
+            map.put("sellAmount", jsonObject.getString("sellAmount"));
+            map.put("contractId", jsonObject.getString("contractId"));
+            infoDO.setId(UUID.randomUUID().toString());
+            //根据不同的内容类型选择不同的内容模版
+            Map<String, String> contentMap = MsgContentUtil.getContent(map);
+            infoDO.setTitle(contentMap.get("title"));
+            infoDO.setContent(contentMap.get("content"));
+            //取上下文租户号
+            Long tenantId = TenantContextHolder.getTenantId();
+            infoDO.setTenantId(tenantId);
+            infoDO.setPhone(String.valueOf(jsonObject.get("phone")));
+            infoDO.setBusinessId(String.valueOf(bpmFormMainVO.getMerchantId()));
+            infoDO.setStatus("0");
+            if (type.equals("0")) {
+                //收车公允值通过需要添加跳转路径
+                if (contentType.equals("12")) {
+                    infoDO.setUrl("/subPages/home/bycar/agreement");
+                    map.put("buyType", "1");
+                } else if (contentType.equals("22")) {
+                    //卖车公允值通过需要添加跳转路径
+                    infoDO.setUrl("/subPages/home/sellingCar/agreement");
+                    map.put("buyType", "12");
+                }
             }
-        }
-        //默认状态为推送成功
-        infoDO.setPushStatus("0");
-        infoDO.setType(type);
-        if (type.equals("1")) {
+            //默认状态为推送成功
+            infoDO.setPushStatus("0");
+            infoDO.setType(type);
+            if (type.equals("1")) {
 
-            map.put("businessId",bpmFormMainVO.getMerchantId().toString());
-            map.put("phone",jsonObject.get("phone").toString());
-            //收车公允审批不通过
-            if (contentType.equals("21")){
-                map.put("type","0");
-                map.put("contentType","11");
-                map.put("url","/subPages/home/bycar/index");
-                map.put("buyType","1");
-                //公允审批不通过的跳转路径
-                //添加站内消息
-                saveNotice(map);
-            }else if (contentType.equals("31")){
-                map.put("type","0");
-                map.put("contentType","21");
-                map.put("buyType","2");
-                //卖车公允审批不通过的跳转路径
-                map.put("url","/subPages/home/sellingCar/carInfo");
-                //添加站内消息
-                saveNotice(map);
+                map.put("businessId", String.valueOf(bpmFormMainVO.getMerchantId()));
+                map.put("phone", String.valueOf(jsonObject.get("phone")));
+                //收车公允审批不通过
+                if (contentType.equals("21")) {
+                    map.put("type", "0");
+                    map.put("contentType", "11");
+                    map.put("url", "/subPages/home/bycar/index");
+                    map.put("buyType", "1");
+                    //公允审批不通过的跳转路径
+                    //添加站内消息
+                    saveNotice(map);
+                } else if (contentType.equals("31")) {
+                    map.put("type", "0");
+                    map.put("contentType", "21");
+                    map.put("buyType", "2");
+                    //卖车公允审批不通过的跳转路径
+                    map.put("url", "/subPages/home/sellingCar/carInfo");
+                    //添加站内消息
+                    saveNotice(map);
+                }
             }
-        }
-        if (type.equals("1")){
-            Map<String, String> message = MsgSendUtil.sendMessage(map);
-            if (message.get("flags").equals("FALSE")){
-                infoDO.setErrorMsg(message.get("msg"));
-                infoDO.setErrorNum(message.get("errorNum"));
-                infoDO.setPushStatus("1");
+            if (type.equals("1")) {
+                Map<String, String> message = MsgSendUtil.sendMessage(map);
+                if (message.get("flags").equals("FALSE")) {
+                    infoDO.setErrorMsg(message.get("msg"));
+                    infoDO.setErrorNum(message.get("errorNum"));
+                    infoDO.setPushStatus("1");
+                }
             }
+
+            String result = "写入数据失败";
+            int insert = noticeMapper.insert(infoDO);
+            if (insert > 0) {
+                result = "写入数据成功";
+            }
+            return result;
         }
-        String result="写入数据失败";
-        int insert = noticeMapper.insert(infoDO);
-        if (insert>0) {
-            result = "写入数据成功";
-        }
-        return result;
+        return "流程VO为null，请检查参数";
     }
 
 
