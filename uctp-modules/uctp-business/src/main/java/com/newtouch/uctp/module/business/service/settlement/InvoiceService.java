@@ -5,7 +5,6 @@ import com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceE
 import com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceExportReqVO;
 import com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceReqVO;
 import com.newtouch.uctp.module.business.controller.admin.settlement.vo.InvoiceRespVO;
-import com.newtouch.uctp.module.business.dal.dataobject.SettlementInvoiceDO;
 
 import java.util.List;
 
