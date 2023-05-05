@@ -2,6 +2,7 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
 import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.bean.Employee;
+import com.qiyuesuo.sdk.v2.bean.Seal;
 import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.ContractPageResult;
@@ -204,4 +205,24 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Object> defaultRoleManage(List<String> contacts);
+
+    /**
+     * 调用此接口可以直接为公司生成印章，并指定印章使用者，
+     * 不需要经过契约锁审核。 可以在云平台中，
+     * 侧边栏 -》企业 -》印章管理 -》制作印章页面中，选择 "自动生成" 来查看生成效果。
+     * @param request 已认证员工手机
+     * @return
+     */
+    QiyuesuoCommonResult<Seal> defaultSealAutoCreate(SealAutoCreateRequest request);
+
+    /**
+     * 调用此接口可以直接为公司生成印章，并指定印章使用者，
+     * 不需要经过契约锁审核。 可以在云平台中，
+     * 侧边栏 -》企业 -》印章管理 -》制作印章页面中，选择 "自动生成" 来查看生成效果。
+     * @param name 印章名称
+     * @param foot 下方横排文字；除 FOREIGN_MIX_SEAL 外，其他样式均可设置，当样式为 SPECIAL_SEAL 必传
+     * @param enterpriseCode 企业信息编码；为 13 到 15 位的数字，生成公章时设置
+     * @return
+     */
+    QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name,String foot,String enterpriseCode);
 }

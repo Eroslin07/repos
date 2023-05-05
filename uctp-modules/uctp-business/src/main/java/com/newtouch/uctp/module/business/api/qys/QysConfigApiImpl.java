@@ -1,15 +1,16 @@
 package com.newtouch.uctp.module.business.api.qys;
 
-import java.io.FileNotFoundException;
-
-import javax.annotation.Resource;
-
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.qys.dto.QysConfigDTO;
+import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
+import com.newtouch.uctp.module.business.service.qys.QysConfigService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.business.service.qys.QysConfigService;
+import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -42,5 +43,11 @@ public class QysConfigApiImpl implements QysConfigApi{
     public CommonResult<Boolean> companySign(Long contractId) {
         qysConfigService.companySign(contractId);
         return success(Boolean.TRUE);
+    }
+
+    @Override
+    public CommonResult<QysConfigDTO> getByDeptId(Long deptId) {
+        QysConfigDO configDO = qysConfigService.getByDeptId(deptId);
+        return success(QysConfigConvert.INSTANCE.convert02(configDO));
     }
 }

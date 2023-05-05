@@ -702,9 +702,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "3",buyCode);
                 contractId = checkContract.getId();
                 //选模版
-                // 旧模板 3086576123044233944L
-                //  二手车收购协议V1.0  3089853213923414533L
-                DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853213923414533L, template, "二手车收购协议").getData();
+                DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3091937993032802465L, template, "二手车收购协议").getData();
                 documentId = documentAddResult.getDocumentId();
                 ContractDO buyContrsctDo = new ContractDO();
                 buyContrsctDo.setCarId(carId);
@@ -904,9 +902,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             contractId = checkContract.getId();
             log.info("=================收车委托合同ID，{}",contractId);
             //选模版
-            // 旧模板 3088683424274190651L
-            // 二手车委托收购协议-全款方式V1.0   3089851249420403111L
-            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089851249420403111L, template, "二手车委托收购协议").getData();
+            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3091933065488900532L, template, "二手车委托收购协议").getData();
             documentId = documentAddResult.getDocumentId();
             businessFile.setFileType("10");//收车委托合同类型
 
@@ -1302,29 +1298,25 @@ public class QysConfigServiceImpl implements QysConfigService {
         AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
         AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         draftContract.setSubject("两方-二手车-收车委托合同");
-        // 设置合同接收方
-        // 甲方平台
+        //注意：契约锁会按照list的下标来确认签署顺序
+        //签署方
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("COMPANY");
+        persoanlSignatory.setTenantName(userDept.getName());
+        persoanlSignatory.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
+//        persoanlSignatory.setSerialNo(2);
+        draftContract.addSignatory(persoanlSignatory);
+        // 平台方
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
         platformSignatory.setTenantName(platformDept.getName());
         platformSignatory.setReceiver(new User(platformUserDO.getMobile(), "MOBILE"));
-        // platformSignatory.setTenantName("广东光耀汽车公司");
-        //platformSignatory.setReceiver(new User("17380123816", "MOBILE"));
-        platformSignatory.setSerialNo(1);
+//        platformSignatory.setSerialNo(1);
         draftContract.addSignatory(platformSignatory);
 
-        //乙方个人签署方
-        Signatory persoanlSignatory = new Signatory();
-        persoanlSignatory.setTenantType("COMPANY");
-        // persoanlSignatory.setTenantName("平头哥二手车");
-        // persoanlSignatory.setReceiver(new User("17311271898", "MOBILE"));
-        persoanlSignatory.setTenantName(userDept.getName());
-        persoanlSignatory.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
-        platformSignatory.setSerialNo(2);
-        draftContract.addSignatory(persoanlSignatory);
+
         //模板参数
-        //draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置`
-        draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置`w
+        draftContract.setCategory(new Category(3091707509472301306L));//业务分类配置`w
         //创建人
         draftContract.setCreator(new User("17396202169","MOBILE"));
         draftContract.setSend(false); //发起合同
@@ -1375,71 +1367,33 @@ public class QysConfigServiceImpl implements QysConfigService {
         AdminUserDO platformUserDO = userMapper.selectFAUser(platformDept.getId());
         AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         draftContract.setSubject("三方-二手车-收车合同");
-        // 设置合同接收方
-        // 甲方个人签署方
 
-
-   /*     Signatory initiator2 = new Signatory();
-        initiator2.setTenantType("PERSONAL");
-        initiator2.setTenantName(carInfoDetailsDO.getBuyerName());
-        initiator2.setReceiver(new User(carInfoDetailsDO.getBuyerTel(), "MOBILE"));
-        // initiator2.setTenantName("阿卡丽");
-        //initiator2.setReceiver(new User("17396202169", "MOBILE"));
-        draftContract.addSignatory(initiator2);
-
-        Signatory platformSignatory = new Signatory();
-        platformSignatory.setTenantType("COMPANY");
-        // platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setTenantName("平头哥二手车");
-        platformSignatory.setReceiver(new User("17311271898", "MOBILE"));
-        draftContract.addSignatory(platformSignatory);
-
-        //乙方个人签署方
-        Signatory persoanlSignatory = new Signatory();
-        persoanlSignatory.setTenantType("COMPANY");
-        persoanlSignatory.setTenantName("广东光耀汽车公司");
-        persoanlSignatory.setReceiver(new User("17380123816", "MOBILE"));
-//        persoanlSignatory.setTenantName(userDept.getName());
-//        persoanlSignatory.setReceiver(new User( userDept.getPhone(), "MOBILE"));
-        draftContract.addSignatory(persoanlSignatory);
-
-*/
-
-
+        //个人
         Signatory persoanlSignatory = new Signatory();
         persoanlSignatory.setTenantType("PERSONAL");
         persoanlSignatory.setTenantName(carInfoDetailsDO.getSellerName());
         persoanlSignatory.setReceiver(new User(carInfoDetailsDO.getSellerTel(), "MOBILE"));
-        persoanlSignatory.setSerialNo(1);
-        // persoanlSignatory.setTenantName("阿卡丽");
-        //persoanlSignatory.setReceiver(new User("17396202169", "MOBILE"));
+//        persoanlSignatory.setSerialNo(1);
         draftContract.addSignatory(persoanlSignatory);
-        // 乙方平台
-        Signatory platformSignatory = new Signatory();
-        platformSignatory.setTenantType("COMPANY");
-        //platformSignatory.setTenantName("广东光耀汽车公司");
-        //platformSignatory.setReceiver(new User( "17380123816", "MOBILE"));
-        platformSignatory.setTenantName(platformDept.getName());
-        platformSignatory.setReceiver(new User(platformUserDO.getMobile(), "MOBILE"));
-        platformSignatory.setSerialNo(2);
-        draftContract.addSignatory(platformSignatory);
         //丙方
         Signatory initiator2 = new Signatory();
         initiator2.setTenantType("COMPANY");
-        //initiator2.setTenantName("平头哥二手车");
-        //initiator2.setReceiver(new User("17311271898", "MOBILE"));
         initiator2.setTenantName(userDept.getName());
         initiator2.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
-        initiator2.setSerialNo(3);
+//        initiator2.setSerialNo(2);
         draftContract.addSignatory(initiator2);
-
-
+        // 乙方平台
+        Signatory platformSignatory = new Signatory();
+        platformSignatory.setTenantType("COMPANY");
+        platformSignatory.setTenantName(platformDept.getName());
+        platformSignatory.setReceiver(new User(platformUserDO.getMobile(), "MOBILE"));
+//        platformSignatory.setSerialNo(3);
+        draftContract.addSignatory(platformSignatory);
         //模板参数
         //收车
-
-        draftContract.setCategory(new Category(3083237961123238073L));//业务分类配置
+        draftContract.setCategory(new Category(3091709384787567488L));//业务分类配置
         //创建人
-        draftContract.setCreator(new User("17396202169","MOBILE"));
+//        draftContract.setCreator(new User("17396202169","MOBILE"));
         draftContract.setSend(false); //发起合同
         return draftContract;
     }

@@ -18,7 +18,7 @@ import com.newtouch.uctp.module.bpm.enums.ApiConstants;
 @FeignClient(name = ApiConstants.NAME)
 @Tag(name = "RPC 服务 - 发起过户流程")
 public interface BpmCarTransferApi {
-    String PREFIX = ApiConstants.PREFIX + "/bpm/car/transfer";
+    String PREFIX = ApiConstants.PREFIX + "/car/transfer";
 
     @PostMapping(PREFIX + "/createTransferBpm")
     @Operation(summary = "根据车辆ID发起过户流程")

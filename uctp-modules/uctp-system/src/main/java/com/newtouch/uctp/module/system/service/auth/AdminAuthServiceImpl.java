@@ -8,9 +8,12 @@ import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.util.monitor.TracerUtils;
 import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
 import com.newtouch.uctp.framework.common.util.validation.ValidationUtils;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
+import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
 import com.newtouch.uctp.module.business.api.file.BusinessFileApi;
 import com.newtouch.uctp.module.business.api.file.dto.FileInsertReqDTO;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
+import com.newtouch.uctp.module.business.api.qys.dto.QysConfigDTO;
 import com.newtouch.uctp.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import com.newtouch.uctp.module.system.api.sms.SmsCodeApi;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
@@ -95,6 +98,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Resource
     @Lazy
     private QysConfigApi qysConfigApi;
+    @Resource
+    @Lazy
+    private QiyuesuoClientFactory qiyuesuoClientFactory;
 
     /**
      * 验证码的开关，默认为 true
@@ -345,8 +351,15 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public int deleteAccount(Long id) {
+        AdminUserDO adminUserDO = adminUserMapper.selectById(id);
         adminUserMapper.deleteById(id);
-        return userExtMapper.deleteByUserId(id);
+        int delete = userExtMapper.deleteByUserId(id);
+        if (delete >= 1) {
+            QysConfigDTO configDTO = qysConfigApi.getByDeptId(adminUserDO.getDeptId()).getCheckedData();
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDTO.getBusinessId());
+            client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+        }
+        return delete;
     }
 
     @Override

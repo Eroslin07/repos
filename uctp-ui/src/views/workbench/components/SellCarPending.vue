@@ -252,6 +252,17 @@
                   }}万元</div
                 >
               </el-col>
+              <el-col :span="2" class="bg-yell">定金：</el-col>
+              <el-col :span="4">
+                <div>{{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                      .deposit
+                  )
+                }}</div>
+              </el-col>
+            </el-row>
+            <el-row>
               <el-col :span="2" class="bg-yell">付款方式：</el-col>
               <el-col :span="4">
                 <div>{{
@@ -261,8 +272,13 @@
                     : '定金+尾款'
                 }}</div>
               </el-col>
-            </el-row>
-            <el-row>
+              <el-col :span="2" class="bg-yell">姓名：</el-col>
+              <el-col :span="4">
+                <div>{{
+                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
+                    .sellerName
+                }}</div>
+              </el-col>
               <el-col :span="2" class="bg-yell">身份证：</el-col>
               <el-col :span="10">
                 <div style="display: flex; align-items: center">
@@ -309,13 +325,8 @@
                   :preview-src-list="fileD"
                 />
               </el-col>
-              <el-col :span="2" class="bg-yell">姓名：</el-col>
-              <el-col :span="4">
-                <div>{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .sellerName
-                }}</div>
-              </el-col>
+            </el-row>
+            <el-row>
               <el-col :span="2" class="bg-yell">联系电话：</el-col>
               <el-col :span="4">
                 <div>{{
@@ -323,10 +334,8 @@
                     .sellerTel
                 }}</div>
               </el-col>
-            </el-row>
-            <el-row>
               <el-col :span="2" class="bg-yell">联系地址：</el-col>
-              <el-col :span="22">
+              <el-col :span="16">
                 <div>
                   {{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
@@ -369,9 +378,13 @@ const actionType = ref('detail') // 操作按钮的类型
 const dialogTitle = ref('卖车价格超公允值待办') // 弹出层标题
 //千分位校验
 const moneyFormat = (num) => {
-  return Number(num)
-    .toFixed(2)
-    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+  if (num || num == '0') {
+    return Number(num)
+      .toFixed(2)
+      .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+  } else {
+    return ''
+  }
 }
 // 设置标题
 const setDialogTile = (type: string) => {

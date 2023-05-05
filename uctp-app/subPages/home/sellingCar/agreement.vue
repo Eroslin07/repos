@@ -130,7 +130,7 @@
 					}
 					getQiyuesuo(data).then((res) => {
 						if (res.data) {
-							_this.$modal.msg("合同以签章");
+							_this.$modal.msg("合同已签章");
 							_this.$tab.switchTab('/pages/index');
 							// _this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
 						}
