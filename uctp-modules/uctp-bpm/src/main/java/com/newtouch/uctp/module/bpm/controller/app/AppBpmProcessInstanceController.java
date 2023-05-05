@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.bpm.controller.admin.task.vo.instance.BpmProcessInstanceByKeyReqVO;
+import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceByKeyReqDTO;
 import com.newtouch.uctp.module.bpm.service.task.BpmProcessInstanceService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
@@ -32,7 +32,7 @@ public class AppBpmProcessInstanceController {
 
     @PostMapping("/v3/create")
     @Operation(summary = "根据流程定义标识（业务类型）新建流程")
-    public CommonResult<String> createProcessInstanceByKey(@Valid @RequestBody BpmProcessInstanceByKeyReqVO createReqVO) {
+    public CommonResult<String> createProcessInstanceByKey(@Valid @RequestBody BpmProcessInstanceByKeyReqDTO createReqVO) {
         return success(processInstanceService.createProcessInstanceByKey(null, createReqVO.getProcDefKey(), createReqVO.getVariables()));
     }
 }
