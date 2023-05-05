@@ -1487,39 +1487,41 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     private String getFeesAndCommitments(String vehicle,String type){
         String result="";
-        if (type.equals("1")) {
-            //A-轿车200元/天,B-商务车400元/天,C-豪车1000元/天,D-乙方（平台）无需承担
-            if (vehicle.equals("A")) {
-                result = "轿车200元/天";
-            } else if (vehicle.equals("B")) {
-                result = "商务车400元/天";
-            } else if (vehicle.equals("C")) {
-                result = "豪车1000元/天";
-            } else if (vehicle.equals("D")) {
-                result = "乙方（平台）无需承担";
-            }
-        }else if(type.equals("2")){
-            //A-销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人),B-销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人,C-甲方（买方）无需承担
-            if (vehicle.equals("A")) {
-                result = "销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人";
-            } else if (vehicle.equals("B")) {
-                result = "销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人";
-            } else if (vehicle.equals("C")) {
-                result = "甲方（买方）无需承担";
-            }
-        }else if(type.equals("3")){
-            //A-依据本协议第二条车辆价款的5%支付车辆折损费用,B-依据本协议第二条车辆价款的5%支付车辆折损费用
-            if (vehicle.equals("A")) {
-                result = "依据本协议第二条车辆价款的5%支付车辆折损费用";
-            } else if (vehicle.equals("B")) {
-                result = "依据本协议第二条车辆价款的5%支付车辆折损费用";
-            }
-        }else if(type.equals("4")){
-            //A-全车检测费用,B-乙方（平台）无需承担
-            if (vehicle.equals("A")) {
-                result = "全车检测费用";
-            } else if (vehicle.equals("B")) {
-                result = "乙方（平台）无需承担";
+        if (vehicle!=null) {
+            if (type.equals("1")) {
+                //A-轿车200元/天,B-商务车400元/天,C-豪车1000元/天,D-乙方（平台）无需承担
+                if (vehicle.equals("A")) {
+                    result = "轿车200元/天";
+                } else if (vehicle.equals("B")) {
+                    result = "商务车400元/天";
+                } else if (vehicle.equals("C")) {
+                    result = "豪车1000元/天";
+                } else if (vehicle.equals("D")) {
+                    result = "乙方（平台）无需承担";
+                }
+            } else if (type.equals("2")) {
+                //A-销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人),B-销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人,C-甲方（买方）无需承担
+                if (vehicle.equals("A")) {
+                    result = "销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人";
+                } else if (vehicle.equals("B")) {
+                    result = "销售车辆首次交易过户费(乙方（平台）过户甲方（买方）指定过户人";
+                } else if (vehicle.equals("C")) {
+                    result = "甲方（买方）无需承担";
+                }
+            } else if (type.equals("3")) {
+                //A-依据本协议第二条车辆价款的5%支付车辆折损费用,B-依据本协议第二条车辆价款的5%支付车辆折损费用
+                if (vehicle.equals("A")) {
+                    result = "依据本协议第二条车辆价款的5%支付车辆折损费用";
+                } else if (vehicle.equals("B")) {
+                    result = "依据本协议第二条车辆价款的5%支付车辆折损费用";
+                }
+            } else if (type.equals("4")) {
+                //A-全车检测费用,B-乙方（平台）无需承担
+                if (vehicle.equals("A")) {
+                    result = "全车检测费用";
+                } else if (vehicle.equals("B")) {
+                    result = "乙方（平台）无需承担";
+                }
             }
         }
         return result;
