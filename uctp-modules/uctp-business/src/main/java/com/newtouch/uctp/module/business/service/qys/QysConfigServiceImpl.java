@@ -14,8 +14,29 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
@@ -28,6 +49,7 @@ import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.ContractStatusDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.DoServiceDTO;
@@ -36,14 +58,12 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqV
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.*;
+import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.business.dal.dataobject.user.UserExtDO;
-import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
-import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
-import com.newtouch.uctp.module.business.dal.mysql.InvoiceTitleMapper;
-import com.newtouch.uctp.module.business.dal.mysql.UsersMapper;
+import com.newtouch.uctp.module.business.dal.mysql.*;
 import com.newtouch.uctp.module.business.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysCallbackMapper;
 import com.newtouch.uctp.module.business.dal.mysql.qys.QysConfigMapper;
@@ -75,22 +95,6 @@ import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import com.qiyuesuo.sdk.v2.utils.StringUtils;
-import io.seata.spring.annotation.GlobalTransactional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
@@ -152,6 +156,10 @@ public class QysConfigServiceImpl implements QysConfigService {
     private InvoiceTitleMapper invoiceTitleMapper;
     @Resource
     private UserAuthProducer userAuthProducer;
+    @Resource
+    private MerchantAccountMapper merchantAccountMapper;
+    @Resource
+    private AccountCashService accountCashService;
 
     @PostConstruct
     @Override
@@ -1293,6 +1301,54 @@ public class QysConfigServiceImpl implements QysConfigService {
         } finally {
             FileUtil.del(tempFile);
             IOUtils.safeClose(fos);
+        }
+    }
+
+    @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
+    public void companyGyhlSign(Long contractId) {
+        if (ObjectUtil.isNull(contractId)) {
+            throw new IllegalArgumentException("收车委托收购协议草稿合同不能为空");
+        }
+        //合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+        ContractDO contractDO = contractService.getByContractId(contractId);
+        if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getCarId()) || ObjectUtil.equals(contractDO.getContractType(), 1)) {
+            throw new IllegalArgumentException("根据收车委托收购协议草稿合同匹配收车基本信息失败");
+        }
+        ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+        if (ObjectUtil.isNull(contractDO1) || ObjectUtil.isNull(contractDO1.getContractId())) {
+            throw new IllegalArgumentException("根据收车委托收购协议草稿合同获取[收车收购合同]信息失败");
+        }
+        CarInfoDO carInfoDO = carInfoService.getCarInfo(contractDO.getCarId());
+        if (ObjectUtil.isNull(carInfoDO) || ObjectUtil.isNull(carInfoDO.getBusinessId()) || ObjectUtil.isNull(carInfoDO.getVehicleReceiptAmount())) {
+            throw new IllegalArgumentException("根据收车委托收购协议草稿合同匹配收车基本信息失败");
+        }
+        //商户id
+        Long merchantId = carInfoDO.getBusinessId();
+        //收车金额（单位：元）
+        BigDecimal vehicleReceiptAmount = carInfoDO.getVehicleReceiptAmount();
+        //收车金额（单位：分）
+        Long tranAmount = vehicleReceiptAmount.multiply(new BigDecimal(100)).longValue();
+        if (tranAmount <= 0L) {
+            throw new IllegalArgumentException("收车金额必须大于0,合同签章失败");
+        }
+        MerchantAccountDO merchantAccountDO = merchantAccountMapper.selectOne(new LambdaQueryWrapper<MerchantAccountDO>().eq(MerchantAccountDO::getMerchantId, merchantId));
+        if (ObjectUtil.isNull(merchantAccountDO) || !org.springframework.util.StringUtils.hasText(merchantAccountDO.getAccountNo())) {
+            throw new IllegalArgumentException("获取商户虚拟账户失败");
+        }
+        String accountNo = merchantAccountDO.getAccountNo();
+        Integer revision = merchantAccountDO.getRevision();
+        TransactionRecordReqVO transactionRecordReqVO = new TransactionRecordReqVO();
+        transactionRecordReqVO.setAccountNo(accountNo);
+        transactionRecordReqVO.setTranAmount(tranAmount);
+        transactionRecordReqVO.setRevision(revision);
+        transactionRecordReqVO.setContractNo(String.valueOf(contractDO1.getContractId()));
+        // 1.保证金预占
+        Boolean hasReserve = accountCashService.reserve(transactionRecordReqVO);
+        if (hasReserve) {
+            // 2.收车委托收购协议草稿合同后台进行自动静默签章
+            this.companyGyhlSign(contractId);
         }
     }
 

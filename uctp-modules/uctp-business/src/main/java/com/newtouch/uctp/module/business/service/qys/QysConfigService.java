@@ -1,5 +1,12 @@
 package com.newtouch.uctp.module.business.service.qys;
 
+import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
@@ -7,12 +14,6 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqV
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
-
-import javax.validation.Valid;
-import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 契约锁 Service 接口
@@ -180,4 +181,9 @@ public interface QysConfigService {
      */
     byte[] documentDownload(Long documentId) throws Throwable;
 
+    /**
+     * 收车公允价值合理时，处理保证金预占和收车委托合同静默签章
+     * @param contractId
+     */
+    void companyGyhlSign(Long contractId);
 }
