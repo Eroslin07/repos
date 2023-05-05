@@ -207,3 +207,6 @@ uctp:
       - /app-api/system/appAuth/registerAccount
 
 debug: false
+
+qys:
+  server-url: @qys.server-url@ #获取契约锁请求地址
