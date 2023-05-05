@@ -170,6 +170,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         SaaSUserAuthPageRequest request = new SaaSUserAuthPageRequest();
         User user = new User(contact, contactType);
         request.setUser(user);
+        request.setCallbackUrl("");
         return this.saasUserAuthPage(request);
     }
 
@@ -280,7 +281,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<Object> defaultRoleManage(RoleManagementRequest request) {
+    public QiyuesuoCommonResult<Object> defaultRoleManage(List<String> contacts) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
@@ -288,11 +289,6 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     protected QiyuesuoCommonResult<Object> doDefaultRoleManage(RoleManagementRequest request) throws Throwable {
         return null;
     }
-
-//    @Override
-//    public QiyuesuoCommonResult<Object> defaultContractSend(Long contractId) {
-//        throw new UnsupportedOperationException("saas的client不支持调用此方法");
-//    }
 
     @Override
     protected QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId) throws Throwable {

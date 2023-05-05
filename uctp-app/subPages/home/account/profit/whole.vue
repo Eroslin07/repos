@@ -90,6 +90,7 @@
 		// 下拉刷新
 		onPullDownRefresh() {
 			this.status2 = false;
+			this.tab[this.tabCur].pageNo = 1;
 			if (this.tabCur == 0) {
 				// 全部
 				this.getListRefresh(1);

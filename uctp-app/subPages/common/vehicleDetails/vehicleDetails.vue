@@ -20,7 +20,7 @@
 				</view>
 				<view class="car-vin">
 					<text>车架号（VIN）</text>
-					<text>{{carInfoAll.carInfo.vin}}</text>
+					<text>{{carInfoAll.carInfo.vin || '暂无'}}</text>
 				</view>
 				<view class="car-details car-money">
 					<view class="car-item car-payment">

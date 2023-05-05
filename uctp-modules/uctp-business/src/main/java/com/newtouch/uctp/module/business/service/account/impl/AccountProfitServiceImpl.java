@@ -11,6 +11,7 @@ import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
+import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -353,8 +354,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
             throw exception(ACC_PRESENT_ERROR);
         }
 
-        // 触发事件
-        this.publishProfitPressentStatusChangeEvent(mp.getId(), auditOpinion.getEvent());
 
         MerchantAccountDO ma = this.merchantAccountService.queryByAccountNo(mp.getAccountNo());
         if (ma == null) {
@@ -375,6 +374,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 // 出现并发问题
                 throw exception(ACC_PRESENT_ERROR);
             }
+
+            // 触发提现审核退回事件
+            this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.PRESENT_MARKET_AUDIT_REJECT);
         } else if (auditOpinion == ProfitPressentAuditOpinion.AUDIT_APPROVED) {
             // 审核通过要更新冻结金额
             Long freezeProfit = ma.getFreezeProfit() == null ? 0L : ma.getFreezeProfit();
@@ -386,6 +388,12 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 // 出现并发问题
                 throw exception(ACC_PRESENT_ERROR);
             }
+
+            // 触发提现审通过回事件
+            this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.PRESENT_MARKET_AUDIT_APPROVED);
+
+            // 调用银行出金接口 TODO 暂时注释，待银行接口调通后再开放，避免影响调试
+            // this.outGold(mp);
         }
     }
 
@@ -546,7 +554,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      */
     private void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
         if (event != null) {
-            log.info("利润【{}】触发【{}】事件", id, ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+            log.info("利润【{}】触发【{}】事件", id, event.getDescription());
 
             MerchantProfitDO profitDO = new MerchantProfitDO();
             profitDO.setId(id);
@@ -1274,6 +1282,19 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                 }
 
             });
+        }
+    }
+
+    /**
+     * 银行出金接口
+     * @param mp
+     */
+    private void outGold(MerchantProfitDO mp) {
+        TransactionRecordDO transactionRecord = this.transactionService.outGold(mp.getBankNo(), Math.abs(mp.getProfit()), AccountEnum.TRAN_PROFIT_PRESENT.getKey(), mp.getContractNo());
+        if (transactionRecord == null || !ResponseStatusCode.TRAN_SUCCESS.getCode().equals(transactionRecord.getBankResultCode())) {
+            // 调用银行出金接口失败，TODO 后续改为银行接口调用失败
+            log.error("调用银行出金接口失败，合同号：{}", mp.getContractNo());
+            throw exception(ACC_PRESENT_ERROR);
         }
     }
 }

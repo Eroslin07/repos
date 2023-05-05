@@ -48,12 +48,14 @@ class UctpBusinessApplicationTests {
 	@Test
 	void contextLoads() {
         String serverUrl = "https://openapi.qiyuesuo.cn";
-        String accessKey = "8aScPl53pm";
-        String accessSecret = "AI4nTFk5jA48JkmztTZUSnIbyKJGSK";
+//        String accessKey = "8aScPl53pm";
+//        String accessSecret = "AI4nTFk5jA48JkmztTZUSnIbyKJGSK";
+        String accessKey = "q4xKsNcFI8";
+        String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
         SdkClient sdkClient = new SdkClient(serverUrl, accessKey, accessSecret);
 // 合同页面
-        ContractPageRequest request = new ContractPageRequest(3089865133669815096L,
-                new User("17396202169", "MOBILE"), "");
+        ContractPageRequest request = new ContractPageRequest(3091669222128951367l,
+                new User("18080011111", "MOBILE"), "");
         String response = sdkClient.service(request);
         SdkResponse<ContractPageResult> responseObj = JSONUtils.toQysResponse(response, ContractPageResult.class);
         if(responseObj.getCode() == 0) {
@@ -132,6 +134,18 @@ class UctpBusinessApplicationTests {
                 .timeout(20000)//超时，毫秒
                 .execute().body();
         System.out.println(result2);
+    }
+    @Test
+    void contractDetail(){
+        Contract checkedData = client.defaultContractDetail(3091645118122296125L).getCheckedData();
+        System.out.println(JSONUtil.toJsonStr(checkedData));
+
+    }
+
+    @Test
+    void contractSend(){
+        Object checkedData = client.defaultContractSend(3091648796489155269L).getCheckedData();
+        System.out.println(JSONUtil.toJsonStr(checkedData));
     }
 
 }

@@ -197,4 +197,11 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Object> defaultRoleManage(RoleManagementRequest request);
+
+    /**
+     * 管理员工角色
+     * @param contacts 已认证员工手机
+     * @return
+     */
+    QiyuesuoCommonResult<Object> defaultRoleManage(List<String> contacts);
 }

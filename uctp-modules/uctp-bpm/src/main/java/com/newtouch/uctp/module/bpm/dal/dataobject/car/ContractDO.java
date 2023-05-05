@@ -1,14 +1,15 @@
 package com.newtouch.uctp.module.bpm.dal.dataobject.car;
 
+import lombok.*;
+
+import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import lombok.*;
-
-import java.time.LocalDateTime;
 
 /**
  * 合同主表 DO
@@ -86,23 +87,8 @@ public class ContractDO extends TenantBaseDO {
      */
     private LocalDateTime signingDate;
 
-//    /**
-//     * 创建人
-//     */
-//    private String creator;
-//    /**
-//     * 创建时间
-//     */
-//    private LocalDateTime createTime;
-//
-//    /**
-//     * 更新人
-//     */
-//    private String updater;
-//    /**
-//     * 更新时间
-//     */
-//    private LocalDateTime updateTime;
-//
-
+    /**
+     * 合同编码
+     */
+    private String code;
 }

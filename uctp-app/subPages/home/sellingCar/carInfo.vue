@@ -3,12 +3,12 @@
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要卖车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
 		<u-grid col="2" :border="true" style="margin-top: 10px;">
-			<u-grid-item>
+			<u-grid-item @click="handleCar">
 				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
 				<image v-show="active == 1" src="../../../static/images/bycar/car1.png" class="form-image"></image>
 				<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
 			</u-grid-item>
-			<u-grid-item>
+			<u-grid-item @click="handleStep">
 				<image v-show="active == 0" src="../../../static/images/bycar/car3.png" class="form-image"></image>
 				<image v-show="active == 1" src="../../../static/images/bycar/car2.png" class="form-image"></image>
 				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">交易信息</text>
@@ -181,7 +181,7 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="number"
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="digit"
 							@focus="depositFocus" @blur="depositBlur">
 							<template slot="suffix">
 								<view>元</view>
@@ -746,23 +746,6 @@
 						},
 						message: '手机号格式不正确',
 						trigger: ['change', 'blur'],
-					}],
-					deposit: [{
-						type: 'string',
-						required: true,
-						message: '请填写定金',
-						trigger: ['blur', 'change']
-					}, {
-						validator(rule, value, data, callback) {
-							const num = value * 1
-							if (num >= 0) {
-								return true
-							} else {
-								return false
-							}
-						},
-						message: '定金格式不正确',
-						trigger: ['change', 'blur'],
 					}]
 				},
 				date: null,
@@ -822,13 +805,13 @@
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit)||'0.00';
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) || '0.00';
 				this.fairStatus = res.data.bpmStatus;
-				res.data.idCardsPicList.forEach((i,index)=>{
-					if(index==0){
-						this.fileList4=[i]
-					}else if(index==1){
-						this.fileList5=[i]
+				res.data.idCardsPicList.forEach((i, index) => {
+					if (index == 0) {
+						this.fileList4 = [i]
+					} else if (index == 1) {
+						this.fileList5 = [i]
 					}
 				})
 				let obj;
@@ -893,7 +876,7 @@
 			}).finally(() => {
 				this.$modal.closeLoading();
 			})
-			
+
 			let hetongData = `carId=${options.id}&&type=1`
 			getContractEcho(hetongData).then(res => {
 				this.contractDtail = res.data
@@ -948,11 +931,19 @@
 					this.vehicleInfor = true;
 					this.sellerInfor = false;
 					this.active = 0;
+					this.$refs.sellerForm.clearValidate();
 					uni.pageScrollTo({
 						scrollTop: 0,
 						duration: 300
 					});
 				}
+			},
+			// 点击车辆信息图片
+			handleCar() {
+				this.vehicleInfor = true;
+				this.sellerInfor = false;
+				this.active = 0;
+				this.$refs.sellerForm.clearValidate();
 			},
 			formatter(type, value) {
 				if (type === 'year') {
@@ -1242,14 +1233,14 @@
 				let feesAndCommitments = {
 					...this.feesForm
 				};
-				let idcards=[...this.fileList4,...this.fileList5];
+				let idcards = [...this.fileList4, ...this.fileList5];
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
 					sellAmount: this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
-					idCardIds: idcards.map((item)=>{
+					idCardIds: idcards.map((item) => {
 						return item.id
 					}),
 					buyerName: this.sellerForm.buyerName,
@@ -1429,5 +1420,10 @@
 				color: #fff;
 			}
 		}
+	}
+
+	/deep/ .u-text__prefix-icon {
+		align-self: flex-start;
+		padding-top: 6rpx;
 	}
 </style>
