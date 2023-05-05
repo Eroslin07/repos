@@ -87,7 +87,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRecordDO.setPayeeBankAccount("");
         transactionRecordDO.setApproveAccount("");
         transactionRecordDO.setTranAmount(0L);
-        transactionRecordDO.setTranStatus(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+        transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
         transactionRecordDO.setBankResultCode(response.getStatusCode());
         transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
         transactionRecordService.save(transactionRecordDO);
@@ -111,7 +111,7 @@ public class TransactionServiceImpl implements TransactionService {
         TransactionRecordDO transactionRecord = transactionRecordService.getOne(new LambdaQueryWrapperX<TransactionRecordDO>().eq(TransactionRecordDO::getTranNo, tranNo));
 
         //只查询系统状态为 交易处理中 的数据
-        if (transactionRecord != null && AccountEnum.TRAN_STATE_DURING.getKey().equals(transactionRecord.getTranStatus())) {
+        if (transactionRecord != null && AccountEnum.TRAN_STATE_DURING.getKey().equals(transactionRecord.getTranState())) {
 
             String mrchOrdrNo = "";
             OrdersPayStatusRequest param = OrdersPayStatusRequest.builder()
@@ -148,7 +148,7 @@ public class TransactionServiceImpl implements TransactionService {
             String bankResultCode = response.getStatusCode();
             if (StringUtils.isNotEmpty(bankResultCode) && !bankResultCode.equals(transactionRecord.getBankResultCode())) {
 
-                transactionRecord.setTranStatus(AccountEnum.bankResultCodeMap.get(bankResultCode));
+                transactionRecord.setTranState(AccountEnum.bankResultCodeMap.get(bankResultCode));
                 transactionRecord.setBankResultCode(bankResultCode);
                 transactionRecord.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(bankResultCode));
                 transactionRecordService.updateById(transactionRecord);
@@ -234,6 +234,10 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, BalancesWithdrawalResponse.class);
 
+            if (null == response) {
+                response = new BalancesWithdrawalResponse();
+                response.setStatusCode(AccountEnum.BANK_RESULT_CODE_UNKNOWN.getKey());
+            }
         } catch (Exception e) {
             log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
             response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
@@ -264,7 +268,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRecordDO.setApproveAccount("");
         transactionRecordDO.setTranAmount(amount);
         transactionRecordDO.setBankResultCode(response.getStatusCode());
-        transactionRecordDO.setTranStatus(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+        transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
         transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
         transactionRecordService.save(transactionRecordDO);
         return transactionRecordDO;
@@ -370,7 +374,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionRecordDO.setApproveAccount("");
             transactionRecordDO.setTranAmount(tranAmount);
             transactionRecordDO.setBankResultCode(response.getStatusCode());
-            transactionRecordDO.setTranStatus(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+            transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
             transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
             transactionRecordService.save(transactionRecordDO);
 

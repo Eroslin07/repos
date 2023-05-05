@@ -1601,6 +1601,7 @@
 			background-image: linear-gradient(to right, #fcbb2b, #ed6c21);
 			background-color: #fff;
 			color: #fff;
+			font-size: 30rpx;
 		}
 	}
 

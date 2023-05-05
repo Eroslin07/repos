@@ -3,16 +3,13 @@ GET {{appBusinessUrl}}/uctp/account/get
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
-
-
-###
 ###保证金释放
 POST {{appBusinessUrl}}/uctp/account/cash/release
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "12345671221"
+  "contractNo": "2312321"
 }
 
 ###保证金回填-利润
@@ -23,7 +20,7 @@ tenant-id: {{adminTenentId}}
 {
   "accountNo": "1234567",
   "tranAmount": 1000,
-  "contractNo": "12345671221"
+  "contractNo": "3213213"
 }
 
 ###保证金回填
@@ -34,7 +31,7 @@ tenant-id: {{adminTenentId}}
 {
   "accountNo": "1234567",
   "tranAmount": 100,
-  "contractNo": "12345671221"
+  "contractNo": "332211"
 }
 
 ###待回填保证金
@@ -52,7 +49,7 @@ Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
 {
-  "contractNo": "123456712211"
+  "contractNo": "332211"
 }
 
 ###保证金预占
@@ -62,8 +59,8 @@ tenant-id: {{adminTenentId}}
 
 {
   "accountNo": "1234567",
-  "tranAmount": 1100,
-  "contractNo": "123456712211"
+  "tranAmount": 11100,
+  "contractNo": "2312321"
 }
 
 ###保证金提取-提取成功后返回我的保证金页面模型数据
@@ -74,7 +71,7 @@ tenant-id: {{adminTenentId}}
 {
   "accountNo": "1234567",
   "tranAmount": 1100,
-  "revision": 14
+  "revision": 42
 }
 
 ###保证金交易明细查询
@@ -84,9 +81,9 @@ tenant-id: {{adminTenentId}}
 
 {
   "accountNo": "1234567",
-  "type": 4,
+  "type": 3,
   "pageNo": 1,
-  "pageSize": 15
+  "pageSize": 27
 }
 
 ###保证金充值-充值成功后返回我的保证金页面模型数据
@@ -97,7 +94,7 @@ tenant-id: {{adminTenentId}}
 {
   "accountNo": "1234567",
   "tranAmount": 11111111111111,
-  "revision": 25
+  "revision": 41
 }
 
 ###保证金详情-我的保证金
