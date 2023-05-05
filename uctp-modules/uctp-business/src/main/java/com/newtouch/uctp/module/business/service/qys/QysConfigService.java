@@ -174,4 +174,10 @@ public interface QysConfigService {
      */
     void companySign(Long contractId);
 
+    /**
+     * 下载合同文档
+     * @param documentId 合同文档id
+     */
+    byte[] documentDownload(Long documentId) throws Throwable;
+
 }

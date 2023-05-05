@@ -5,10 +5,14 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.qiyuesuo.sdk.v2.request.SaasPrivilegeUrlRequest;
+import com.qiyuesuo.sdk.v2.SdkClient;
+import com.qiyuesuo.sdk.v2.bean.Company;
+import com.qiyuesuo.sdk.v2.json.JSONUtils;
+import com.qiyuesuo.sdk.v2.request.CompanyDetailRequest;
 import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
+import com.qiyuesuo.sdk.v2.response.SdkResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +43,8 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void companyAuth() {
-        String applicanInfo = "{\"name\":\"贺龙\",\"contact\": \"15196636618\",\"contactType\": \"MOBILE\"}";
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("山西车友通汽车公司", applicanInfo);
+        String applicanInfo = "{\"name\":\"李杨\",\"contact\": \"17380123816\",\"contactType\": \"MOBILE\"}";
+        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("成都新致云服测试公司", applicanInfo);
         System.out.println(result.getData().getPageUrl());
         Assert.equals(result.getCode(), 0);
     }
@@ -54,11 +58,19 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void privilegeUrl() {
-        SaasPrivilegeUrlRequest urlRequest = new SaasPrivilegeUrlRequest();
-        QiyuesuoCommonResult<SaaSPrivilegeUrlResult> result = client.saasPrivilegeUrl(3088322841008022468L, "17380123816");
-        System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(), 0);
+        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(2724174433890603381L, "17380123816").getCheckedData();
+        System.out.println(checkedData.getPageUrl());
     }
-
+    @Test
+    void companyDetail(){
+        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn", "q4xKsNcFI8", "qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
+// 公司信息
+        CompanyDetailRequest request = new CompanyDetailRequest("成都新致云服测试公司");
+        String response = sdkClient.service(request);
+        SdkResponse<Company> responseObj = JSONUtils.toQysResponse(response, Company.class);
+        if(responseObj.getCode() == 0) {
+            Company result = responseObj.getResult();
+        }
+    }
 
 }

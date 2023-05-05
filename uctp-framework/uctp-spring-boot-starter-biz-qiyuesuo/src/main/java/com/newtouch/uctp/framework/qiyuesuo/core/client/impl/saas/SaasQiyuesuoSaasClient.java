@@ -14,6 +14,7 @@ import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.List;
 public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
@@ -37,6 +38,12 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     protected void doInit() {
         client = new SaaSSdkClient(properties.getAccessKey(), properties.getAccessSecret(),properties.getServerUrl());
     }
+
+    @Override
+    protected QiyuesuoCommonResult<Boolean> doDefaultDocumentDownload(DocumentDownloadRequest request, FileOutputStream fos) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
 
     @Override
     protected QiyuesuoCommonResult<Seal> doDefaultSealAutoCreate(SealAutoCreateRequest request) throws Throwable {
