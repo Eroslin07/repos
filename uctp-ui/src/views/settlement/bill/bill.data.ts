@@ -17,42 +17,42 @@ const crudSchemas = reactive<VxeCrudSchema>({
   columns: [
     {
       title: '发票类型',
-      field: 'name',
-      dictType: DICT_TYPE.COMMON_STATUS,
+      field: 'type',
+      dictType: DICT_TYPE.SETTLEMENT_INVOICE_TYPE,
       dictClass: 'number',
       isSearch: true
     },
     {
       title: '商户',
-      field: 'code',
+      field: 'merchant',
       isSearch: true
     },
     {
       title: '合同名称',
-      field: 'contractName'
+      field: 'name'
     },
     {
       title: '合同金额',
-      field: 'sort'
+      field: 'amount'
     },
     {
       title: '税额',
-      field: 'amountTax'
+      field: 'tax'
     },
     {
       title: t('common.status'),
       field: 'status',
-      dictType: DICT_TYPE.COMMON_STATUS,
+      dictType: DICT_TYPE.SETTLEMENT_INVOICE_STATUS,
       dictClass: 'number',
       isSearch: true
     },
     {
       title: '操作人',
-      field: 'operator'
+      field: 'founder'
     },
     {
       title: t('common.createTime'),
-      field: 'createTime',
+      field: 'creationTime',
       formatter: 'formatDate',
       isForm: false
     }

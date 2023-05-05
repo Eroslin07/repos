@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.contract.RecordMapper">
+    <resultMap id="recordRespVO" type="com.newtouch.uctp.module.business.controller.admin.contract.vo.RecordRespVO">
+        <id property="id" column="ID"/>
+        <result property="number" column="CONTRACT_ID"/>
+        <result property="name" column="CONTRACT_NAME"/>
+        <result property="first" column="FIRST_PARTY"/>
+        <result property="second" column="SECOND_PARTY"/>
+        <result property="merchant" column="BUSINESS_ID"/>
+        <result property="type" column="CONTRACT_TYPE"/>
+        <result property="amount" column="SIGN_UP_AMOUNT"/>
+        <result property="status" column="STATUS"/>
+        <result property="initiationTime" column="CREATE_TIME"/>
+        <result property="signTime" column="SIGNING_DATE"/>
+        <result property="initiator" column="CREATOR"/>
+        <result property="updater" column="UPDATER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="tenantId" column="TENANT_ID"/>
+    </resultMap>
+    <resultMap id="RecordExport" type="com.newtouch.uctp.module.business.controller.admin.contract.vo.RecordExport">
+        <id property="id" column="ID"/>
+        <result property="number" column="CONTRACT_ID"/>
+        <result property="name" column="CONTRACT_NAME"/>
+        <result property="first" column="FIRST_PARTY"/>
+        <result property="second" column="SECOND_PARTY"/>
+        <result property="merchant" column="BUSINESS_ID"/>
+        <result property="type" column="CONTRACT_TYPE"/>
+        <result property="amount" column="SIGN_UP_AMOUNT"/>
+        <result property="status" column="STATUS"/>
+        <result property="initiationTime" column="CREATE_TIME"/>
+        <result property="signTime" column="SIGNING_DATE"/>
+
+    </resultMap>
+
+   <!-- <sql id="TempVo">
+        select ID,
+               NUMBER,
+               NAME,
+               TYPE,
+               TYPE_NAME,
+               REMARK,
+               STATUS,
+               STATUS_NAME,
+               CREATED_BY,
+               CREATED_TIME,
+               UPDATED_BY,
+               UPDATED_TIME,
+               REVISION,
+               TENANT_ID
+        from uctp_contract_temp
+    </sql>-->
+
+    <!-- 查詢合同模板信息 -->
+    <select id="getRecordPage" resultMap="recordRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.contract.vo.RecordReqVO">
+        select c.ID,
+        c.CONTRACT_ID,
+        c.CONTRACT_NAME,
+        c.FIRST_PARTY,
+        c.SECOND_PARTY,
+        d.name as BUSINESS_ID,
+        c.CONTRACT_TYPE,
+        c.SIGN_UP_AMOUNT,
+        c.STATUS,
+        c.CREATE_TIME,
+        c.SIGNING_DATE,
+        c.UPDATER,
+        c.UPDATE_TIME,
+        c.TENANT_ID
+        from uctp_contract c
+        inner join system_dept d on d.id = c.BUSINESS_ID
+        <if test="reqVO.name != null and reqVO.name != ''">
+            AND c.CONTRACT_NAME =#{reqVO.name}
+        </if>
+        <if test="reqVO.merchant != null and reqVO.merchant != ''">
+            AND d.name =#{reqVO.merchant}
+        </if>
+
+        <if test="reqVO.type != null and reqVO.type != ''">
+            AND c.CONTRACT_TYPE =#{reqVO.type}
+        </if>
+
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND c.STATUS =#{reqVO.status}
+        </if>
+
+        <if test="reqVO.initiationTime != null and reqVO.initiationTime != ''">
+            AND c.CREATE_TIME =#{reqVO.initiationTime}
+        </if>
+    </select>
+
+    <!-- 导出合同模板信息 -->
+    <select id="recordList" resultMap="RecordExport"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.contract.vo.RecordExportReqVO">
+     select c.ID,
+            c.CONTRACT_ID,
+            c.CONTRACT_NAME,
+            c.FIRST_PARTY,
+            c.SECOND_PARTY,
+            d.name as BUSINESS_ID,
+            cn.contract_type as CONTRACT_TYPE,
+            c.SIGN_UP_AMOUNT,
+            co.contract_status as STATUS,
+            c.CREATE_TIME,
+            c.SIGNING_DATE
+        from uctp_contract c
+                 inner join uctp_conversion cn on c.CONTRACT_TYPE = cn.id
+                 left join uctp_conversion co on c.STATUS = co.id
+                 left join system_dept d on d.id = c.BUSINESS_ID
+    </select>
+</mapper>
