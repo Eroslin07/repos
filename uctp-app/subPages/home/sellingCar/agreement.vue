@@ -71,7 +71,8 @@
 		methods: {
 			// 获取合同
 			getContractUrl() {
-				this.isSHowTip = 'onLoading'
+				let starTime=new Date().getTime();
+				this.isSHowTip = 'creating'
 				let data = `carId=${this.carId}&&type=2`
 				getContractEcho(data).then(res => {
 					this.contractDtail = res.data
@@ -80,7 +81,15 @@
 				}).catch(err => {
 					this.$modal.msg('获取合同失败')
 				}).finally(()=>{
-					this.isSHowTip = ''
+					let endTime=new Date().getTime();
+					if(endTime-starTime>1500){
+						this.isSHowTip = ''
+					}else{
+						setTimeout(()=>{
+							this.isSHowTip = ''
+						},1500)
+					}
+				
 				})
 			},
 			
@@ -202,7 +211,7 @@
 		justify-content: space-around;
 	}
 	.hetong_image {
-		width: 185px;
+		width: 185rpx;
 		height: 160rpx;
 	}
 	

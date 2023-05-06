@@ -61,68 +61,67 @@
 						</u-collapse-item> -->
 					</u-collapse>
 					<u-form-item label="发动机编号" prop="engineNum" borderBottom>
-						<u--input v-model="carForm.engineNum" readonly border="none" placeholder="请输入发动机编号"></u--input>
+						<u--input v-model="carForm.engineNum" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="车架号(VIN)" prop="vin" borderBottom>
-						<u--input v-model="carForm.vin" readonly border="none" placeholder="请输入17位车架号(VIN)"></u--input>
+						<u--input v-model="carForm.vin" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom>
 						<u--input v-model="carForm.firstRegistDate" readonly disabledColor="#ffffff"
-							placeholder="请选择登记日期" border="none"></u--input>
+							border="none"></u--input>
 						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
 						></u-icon> -->
 					</u-form-item>
 					<u-form-item label="车牌号" prop="plateNum" borderBottom>
-						<u--input v-model="carForm.plateNum" readonly border="none" placeholder="请输入车牌号"></u--input>
+						<u--input v-model="carForm.plateNum" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="使用性质" prop="natureOfOperat" borderBottom>
-						<u--input v-model="carForm.natureOfOperat" readonly border="none" placeholder="请输入使用性质">
+						<u--input v-model="carForm.natureOfOperat" readonly border="none">
 						</u--input>
 					</u-form-item>
 					<u-form-item label="车辆类型" prop="carType" borderBottom>
-						<u--input v-model="carForm.carType" readonly border="none" placeholder="请输入车辆类型"></u--input>
+						<u--input v-model="carForm.carType" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="品牌型号" prop="brandType" borderBottom>
-						<u--input v-model="carForm.brandType" readonly border="none" placeholder="请输入品牌型号"></u--input>
+						<u--input v-model="carForm.brandType" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="品牌/车型" prop="model" borderBottom>
-						<u--input v-model="carForm.model" readonly border="none" placeholder="请输入品牌/车型"></u--input>
+						<u--input v-model="carForm.model" readonly border="none"></u--input>
 						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
 						></u-icon> -->
 					</u-form-item>
 					<u-form-item label="登记证号" prop="certificateNo" borderBottom>
-						<u--input v-model="carForm.certificateNo" readonly border="none" placeholder="请输入登记证号">
+						<u--input v-model="carForm.certificateNo" readonly border="none">
 						</u--input>
 					</u-form-item>
 					<u-form-item label="颜色" prop="colour" borderBottom>
-						<u--input v-model="carForm.colour" readonly border="none" placeholder="请输入颜色"></u--input>
+						<u--input v-model="carForm.colour" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="里程数" prop="mileage" borderBottom>
-						<u-input v-model="carForm.mileage" readonly border="none" placeholder="请输入里程数">
+						<u-input v-model="carForm.mileage" readonly border="none">
 							<template slot="suffix">
 								<view>万公里</view>
 							</template>
 						</u-input>
 					</u-form-item>
 					<u-form-item label="使用年限至" prop="scrapDate" borderBottom>
-						<u--input v-model="carForm.scrapDate" readonly disabledColor="#ffffff" placeholder="请选择"
-							border="none"></u--input>
+						<u--input v-model="carForm.scrapDate" readonly disabledColor="#ffffff" border="none"></u--input>
 						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="年检签证有效期" prop="annualInspectionDate" borderBottom>
 						<u--input v-model="carForm.annualInspectionDate" readonly disabledColor="#ffffff"
-							placeholder="请选择" border="none"></u--input>
+							border="none"></u--input>
 						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="保险险种" prop="insurance" borderBottom>
-						<u--input v-model="carForm.insurance" readonly border="none" placeholder="请输入保险险种"></u--input>
+						<u--input v-model="carForm.insurance" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="保险期至" prop="insuranceEndData" borderBottom>
-						<u--input v-model="carForm.insuranceEndData" readonly disabledColor="#ffffff" placeholder="请选择"
+						<u--input v-model="carForm.insuranceEndData" readonly disabledColor="#ffffff"
 							border="none"></u--input>
 						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
@@ -170,8 +169,8 @@
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看
-								></text></view>
+							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看 ></text>
+						</view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
 						<u-radio-group v-model="sellerForm.sellType" placement="row" activeColor="#fd6404">
@@ -793,8 +792,9 @@
 			}).then((res) => {
 				if (!res.data.other) res.data.other = ''
 				this.carForm = res.data;
-				this.carForm.scrapDate = parseTime(this.carForm.scrapDate);
-				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
+				this.carForm.scrapDate = parseTime(this.carForm.scrapDate, '{y}-{m}-{d}');
+				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate, '{y}-{m}-{d}');
+				this.carForm.insuranceEndData = parseTime(this.carForm.insuranceEndData, '{y}-{m}-{d}');
 				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
 				// 收车金额
@@ -816,6 +816,7 @@
 						}
 					})
 				}
+				this.handleBlur(res.data.sellAmount);
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
