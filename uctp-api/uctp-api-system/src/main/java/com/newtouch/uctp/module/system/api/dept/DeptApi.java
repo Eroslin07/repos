@@ -56,4 +56,8 @@ public interface DeptApi {
     @Operation(summary = "根据部门名称获得部门信息")
     @Parameter(name = "userId", description = "用户Id", required = true, example = "1024")
     public CommonResult<DeptRespDTO> getDeptByUserId(@RequestParam("name") Long userId);
+
+    @GetMapping(PREFIX + "/get/platform")
+    @Operation(summary = "获得市场方部门信息")
+    CommonResult<DeptRespDTO> getPlatformDept();
 }

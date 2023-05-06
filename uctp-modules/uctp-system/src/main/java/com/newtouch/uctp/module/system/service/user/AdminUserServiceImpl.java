@@ -62,6 +62,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private AdminUserMapper userMapper;
 
     @Resource
+    @Lazy
     private DeptService deptService;
     @Resource
     private PostService postService;
@@ -505,6 +506,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public int insertUser(AdminUserDO user) {
         return userMapper.insert(user);
+    }
+
+    @Override
+    public AdminUserDO getMasterUser(Long deptId) {
+        return userMapper.getMasterUser(deptId);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service.impl;
+package com.newtouch.uctp.module.business.service.contract;
 
 
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppCarCostVO;

@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service;
+package com.newtouch.uctp.module.business.service.contract;
 
 
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
@@ -81,4 +81,25 @@ public interface ContractService {
      * @return
      */
     String GenerateCode(Integer type);
+
+    void draft(Long carId);
+
+    /**
+     * 下载合同文档
+     *
+     * @param documentId 合同文档id
+     */
+    void documentDownload(Long documentId,String fileName);
+
+    /**
+     * 保存合同
+     *
+     * @param contractId
+     * @param carId
+     * @param contractName
+     * @param deptId
+     * @param code
+     */
+    Integer qysSave(Long contractId,Long carId,String contractName,
+                    Long deptId,String code,Integer contractType);
 }
