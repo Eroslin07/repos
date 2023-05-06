@@ -816,6 +816,7 @@
 						}
 					})
 				}
+				this.handleBlur(res.data.sellAmount);
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
