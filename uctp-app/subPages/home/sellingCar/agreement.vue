@@ -211,7 +211,7 @@
 		justify-content: space-around;
 	}
 	.hetong_image {
-		width: 185px;
+		width: 185rpx;
 		height: 160rpx;
 	}
 	
