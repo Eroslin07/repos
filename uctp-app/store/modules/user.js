@@ -21,6 +21,7 @@ const user = {
     tenantName: uni.getStorageSync('SET_TENANTNAME') || storage.get(constant.tenantName),
     accountNo: '55555555',
     staffType:uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
+    loginStatus: true,
   },
 
   mutations: {
@@ -70,11 +71,14 @@ const user = {
       storage.set(constant.tenantName, tenantName)
       uni.setStorageSync('SET_TENANTNAME', tenantName)
     },
-	SET_STAFFTYPE: (state, staffType) => {
-	  state.staffType = staffType
-	  storage.set(constant.staffType, staffType)
-	  uni.setStorageSync('SET_STAFFTYPE', staffType)
-	},
+    SET_STAFFTYPE: (state, staffType) => {
+      state.staffType = staffType
+      storage.set(constant.staffType, staffType)
+      uni.setStorageSync('SET_STAFFTYPE', staffType)
+    },
+    LOGIN_STATUS: (state, loginStatus) => {
+      state.loginStatus = loginStatus
+    },
   },
 
   actions: {
@@ -140,17 +144,37 @@ const user = {
       })
     },
 
-    // 退出系统
+    // 退出系统(旧)
+    // LogOut({ commit, state }) {
+    //   return new Promise((resolve, reject) => {
+    //     logout(state.token).then(() => {
+    //       commit('SET_ROLES', [])
+    //       commit('SET_PERMISSIONS', [])
+    //       removeToken()
+    //       storage.clean()
+    //       resolve()
+    //     }).catch(error => {
+    //       reject(error)
+    //     })
+    //   })
+    // }
+
+    // 退出系统(新)
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('SET_ROLES', [])
-          commit('SET_PERMISSIONS', [])
-          removeToken()
-          storage.clean()
-          resolve()
-        }).catch(error => {
-          reject(error)
+        wx.login({
+          success(res) {
+            logout({token: state.token, wxCode: res.code}).then(() => {
+              commit('SET_ROLES', [])
+              commit('SET_PERMISSIONS', [])
+              commit('LOGIN_STATUS', false)
+              removeToken()
+              storage.clean()
+              resolve()
+            }).catch(error => {
+              reject(error)
+            })
+          }
         })
       })
     }

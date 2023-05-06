@@ -32,6 +32,15 @@ export function wxLogin(phone) {
 	})
 }
 
+// 获取微信openid
+export function getCheckIsLogin(data) {
+	return request({
+		url: '/system/appAuth/checkIsLogin',
+		'method': 'GET',
+		params: data
+	})
+}
+
 // 获取微信授权token
 export function getWxToken(data) {
 	return request({
@@ -49,10 +58,18 @@ export function getInfo() {
 	})
 }
 
-// 退出方法
-export function logout() {
+// 退出方法(旧)
+// export function logout() {
+// 	return request({
+// 		url: '/system/appAuth/logout',
+// 		'method': 'POST'
+// 	})
+// }
+
+// 退出方法(新)
+export function logout(data) {
 	return request({
-		url: '/system/appAuth/logout',
+		url: '/system/appAuth/logout?wxCode='+data.wxCode,
 		'method': 'POST'
 	})
 }

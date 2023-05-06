@@ -1,5 +1,5 @@
 <template>
-	<view class="normal-login-container">
+	<view class="normal-login-container" v-if="!showToken">
 		<!-- 自定义导航栏 -->
 		<u-navbar safeAreaInsetTop fixed placeholder>
 			<view class="u-nav-slot" slot="left">
@@ -33,10 +33,12 @@
 </template>
 
 <script>
-	import { getWxToken } from '@/api/login'
+	import { getWxToken, getCheckIsLogin } from '@/api/login'
+	import { setToken } from '@/utils/auth'
 	export default {
 		data() {
 			return {
+				showToken: true,
 				showModel: false,
 				content: '您的手机号尚未在平台注册，是否要注册?',
 				value: [''],
@@ -48,10 +50,29 @@
 		onLoad() {
 			// #ifdef MP-WEIXIN
 			let _this = this;
+			if (!_this.$store.state.user.loginStatus) {
+				_this.showToken = false;
+				return
+			}
 			uni.login({
 				provider: 'weixin',
 				success(res) {
 					_this.wxcode = res.code;
+					_this.$modal.loading("检测登录环境")
+					// 获取openid
+					getCheckIsLogin({ wxCode: _this.wxcode }).then((ress) => {
+						if (ress.data.accessToken) {
+							_this.showToken = true;
+							setToken(ress.data);
+							_this.loginSuccess();
+						} else {
+							_this.showToken = false;
+						}
+					}).catch((error) => {
+						_this.showToken = false;
+					}).finally(() => {
+						_this.$modal.closeLoading()
+					})
 				}
 			})
 			// #endif
@@ -88,15 +109,20 @@
 						return;
 					}
 				}
-				getWxToken({ code: e.detail.code }).then((res) => {
-					_this.phone = res.data;
-					_this.$store.commit('SET_PHONE', _this.phone);
-					_this.phoneLogin();
+				_this.$modal.loading("登录中，请耐心等待...")
+				uni.login({
+					provider: 'weixin',
+					success(res) {
+						getWxToken({ code: e.detail.code, wxCode: res.code }).then((ress) => {
+							_this.phone = ress.data;
+							_this.$store.commit('SET_PHONE', _this.phone);
+							_this.phoneLogin();
+						})
+					}
 				})
 			},
 			// 手机号登录
 			async phoneLogin(captchaParams) {
-			  this.$modal.loading("登录中，请耐心等待...")
 			  // 执行登录
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
 					// this.$modal.closeLoading()
