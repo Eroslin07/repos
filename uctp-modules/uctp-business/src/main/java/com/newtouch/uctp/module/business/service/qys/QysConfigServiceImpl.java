@@ -860,8 +860,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                 System.out.println("访问路径-----》" + FileDTO.getUrl());
             } else {
                 contractId = sellContract.getContractId();
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractId);
                 List<Long> contractIds = new ArrayList<>();
-                contractIds.add(contractId);
+                contractIds.add(businessFileDO.getId());
                 CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
                 if (listCommonResult.getData() != null) {
                     qysContractVO.setUrl(listCommonResult.getData().get(0).getUrl());
