@@ -26,15 +26,15 @@
             >{{ baseInfoData.data?.title }}</div
           >
           <div class="btns" id="btns">
-            <el-button plain type="primary" @click="submitBtn('同意')" v-if="!completedVisible"
-              >同意</el-button
-            >
+            <el-button plain type="primary" @click="submitBtn('同意')" v-if="!completedVisible">{{
+              successText(props.status)
+            }}</el-button>
             <el-button
               plain
               type="success"
               @click="submitBtn('不同意')"
               v-if="!completedVisible && noVisible"
-              >不同意</el-button
+              >退回并终止</el-button
             >
             <!-- <el-button plain type="danger">作废</el-button> -->
             <el-button plain type="info" @click="dravwerClose">关闭</el-button>
@@ -52,7 +52,7 @@
             >
               <el-scrollbar class="scrollbar_init" :min-size="5">
                 <keep-alive>
-                  <component :is="item.compName" :status="status"></component>
+                  <component :is="item.compName" :status="props.status"></component>
                 </keep-alive>
               </el-scrollbar>
             </el-tab-pane>
@@ -92,6 +92,9 @@ import BaseHistory from '@/views/ApprovalProcess/BaseHistory.vue'
 import BaseFlowChart from '@/views/ApprovalProcess/BaseFlowChart.vue'
 import { ref, shallowRef } from 'vue'
 import { baseInfoData, completedVisible, tabName } from '@/views/workbench/basInfoValue'
+import { status } from 'nprogress'
+console.log(status)
+
 console.log(completedVisible, 'drawer')
 
 const message = useMessage()
@@ -178,7 +181,21 @@ const dialogSubmit = () => {
       message.error('提交失败')
     })
 }
+const successText = (i) => {
+  console.log(i)
 
+  if (i == 'ZHSQ' || i == 'SGYZ' || i == 'MGYZ') {
+    return '同意'
+  } else if (i == 'SCKP' || i == 'MCKP') {
+    return '打印/开票'
+  } else if (i == 'SCGH' || i == 'MCGH') {
+    return '确认已过户'
+  } else if (i == 'SKZH') {
+    return '重新支付'
+  } else if (i == 'LRTX') {
+    return '在线转账'
+  }
+}
 // 关闭抽屉
 const dravwerClose = () => {
   activeName.value = 'BaseInfo'
