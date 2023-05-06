@@ -42,4 +42,9 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
     @ResultType(ContractDO.class)
     @Select("select * from uctp_contract where contract_id = #{contractId} and deleted = 0")
     ContractDO selectByContractId(@Param("contractId") Long contractId);
+
+    @InterceptorIgnore(tenantLine = "true")
+    @ResultType(ContractDO.class)
+    @Select("select * from uctp_contract where car_id = #{carId} and contract_type = #{contractType} and deleted = 0")
+    ContractDO selectByCarIdAndContractType(@Param("carId") Long carId, @Param("contractType") Integer contractType);
 }
