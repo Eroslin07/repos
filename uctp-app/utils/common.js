@@ -5,7 +5,8 @@
 export function toast(content) {
   uni.showToast({
     icon: 'none',
-    title: content
+    title: content,
+    duration: 2000
   })
 }
 
