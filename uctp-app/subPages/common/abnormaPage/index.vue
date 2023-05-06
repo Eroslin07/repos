@@ -20,6 +20,14 @@
 			<image src="/static/images/error/error.png" mode=""></image>
 			<view>系统异常</view>
 		</view>
+		<view v-if="isSHowTip=='signing'" class="tips">
+			<image src="/static/images/bycar/signing.gif" mode=""></image>
+			<view>合同签署中</view>
+		</view>
+		<view v-if="isSHowTip=='creating'" class="tips">
+			<image src="/static/images/bycar/creating.gif" mode="widthFix" ></image>
+			<view>合同生成中</view>
+		</view>
 	</view>
 </template>
 
