@@ -1255,13 +1255,39 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
         //商户签章
-        this.companySign(configDO,contractDO);
+        this.companySign(configDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.FALSE)));
         //平台方签章
-        QysConfigDO platformConfigDO = qysConfigMapper.selectById(2L);
-        this.companySign(platformConfigDO,contractDO);
+        QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
+        this.companySign(platformConfigDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.TRUE)));
     }
 
-    private void companySign(QysConfigDO configDO,ContractDO contractDO){
+    /**
+     * 签章关键字
+     *
+     * @param contractType 合同类型
+     * @param isPlatform   是否平台方
+     * @return
+     */
+    private String getKeyword(Integer contractType, Boolean isPlatform) {
+        String keyword = "";
+        if (ObjectUtil.equals(1, contractType) || ObjectUtil.equals(3, contractType)) {
+            if (isPlatform) {
+                keyword = "乙方（章）：";
+            } else {
+                keyword = "甲方（章）：";
+            }
+        }
+        if (ObjectUtil.equals(2, contractType) || ObjectUtil.equals(4, contractType)) {
+            if (isPlatform) {
+                keyword = "乙方：";
+            } else {
+                keyword = "丙方：";
+            }
+        }
+        return keyword;
+    }
+
+    private void companySign(QysConfigDO configDO,ContractDO contractDO,List<String> keywords){
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         //获取签署方公章
         Long sealId = null;
@@ -1277,14 +1303,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else {
             sealId = configDO.getSealId();
         }
-        List<String> keywords = ListUtil.list(false);
-        if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
-            keywords.add("甲方（章）：");
+//        List<String> keywords = ListUtil.list(false);
+//        if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
+//            keywords.add("甲方（章）：");
+////            keywords.add("甲方：");
+//        }
+//        if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
 //            keywords.add("甲方：");
-        }
-        if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
-            keywords.add("甲方：");
-        }
+//        }
         client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
         if (ObjectUtil.isNull(configDO.getSealId())) {
             configDO.setSealId(sealId);
