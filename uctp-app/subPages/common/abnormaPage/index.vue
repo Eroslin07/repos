@@ -1,23 +1,23 @@
 <template>
 	<view class="abnormal">
 		<view v-if="isSHowTip=='onLoading'" class="tips">
-			<image src="/static/images/home/car-loading2.gif" mode=""></image>
+			<image src="@/subPages/static/images/home/car-loading2.gif" mode=""></image>
 			<view>正在加载...</view>
 		</view>
 		<view v-if="isSHowTip=='noData'" class="tips">
-			<image src="/static/images/error/noData.png" mode=""></image>
+			<image src="@/subPages/static/images/error/noData.png" mode=""></image>
 			<view>暂无数据</view>
 		</view>
 		<view v-if="isSHowTip=='noMsg'" class="tips">
-			<image src="/static/images/error/noMsg.png" mode=""></image>
+			<image src="@/subPages/static/images/error/noMsg.png" mode=""></image>
 			<view>暂无消息</view>
 		</view>
 		<view v-if="isSHowTip=='webError'" class="tips">
-			<image src="/static/images/error/webError.png" mode=""></image>
+			<image src="@/subPages/static/images/error/webError.png" mode=""></image>
 			<view>网络异常</view>
 		</view>
 		<view v-if="isSHowTip=='sysError'" class="tips">
-			<image src="/static/images/error/error.png" mode=""></image>
+			<image src="@/subPages/static/images/error/error.png" mode=""></image>
 			<view>系统异常</view>
 		</view>
 		<view v-if="isSHowTip=='signing'" class="tips">
