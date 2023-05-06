@@ -1264,13 +1264,18 @@ public class QysConfigServiceImpl implements QysConfigService {
     private void companySign(QysConfigDO configDO,ContractDO contractDO){
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         //获取签署方公章
-        SealListResult checkedData = client.defaultSealList(configDO.getBusinessName()).getCheckedData();
-        if (checkedData.getTotalCount() == 0) {
-            throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
-        }
-        Long sealId = this.getSealId(checkedData.getList());
-        if (ObjectUtil.isNull(sealId)) {
-            throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
+        Long sealId = null;
+        if (ObjectUtil.isNull(configDO.getSealId())) {
+            SealListResult checkedData = client.defaultSealList(configDO.getBusinessName()).getCheckedData();
+            if (checkedData.getTotalCount() == 0) {
+                throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
+            }
+            sealId = this.getSealId(checkedData.getList());
+            if (ObjectUtil.isNull(sealId)) {
+                throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
+            }
+        } else {
+            sealId = configDO.getSealId();
         }
         List<String> keywords = ListUtil.list(false);
         if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
@@ -1280,7 +1285,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
             keywords.add("甲方：");
         }
-        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), configDO.getSealId(), keywords).getCheckedData();
+        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
         if (ObjectUtil.isNull(configDO.getSealId())) {
             configDO.setSealId(sealId);
             qysConfigMapper.updateById(configDO);
