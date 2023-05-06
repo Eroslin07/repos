@@ -13,13 +13,13 @@
         <icon icon="svg-icon:notice" class="notice"></icon>
         <div class="title-box">
           收车合同
-          <span style="color: #63b0ff">{{ baseInfoData.data.serialNo }}</span>
+          <span style="color: #63b0ff">{{ baseInfoData.data.variables.contractCode }}</span>
           已经签约完成并已付款。现需要向卖车方
           <span style="color: #63b0ff">{{
             baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
               .sellerName || '--'
           }}</span>
-          的开具反向二手车通用发票。开票内容如下，请平台方开具反向二手车统一发票！
+          开具二手车销售统一发票（反向），开票内容如下：
         </div>
       </div>
       <div class="content">
