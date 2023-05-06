@@ -939,7 +939,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 throw new ServiceException(sellResult.getCode(), sellResult.getApiMsg());
             }*/
             //模版参数
-            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "4", sellWTCode);
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "2", sellWTCode);
             contractId = checkContract.getId();
             //选模版
             //旧模板  3088683482805772326L
@@ -1783,8 +1783,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("车价小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount()))));
                 params.add(new TemplateParam("定金大写", UppercaseUtil.convert(carInfo.getDeposit())));
                 params.add(new TemplateParam("定金小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getDeposit()))));
-                params.add(new TemplateParam("剩余车款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
-                params.add(new TemplateParam("剩余车款小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getBalancePayment()))));
+                params.add(new TemplateParam("尾款大写", UppercaseUtil.convert(carInfo.getBalancePayment())));
+                params.add(new TemplateParam("尾款小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getBalancePayment()))));
             } else if ("21".equals(type)) {
                 //卖车委托合同-按揭付款
                 params.add(new TemplateParam("合同编号", code));
