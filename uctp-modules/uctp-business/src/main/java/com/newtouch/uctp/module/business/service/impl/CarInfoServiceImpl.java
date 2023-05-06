@@ -905,20 +905,22 @@ public class CarInfoServiceImpl implements CarInfoService {
             List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
             contractList.add(this.getContractApprovalShowInfo(carId, 1));
             contractList.add(this.getContractApprovalShowInfo(carId, 2));
+            Long contractId = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? contractList.get(1).getContractId() : null;
             String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractCode()) ? String.valueOf(contractList.get(1).getContractCode()) : "";
             carTransferInfoVO.setContractCode(contractCode);
             carTransferInfoVO.setContractList(contractList);
-            CarInvoiceInfoVO carInvoiceInfo = this.getReverseInvoiceInfo(Long.valueOf(contractCode));
+            CarInvoiceInfoVO carInvoiceInfo = this.getReverseInvoiceInfo(contractId);
             carTransferInfoVO.setCarInvoiceInfoVO(carInvoiceInfo);
         } else if (ObjectUtil.equals(BpmDefTypeEnum.MCGH.name(), procDefKey)) {
             // 卖车过户
             List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
             contractList.add(this.getContractApprovalShowInfo(carId, 3));
             contractList.add(this.getContractApprovalShowInfo(carId, 4));
+            Long contractId = ObjectUtil.isNotNull(contractList.get(1).getContractId()) ? contractList.get(1).getContractId() : null;
             String contractCode = ObjectUtil.isNotNull(contractList.get(1).getContractCode()) ? String.valueOf(contractList.get(1).getContractCode()) : "";
             carTransferInfoVO.setContractCode(contractCode);
             carTransferInfoVO.setContractList(contractList);
-            CarInvoiceInfoVO carInvoiceInfo = this.getForwardInvoiceInfo(Long.valueOf(contractCode));
+            CarInvoiceInfoVO carInvoiceInfo = this.getForwardInvoiceInfo(contractId);
             carTransferInfoVO.setCarInvoiceInfoVO(carInvoiceInfo);
         }
 
@@ -1031,8 +1033,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         CarInfoDetailsDO infoDetails = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, carId);
         //3.根据tenantId拿到发票抬头
         InvoiceTitleDO titleDO = invoiceTitleMapper.selectOne(InvoiceTitleDO::getTenantId, carInfoDO.getTenantId());
-        invoiceDetailVO.setBuyerName(titleDO.getName());
-        invoiceDetailVO.setBuyerIdCard(titleDO.getBankAccount());
+        invoiceDetailVO.setBuyerName(titleDO.getRepresent());
+        invoiceDetailVO.setBuyerIdCard(titleDO.getTaxNum());
         invoiceDetailVO.setBuyerAddress(titleDO.getAddress());
         invoiceDetailVO.setBuyerTel(titleDO.getTel());
         invoiceDetailVO.setSellerName(infoDetails.getSellerName());
@@ -1045,11 +1047,11 @@ public class CarInfoServiceImpl implements CarInfoService {
         invoiceDetailVO.setVin(carInfoDO.getVin());
         invoiceDetailVO.setModel(carInfoDO.getModel());
         invoiceDetailVO.setTransManageName(infoDetails.getTransManageName());
-        invoiceDetailVO.setSellAmount(carInfoDO.getSellAmount());
-        invoiceDetailVO.setMarketName(titleDO.getName());
+        invoiceDetailVO.setSellAmount(carInfoDO.getVehicleReceiptAmount());
+        invoiceDetailVO.setMarketName(titleDO.getRepresent());
         invoiceDetailVO.setTaxNum(titleDO.getTaxNum());
         invoiceDetailVO.setMarketAddress(titleDO.getAddress());
-        invoiceDetailVO.setMarketBankNum(titleDO.getBank()+titleDO.getBankAccount());
+        invoiceDetailVO.setMarketBankNum(titleDO.getOpening());
         invoiceDetailVO.setMarketTel(titleDO.getTel());
         return invoiceDetailVO;
     }
