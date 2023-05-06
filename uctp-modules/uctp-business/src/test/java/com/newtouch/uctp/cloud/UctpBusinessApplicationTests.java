@@ -10,10 +10,7 @@ import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultQiyuesuo
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.qiyuesuo.sdk.v2.SdkClient;
-import com.qiyuesuo.sdk.v2.bean.Category;
-import com.qiyuesuo.sdk.v2.bean.Contract;
-import com.qiyuesuo.sdk.v2.bean.Signatory;
-import com.qiyuesuo.sdk.v2.bean.User;
+import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.ContractPageRequest;
 import com.qiyuesuo.sdk.v2.response.ContractPageResult;
@@ -22,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +52,8 @@ class UctpBusinessApplicationTests {
         String accessSecret = "qKPK101VGyLsnSqFoLzSCu3JGiMAVO";
         SdkClient sdkClient = new SdkClient(serverUrl, accessKey, accessSecret);
 // 合同页面
-        ContractPageRequest request = new ContractPageRequest(3091669222128951367l,
-                new User("15196636618", "MOBILE"), "");
+        ContractPageRequest request = new ContractPageRequest(3092059562803470607l,
+                new User("15328756760", "MOBILE"), "");
         String response = sdkClient.service(request);
         SdkResponse<ContractPageResult> responseObj = JSONUtils.toQysResponse(response, ContractPageResult.class);
         if(responseObj.getCode() == 0) {
@@ -70,7 +68,7 @@ class UctpBusinessApplicationTests {
     void sendContract(){
 //        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         Contract draftContract = new Contract();
-        draftContract.setSubject("两方-二手车-收车委托合同");
+        draftContract.setSubject("两方-二手车-收车委托合同666");
         // 设置合同接收方
         // 甲方个人签署方
 //        Signatory persoanlSignatory = new Signatory();
@@ -101,25 +99,21 @@ class UctpBusinessApplicationTests {
 //        draftContract.addTemplateParam(new TemplateParam("选择2","☑"));
 //        draftContract.addTemplateParam(new TemplateParam("选择3","□"));
 //        draftContract.addTemplateParam(new TemplateParam("选择4","□"));
-        draftContract.setCategory(new Category(3091707509472301306L));//业务分类配置
+        draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置
         draftContract.setSend(false); // 发起合同
-        draftContract.setCreator(new User("15196636618","MOBILE"));
-        Contract checkedData = client.defaultDraftSend(draftContract).getCheckedData();
-        System.out.println(checkedData.getId());
+        draftContract.setCreator(new User("17380123816","MOBILE"));
+        Contract contract = client.defaultDraftSend(draftContract).getCheckedData();
+        System.out.println(contract.getId());
         //2,签字时是丙方是否会自动签章
 //        QiyuesuoCommonResult<Contract> result = client.defaultDraftSend(draftContract);
 //        System.out.println(JSONUtil.toJsonStr(result.getData()));
 //        Contract contract = result.getData();
-//        ArrayList<TemplateParam> params = ListUtil.toList(new TemplateParam("甲方", "罗聪"),
-//                new TemplateParam("乙方", "新致"),
-//                new TemplateParam("丙方", "平头哥二手车"),
-//                new TemplateParam("选择1", "☑"),
-//                new TemplateParam("选择2", "☑"),
-//                new TemplateParam("选择3", "□"),
-//                new TemplateParam("选择4", "□"));
-//        QiyuesuoCommonResult<DocumentAddResult> docRes = client.defaultDocumentAddByTemplate(contract.getId(), 3083246899365421080L, params, "二手车收购协议");
+        ArrayList<TemplateParam> params = ListUtil.toList(new TemplateParam("甲方", "罗聪"),
+                new TemplateParam("乙方", "新致"),
+                new TemplateParam("丙方", "平头哥二手车"));
+        client.defaultDocumentAddByTemplate(contract.getId(), 3089851249420403111L, params, "二手车收购协议").getCheckedData();
 //        System.out.println(JSONUtil.toJsonStr(docRes.getData()));
-//        QiyuesuoCommonResult<Object> result1 = client.defaultContractSend(contract.getId());
+        client.defaultContractSend(contract.getId()).getCheckedData();
 //        System.out.println(result1.getData());
     }
 
@@ -149,7 +143,7 @@ class UctpBusinessApplicationTests {
 
     @Test
     void contractSend(){
-        Object checkedData = client.defaultContractSend(3091648796489155269L).getCheckedData();
+        Object checkedData = client.defaultContractSend(3092074193567683165L).getCheckedData();
         System.out.println(JSONUtil.toJsonStr(checkedData));
     }
 

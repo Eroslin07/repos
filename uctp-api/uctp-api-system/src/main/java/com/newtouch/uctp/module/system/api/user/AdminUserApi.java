@@ -57,4 +57,8 @@ public interface AdminUserApi {
     @Parameter(name = "ids", description = "用户编号数组", example = "3,5", required = true)
     CommonResult<Boolean> validUserList(@RequestParam("ids") Set<Long> ids);
 
+    @GetMapping(PREFIX + "/get/master")
+    @Operation(summary = "查询部门下主用户")
+    @Parameter(name = "deptId", description = "用户编号", example = "1", required = true)
+    CommonResult<AdminUserRespDTO> getMasterUser(@RequestParam("deptId") Long deptId);
 }

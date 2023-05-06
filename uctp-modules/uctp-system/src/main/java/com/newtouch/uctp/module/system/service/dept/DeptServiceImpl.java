@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
+import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.context.TenantContextHolder;
 import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
@@ -12,11 +13,14 @@ import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReq
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
 import com.newtouch.uctp.module.system.convert.dept.DeptConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
+import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.system.enums.dept.DeptIdEnum;
 import com.newtouch.uctp.module.system.mq.producer.dept.DeptProducer;
+import com.newtouch.uctp.module.system.service.user.AdminUserService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -61,6 +65,9 @@ public class DeptServiceImpl implements DeptService {
     @Resource
     private DeptProducer deptProducer;
 
+    @Resource
+    @Lazy
+    private AdminUserService adminUserService;
     /**
      * 初始化 {@link #parentDeptCache} 和 {@link #deptCache} 缓存
      */
@@ -339,5 +346,12 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public DeptDO getDeptByUserId(Long userId) {
         return deptMapper.selectOne("leader_user_id ",userId);
+    }
+
+    @Override
+    public DeptDO getPlatformDept() {
+        AdminUserDO user = adminUserService.getUser(SecurityFrameworkUtils.getLoginUserId());
+        DeptDO deptDO = this.getDept(user.getDeptId());
+        return deptMapper.selectOne("parent_id", deptDO.getParentId(), "attr", 1);
     }
 }

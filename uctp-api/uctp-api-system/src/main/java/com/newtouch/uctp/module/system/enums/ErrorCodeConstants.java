@@ -50,6 +50,7 @@ public interface ErrorCodeConstants {
     ErrorCode USER_PASSWORD_FAILED = new ErrorCode(1002003005, "用户密码校验失败");
     ErrorCode USER_IS_DISABLE = new ErrorCode(1002003006, "名字为【{}】的用户已被禁用");
     ErrorCode USER_COUNT_MAX = new ErrorCode(1002003008, "创建用户失败，原因：超过租户最大租户配额({})！");
+    ErrorCode USER_EXT_NOT_EXISTS = new ErrorCode(1002003009, "用户扩展数据不存在！");
 
     // ========== 部门模块 1002004000 ==========
     ErrorCode DEPT_NAME_DUPLICATE = new ErrorCode(1002004000, "已经存在该名字的部门");
@@ -61,7 +62,7 @@ public interface ErrorCodeConstants {
     ErrorCode DEPT_NOT_ENABLE = new ErrorCode(1002004006, "部门({})不处于开启状态，不允许选择");
     ErrorCode DEPT_PARENT_IS_CHILD = new ErrorCode(1002004007, "不能设置自己的子部门为父部门");
     ErrorCode DEPT_NOT_ADD_USER = new ErrorCode(1002004008, "该部门不能设置用户");
-
+    ErrorCode PLATFORM_DEPT_NOT_FOUND = new ErrorCode(1002004009, "当前账号市场部门不存在");
     // ========== 岗位模块 1002005000 ==========
     ErrorCode POST_NOT_FOUND = new ErrorCode(1002005000, "当前岗位不存在");
     ErrorCode POST_NOT_ENABLE = new ErrorCode(1002005001, "岗位({}) 不处于开启状态，不允许选择");

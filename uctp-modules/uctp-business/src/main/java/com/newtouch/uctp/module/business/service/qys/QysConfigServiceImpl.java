@@ -14,26 +14,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
-import io.seata.spring.annotation.GlobalTransactional;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -75,6 +55,7 @@ import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 import com.newtouch.uctp.module.business.mq.producer.UserAuthProducer;
 import com.newtouch.uctp.module.business.service.*;
+import com.newtouch.uctp.module.business.service.contract.ContractService;
 import com.newtouch.uctp.module.business.util.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
@@ -95,6 +76,23 @@ import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import com.qiyuesuo.sdk.v2.utils.StringUtils;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
@@ -1248,7 +1246,6 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Transactional
     public void companySign(Long contractId) {
         ContractDO contractDO = contractService.getByContractId(contractId);
-
         if (ObjectUtil.isNull(contractDO)) {
             throw exception(CONTRACT_NOT_EXISTS);
         }
@@ -1257,6 +1254,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.isNull(configDO)) {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
+        //商户签章
+        this.companySign(configDO,contractDO);
+        //平台方签章
+        QysConfigDO platformConfigDO = qysConfigMapper.selectById(2L);
+        this.companySign(platformConfigDO,contractDO);
+    }
+
+    private void companySign(QysConfigDO configDO,ContractDO contractDO){
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         //获取签署方公章
         SealListResult checkedData = client.defaultSealList(configDO.getBusinessName()).getCheckedData();
@@ -1267,9 +1272,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.isNull(sealId)) {
             throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
         }
-
-//        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1650772257324167170L);
-
         List<String> keywords = ListUtil.list(false);
         if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
             keywords.add("甲方（章）：");
@@ -1278,7 +1280,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
             keywords.add("甲方：");
         }
-        client.defaultCompanysign(contractId, contractDO.getDocumentId(), configDO.getSealId(), keywords).getCheckedData();
+        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), configDO.getSealId(), keywords).getCheckedData();
         if (ObjectUtil.isNull(configDO.getSealId())) {
             configDO.setSealId(sealId);
             qysConfigMapper.updateById(configDO);

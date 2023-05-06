@@ -32,7 +32,7 @@ import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.service.CarInfoService;
-import com.newtouch.uctp.module.business.service.ContractService;
+import com.newtouch.uctp.module.business.service.contract.ContractService;
 import com.newtouch.uctp.module.business.util.DownLoadUtils;
 import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
 

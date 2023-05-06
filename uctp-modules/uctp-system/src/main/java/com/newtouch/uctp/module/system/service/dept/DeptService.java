@@ -1,19 +1,16 @@
 package com.newtouch.uctp.module.system.service.dept;
 
 import cn.hutool.core.collection.CollUtil;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 部门 Service 接口
@@ -153,4 +150,6 @@ public interface DeptService {
     List<DeptDO> selectByName(String name);
 
     DeptDO getDeptByUserId(Long userId);
+
+    DeptDO getPlatformDept();
 }
