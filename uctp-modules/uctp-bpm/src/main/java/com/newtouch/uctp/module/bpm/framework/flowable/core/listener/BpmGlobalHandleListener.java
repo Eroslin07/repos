@@ -38,6 +38,7 @@ import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
+import com.newtouch.uctp.module.business.api.contract.MerchantMoneyApi;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
@@ -71,6 +72,8 @@ public class BpmGlobalHandleListener {
     private RepositoryService repositoryService;
     @Resource
     private ContractMapper contractMapper;
+    @Resource
+    private MerchantMoneyApi merchantMoneyApi;
 
     /**
      * 流程创建时处理
@@ -84,8 +87,14 @@ public class BpmGlobalHandleListener {
         bpmFormMainMapper.updateById(bpmFormMainDO);
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
-            //收车公允价值流程发起，修改车辆状态
+            // 收车公允价值流程发起，修改车辆状态
             carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A_B.value(),CarStatus.COLLECT_A_B_A.value(),"已发起","");
+            // 预占保证金（通过车辆ID查询车辆的收车草稿合同）     合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
+            ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
+            if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
+                throw new RuntimeException("车辆ID[" + bpmFormMainVO.getThirdId() + "]预占保证金失败，原因：未获取到收车合同信息");
+            }
+            merchantMoneyApi.reserveCash(contractDO.getContractId());
         }else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允价值流程发起，修改车辆状态
             carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
@@ -144,6 +153,13 @@ public class BpmGlobalHandleListener {
             if ("disagree".equals(approvalType)) {
                 //修改车辆状态
                 carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
+                // 释放保证金
+                ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
+                if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
+                    throw new RuntimeException("车辆ID[" + bpmFormMainVO.getThirdId() + "]释放保证金失败，原因：未获取到收车合同信息");
+                }
+                merchantMoneyApi.releaseCash(contractDO.getContractId());
+                // 保存消息
                 noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
@@ -153,7 +169,7 @@ public class BpmGlobalHandleListener {
                 carInfoMapper.updateById(carInfoDO);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 1);
-                qysConfigApi.companySign(contractDO.getContractId());
+                qysConfigApi.companySign(contractDO.getContractId());  // TODO :调用有问题，需要调用同时支持合同发起、静默签章
                 noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
