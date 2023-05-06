@@ -18,6 +18,7 @@ import org.flowable.task.api.Task;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -33,6 +34,8 @@ import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
+import com.newtouch.uctp.module.bpm.service.openinvoice.BpmOpenInvoiceService;
+import com.newtouch.uctp.module.bpm.service.transfer.BpmCarTransferService;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
 import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
@@ -74,6 +77,10 @@ public class BpmGlobalHandleListener {
     private ContractMapper contractMapper;
     @Resource
     private MerchantMoneyApi merchantMoneyApi;
+    @Resource
+    private BpmOpenInvoiceService bpmOpenInvoiceService;
+    @Resource
+    private BpmCarTransferService bpmCarTransferService;
 
     /**
      * 流程创建时处理
@@ -188,6 +195,33 @@ public class BpmGlobalHandleListener {
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 3);
                 qysConfigApi.companySign(contractDO.getContractId());
                 noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
+            }
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SKZH.name())) {
+            // 收车支付失败流程重新支付成功后，需要发起收车开票流程
+            if ("pass".equals(approvalType)) {
+                String formMainId = bpmOpenInvoiceService.createOpenInvoiceBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.SCKP.name());
+                if (!StringUtils.hasText(formMainId)) {
+                    throw new RuntimeException("收车款支付失败流程完成后，自动发起反向二手车统一发票待办开票审批流程失败");
+                }
+            }
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCKP.name())) {
+            // 收车开票完成后，自动发起收车过户流程
+            if ("pass".equals(approvalType)) {
+                String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.SCGH.name());
+                if (!StringUtils.hasText(formMainId)) {
+                    throw new RuntimeException("收车开票完成后，自动发起收车过户流程失败");
+                }
+            }
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCKP.name())) {
+            // 卖车开票完成后，自动发起收车过户流程
+            if ("pass".equals(approvalType)) {
+                String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.MCGH.name());
+                if (!StringUtils.hasText(formMainId)) {
+                    throw new RuntimeException("卖车开票完成后，自动发起卖车过户流程失败");
+                }
             }
         }
 

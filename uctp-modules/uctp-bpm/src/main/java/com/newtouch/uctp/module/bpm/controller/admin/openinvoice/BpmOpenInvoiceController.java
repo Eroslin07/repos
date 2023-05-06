@@ -30,7 +30,7 @@ public class BpmOpenInvoiceController {
     private BpmOpenInvoiceService bpmOpenInvoiceService;
 
     @PostMapping("/createOpenInvoiceBpm")
-    @Operation(summary = "根据车辆ID发起过户流程")
+    @Operation(summary = "根据合同ID发起开票流程")
     @Parameter(name = "contractId", description = "合同号ID", required = true, example = "3088109266591097072")
     @Parameter(name = "procDefKey", description = "收车/卖车开票流程标识", required = true, example = "SCGH")
     public CommonResult<String> createOpenInvoiceBpm(@RequestParam("contractId") Long contractId, @RequestParam("procDefKey") String procDefKey){
