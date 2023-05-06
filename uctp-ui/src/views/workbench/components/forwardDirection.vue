@@ -11,7 +11,7 @@
         <icon icon="svg-icon:notice" class="notice"></icon>
         <div class="title-box">
           卖车合同
-          <span style="color: #63b0ff">{{ baseInfoData.data.serialNo }}</span>
+          <span style="color: #63b0ff">{{ baseInfoData.data.variables.contractCode }}</span>
           已经签约完成并已付款。现需要向卖车方
           <span style="color: #63b0ff">{{
             baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
