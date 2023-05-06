@@ -10,14 +10,26 @@
           </div>
         </div>
         <div class="xinxi">收车款信息</div>
+        <div class="title-bg-box">
+          <icon icon="svg-icon:notice" class="notice"></icon>
+          <div class="title-box">
+            您向卖车方
+            <span style="color: #63b0ff">{{ mainValue.formDataJson.bankName }}</span>
+            的收款账号
+            <span style="color: #63b0ff">{{ mainValue.formDataJson.bankNo }}</span>
+            支付收车款
+            <span style="color: #63b0ff">{{ mainValue.formDataJson.balanceAmount }}</span>
+            元，因 {{}} 原因支付失败，请处理！
+          </div>
+        </div>
         <div class="content-box">
           <el-row>
             <el-col :span="2" class="bg-yell">姓名：</el-col>
-            <el-col :span="4"> {{ mainValue.formDataJson.merchantName || '暂无数据' }}</el-col>
+            <el-col :span="4"> {{ mainValue.formDataJson.bankName || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">开户行：</el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.telNo || '暂无数据' }}</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.bankOfDeposit || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">银行账号： </el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.amount || '暂无数据' }}</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.bankNo || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">收车款： </el-col>
             <el-col :span="4">{{
               mainValue.formDataJson.balanceAmount + '元' || '暂无数据'
@@ -25,7 +37,7 @@
           </el-row>
         </div>
         <div class="xinxi" style="margin-top: 16px">合同信息</div>
-        <div class="content">
+        <!-- <div class="content">
           <el-row>
             <template
               v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
@@ -40,7 +52,7 @@
               </el-col>
             </template>
           </el-row>
-        </div>
+        </div> -->
       </el-main>
     </el-container>
     <AgreementFrame
@@ -81,10 +93,10 @@ const contractVisible = ref(false)
 const contractFileUrl = ref('')
 
 // 查看合同
-const viewContract = (item: any) => {
-  contractFileUrl.value = item.contractFileUrl
-  contractVisible.value = true
-}
+// const viewContract = (item: any) => {
+//   contractFileUrl.value = item.contractFileUrl
+//   contractVisible.value = true
+// }
 
 // 关闭合同弹框
 const handleCancel = () => {
@@ -150,6 +162,28 @@ const handleCancel = () => {
     .el-col {
       border-top: 1px solid #eaeaea;
     }
+  }
+}
+.title-bg-box {
+  margin: 14px 0 16px;
+  width: 100%;
+  overflow: hidden;
+  height: 34px;
+  background: rgba(250, 100, 0, 0.1);
+  border-radius: 2px;
+  padding-top: 8px;
+  align-items: center;
+  padding-left: 40px;
+  position: relative;
+  .notice {
+    position: absolute;
+    left: 20px;
+    top: 8px;
+  }
+  .title-box {
+    width: 200%;
+    display: flex;
+    color: #fa6400;
   }
 }
 </style>
