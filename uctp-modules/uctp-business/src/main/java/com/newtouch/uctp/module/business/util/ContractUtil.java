@@ -1,14 +1,12 @@
 package com.newtouch.uctp.module.business.util;
 
 import com.qiyuesuo.sdk.v2.SdkClient;
-import com.qiyuesuo.sdk.v2.http.FileItem;
 import com.qiyuesuo.sdk.v2.request.DocumentDownloadRequest;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Map;
 
 public class ContractUtil {
     private static final Logger log = LoggerFactory.getLogger(ContractUtil.class);
@@ -23,9 +21,9 @@ public class ContractUtil {
 
         // 下载合同文档
         DocumentDownloadRequest request = new DocumentDownloadRequest(documentId);
-        byte[] bytes = null;
+        byte[] bytes =null;
         try {
-            File tempFile = File.createTempFile("temp", ".pdf");
+            File tempFile =File.createTempFile("temp",".pdf");
             FileOutputStream fos = new FileOutputStream(tempFile);
             //下载文件到临时文件
             sdkClient.download(request, fos);
@@ -45,7 +43,7 @@ public class ContractUtil {
 
     /**
      * 将文件转为字节流操作
-     */
+     * */
     public static byte[] fileConvertToByteArray(File file) {
         byte[] data = null;
 

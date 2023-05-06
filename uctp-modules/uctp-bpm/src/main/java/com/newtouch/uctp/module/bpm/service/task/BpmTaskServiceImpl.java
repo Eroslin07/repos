@@ -399,15 +399,15 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             new BpmTaskExtDO().setAssigneeUserId(NumberUtils.parseLong(task.getAssignee())).setTaskId(task.getId());
         taskExtMapper.updateByTaskId(taskExtDO);
         // 发送通知。在事务提交时，批量执行操作，所以直接查询会无法查询到 ProcessInstance，所以这里是通过监听事务的提交来实现。
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+        /*TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
                 ProcessInstance processInstance = processInstanceService.getProcessInstance(task.getProcessInstanceId());
                 //AdminUserRespDTO startUser = adminUserApi.getUser(Long.valueOf(processInstance.getStartUserId())).getCheckedData();
-                /*messageService.sendMessageWhenTaskAssigned(
-                    BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));*/
+                *//*messageService.sendMessageWhenTaskAssigned(
+                    BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));*//*
             }
-        });
+        });*/
     }
 
     @Override
@@ -513,6 +513,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         }
         HashMap<String, Object> formDataJsonVariable = new HashMap<>();
         Map<String, Object> formMainMap = BeanUtil.beanToMap(bpmFormMainVO, false, false);
+        //formMainMap.put("thirdId", String.valueOf(bpmFormMainDO.getThirdId()));
         formMainMap.put("formDataJson", bpmFormMainVO.getFormDataJson().getInnerMap());
         formDataJsonVariable.put("formMain", formMainMap);
         variablesNew.put("formDataJson", formDataJsonVariable);

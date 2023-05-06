@@ -29,6 +29,8 @@
 		</uni-card>
 		<!-- 提示信息 -->
 		<AbnormalPage v-else :isSHowTip="isSHowTip" />
+		<button v-show="isSHowTip=='createFail'|| isSHowTip=='signFail'" @click="failBtn"  class="button confitmBtn">确定</button>
+		<button v-show="isSHowTip=='signSuccess'" @click="signSucessBtn"  class="button confitmBtn">确定</button>
 	</view>
 </template>
 
@@ -71,25 +73,16 @@
 		methods: {
 			// 获取合同
 			getContractUrl() {
-				let starTime=new Date().getTime();
 				this.isSHowTip = 'creating'
 				let data = `carId=${this.carId}&&type=2`
 				getContractEcho(data).then(res => {
+					this.isSHowTip = ''
 					this.contractDtail = res.data
 					this.contractName = res.data.find(v => v.contractType == '2')?.contractName || '收购协议'
 					this.entrustName = res.data.find(v => v.contractType == '1')?.contractName || '委托收购协议'
 				}).catch(err => {
-					this.$modal.msg('获取合同失败')
-				}).finally(()=>{
-					let endTime=new Date().getTime();
-					if(endTime-starTime>1500){
-						this.isSHowTip = ''
-					}else{
-						setTimeout(()=>{
-							this.isSHowTip = ''
-						},1500)
-					}
-				
+					// this.$modal.msg('获取合同失败')
+					this.isSHowTip = 'createFail'
 				})
 			},
 			
@@ -133,18 +126,21 @@
 						}
 					})
 				} else {
-					_this.$modal.msg('正在加载，请稍等...')
+					// _this.$modal.msg('正在加载，请稍等...')
+					_this.isSHowTip='signing'
 					let data={
 						..._this.contractDtail.find(v=>v.contractType=='1')
 					}
 					getQiyuesuo(data).then((res) => {
 						if (res.data) {
-							_this.$modal.msg("合同已签章");
-							_this.$tab.switchTab('/pages/index');
+							// _this.$modal.msg("合同已签章");
+							_this.isSHowTip='signSuccess'
+							// _this.$tab.switchTab('/pages/index');
 							// _this.$tab.navigateTo(`/subPages/common/webview/index?title=卖车合同签章&url=${res.data}`);
 						}
 					}).catch(()=>{
 						// this.$modal.msg('加载失败！')
+						this.isSHowTip='signFail'
 					})
 				}
 			},
@@ -189,6 +185,16 @@
 			// 关闭
 			handleClose() {
 				this.$tab.switchTab('/pages/index');
+			},
+			// 合同生成失败
+			failBtn(){
+				this.$tab.navigateBack();
+				this.isSHowTip = ''
+			},
+			// 合同签属成功
+			signSucessBtn(){
+				this.$tab.switchTab('/pages/index');
+				this.isSHowTip = ''
 			}
 		}
 	}
@@ -226,5 +232,11 @@
 		margin-top: 10px;
 		background-color: #fa6400;
 		color: #fff;
+	}
+	.confitmBtn{
+		margin:80rpx 30rpx 0;
+		color:#000;
+		background-color: #fff;
+		font-size: 32rpx;
 	}
 </style>

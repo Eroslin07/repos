@@ -41,6 +41,8 @@ public class MakeInvoiceServiceImpl implements MakeInvoiceService{
     /** 获取配置信息 */
     @Override
     public MakeInvoiceRespVO getMakeInvoice(Long tenantId) {
-        return makeMapper.getMakeInvoice(tenantId);
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        Long id = loginUser.getTenantId();
+        return makeMapper.getMakeInvoice(id);
     }
 }

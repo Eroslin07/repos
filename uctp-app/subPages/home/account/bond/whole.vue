@@ -31,7 +31,7 @@
 					<u-loadmore :status="status[index]" loadingText="努力加载中..." />
 				</view>
 				<view v-else  class="empty-page">
-					<image class="empty-img" src="/static/images/index/noData.png" mode="widthFix"></image><br />
+					<image class="empty-img" src=""@/subPages/static/images/index/noData.png" mode="widthFix"></image><br />
 					<text class="empty-text" v-if="status2">暂无数据</text>
 				</view>
 			</view>

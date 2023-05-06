@@ -7,6 +7,9 @@ import lombok.ToString;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 /**
  * @author helong
  * @date 2023/4/12 15:58
@@ -22,6 +25,7 @@ public class BpmTaskApproveFormRespVO {
     @Schema(description = "流程实例ID")
     private String procInstId;
     @Schema(description = "业务ID")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long businessKey;
     @Schema(description = "业务类型")
     private String busiType;
@@ -36,5 +40,6 @@ public class BpmTaskApproveFormRespVO {
     @Schema(description = "前端路由组件地址")
     private String componentAddress;
     @Schema(description = "变量实例")
+    //@JsonSerialize(using= MapSerializer.class)
     private Map<String, Object> variables = new HashMap<String,Object>();
 }

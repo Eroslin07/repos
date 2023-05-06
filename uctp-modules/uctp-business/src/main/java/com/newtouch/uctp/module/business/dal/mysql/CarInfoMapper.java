@@ -95,7 +95,7 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
 
     default List<CarInfoDO> selectIsExist(String vin,Long businessId, Integer salesStatus,Integer status){//salesStatus一级状态  status二级状态
         return selectList(new LambdaQueryWrapperX<CarInfoDO>()
-                .likeIfPresent(CarInfoDO::getVin,vin)
+                .eqIfPresent(CarInfoDO::getVin,vin)
                 .eqIfPresent(CarInfoDO::getBusinessId,businessId)
                 .eqIfPresent(CarInfoDO::getSalesStatus, salesStatus)
                 .eqIfPresent(CarInfoDO::getStatus, status)

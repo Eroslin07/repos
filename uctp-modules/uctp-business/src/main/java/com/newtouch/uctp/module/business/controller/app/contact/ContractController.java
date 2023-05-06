@@ -1,7 +1,7 @@
 package com.newtouch.uctp.module.business.controller.app.contact;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.business.service.ContractService;
+import com.newtouch.uctp.module.business.service.contract.ContractService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +30,14 @@ public class ContractController {
     public CommonResult<Boolean> callbackLogin(@RequestParam Long id,
                                                @RequestParam String reason){
         contractService.contractInvalid(id,reason);
+        return success(true);
+    }
+
+    @PostMapping("/contract/draft")
+    @Operation(summary = "合同发起草稿")
+    @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
+    public CommonResult<Boolean> callbackLogin(@RequestParam Long carId){
+        contractService.draft(carId);
         return success(true);
     }
 

@@ -350,7 +350,7 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     protected QiyuesuoCommonResult<Object> doDefaultContractSend(Long contractId) throws Throwable {
         ContractSendRequest request = new ContractSendRequest(contractId, Arrays.asList());
         String response = this.client.service(request);
-        SdkResponse<DocumentAddResult> sdkResponse = JSONUtils.toQysResponse(response, DocumentAddResult.class);
+        SdkResponse<Object> sdkResponse = JSONUtils.toQysResponse(response, Object.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
                 , sdkResponse.getMessage()
                 , sdkResponse.getResult()

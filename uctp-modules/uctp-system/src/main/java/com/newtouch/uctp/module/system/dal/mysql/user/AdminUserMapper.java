@@ -7,6 +7,8 @@ import com.newtouch.uctp.module.system.controller.admin.user.vo.user.UserExportR
 import com.newtouch.uctp.module.system.controller.admin.user.vo.user.UserPageReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.Collection;
 import java.util.List;
@@ -66,4 +68,8 @@ public interface AdminUserMapper extends BaseMapperX<AdminUserDO> {
         return selectList(AdminUserDO::getDeptId, deptIds);
     }
 
+    @Select("select *\n" +
+            "from system_users a inner join uctp_user_ext b on a.id = b.USER_ID\n" +
+            "where a.dept_id = #{deptId} and b.STAFF_TYPE = 1 and a.deleted = 0")
+    AdminUserDO getMasterUser(@Param("deptId") Long deptId);
 }

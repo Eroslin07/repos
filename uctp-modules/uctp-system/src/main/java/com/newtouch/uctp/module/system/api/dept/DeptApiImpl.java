@@ -23,7 +23,6 @@ public class DeptApiImpl implements DeptApi {
 
     @Resource
     private DeptService deptService;
-
     @Override
     public CommonResult<DeptRespDTO> getDept(Long id) {
         DeptDO dept = deptService.getDept(id);
@@ -51,6 +50,12 @@ public class DeptApiImpl implements DeptApi {
     @Override
     public CommonResult<DeptRespDTO> getDeptByUserId(Long userId) {
         DeptDO dept = deptService.getDeptByUserId(userId);
+        return success(DeptConvert.INSTANCE.convert03(dept));
+    }
+
+    @Override
+    public CommonResult<DeptRespDTO> getPlatformDept() {
+        DeptDO dept = deptService.getPlatformDept();
         return success(DeptConvert.INSTANCE.convert03(dept));
     }
 

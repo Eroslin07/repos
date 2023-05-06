@@ -45,5 +45,9 @@ public class DeptRespDTO {
      * 契约锁公司Id
      */
     private Long companyId;
+    /**
+     * 联系地址
+     */
+    private String address;
 
 }

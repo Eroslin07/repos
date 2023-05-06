@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
@@ -76,6 +78,9 @@ public class RegisterController {
     @Resource
     private UserExtService userExtService;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
 
     @PostMapping("/appLogin")
     @PermitAll
@@ -93,11 +98,81 @@ public class RegisterController {
         return success(authService.wxLogin(reqVO));
     }
 
+//    @GetMapping("/wxToken")
+//    @Operation(summary = "获取微信手机号")
+//    public CommonResult<String> wxToken(@RequestParam("code") String code) {
+//        String authHost = "https://api.weixin.qq.com/cgi-bin/token?";
+//        String getPhone = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?";
+//        String appId="wx9decec45b7374b90";
+//        String secret="45323149c53d4340dfad4a304803eeaf";
+//        String getAccessTokenUrl = authHost
+//                // 1. grant_type为固定参数
+//                + "grant_type=client_credential"
+//                // 2. 官网获取的 API Key
+//                + "&appid=" + appId
+//                // 3. 官网获取的 Secret Key
+//                + "&secret=" + secret;
+//        String access_token="";
+//        String phoneNumber="";
+//        try {
+//            URL realUrl = new URL(getAccessTokenUrl);
+//            // 打开和URL之间的连接
+//            HttpURLConnection connection = (HttpURLConnection) realUrl.openConnection();
+//            connection.setRequestMethod("GET");
+//            connection.connect();
+//            // 获取所有响应头字段
+//            Map<String, List<String>> map = connection.getHeaderFields();
+//            // 遍历所有的响应头字段
+//            for (String key : map.keySet()) {
+//                System.err.println(key + "--->" + map.get(key));
+//            }
+//            // 定义 BufferedReader输入流来读取URL的响应
+//            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            String result = "";
+//            String line;
+//            while ((line = in.readLine()) != null) {
+//                result += line;
+//            }
+//            /**
+//             * 返回结果示例
+//             */
+//            System.err.println("result:" + result);
+//            JSONObject jsonObject = JSON.parseObject(result);
+//            access_token = jsonObject.getString("access_token");
+//
+//
+//            String getUserPhoneUrl = getPhone
+//                    // 1. grant_type为固定参数
+//                    + "&access_token=" + access_token;
+//            HashMap<String, Object> requestParam = new HashMap<>();
+//            // 手机号调用凭证
+//            requestParam.put("code", code);
+//            String jsonStr = JSONUtil.toJsonStr(requestParam);
+//            String result1 = HttpRequest.post(getUserPhoneUrl) .body(jsonStr).execute().body();
+//
+//            /**
+//             * 返回结果示例
+//             */
+//            System.err.println("result:" + result1);
+//            JSONObject phoneJsonObject = JSON.parseObject(result1);
+//            String phone_info = phoneJsonObject.getString("phone_info");
+//            System.out.println(phone_info);
+//            JSONObject jsonObject1 = JSON.parseObject(phone_info);
+//            phoneNumber = jsonObject1.getString("phoneNumber");
+//            System.out.println(phoneNumber);
+//        } catch (Exception e) {
+//            System.err.printf("获取token失败！");
+//            e.printStackTrace(System.err);
+//        }
+//        return success(phoneNumber);
+//    }
+
     @GetMapping("/wxToken")
-    @Operation(summary = "获取微信token")
-    public CommonResult<String> wxToken(@RequestParam("code") String code) {
+    @Operation(summary = "获取微信手机号")
+    public CommonResult<String> wxToken(@RequestParam("code") String code,@RequestParam("wxCode") String wxCode) {
         String authHost = "https://api.weixin.qq.com/cgi-bin/token?";
         String getPhone = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?";
+        String getOpenId = "https://api.weixin.qq.com/sns/jscode2session?";
         String appId="wx9decec45b7374b90";
         String secret="45323149c53d4340dfad4a304803eeaf";
         String getAccessTokenUrl = authHost
@@ -109,25 +184,17 @@ public class RegisterController {
                 + "&secret=" + secret;
         String access_token="";
         String phoneNumber="";
+        String getOpenIdUrl=getOpenId
+                // 1. 官网获取的 API Key
+                + "&appid=" + appId
+                // 2. 官网获取的 Secret Key
+                + "&secret=" + secret
+                // 3. js_code
+                + "&js_code=" + wxCode
+                // 4. grant_type为固定参数
+                + "&grant_type=authorization_code";
         try {
-            URL realUrl = new URL(getAccessTokenUrl);
-            // 打开和URL之间的连接
-            HttpURLConnection connection = (HttpURLConnection) realUrl.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            // 获取所有响应头字段
-            Map<String, List<String>> map = connection.getHeaderFields();
-            // 遍历所有的响应头字段
-            for (String key : map.keySet()) {
-                System.err.println(key + "--->" + map.get(key));
-            }
-            // 定义 BufferedReader输入流来读取URL的响应
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String result = "";
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
+            String result = HttpRequest.get(getAccessTokenUrl).execute().body();
             /**
              * 返回结果示例
              */
@@ -154,12 +221,57 @@ public class RegisterController {
             System.out.println(phone_info);
             JSONObject jsonObject1 = JSON.parseObject(phone_info);
             phoneNumber = jsonObject1.getString("phoneNumber");
+//            phoneNumber = "17380123816";
             System.out.println(phoneNumber);
+
+            String openIdResult = HttpRequest.get(getOpenIdUrl).execute().body();
+            JSONObject openIdResult1 = JSON.parseObject(openIdResult);
+            String openid = openIdResult1.getString("openid");
+            stringRedisTemplate.opsForValue().set(openid,phoneNumber,7,TimeUnit.DAYS);
+
         } catch (Exception e) {
             System.err.printf("获取token失败！");
             e.printStackTrace(System.err);
         }
         return success(phoneNumber);
+    }
+
+
+    @GetMapping("/checkIsLogin")
+    @Operation(summary = "校验是否免登陆")
+    public CommonResult<AuthLoginRespVO> checkIsLogin(@RequestParam("wxCode") String wxCode) {
+        String getOpenId = "https://api.weixin.qq.com/sns/jscode2session?";
+        String appId="wx9decec45b7374b90";
+        String secret="45323149c53d4340dfad4a304803eeaf";
+        AuthWxLoginReqVO reqVO=new AuthWxLoginReqVO();
+        AuthLoginRespVO respVO =new AuthLoginRespVO();
+        String getOpenIdUrl=getOpenId
+                // 1. 官网获取的 API Key
+                + "&appid=" + appId
+                // 2. 官网获取的 Secret Key
+                + "&secret=" + secret
+                // 3. js_code
+                + "&js_code=" + wxCode
+                // 4. grant_type为固定参数
+                + "&grant_type=authorization_code";
+        try {
+
+            String openIdResult = HttpRequest.get(getOpenIdUrl).execute().body();
+            JSONObject openIdResult1 = JSON.parseObject(openIdResult);
+            String openid = openIdResult1.getString("openid");
+            String s = stringRedisTemplate.opsForValue().get(openid);
+            if(null==s){
+
+            }else{
+                reqVO.setUsername(s);
+                respVO = authService.wxLogin(reqVO);
+            }
+
+        } catch (Exception e) {
+            System.err.printf("登录失败");
+            e.printStackTrace(System.err);
+        }
+        return success(respVO);
     }
 
 
@@ -182,10 +294,29 @@ public class RegisterController {
     @PermitAll
     @Operation(summary = "登出系统")
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
-    public CommonResult<Boolean> logout(HttpServletRequest request) {
+    public CommonResult<Boolean> logout(HttpServletRequest request, String wxCode) {
         String token = obtainAuthorization(request, securityProperties.getTokenHeader());
         if (StrUtil.isNotBlank(token)) {
             authService.logout(token, LoginLogTypeEnum.LOGOUT_SELF.getType());
+        }
+        String getOpenId = "https://api.weixin.qq.com/sns/jscode2session?";
+        String appId="wx9decec45b7374b90";
+        String secret="45323149c53d4340dfad4a304803eeaf";
+        String getOpenIdUrl=getOpenId
+                // 1. 官网获取的 API Key
+                + "&appid=" + appId
+                // 2. 官网获取的 Secret Key
+                + "&secret=" + secret
+                // 3. js_code
+                + "&js_code=" + wxCode
+                // 4. grant_type为固定参数
+                + "&grant_type=authorization_code";
+
+        String openIdResult = HttpRequest.get(getOpenIdUrl).execute().body();
+        JSONObject openIdResult1 = JSON.parseObject(openIdResult);
+        String openid = openIdResult1.getString("openid");
+        if(null!=openid){
+            stringRedisTemplate.delete(openid);
         }
         return success(true);
     }

@@ -55,4 +55,10 @@ public class AdminUserApiImpl implements AdminUserApi {
         return success(true);
     }
 
+    @Override
+    public CommonResult<AdminUserRespDTO> getMasterUser(Long deptId) {
+        AdminUserDO user = userService.getMasterUser(deptId);
+        return success(UserConvert.INSTANCE.convert4(user));
+    }
+
 }
