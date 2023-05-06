@@ -793,8 +793,9 @@
 			}).then((res) => {
 				if (!res.data.other) res.data.other = ''
 				this.carForm = res.data;
-				this.carForm.scrapDate = parseTime(this.carForm.scrapDate);
-				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate);
+				this.carForm.scrapDate = parseTime(this.carForm.scrapDate,'{y}-{m}-{d}');
+				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate,'{y}-{m}-{d}');
+				this.carForm.insuranceEndData = parseTime(this.carForm.insuranceEndData,'{y}-{m}-{d}');
 				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
 				// 收车金额
