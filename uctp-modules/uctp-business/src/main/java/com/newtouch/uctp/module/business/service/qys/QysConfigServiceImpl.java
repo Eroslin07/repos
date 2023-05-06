@@ -611,9 +611,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(DEPT_INFO_ERROR);
         }
         //这里必须要市场方发起
-        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
-        //QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", 184);
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
+//        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
+        //发起方为平台方，平台方ID 为2L
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         //合同发起
         client.defaultContractSend(contractId);
 
@@ -623,9 +623,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         //合同发起后修改状态为已发起
 
         contractMapper.updateContractByContractId("1", contractId);
-
-        String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
-        return ssoUrl;
+        this.companySign(contractId);
+//        String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
+        return "OK";
 
 
     }
@@ -735,7 +735,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
                 FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
                 //通过契约锁文档ID将文档内容转为字节流
-                    byte[] bytes = ContractUtil.ContractDown(documentId);
+                byte[] bytes = ContractUtil.ContractDown(documentId);
 //                byte[] bytes = this.documentDownload(documentId);
                 fileCreateReqDTO.setContent(bytes);
                 fileCreateReqDTO.setName(contractName);
@@ -841,7 +841,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 contractMapper.insert(sellContrsctDo);
 
                 FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
-                    byte[] bytes = ContractUtil.ContractDown(documentId);
+                byte[] bytes = ContractUtil.ContractDown(documentId);
 //                byte[] bytes = this.documentDownload(documentId);
                 fileCreateReqDTO.setContent(bytes);
                 fileCreateReqDTO.setName(contractName);
@@ -1246,6 +1246,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Transactional
     public void companySign(Long contractId) {
         ContractDO contractDO = contractService.getByContractId(contractId);
+
         if (ObjectUtil.isNull(contractDO)) {
             throw exception(CONTRACT_NOT_EXISTS);
         }
@@ -1269,8 +1270,8 @@ public class QysConfigServiceImpl implements QysConfigService {
 
         List<String> keywords = ListUtil.list(false);
         if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
-//            keywords.add("甲方（章）：");
-            keywords.add("甲方：");
+            keywords.add("甲方（章）：");
+//            keywords.add("甲方：");
         }
         if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
             keywords.add("甲方：");
@@ -1373,13 +1374,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         AdminUserDO pUserDO = userMapper.selectFAUser(userDept.getId());
         draftContract.setSubject("两方-二手车-收车委托合同");
         //注意：契约锁会按照list的下标来确认签署顺序
-        //签署方
-        Signatory persoanlSignatory = new Signatory();
-        persoanlSignatory.setTenantType("COMPANY");
-        persoanlSignatory.setTenantName(userDept.getName());
-        persoanlSignatory.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
-//        persoanlSignatory.setSerialNo(2);
-        draftContract.addSignatory(persoanlSignatory);
+
         // 平台方
         Signatory platformSignatory = new Signatory();
         platformSignatory.setTenantType("COMPANY");
@@ -1387,6 +1382,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         platformSignatory.setReceiver(new User(platformUserDO.getMobile(), "MOBILE"));
 //        platformSignatory.setSerialNo(1);
         draftContract.addSignatory(platformSignatory);
+
+        //签署方
+        Signatory persoanlSignatory = new Signatory();
+        persoanlSignatory.setTenantType("COMPANY");
+        persoanlSignatory.setTenantName(userDept.getName());
+        persoanlSignatory.setReceiver(new User(pUserDO.getMobile(), "MOBILE"));
+//        persoanlSignatory.setSerialNo(2);
+        draftContract.addSignatory(persoanlSignatory);
 
 
         //模板参数
@@ -1553,9 +1556,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         return result;
     }
 
-    private String getProceduresAndSpareParts(ProceduresAndSpareParts parts){
-        String result="";
-        if (parts!=null) {
+    private String getProceduresAndSpareParts(ProceduresAndSpareParts parts) {
+        String result = "";
+        if (parts != null) {
             if (parts.getDrivingLicense() != null && parts.getDrivingLicense()) {
                 result += "有行驶证(正/副)本";
             }
@@ -1587,7 +1590,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 result += "、有说明书";
             }
             if (parts.getVehicleKey() != null) {
-                result += "、钥匙数量:" + parts.getVehicleKey()+"组";
+                result += "、钥匙数量:" + parts.getVehicleKey() + "组";
             }
             if (parts.getAccidentVehicle() != null) {
                 result += "、" + parts.getAccidentVehicle();
@@ -1630,7 +1633,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 result += "、有说明书";
             }
             if (parts.getVehicleKey() != null) {
-                result += "、钥匙数量:" + parts.getVehicleKey()+"组";
+                result += "、钥匙数量:" + parts.getVehicleKey() + "组";
             }
             if (parts.getAccidentVehicle() != null) {
                 result += "、" + parts.getAccidentVehicle();
@@ -1639,9 +1642,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         return result;
     }
 
-    private String dateFormal(String dateString){
-        String result="";
-        if (StringUtils.isNotEmpty(dateString)&&dateString!="null") {
+    private String dateFormal(String dateString) {
+        String result = "";
+        if (StringUtils.isNotEmpty(dateString) && dateString != "null") {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date = null;
             try {
@@ -1728,7 +1731,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("车辆类型", carInfo.getCarType()));
                 params.add(new TemplateParam("厂牌、型号", carInfo.getModel()));
                 params.add(new TemplateParam("颜色", carInfoDetailsDO.getColour()));
-               // params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
+                // params.add(new TemplateParam("初次登记日期", carInfoDetailsDO.getFirstRegistDate()));
                 params.add(new TemplateParam("初次登记日期", dateFormal(carInfoDetailsDO.getFirstRegistDate())));
                 params.add(new TemplateParam("登记证号", carInfoDetailsDO.getCertificateNo()));
                 params.add(new TemplateParam("发动机号码", carInfo.getEngineNum()));
@@ -2057,7 +2060,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
 // 构建
         AES aes = SecureUtil.aes(key);
-
 
 
 // 加密为16进制表示
