@@ -741,7 +741,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 fileCreateReqDTO.setName(contractName);
                 fileCreateReqDTO.setPath(null);
                 //文件上传致服务器
-                CommonResult<FileDTO> resultFile = fileApi.createFile(fileCreateReqDTO);
+                CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
                 FileDTO FileDTO = resultFile.getData();
                 if (ObjectUtil.isNull(FileDTO)) {
                     throw exception(FILL_ERROR);
@@ -846,7 +846,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 fileCreateReqDTO.setContent(bytes);
                 fileCreateReqDTO.setName(contractName);
                 fileCreateReqDTO.setPath(null);
-                CommonResult<FileDTO> resultFile = fileApi.createFile(fileCreateReqDTO);
+                CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
                 FileDTO FileDTO = resultFile.getData();
                 if (ObjectUtil.isNull(FileDTO)) {
                     throw exception(FILL_ERROR);
@@ -949,17 +949,18 @@ public class QysConfigServiceImpl implements QysConfigService {
             businessFile.setFileType("12");//卖车委托合同类型
             contractName = "二手车委托代销售协议.pdf";
 
-            ContractDO buyContrsctDo = new ContractDO();
-            buyContrsctDo.setCarId(carInfo.getId());
-            buyContrsctDo.setContractId(contractId);
-            buyContrsctDo.setContractName("二手车委托代销售协议");
-            buyContrsctDo.setStatus(0);
-            buyContrsctDo.setContractType(3);
-            buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
-            buyContrsctDo.setBusinessId(usersDO.getDeptId());
-            buyContrsctDo.setCode(sellWTCode);
+            ContractDO sellWTContrsctDo = new ContractDO();
+            sellWTContrsctDo.setCarId(carInfo.getId());
+            sellWTContrsctDo.setContractId(contractId);
+            sellWTContrsctDo.setContractName("二手车委托代销售协议");
+            sellWTContrsctDo.setStatus(0);
+            sellWTContrsctDo.setContractType(3);
+            sellWTContrsctDo.setTenantId(TenantContextHolder.getTenantId());
+            sellWTContrsctDo.setDocumentId(documentId);
+            sellWTContrsctDo.setBusinessId(usersDO.getDeptId());
+            sellWTContrsctDo.setCode(sellWTCode);
             //存合同草稿合同到表
-            contractMapper.insert(buyContrsctDo);
+            contractMapper.insert(sellWTContrsctDo);
             qysContractVO.setType("2");
 
         } else if (type.equals("3")) {////卖车委托按揭付款
@@ -979,17 +980,18 @@ public class QysConfigServiceImpl implements QysConfigService {
             businessFile.setFileType("12");//卖车委托合同类型
             contractName = "二手车委托代销售协议.pdf";
 
-            ContractDO buyContrsctDo = new ContractDO();
-            buyContrsctDo.setCarId(carInfo.getId());
-            buyContrsctDo.setContractId(contractId);
-            buyContrsctDo.setContractName("二手车委托代销售协议");
-            buyContrsctDo.setStatus(0);
-            buyContrsctDo.setContractType(3);
-            buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
-            buyContrsctDo.setBusinessId(usersDO.getDeptId());
-            buyContrsctDo.setCode(sellWTCode);
+            ContractDO sellWTContrsctDo = new ContractDO();
+            sellWTContrsctDo.setCarId(carInfo.getId());
+            sellWTContrsctDo.setContractId(contractId);
+            sellWTContrsctDo.setContractName("二手车委托代销售协议");
+            sellWTContrsctDo.setStatus(0);
+            sellWTContrsctDo.setContractType(3);
+            sellWTContrsctDo.setTenantId(TenantContextHolder.getTenantId());
+            sellWTContrsctDo.setDocumentId(documentId);
+            sellWTContrsctDo.setBusinessId(usersDO.getDeptId());
+            sellWTContrsctDo.setCode(sellWTCode);
             //存合同草稿合同到表
-            contractMapper.insert(buyContrsctDo);
+            contractMapper.insert(sellWTContrsctDo);
             qysContractVO.setType("2");
 
         }
@@ -1001,7 +1003,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         fileCreateReqDTO.setContent(bytes);
         fileCreateReqDTO.setName(contractName);
         fileCreateReqDTO.setPath(null);
-        CommonResult<FileDTO> resultFile = fileApi.createFile(fileCreateReqDTO);
+        CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
         FileDTO FileDTO = resultFile.getData();
         if (ObjectUtil.isNull(FileDTO)) {
             throw exception(FILL_ERROR);
