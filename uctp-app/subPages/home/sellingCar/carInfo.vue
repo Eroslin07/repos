@@ -157,7 +157,7 @@
 					</u-form-item>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
 						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
-							@blur="handleBlur" placeholder="请输入卖车金额">
+							@blur="handleBlur" placeholder="0.00">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -180,7 +180,7 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="请输入定金" type="digit"
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit"
 							@focus="depositFocus" @blur="depositBlur">
 							<template slot="suffix">
 								<view>元</view>
@@ -679,7 +679,7 @@
 					buyerName: '',
 					buyerAdder: '',
 					buyerTel: '',
-					deposit: '0.00'
+					deposit: ''
 				},
 				// 卖家信息校验规则
 				sellerRules: {
@@ -805,7 +805,7 @@
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) || '0.00';
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
@@ -1136,6 +1136,7 @@
 			},
 			//顶级失焦
 			depositBlur() {
+				if (this.sellerForm.deposit == '') return
 				let amount = this.$amount.getComdify(this.sellerForm.deposit);
 				this.$set(this.sellerForm, 'deposit', amount);
 			},
@@ -1250,7 +1251,7 @@
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.sellerForm.sellType,
-					deposit: this.$amount.getDelcommafy(this.sellerForm.deposit),
+					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm.deposit),
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
