@@ -591,7 +591,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public String send(Long carId, String type, Long contractId, String contractType) {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         //AdminUserDO usersDO = usersMapper.selectById(294);
@@ -613,7 +613,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         //发起方为平台方，平台方ID 为2L
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         //合同发起
-        client.defaultContractSend(contractId);
+        client.defaultContractSend(contractId).getCheckedData();
 
         //ContractDO buyContrsctDo = contractMapper.selectOne("CONTRACT_ID",contractId);
         //buyContrsctDo.setStatus(1);
@@ -1259,6 +1259,11 @@ public class QysConfigServiceImpl implements QysConfigService {
         //平台方签章
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
         this.companySign(platformConfigDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.TRUE)));
+        //临时修改，发起收车合同
+        if (ObjectUtil.equals(contractDO.getContractType(),1)) {
+            ContractDO collectContractDO = contractMapper.selectOne("CAR_ID", contractDO.getCarId(), "CONTRACT_TYPE", 2);
+            this.send(0L, "", collectContractDO.getContractId(), "");
+        }
     }
 
     /**
@@ -1288,6 +1293,10 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     private void companySign(QysConfigDO configDO,ContractDO contractDO,List<String> keywords){
+//      //如果是收/卖车合同，需要等待个人签署完成后，自动签署
+//        if (ObjectUtil.equals(2,contractDO.getContractType()) || ObjectUtil.equals(4,contractDO.getContractType())) {
+//            return;
+//        }
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         //获取签署方公章
         Long sealId = null;
@@ -1303,14 +1312,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else {
             sealId = configDO.getSealId();
         }
-//        List<String> keywords = ListUtil.list(false);
-//        if (ObjectUtil.equals(1, contractDO.getContractType()) || ObjectUtil.equals(3, contractDO.getContractType())) {
-//            keywords.add("甲方（章）：");
-////            keywords.add("甲方：");
-//        }
-//        if (ObjectUtil.equals(2, contractDO.getContractType()) || ObjectUtil.equals(4, contractDO.getContractType())) {
-//            keywords.add("甲方：");
-//        }
         client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
         if (ObjectUtil.isNull(configDO.getSealId())) {
             configDO.setSealId(sealId);
@@ -1879,7 +1880,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("车商公司名称", userDept.getName()));
                 params.add(new TemplateParam("丙方营业执照号", userDept.getTaxNum()));
                 params.add(new TemplateParam("丙方法定代表人", userDept.getLegalRepresentative()));
-                params.add(new TemplateParam("丙方联系电话", userDept.getPhone()));
+                params.add(new TemplateParam("丙方联系电话", pUserDO.getMobile()));
                 params.add(new TemplateParam("丙方联系地址", userDept.getAddress()));
 
                 params.add(new TemplateParam("首次登记日期", dateFormal(carInfoDetailsDO.getFirstRegistDate())));

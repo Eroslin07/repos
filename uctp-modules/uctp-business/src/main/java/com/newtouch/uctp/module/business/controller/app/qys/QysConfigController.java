@@ -1,20 +1,5 @@
 package com.newtouch.uctp.module.business.controller.app.qys;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
@@ -25,6 +10,18 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateRe
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.service.qys.QysConfigService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
@@ -147,9 +144,9 @@ public class QysConfigController {
     public CommonResult<String> send(@Valid @RequestBody QYSContractVO qysContractVO) {
         String result = "";
         //这里只发起委托合同
-        if (qysContractVO.getContractType().equals("1")) {
+//        if (qysContractVO.getContractType().equals("1")) {
             result = qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
-        }
+//        }
         return success(result);
     }
     /*public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {

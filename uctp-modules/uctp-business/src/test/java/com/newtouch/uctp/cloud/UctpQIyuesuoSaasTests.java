@@ -58,7 +58,7 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void privilegeUrl() {
-        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(2724174433890603381L, "17380123816").getCheckedData();
+        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(3091624376865599583L, "15328756760").getCheckedData();
         System.out.println(checkedData.getPageUrl());
     }
     @Test
