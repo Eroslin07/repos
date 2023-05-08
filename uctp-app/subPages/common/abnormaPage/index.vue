@@ -34,11 +34,11 @@
 		</view>
 		<view v-if="isSHowTip=='signFail'" class="tips">
 			<image src="@/subPages/static/images/bycar/signFail.ico" mode="widthFix" ></image>
-			<view class="contract-tips">抱歉,电子合同签属失败 ！</view>
+			<view class="contract-tips">抱歉,电子合同签署失败 ！</view>
 		</view>
 		<view v-if="isSHowTip=='signSuccess'" class="tips">
 			<image src="@/subPages/static/images/bycar/signSuccess.ico" mode="widthFix" ></image>
-			<view class="contract-tips suss-tips">恭喜您，电子合同签属成功！</view>
+			<view class="contract-tips suss-tips">恭喜您，电子合同签署成功！</view>
 		</view>
 	</view>
 </template>
