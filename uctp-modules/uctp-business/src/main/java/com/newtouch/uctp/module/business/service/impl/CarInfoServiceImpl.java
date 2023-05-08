@@ -1005,8 +1005,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         invoiceDetailVO.setBuyerIdCard(infoDetails.getBuyerIdCard());
         invoiceDetailVO.setBuyerAddress(infoDetails.getBuyerAdder());
         invoiceDetailVO.setBuyerTel(infoDetails.getBuyerTel());
-        invoiceDetailVO.setSellerName(titleDO.getName());
-        invoiceDetailVO.setSellerIdCard(titleDO.getBankAccount());
+        invoiceDetailVO.setSellerName(titleDO.getRepresent());
+        invoiceDetailVO.setSellerIdCard(titleDO.getTaxNum());
         invoiceDetailVO.setSellerAddress(titleDO.getAddress());
         invoiceDetailVO.setSellerTel(titleDO.getTel());
         invoiceDetailVO.setPlateNum(carInfoDO.getPlateNum());
@@ -1016,10 +1016,10 @@ public class CarInfoServiceImpl implements CarInfoService {
         invoiceDetailVO.setModel(carInfoDO.getModel());
         invoiceDetailVO.setTransManageName(infoDetails.getTransManageName());
         invoiceDetailVO.setSellAmount(carInfoDO.getSellAmount());
-        invoiceDetailVO.setMarketName(titleDO.getName());
+        invoiceDetailVO.setMarketName(titleDO.getRepresent());
         invoiceDetailVO.setTaxNum(titleDO.getTaxNum());
         invoiceDetailVO.setMarketAddress(titleDO.getAddress());
-        invoiceDetailVO.setMarketBankNum(titleDO.getBank()+titleDO.getBankAccount());
+        invoiceDetailVO.setMarketBankNum(titleDO.getOpening());
         invoiceDetailVO.setMarketTel(titleDO.getTel());
         return invoiceDetailVO;
     }

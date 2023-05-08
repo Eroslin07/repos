@@ -72,7 +72,7 @@ public class BpmOpenInvoiceServiceImpl implements BpmOpenInvoiceService {
         Long tenantId = carInfoDO.getTenantId();
         AtomicReference<String> formMainId = new AtomicReference<>("");
         TenantUtils.execute(tenantId, () -> {
-            String creator = carInfoDO.getCreator();
+            String creator = contractDO.getCreator();
             WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(creator));
             JSONObject invoiceJson = new JSONObject();
             if (ObjectUtil.equals(BpmDefTypeEnum.MCKP.name(), procDefKey)) {
