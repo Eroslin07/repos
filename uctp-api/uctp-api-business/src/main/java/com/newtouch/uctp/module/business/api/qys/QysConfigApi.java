@@ -42,8 +42,15 @@ public interface QysConfigApi {
     @Parameter(name = "contractId", description = "合同ID", example = "1024", required = true)
     CommonResult<Boolean> companySign(@PathVariable("contractId") @NotNull Long contractId);
 
+    @PostMapping(PREFIX + "/send/{contractId}/{hasReserve}")
+    @Operation(summary ="发起合同")
+    @Parameter(name = "contractId", description = "收车委托合同ID", example = "1024", required = true)
+    @Parameter(name = "hasReserve", description = "是否预占", example = "true", required = true)
+    CommonResult<Boolean> send(@PathVariable("contractId") @NotNull Long contractId,
+                               @PathVariable("hasReserve") @NotNull Boolean hasReserve);
+
     @PostMapping(PREFIX + "/get/{deptId}")
-    @Operation(summary ="公司静默签章")
+    @Operation(summary ="获取契约锁")
     @Parameter(name = "deptId", description = "部门ID", example = "1024", required = true)
     CommonResult<QysConfigDTO> getByDeptId(@PathVariable("deptId") @NotNull Long deptId);
 }

@@ -56,6 +56,7 @@ import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 import com.newtouch.uctp.module.business.mq.producer.UserAuthProducer;
 import com.newtouch.uctp.module.business.service.*;
 import com.newtouch.uctp.module.business.service.contract.ContractService;
+import com.newtouch.uctp.module.business.service.contract.MerchantMoneyService;
 import com.newtouch.uctp.module.business.util.*;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
@@ -158,6 +159,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     private MerchantAccountMapper merchantAccountMapper;
     @Resource
     private AccountCashService accountCashService;
+    @Resource
+    private MerchantMoneyService merchantMoneyService;
 
     @PostConstruct
     @Override
@@ -599,7 +602,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     @Transactional
-    public String send(Long carId, String type, Long contractId, String contractType) {
+    public String send(Long contractId,Boolean hasReserve) {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         //AdminUserDO usersDO = usersMapper.selectById(294);
         AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
@@ -615,12 +618,22 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.isNull(platformDept)) {
             throw exception(DEPT_INFO_ERROR);
         }
+        ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
+        if (ObjectUtil.equals(1,contractDO.getContractType()) && hasReserve) {
+            ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+            //保证金预占
+            Boolean reserveCash = merchantMoneyService.reserveCash(contractDO1.getContractId());
+            if (reserveCash) {
+                throw exception(ACC_RESERVECASH_ERROR);
+            }
+        }
         //这里必须要市场方发起
 //        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
         //发起方为平台方，平台方ID 为2L
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         //合同发起
         client.defaultContractSend(contractId).getCheckedData();
+
 
         //ContractDO buyContrsctDo = contractMapper.selectOne("CONTRACT_ID",contractId);
         //buyContrsctDo.setStatus(1);
@@ -1269,7 +1282,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         //临时修改，发起收车合同
         if (ObjectUtil.equals(contractDO.getContractType(),1)) {
             ContractDO collectContractDO = contractMapper.selectOne("CAR_ID", contractDO.getCarId(), "CONTRACT_TYPE", 2);
-            this.send(0L, "", collectContractDO.getContractId(), "");
+            this.send(collectContractDO.getContractId(), false);
         }
     }
 

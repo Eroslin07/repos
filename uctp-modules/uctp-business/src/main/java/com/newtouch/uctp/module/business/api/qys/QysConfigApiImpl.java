@@ -46,6 +46,12 @@ public class QysConfigApiImpl implements QysConfigApi{
     }
 
     @Override
+    public CommonResult<Boolean> send(Long contractId,Boolean hasReserve) {
+        qysConfigService.send(contractId, hasReserve);
+        return success(Boolean.TRUE);
+    }
+
+    @Override
     public CommonResult<QysConfigDTO> getByDeptId(Long deptId) {
         QysConfigDO configDO = qysConfigService.getByDeptId(deptId);
         return success(QysConfigConvert.INSTANCE.convert02(configDO));

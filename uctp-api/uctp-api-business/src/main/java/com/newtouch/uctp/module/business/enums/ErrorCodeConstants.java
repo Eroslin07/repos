@@ -48,6 +48,8 @@ public interface ErrorCodeConstants {
     ErrorCode ACC_PRESENT_PROFIT_RECORDED_ERROR = new ErrorCode(1005000213, "利润划入出错");
     ErrorCode ACC_PRESENT_PROFIT_RECORDED_REPEAT = new ErrorCode(1005000214, "利润重复划入");
 
+    ErrorCode ACC_RESERVECASH_ERROR = new ErrorCode(1005000215, "保证金预占失败");
+
     ErrorCode USERS_INFO_ERROR = new ErrorCode(1005000215, "用户信息不存在");
     ErrorCode DEPT_INFO_ERROR = new ErrorCode(1005000216, "部门信息不存在");
 

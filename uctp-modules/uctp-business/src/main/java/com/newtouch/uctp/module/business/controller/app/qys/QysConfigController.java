@@ -154,7 +154,7 @@ public class QysConfigController {
         String result = "";
         //这里只发起委托合同
 //        if (qysContractVO.getContractType().equals("1")) {
-            result = qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
+            result = qysConfigService.send(qysContractVO.getContractId(),true);
 //        }
         return success(result);
     }

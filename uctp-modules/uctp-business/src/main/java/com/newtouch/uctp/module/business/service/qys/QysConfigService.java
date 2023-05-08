@@ -105,9 +105,10 @@ public interface QysConfigService {
 
     /**
      * 发送契约锁合同
-     * @param carId 车辆Id
+     * @param contractId 合同Id
+     * @param hasReserve 是否预占
      */
-    String send(Long carId,String type,Long contractId,String contractType);
+    String send(Long contractId,Boolean hasReserve);
     /**
      * 发送契约锁合同
      * @param carId 车辆Id
