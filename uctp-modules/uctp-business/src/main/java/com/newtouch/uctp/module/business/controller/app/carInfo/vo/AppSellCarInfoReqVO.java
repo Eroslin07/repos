@@ -63,4 +63,7 @@ public class AppSellCarInfoReqVO {
      */
     @Schema(description = "车辆手续及备件(卖车)")
     private String other;
+
+    @Schema(description = "卖车公允价值")
+    private String sellCarFair;
 }

@@ -283,6 +283,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         //更新车辆主表
         CarInfoDO carInfoDO = carInfoMapper.selectById(infoDetails.getCarId());
         carInfoDO.setVehicleReceiptAmount(reqVO.getVehicleReceiptAmount());
+        carInfoDO.setBuyCarFair(reqVO.getBuyCarFair());
         carInfoMapper.updateById(carInfoDO);
 
         businessFileService.deleteByMainIdAndType(carInfoDO.getId(),"4");
@@ -569,6 +570,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setSalesStatus(CarStatus.SELL.value());
         carInfo.setStatus(CarStatus.SELL_A.value());
         carInfo.setStatusThree(CarStatus.SELL_A_A.value());
+        carInfo.setSellCarFair(reqVO.getSellCarFair());
         carInfoMapper.updateById(carInfo);
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(reqVO.getId());
         carInfoDetails.setBuyerTel( reqVO.getBuyerTel() );

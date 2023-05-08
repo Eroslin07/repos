@@ -60,4 +60,7 @@ public class AppSellerInfoReqVO {
 
     @Schema(description = "提交或者保存（1提交 2保存）")
     private String buttonSaveOrSubmit;
+
+    @Schema(description = "收车公允价值")
+    private String buyCarFair;
 }
