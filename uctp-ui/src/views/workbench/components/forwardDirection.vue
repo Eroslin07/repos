@@ -241,7 +241,7 @@
         </div>
       </div>
       <p style="font-weight: bold; margin: 10px 0">合同信息</p>
-      <div class="content content-box">
+      <div class="content-box">
         <el-row>
           <template
             v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
@@ -249,7 +249,7 @@
             :key="item.contractFileId"
           >
             <el-col :span="4" class="bg-blue">
-              <span>{{ item.contractName }}</span>
+              <span>{{ item.contractName ? item.contractName + ':' : '' }}</span>
             </el-col>
             <el-col :span="4">
               <span><button class="colr159" @click="viewContract(item)">查看</button></span>
@@ -397,11 +397,17 @@ p {
   }
 }
 .content-box {
+  .el-row {
+    border-left: 1px solid #eaeaea;
+  }
   .el-row:first-child {
     border-top: none;
     .el-col {
       border-top: 1px solid #eaeaea;
     }
+  }
+  .bg-blue {
+    background: #f5f5f5;
   }
 }
 </style>

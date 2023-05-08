@@ -612,7 +612,7 @@
               :key="item.contractFileId"
             >
               <el-col :span="4" class="bg-yell">
-                <span>{{ item.contractName }}</span>
+                <span>{{ item.contractName ? item.contractName + ':' : '' }}</span>
               </el-col>
               <el-col :span="4">
                 <span><button class="colr159" @click="viewContract(item)">查看</button></span>
@@ -776,6 +776,9 @@ const handleCancel = () => {
   width: 140px;
 }
 .content {
+  .el-row {
+    border-left: 1px solid #eaeaea;
+  }
   .el-row:first-child {
     border-top: none;
     .el-col {

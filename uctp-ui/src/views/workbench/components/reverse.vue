@@ -224,7 +224,7 @@
             :key="item.contractFileId"
           >
             <el-col :span="4" class="bg-blue">
-              <span>{{ item.contractName }}</span>
+              <span>{{ item.contractName ? item.contractName + ':' : '' }}</span>
             </el-col>
             <el-col :span="4">
               <span><button class="colr159" @click="viewContract(item)">查看</button></span>
@@ -359,11 +359,17 @@ p {
   height: 100%;
 }
 .content-box {
+  .el-row {
+    border-left: 1px solid #eaeaea;
+  }
   .el-row:first-child {
     border-top: none;
     .el-col {
       border-top: 1px solid #eaeaea;
     }
+  }
+  .bg-blue {
+    background: #f5f5f5;
   }
 }
 </style>
