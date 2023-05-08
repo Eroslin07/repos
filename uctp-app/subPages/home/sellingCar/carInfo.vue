@@ -1256,7 +1256,7 @@
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
 					other: this.carForm.other ,//其他,
-					sellCarFair:this.fairValue
+					sellCarFair:`${this.fairValue.value1}万元-${this.fairValue.value2}万元`
 				}
 
 				this.showOverlay = true;
@@ -1322,6 +1322,7 @@
 					} else {
 						_this.gxzStatus = 0;
 					}
+						// _this.gxzStatus = 0;
 					_this.handleDraft('entrust');
 				})
 			},

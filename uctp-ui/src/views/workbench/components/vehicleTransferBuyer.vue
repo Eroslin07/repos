@@ -244,13 +244,9 @@
             </el-col>
             <el-col :span="2" class="bg-yell">公允值范围：</el-col>
             <el-col :span="4">
-              <div
-                >{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue?.value1
-                }}万元—{{
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.fairValue?.value2
-                }}万元</div
-              >
+              <div>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.sellCarFair
+              }}</div>
             </el-col>
             <el-col :span="2" class="bg-yell">定金：</el-col>
             <el-col :span="4">

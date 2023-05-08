@@ -223,7 +223,7 @@ const successText = (i) => {
   if (i == 'ZHSQ' || i == 'SGYZ' || i == 'MGYZ') {
     return '同意'
   } else if (i == 'SCKP' || i == 'MCKP') {
-    return '打印/开票'
+    return '开票'
   } else if (i == 'SCGH' || i == 'MCGH') {
     return '确认已过户'
   } else if (i == 'SKZH') {
