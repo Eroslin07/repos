@@ -160,4 +160,16 @@ public class CarInfoDO extends TenantBaseDO {
      * 流程意见
      */
     private String bpmReason;
+
+    /**
+     * 收车公允价值
+     */
+    private String buyCarFair;
+
+    /**
+     * 卖车公允价值
+     */
+    private String sellCarFair;
+
+
 }
