@@ -224,6 +224,14 @@ public class BpmGlobalHandleListener {
                 }
             }
         }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCGH.name())) {
+            // 1.收车过户成功，修改车辆状态为收车已过户
+            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_A_B.value(),CarStatus.SALE_A_B_A.value(),"收车过户成功",reason);
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCGH.name())) {
+            // 1.卖车过户成功，修改车辆状态为卖车已过户
+
+        }
 
         System.out.println(bpmFormMainVO);
     }

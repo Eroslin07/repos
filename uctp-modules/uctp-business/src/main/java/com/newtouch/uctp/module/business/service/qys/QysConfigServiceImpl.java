@@ -264,11 +264,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                     configDO.setCompanyId(Long.valueOf(companyId));
                     configDO.setBusinessId(deptDO.getId());
                     configDO.setBusinessName(deptDO.getName());
-                    if (ObjectUtil.isNull(configDO.getId())) {
-                        qysConfigMapper.insert(configDO);
-                    } else {
-                        qysConfigMapper.updateById(configDO);
-                    }
+
                     deptDO.setAuth(Integer.valueOf(status));
                     deptMapper.updateById(deptDO);
                     //保存回调信息
@@ -282,13 +278,18 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //此时只会存在一条当前部门下的用户数据
                         userRespDTO = checkedData.get(0);
 //                    this.privilegeUrl(userRespDTO.getId());
-                        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
-                        SaaSPrivilegeUrlResult privilegeUrlResult = client.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
-                        log.info("企业授权【{}】,授权地址【{}】", deptDO.getName(), privilegeUrlResult.getPageUrl());
+                        QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
+                        //这里先去生成一个企业公章
+                        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+                        Seal seal = client.defaultSealAutoCreate("公章", deptDO.getTaxNum()).getCheckedData();
+                        //公章设置进去
+                        configDO.setSealId(seal.getId());
+                        SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
+                        log.info("企业功能自动签授权【{}】,授权地址【{}】", deptDO.getName(), privilegeUrlResult.getPageUrl());
                         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(privilegeUrlResult.getPageUrl()));
                         Map<String, String> map = MapUtil
-                                .builder("title", "企业认证")
-                                .put("contentType", "40")
+                                .builder("title", "企业印章及功能授权")
+                                .put("contentType", "44")
                                 .put("name", deptDO.getName())
                                 .put("url", urls.get(0))
                                 .put("phone", userRespDTO.getMobile())
@@ -300,18 +301,24 @@ public class QysConfigServiceImpl implements QysConfigService {
                     }
                 } else if ("2".equals(status) && StrUtil.isNotBlank(companyId)) {
                     //如果回调数据为认证失败，删除注册数据
-                    deptMapper.deleteById(deptDO);
-                    AdminUserDO adminUserDO = userMapper.selectById(userRespDTO.getId());
-                    if (ObjectUtil.isNotNull(adminUserDO)) {
-                        userMapper.deleteById(adminUserDO);
-                    }
-                    UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", userRespDTO.getId());
-                    if (ObjectUtil.isNotNull(userExtDO)) {
-                        userExtMapper.deleteById(userExtDO);
-                    }
-                    if (ObjectUtil.isNotNull(configDO)) {
-                        qysConfigMapper.deleteById(configDO);
-                    }
+                    //2023-05-08 ,删除此需求
+//                    deptMapper.deleteById(deptDO);
+//                    AdminUserDO adminUserDO = userMapper.selectById(userRespDTO.getId());
+//                    if (ObjectUtil.isNotNull(adminUserDO)) {
+//                        userMapper.deleteById(adminUserDO);
+//                    }
+//                    UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", userRespDTO.getId());
+//                    if (ObjectUtil.isNotNull(userExtDO)) {
+//                        userExtMapper.deleteById(userExtDO);
+//                    }
+//                    if (ObjectUtil.isNotNull(configDO)) {
+//                        qysConfigMapper.deleteById(configDO);
+//                    }
+                }
+                if (ObjectUtil.isNull(configDO.getId())) {
+                    qysConfigMapper.insert(configDO);
+                } else {
+                    qysConfigMapper.updateById(configDO);
                 }
             });
         } else {
@@ -1388,6 +1395,44 @@ public class QysConfigServiceImpl implements QysConfigService {
             // 2.收车委托收购协议草稿合同后台进行自动静默签章
             this.companyGyhlSign(contractId);
         }
+    }
+
+    @Transactional
+    @Override
+    public String callbackCertificationPerson(String signature, String timestamp, String content) throws Exception {
+        log.info("[certification-person]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
+        //验证签名
+        if (!this.verificationSignature(signature, timestamp)) {
+            return "fail";
+        }
+        //解密消息
+        String json = this.decryptMessage(content);
+        JSONObject jsonObject = JSON.parseObject(json);
+        log.info("个人认证参数：{}",jsonObject.toJSONString());
+        String companyName = jsonObject.getString("companyName");
+        String status = jsonObject.getString("status");
+        String companyId = jsonObject.getString("companyId");
+        String registerNo = jsonObject.getString("registerNo");
+        //通过营业执照，和公司名称找到公司数据
+        DeptDO deptDO = deptMapper.findByNameAndTaxNum(companyName, registerNo);
+        if (ObjectUtil.isNotNull(deptDO)) {
+            //fengin接口回调，如果要用feign 那么这里必须卸载回调里，不然报错没传参数 tenant-id
+            TenantUtils.execute(deptDO.getTenantId(), () -> {
+                WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, deptDO.getTenantId());
+                //设置当前登录人信息，免得保存报错
+                List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
+                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(adminUserRespDTOs.get(0).getId()));
+//                AdminUserDO user = new  AdminUserDO();
+//                user.setStatus(0);
+//                userMapper.updateById(user);
+//                UserExtDO userExtDO = new UserExtDO();
+//                userExtDO.setStatus(0);
+//                userExtMapper.updateById(userExtDO);
+            });
+        } else {
+            log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}", companyName, registerNo);
+        }
+        return "success";
     }
 
 

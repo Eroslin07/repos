@@ -67,15 +67,16 @@
                d.name as merchant_name,
                cu.nickname as start_user_name,
                fm.submit_time,
-               res.end_time_ as arrival_time,
+               te.end_time as arrival_time,
                res.assignee_ as assignee_user_id,
                u.nickname as assignee_user_name
         from bpm_form_main fm
                  inner join act_hi_taskinst res on fm.proc_inst_id = res.proc_inst_id_
+                 left join bpm_task_ext te on res.ID_ = te.task_id
                  left join system_dept d on fm.merchant_id = d.id
                  left join system_users u on res.assignee_ = u.id
                  left join system_users cu on fm.start_user_id = cu.id
-        where res.assignee_ = #{loginUserId} and res.end_time_ is not null
+        where res.assignee_ = #{loginUserId} and (res.end_time_ is not null or te.result = -1)
         <if test="doneReqVO.startUserName != null and doneReqVO.startUserName != ''">
             and cu.nickname like concat('%', #{doneReqVO.startUserName}, '%')
         </if>
@@ -91,6 +92,6 @@
         <if test="doneReqVO.serialNo != null and doneReqVO.serialNo != ''">
             and fm.serial_no like concat('%', #{doneReqVO.serialNo}, '%')
         </if>
-        order by res.end_time_ desc
+        order by te.end_time desc
     </select>
 </mapper>

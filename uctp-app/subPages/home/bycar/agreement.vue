@@ -53,7 +53,7 @@
 				isSHowTip: '',
 				contractName: '收购协议',
 				entrustName: '委托收购协议',
-				fairVisible: true,
+				fairVisible: 1,
 				contractValue: [],
 				entrustValue: [],
 				jsonData: {},
@@ -81,6 +81,7 @@
 			// 查看合同
 			handleViewContract(text) {
 				this.$modal.msg('正在加载，请稍等...')
+				let _this=this
 				let url = this.contractDtail.find(v => v.contractType == text)?.url
 				uni.downloadFile({
 					url: url,
@@ -91,6 +92,13 @@
 							showMenu: false,
 							success: function(res) {
 								console.log('打开文档成功');
+								setTimeout(()=>{
+									if(text=='1'){
+										_this.entrustValue=['委托收购协议']
+									}else{
+										_this.contractValue=['收购协议']
+									}
+								},1000)
 							}
 						});
 					},
@@ -114,7 +122,7 @@
 					}
 
 				})
-				if (!this.fairVisible) return uni.showModal({
+				if (this.fairVisible == 0) return uni.showModal({
 					title: '提示',
 					content: '您的收车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
 					confirmText: '是',

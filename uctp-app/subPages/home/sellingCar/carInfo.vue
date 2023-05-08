@@ -759,7 +759,7 @@
 				// 是否是子账户
 				isChildAccount: false,
 				fairStatus: null,
-				gxzStatus: true
+				gxzStatus: 1
 			}
 		},
 		onReady() {
@@ -1317,9 +1317,9 @@
 					let amount = _this.$amount.getDelcommafy(_this.sellerForm.sellAmount);
 					amount = amount / 10000;
 					if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-						_this.gxzStatus = true;
+						_this.gxzStatus = 1;
 					} else {
-						_this.gxzStatus = false;
+						_this.gxzStatus = 0;
 					}
 					_this.handleDraft('entrust');
 				})

@@ -334,7 +334,7 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name, String foot, String enterpriseCode) {
+    public QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name, String enterpriseCode) {
         SealAutoCreateRequest request = new SealAutoCreateRequest();
         SealImageInfo sealInfo = new SealImageInfo();
         //目前只有公章

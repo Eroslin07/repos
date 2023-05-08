@@ -14,7 +14,7 @@ import javax.validation.constraints.NotEmpty;
 public class BpmTaskInvalidReqVO {
     @Schema(description = "任务编号", required = true, example = "1024")
     @NotEmpty(message = "任务编号不能为空")
-    private String id;
+    private String taskId;
 
     @Schema(description = "审批意见", required = true, example = "不错不错！")
     @NotEmpty(message = "审批意见不能为空")

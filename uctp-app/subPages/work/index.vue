@@ -95,8 +95,11 @@
 		components: {
 			AbnormalPage,
 		},
-		onLoad() {
+		onShow(){
 			this.getListData()
+		},
+		onLoad() {
+			// this.getListData()
 		},
 		onPullDownRefresh() {
 			this.getListData()

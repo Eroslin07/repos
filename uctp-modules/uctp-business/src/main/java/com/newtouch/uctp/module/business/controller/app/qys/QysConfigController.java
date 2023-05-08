@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -90,6 +91,14 @@ public class QysConfigController {
                            @RequestParam String timestamp,
                            @RequestParam String content) throws Exception {
         return qysConfigService.callbackCertification(signature, timestamp, content);
+    }
+
+    @PostMapping("/callback/certification/person")
+    @Operation(summary = "saas模式契约锁回调-企业认证")
+    public String callbackCertificationPerson(@RequestParam String signature,
+                           @RequestParam String timestamp,
+                           @RequestParam String content) throws Exception {
+        return qysConfigService.callbackCertificationPerson(signature, timestamp, content);
     }
     @PostMapping("/callback/privilege")
     @Operation(summary = "saas模式契约锁回调-企业授权")
@@ -170,9 +179,11 @@ public class QysConfigController {
     }
 
     @PostMapping("/user/auth")
+    @PermitAll
     @Operation(summary ="个人认证")
-    @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
-    public CommonResult<Boolean> userAuth(@RequestParam("userId") @NotNull  Long userId) {
+//    @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
+    public CommonResult<Boolean> userAuth(@RequestBody @Valid  Map map) {
+        Long userId = Long.valueOf(map.get("userId").toString());
         qysConfigService.userAuth(userId);
         return success(true);
     }

@@ -1,12 +1,5 @@
 package com.newtouch.uctp.module.business.service.qys;
 
-import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
@@ -14,6 +7,12 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqV
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
+
+import javax.validation.Valid;
+import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 契约锁 Service 接口
@@ -186,4 +185,14 @@ public interface QysConfigService {
      * @param contractId
      */
     void companyGyhlSign(Long contractId);
+
+    /**
+     * 个人认证
+     *
+     * @param signature
+     * @param timestamp
+     * @param content
+     * @return
+     */
+    String callbackCertificationPerson(String signature, String timestamp, String content) throws Exception;
 }

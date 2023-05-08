@@ -67,4 +67,9 @@ public class UserExtDO extends TenantBaseDO {
      * 保证金充值卡号
      */
     private String bondBankAccount;
+
+    /**
+     * 契约锁认证id
+     */
+    private Integer authId;
 }
