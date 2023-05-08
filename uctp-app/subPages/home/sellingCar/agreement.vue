@@ -57,7 +57,7 @@
 				entrustValue: [],
 				fairValue: undefined,
 				carData: undefined,
-				gxzStatus: true,
+				gxzStatus: 1,
 			}
 		},
 		components: {
@@ -112,7 +112,7 @@
 				let _this = this;
 				if(!_this.contractValue.length || !_this.entrustValue.length) return _this.$modal.msg('请勾选协议和委托协议！')
 				// 判断是否超出公允值
-				if (_this.gxzStatus == false) {
+				if (_this.gxzStatus == 0) {
 					uni.showModal({
 						title: '提示',
 						content: '您的卖车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
