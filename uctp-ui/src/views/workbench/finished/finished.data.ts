@@ -63,7 +63,7 @@ const crudSchemas = reactive<VxeCrudSchema>({
       }
     },
     {
-      title: '到达时间',
+      title: '办理时间',
       field: 'arrivalTime',
       formatter: 'formatDate',
       table: {
