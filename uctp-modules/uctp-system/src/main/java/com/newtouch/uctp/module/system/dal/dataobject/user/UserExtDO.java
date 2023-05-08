@@ -1,15 +1,11 @@
 package com.newtouch.uctp.module.system.dal.dataobject.user;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
-import com.newtouch.uctp.framework.mybatis.core.type.JsonLongSetTypeHandler;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import com.newtouch.uctp.module.system.enums.common.SexEnum;
 import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * 用户扩展表 DO
@@ -71,5 +67,5 @@ public class UserExtDO extends TenantBaseDO {
     /**
      * 契约锁认证id
      */
-    private Integer authId;
+    private String authId;
 }

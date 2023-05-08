@@ -66,5 +66,5 @@ public class UserExtDO extends TenantBaseDO {
     /**
      * 个人认证id
      */
-    private Long authId;
+    private String authId;
 }
