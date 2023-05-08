@@ -36,8 +36,8 @@ class UctpBusinessApplicationTests {
         properties.setId(2L);
         properties.setCode(QiyuesuoChannelEnum.DEFAULT.getCode());
 //        ("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO")
-        properties.setAccessKey("9oFYG0lOfG");
-        properties.setAccessSecret("PcUsF4Xkmq9JBFjqVlKsnnXWYmRBHr");
+        properties.setAccessKey("d9aXtgVRNa");
+        properties.setAccessSecret("rDdsGSWJvcdhjp7aoniCHNYzkJ07cg");
         properties.setServerUrl("https://openapi.qiyuesuo.cn");
         client = new DefaultQiyuesuoClient(properties);
         client.init();
@@ -145,6 +145,12 @@ class UctpBusinessApplicationTests {
     void contractSend(){
         Object checkedData = client.defaultContractSend(3092074193567683165L).getCheckedData();
         System.out.println(JSONUtil.toJsonStr(checkedData));
+    }
+
+    @Test
+    void sealAutocreate(){
+        Seal seal = client.defaultSealAutoCreate("公章", "12345678902547").getCheckedData();
+        System.out.println(JSONUtil.toJsonStr(seal));
     }
 
 }

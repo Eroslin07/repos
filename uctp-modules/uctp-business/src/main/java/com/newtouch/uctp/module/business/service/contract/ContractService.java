@@ -57,10 +57,9 @@ public interface ContractService {
      * 获取收车草稿合同
      * @param carId 车辆id
      * @param contractType 合同类型
-     * @param tenantId 部门ID
      * @return
      */
-    ContractDO getCollectDraft(Long carId, Integer contractType, Long tenantId);
+    ContractDO getCollectDraft(Long carId, Integer contractType);
 
     /**
      * 更新数据

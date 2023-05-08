@@ -21,7 +21,6 @@ import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
-import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
 import com.newtouch.uctp.framework.security.core.LoginUser;
@@ -32,7 +31,6 @@ import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
 import com.newtouch.uctp.module.business.controller.app.qys.dto.ContractStatusDTO;
-import com.newtouch.uctp.module.business.controller.app.qys.dto.DoServiceDTO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
@@ -319,10 +317,12 @@ public class QysConfigServiceImpl implements QysConfigService {
 //                        qysConfigMapper.deleteById(configDO);
 //                    }
                 }
-                if (ObjectUtil.isNull(configDO.getId())) {
-                    qysConfigMapper.insert(configDO);
-                } else {
-                    qysConfigMapper.updateById(configDO);
+                if (ObjectUtil.isNotNull(configDO)) {
+                    if (ObjectUtil.isNull(configDO.getId())) {
+                        qysConfigMapper.insert(configDO);
+                    } else {
+                        qysConfigMapper.updateById(configDO);
+                    }
                 }
             });
         } else {
@@ -343,14 +343,13 @@ public class QysConfigServiceImpl implements QysConfigService {
         ContractStatusDTO contractStatusDTO = JSONObject.parseObject(json, ContractStatusDTO.class);
         ContractDO contractDO = contractMapper.findByContractId(contractStatusDTO.getContractId());
         if (ObjectUtil.isNull(contractDO)) {
-            log.warn("[status]电子签回调,未获取到合同contractId:{}", contractStatusDTO.getContractId());
+            log.warn("[status]电子签回调,未获取到合同,contractId:{}", contractStatusDTO.getContractId());
             return "fail";
         }
         TenantUtils.execute(contractDO.getTenantId(), () -> {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, contractDO.getTenantId());
             //设置当前登录人信息，免得保存报错
             WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(contractDO.getCreator()));
-            DoServiceDTO doServiceDTO = new DoServiceDTO();
             CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
             if (contractDO.getContractType().equals(1)) {
                 //1收车委托合同
@@ -511,7 +510,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         carInfo.setStatusThree(statusThree);
         // 发起合同
         if (send) {
-            ContractDO collectContractDO = contractService.getCollectDraft(carInfo.getId(), contractDO.getContractType(), contractDO.getTenantId());
+            //这里提前注入录入tenant_id
+            ContractDO collectContractDO = contractService.getCollectDraft(carInfo.getId(), contractDO.getContractType());
             if (ObjectUtil.isNotNull(collectContractDO)) {
                 QysConfigDO configDO = getByDeptId(contractDO.getBusinessId());
                 QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
@@ -604,21 +604,21 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     @Transactional
     public String send(Long contractId,Boolean hasReserve) {
-        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+//        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         //AdminUserDO usersDO = usersMapper.selectById(294);
-        AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
-        if (ObjectUtil.isNull(usersDO)) {
-            throw exception(USERS_INFO_ERROR);
-        }
-        DeptDO userDept = deptMapper.selectById(usersDO.getDeptId());
-        if (ObjectUtil.isNull(userDept)) {
-            throw exception(DEPT_INFO_ERROR);
-        }
-        DeptDO pDept = deptMapper.selectOne("id", userDept.getParentId());
-        DeptDO platformDept = deptMapper.selectOne("parent_id", pDept.getParentId(), "attr", 1);
-        if (ObjectUtil.isNull(platformDept)) {
-            throw exception(DEPT_INFO_ERROR);
-        }
+//        AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
+//        if (ObjectUtil.isNull(usersDO)) {
+//            throw exception(USERS_INFO_ERROR);
+//        }
+////        DeptDO userDept = deptMapper.selectById(usersDO.getDeptId());
+////        if (ObjectUtil.isNull(userDept)) {
+////            throw exception(DEPT_INFO_ERROR);
+////        }
+////        DeptDO pDept = deptMapper.selectOne("id", userDept.getParentId());
+////        DeptDO platformDept = deptMapper.selectOne("parent_id", pDept.getParentId(), "attr", 1);
+////        if (ObjectUtil.isNull(platformDept)) {
+////            throw exception(DEPT_INFO_ERROR);
+////        }
         ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         if (ObjectUtil.equals(1,contractDO.getContractType()) && hasReserve) {
             ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
@@ -1084,7 +1084,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public void companyAuth(Long userId) throws FileNotFoundException {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectById(1);
+        QysConfigDO configDO = qysConfigMapper.selectById(1L);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
         //获取营业执照图片
@@ -1099,12 +1099,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("contact", userRespDTO.getMobile())
                 .put("contactType", "MOBILE").build();
 
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl(deptRespDTO.getName(),
+        SaaSCompanyAuthPageResult checkedData = client.saasCompanyAuthPageUrl(deptRespDTO.getName(),
                 JSON.toJSONString(applicantInfo),
                 deptRespDTO.getLegalRepresentative(),
                 deptRespDTO.getTaxNum(),
-                streamFile);
-        SaaSCompanyAuthPageResult checkedData = result.getCheckedData();
+                streamFile).getCheckedData();
+
         log.info("企业认证【{}】,认证地址【{}】", deptRespDTO.getName(), checkedData.getPageUrl());
         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getPageUrl()));
         Map<String, String> map = MapUtil
@@ -1285,10 +1285,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
         this.companySign(platformConfigDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.TRUE)));
         //临时修改，发起收车合同
-        if (ObjectUtil.equals(contractDO.getContractType(),1)) {
-            ContractDO collectContractDO = contractMapper.selectOne("CAR_ID", contractDO.getCarId(), "CONTRACT_TYPE", 2);
-            this.send(collectContractDO.getContractId(), false);
-        }
+//        if (ObjectUtil.equals(contractDO.getContractType(),1)) {
+//            ContractDO collectContractDO = contractMapper.selectOne("CAR_ID", contractDO.getCarId(), "CONTRACT_TYPE", 2);
+//            this.send(collectContractDO.getContractId(), false);
+//        }
     }
 
     /**
@@ -1442,6 +1442,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                 AdminUserDO userDO = userMapper.selectById(userExtDO.getUserId());
                 userDO.setStatus(0);
                 userMapper.updateById(userDO);
+                QysConfigDO configDO = qysConfigMapper.selectOne(QysConfigDO::getBusinessId, userDO.getDeptId());
+                //授权印章角色
+                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+                client.defaultRoleManage(ListUtil.of(userDO.getMobile())).getCheckedData();
             });
         } else {
             log.warn("个人认证失败，找不到数据，authId：{}",authId);
