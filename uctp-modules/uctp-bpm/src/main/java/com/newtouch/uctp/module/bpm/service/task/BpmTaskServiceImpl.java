@@ -411,8 +411,10 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     }
 
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public void invalidTask(Long userId, BpmTaskInvalidReqVO reqVO) {
-        Task task = getTask(reqVO.getId());
+        Task task = getTask(reqVO.getTaskId());
         if (task == null) {
             throw exception(TASK_COMPLETE_FAIL_NOT_EXISTS);
         }
@@ -424,10 +426,17 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         bpmFormMainDO.setStatus(BpmProcessInstanceResultEnum.INVALID.getResult());
         bpmFormMainMapper.updateById(bpmFormMainDO);
 
-        // 更新任务拓展表为不通过
-        taskExtMapper.updateByTaskId(
-                new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.INVALID.getResult())
+        // 作废/终止时，业务处理
+        this.invalidTaskBizHandle(reqVO, task.getProcessInstanceId());
+
+        // 更新任务拓展表为作废/终止
+        taskExtMapper.updateByTaskId(new BpmTaskExtDO().setTaskId(task.getId()).setResult(BpmProcessInstanceResultEnum.INVALID.getResult())
                         .setEndTime(LocalDateTime.now()).setReason(reqVO.getReason()));
+    }
+
+    private void invalidTaskBizHandle(BpmTaskInvalidReqVO reqVO, String processInstanceId) {
+        BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, processInstanceId);
+
     }
 
     @Override
