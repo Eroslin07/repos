@@ -206,7 +206,11 @@
               <el-col :span="10">
                 <div>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo
-                    .insuranceEndData
+                    ?.insuranceEndData
+                    ? baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo?.insuranceEndData.split(
+                        ' '
+                      )[0]
+                    : ''
                 }}</div>
               </el-col>
             </el-row>
@@ -443,12 +447,12 @@ const setDialogTile = (type: string) => {
   actionType.value = type
 }
 //时间戳转日期
-const formatDate = (time: string) => {
+const formatDate = (time: any) => {
   let date = ''
   if (time) {
-    const y = new Date(time).getFullYear()
-    const m = new Date(time).getMonth()
-    const d = new Date(time).getDate()
+    const y = new Date(time * 1).getFullYear()
+    const m = (new Date(time * 1).getMonth() + 1 + '').padStart(2, '0')
+    const d = (new Date(time * 1).getDate() + '').padStart(2, '0')
     date = y + '-' + m + '-' + d
     return date
   } else {
