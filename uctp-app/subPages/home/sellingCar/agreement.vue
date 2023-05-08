@@ -89,6 +89,7 @@
 			// 查看
 			handleViewContract(text) {
 				this.$modal.msg('正在加载，请稍等...')
+				let _this=this
 				let url=this.contractDtail.find(v=>v.contractType==text)?.url
 				uni.downloadFile({
 					url: url,
