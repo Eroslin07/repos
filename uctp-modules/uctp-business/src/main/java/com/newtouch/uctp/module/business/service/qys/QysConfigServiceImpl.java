@@ -285,6 +285,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //这里先去生成一个企业公章
                         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
                         Seal seal = client.defaultSealAutoCreate("公章", deptDO.getTaxNum()).getCheckedData();
+                        log.info("企业公章生成，企业:{},公章id:{}",deptDO.getName(),seal.getId());
                         //公章设置进去
                         configDO.setSealId(seal.getId());
                         SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();

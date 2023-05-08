@@ -158,17 +158,6 @@ public class QysConfigController {
 //        }
         return success(result);
     }
-    /*public CommonResult<String> send(@Valid @RequestBody List<QYSContractVO> VO) {
-        String result="";
-        for (QYSContractVO qysContractVO : VO) {
-            //这里只发起委托合同
-            if(qysContractVO.getContractType().equals("1")) {
-                result= qysConfigService.send(qysContractVO.getCarId(), qysContractVO.getType(), qysContractVO.getContractId(), qysContractVO.getContractType());
-            }
-        }
-
-        return success(result);
-    }*/
 
     @PostMapping("/ContractEcho")
     @Operation(summary ="合同回显")
