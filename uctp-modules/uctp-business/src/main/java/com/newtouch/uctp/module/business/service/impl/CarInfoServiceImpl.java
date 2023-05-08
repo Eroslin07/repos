@@ -898,7 +898,12 @@ public class CarInfoServiceImpl implements CarInfoService {
         carTransferInfoVO.setCarInfo(carInfoDO);
         carTransferInfoVO.setCarInfoDetails(infoDetails);
         // 3.处理车辆的图片信息
-        this.buildBmpVO(carInfoDO,infoDetails);
+        AppBpmCarInfoRespVO appBpmCarInfoRespVO = this.buildBmpVO(carInfoDO,infoDetails);
+        carTransferInfoVO.setFileA(appBpmCarInfoRespVO.getFileA());
+        carTransferInfoVO.setFileB(appBpmCarInfoRespVO.getFileB());
+        carTransferInfoVO.setFileC(appBpmCarInfoRespVO.getFileC());
+        carTransferInfoVO.setFileD(appBpmCarInfoRespVO.getFileD());
+        carTransferInfoVO.setFileE(appBpmCarInfoRespVO.getFileE());
         // 4.处理合同   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
         if (ObjectUtil.equals(BpmDefTypeEnum.SCGH.name(), procDefKey)) {
             // 收车过户
