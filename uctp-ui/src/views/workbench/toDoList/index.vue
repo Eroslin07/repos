@@ -14,7 +14,7 @@
           type="primary"
           preIcon="ep:cherry"
           title="审批"
-          v-hasPermi="['system:post:create']"
+          v-hasPermi="['workbench:toDoList:examineApprove']"
           @click="handleApproval()"
         />
         <!-- <XButton
@@ -29,7 +29,7 @@
           type="primary"
           preIcon="ep:download"
           :title="t('action.export')"
-          v-hasPermi="['system:post:create']"
+          v-hasPermi="['workbench:toDoList:export']"
           @click="handleExport()"
         />
       </template>
