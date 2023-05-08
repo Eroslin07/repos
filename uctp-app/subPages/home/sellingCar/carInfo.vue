@@ -894,7 +894,7 @@
 			filterMoney(val) {
 				if (val) {
 					let money = that.$amount.getComdify(val - 0)
-					console.log(money, 'money')
+					// console.log(money, 'money')
 					return money ? money : 0
 				} else {
 					return 0

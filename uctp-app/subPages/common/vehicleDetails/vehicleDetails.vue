@@ -199,7 +199,7 @@
 			isShowTransfer() {
 				let arr = [22, 23, 42, 43]
 				let flag = arr.indexOf(this.carInfoAll.carInfo.status)
-				console.log(flag,this.carInfoAll.carInfo.status,8899)
+				// console.log(flag,this.carInfoAll.carInfo.status,8899)
 				if (flag > -1) {
 					return true
 				} else {
@@ -246,7 +246,7 @@
 			},
 			// 切换tab
 			changeTab(item) {
-				console.log(item)
+				// console.log(item)
 				this.tabCar = item.index
 				if (item.index != 2) {
 					this.$refs.contractInfo.eyeIsShow = false

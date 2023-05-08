@@ -68,7 +68,7 @@
 			AbnormalPage
 		},
 		onLoad(options) {
-			console.log((options))
+			// console.log((options))
 			this.carId = options.carId
 			this.fairVisible = options.fairVisible
 			this.jsonData = JSON.parse(options.data)

@@ -188,7 +188,7 @@
 			},
 			// 显示隐藏金额
 			handleMoneyShow(tab, flag) {
-				console.log(tab, flag, 8899)
+				// console.log(tab, flag, 8899)
 				tab.isSHowMoney = flag;
 			},
 			// 点击车辆卡片

@@ -88,7 +88,7 @@
 			}
 		},
 		onLoad(options) {
-			console.log(options)
+			// console.log(options)
 			if (options.data) {
 				this.oldData = {};
 				this.staffForm = JSON.parse(decodeURIComponent(options.data));

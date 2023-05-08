@@ -247,7 +247,7 @@
 				this.tabList = []
 				getHomePageList(params).then(res => {
 					let secondTime = new Date().getTime();
-					console.log(secondTime,firstTime,secondTime - firstTime)
+					// console.log(secondTime,firstTime,secondTime - firstTime)
 					if (secondTime - firstTime > 1000) {
 						if (res.data.list.length > 0) {
 							this.isSHowTip = ''

@@ -515,7 +515,7 @@
 			},
 			// 预览合同
 			handleContact(url) {
-				console.log(url)
+				// console.log(url)
 				uni.downloadFile({
 					url: url,
 					success: function(res) {
@@ -540,7 +540,7 @@
 			},
 			// 作废
 			handleCancle(id) {
-				console.log(id)
+				// console.log(id)
 				this.$tab.navigateTo(
 					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
 					)

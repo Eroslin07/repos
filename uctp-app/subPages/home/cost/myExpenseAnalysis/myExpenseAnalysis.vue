@@ -210,7 +210,7 @@
 				this.costValue = item.name;
 			},
 			checkDetail(text) {
-				console.log(text)
+				// console.log(text)
 				uni.navigateTo({
 					url: `/subPages/home/cost/costAnalysisDetails/costAnalysisDetails`
 				})
