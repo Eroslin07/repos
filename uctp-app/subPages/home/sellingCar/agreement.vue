@@ -99,6 +99,13 @@
 							showMenu: false,
 							success: function(res) {
 								console.log('打开文档成功');
+								setTimeout(()=>{
+									if(text=='1'){
+										_this.entrustValue=['委托收购协议']
+									}else{
+										_this.contractValue=['收购协议']
+									}
+								},1000)
 							}
 						});
 					},

@@ -81,6 +81,7 @@
 			// 查看合同
 			handleViewContract(text) {
 				this.$modal.msg('正在加载，请稍等...')
+				let _this=this
 				let url = this.contractDtail.find(v => v.contractType == text)?.url
 				uni.downloadFile({
 					url: url,
@@ -91,6 +92,13 @@
 							showMenu: false,
 							success: function(res) {
 								console.log('打开文档成功');
+								setTimeout(()=>{
+									if(text=='1'){
+										_this.entrustValue=['委托收购协议']
+									}else{
+										_this.contractValue=['收购协议']
+									}
+								},1000)
 							}
 						});
 					},
