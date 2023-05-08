@@ -164,6 +164,7 @@ uctp:
       - /app-api/uctp/qys/callback/login
       - /app-api/uctp/qys/callback/certification
       - /app-api/uctp/qys/callback/privilege
+      - /app-api/uctp/qys/callback/certification/person
     ignore-tables:
       - infra_file
       - uctp_qys_callback
@@ -180,6 +181,7 @@ uctp:
       - /app-api/uctp/qys/callback/login
       - /app-api/uctp/qys/callback/certification
       - /app-api/uctp/qys/callback/privilege
+      - /app-api/uctp/qys/callback/certification/person
 
 debug: false
 
