@@ -1255,7 +1255,8 @@
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
-					other: this.carForm.other //其他
+					other: this.carForm.other ,//其他,
+					sellCarFair:this.fairValue
 				}
 
 				this.showOverlay = true;

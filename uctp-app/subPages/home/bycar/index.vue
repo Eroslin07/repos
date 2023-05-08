@@ -1478,7 +1478,8 @@
 					bankName: this.sellerForm.bankName,
 					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g, "") : null,
 					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g, "") : null,
-					buttonSaveOrSubmit: val == 'entrust' ? '1' : '2'
+					buttonSaveOrSubmit: val == 'entrust' ? '1' : '2',
+					buyCarFair:this.fairValue
 				}
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {

@@ -642,6 +642,9 @@ import { baseInfoData } from '@/views/workbench/basInfoValue'
 const formatDate = (time: any) => {
   let date = ''
   if (time) {
+    if (time.includes('T')) {
+      return time.split('T')[0]
+    }
     const y = new Date(time * 1).getFullYear()
     const m = (new Date(time * 1).getMonth() + 1 + '').padStart(2, '0')
     const d = (new Date(time * 1).getDate() + '').padStart(2, '0')
