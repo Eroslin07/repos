@@ -2,18 +2,21 @@
 	<view class="selling-car">
 		<!-- 自定义导航栏 -->
 		<u-navbar title="我要卖车" @leftClick="back" safeAreaInsetTop fixed placeholder></u-navbar>
-		<u-grid col="2" :border="true" style="margin-top: 10px;">
-			<u-grid-item @click="handleCar">
-				<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
-				<image v-show="active == 1" src="../../../static/images/bycar/car1.png" class="form-image"></image>
-				<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
-			</u-grid-item>
-			<u-grid-item @click="handleStep">
-				<image v-show="active == 0" src="../../../static/images/bycar/car3.png" class="form-image"></image>
-				<image v-show="active == 1" src="../../../static/images/bycar/car2.png" class="form-image"></image>
-				<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">交易信息</text>
-			</u-grid-item>
-		</u-grid>
+		<view class="headers">
+			<u-grid col="2" :border="true">
+				<u-grid-item @click="handleCar">
+					<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
+					<image v-show="active == 1" src="../../../static/images/bycar/car1.png" class="form-image"></image>
+					<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
+				</u-grid-item>
+				<u-grid-item @click="handleStep">
+					<image v-show="active == 0" src="../../../static/images/bycar/car3.png" class="form-image"></image>
+					<image v-show="active == 1" src="../../../static/images/bycar/car2.png" class="form-image"></image>
+					<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">交易信息</text>
+				</u-grid-item>
+			</u-grid>
+		</view>
+		<view style="height: 136rpx;"></view>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<!-- 车辆信息 -->
 			<view v-show="vehicleInfor">
@@ -1407,6 +1410,14 @@
 					display: inline;
 				}
 			}
+		}
+		
+		.headers {
+			width: 100%;
+			position: fixed;
+			background-color: #fff;
+			margin-top: -1px;
+			z-index: 999;
 		}
 
 		.footer {
