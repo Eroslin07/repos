@@ -1130,6 +1130,10 @@ public class QysConfigServiceImpl implements QysConfigService {
         QysConfigDO configDO = qysConfigMapper.selectById(1);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
+        String authId =checkedData.getAuthId();
+        UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", userId);
+        userExtDO.setAuthId(authId);
+        userExtMapper.updateById(userExtDO);
         log.info("个人认证【{}】,认证地址【{}】", deptRespDTO.getName(), checkedData.getAuthUrl());
         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getAuthUrl()));
         Map<String, String> map = MapUtil
