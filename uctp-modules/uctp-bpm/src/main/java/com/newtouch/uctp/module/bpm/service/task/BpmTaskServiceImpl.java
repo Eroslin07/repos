@@ -436,7 +436,13 @@ public class BpmTaskServiceImpl implements BpmTaskService {
 
     private void invalidTaskBizHandle(BpmTaskInvalidReqVO reqVO, String processInstanceId) {
         BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, processInstanceId);
+        if (ObjectUtil.equals(bpmFormMainDO.getBusiType(), BpmDefTypeEnum.SKZH.name())) {
+            // 进行委托合同作废、收车合同作废
 
+        }
+        else if (ObjectUtil.equals(bpmFormMainDO.getBusiType(), BpmDefTypeEnum.LRTX.name())) {
+
+        }
     }
 
     @Override
