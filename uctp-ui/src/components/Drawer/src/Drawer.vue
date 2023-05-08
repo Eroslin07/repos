@@ -36,6 +36,13 @@
               v-if="!completedVisible && noVisible"
               >退回并终止</el-button
             >
+            <el-button
+              plain
+              type="success"
+              @click="submitBtn('不同意')"
+              v-if="props.status == 'SKZH'"
+              >提交作废</el-button
+            >
             <!-- <el-button plain type="danger">作废</el-button> -->
             <el-button plain type="info" @click="dravwerClose">关闭</el-button>
           </div>
@@ -147,6 +154,13 @@ const submitBtn = (text) => {
   console.log(text)
   dialogText.value = text
   form.value.reason = '审批' + text
+  if (props.status == 'SKZH') {
+    if (text == '同意') {
+      form.value.reason = '重新支付'
+    } else if (text == '不同意') {
+      form.value.reason = '合同作废'
+    }
+  }
   dialogFormVisible.value = true
 }
 
@@ -158,28 +172,50 @@ const form = ref<any>({})
 const dialogSubmit = () => {
   if (!form.value.reason) return message.error('请输入审批意见')
   subLoading.value = true
-  let data = {
-    id: baseInfoData.data.taskId,
-    reason: form.value.reason,
-    variables: baseInfoData.data.variables
+  if (props.status == 'SKZH' || props.status == 'LRTX') {
+    let params = {
+      id: baseInfoData.data.taskId,
+      reason: form.value.reason
+    }
+    detailAPI
+      .putInvalid(params)
+      .then(() => {
+        dravwerClose()
+        subLoading.value = false
+        message.success('作废成功')
+        dialogFormVisible.value = false
+        emit('handleCloseDrawer')
+        emit('handleUpdateList')
+      })
+      .catch((err) => {
+        console.log(err)
+        subLoading.value = false
+        message.error('提交失败')
+      })
+  } else {
+    let data = {
+      id: baseInfoData.data.taskId,
+      reason: form.value.reason,
+      variables: baseInfoData.data.variables
+    }
+    data.variables.approvalType = dialogText.value == '同意' ? 'pass' : 'disagree'
+    data.variables.nodeId = baseInfoData.data.nodeId
+    data.variables = detailAPI
+      .putApproveAPI(data)
+      .then(() => {
+        dravwerClose()
+        subLoading.value = false
+        message.success('提交成功')
+        dialogFormVisible.value = false
+        emit('handleCloseDrawer')
+        emit('handleUpdateList')
+      })
+      .catch((err) => {
+        console.log(err)
+        subLoading.value = false
+        message.error('提交失败')
+      })
   }
-  data.variables.approvalType = dialogText.value == '同意' ? 'pass' : 'disagree'
-  data.variables.nodeId = baseInfoData.data.nodeId
-  data.variables = detailAPI
-    .putApproveAPI(data)
-    .then(() => {
-      dravwerClose()
-      subLoading.value = false
-      message.success('提交成功')
-      dialogFormVisible.value = false
-      emit('handleCloseDrawer')
-      emit('handleUpdateList')
-    })
-    .catch((err) => {
-      console.log(err)
-      subLoading.value = false
-      message.error('提交失败')
-    })
 }
 const successText = (i) => {
   console.log(i)

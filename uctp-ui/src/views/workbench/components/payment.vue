@@ -63,6 +63,7 @@
   </ContentWrap>
 </template>
 <script lang="ts" setup name="MerchantApprovalPending">
+import { AgreementFrame } from './index'
 import { allSchemas } from '../toDoList/toDoList.data'
 import { defineProps } from 'vue'
 import { propTypes } from '@/utils/propTypes'

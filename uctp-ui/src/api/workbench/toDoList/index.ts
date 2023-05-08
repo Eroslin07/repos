@@ -14,3 +14,7 @@ export const getTaskFormInfoAPI = async (params) => {
 export const putApproveAPI = async (data) => {
   return await request.put({ url: '/bpm/task/v2/approve', data })
 }
+// 作废
+export const putInvalid = async (data) => {
+  return await request.put({ url: '/bpm/task/invalid', data })
+}
