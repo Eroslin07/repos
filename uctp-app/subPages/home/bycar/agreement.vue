@@ -53,7 +53,7 @@
 				isSHowTip: '',
 				contractName: '收购协议',
 				entrustName: '委托收购协议',
-				fairVisible: true,
+				fairVisible: 1,
 				contractValue: [],
 				entrustValue: [],
 				jsonData: {},
@@ -114,7 +114,7 @@
 					}
 
 				})
-				if (!this.fairVisible) return uni.showModal({
+				if (this.fairVisible == 0) return uni.showModal({
 					title: '提示',
 					content: '您的收车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
 					confirmText: '是',

@@ -706,8 +706,8 @@
 					}
 				},
 				fairValue: {
-					value1: '',
-					value2: ''
+					value1: 10,
+					value2: 20
 				},
 				showSex: false,
 				range: [
@@ -723,7 +723,7 @@
 				modelName: null,
 				date: null,
 				fairStatus: null,
-				fairVisible: true
+				fairVisible: 1
 			}
 		},
 		onReady() {
@@ -1290,13 +1290,16 @@
 					this.chebi = false;
 				}
 				this.$refs.carForm.validate().then(res => {
-					if (this.modelId) {
-						if (this.chebi == false) {
-							this.getFairValue();
-						}
-					} else {
-						this.$modal.msg("请选择车型");
+					if (this.chebi == false) {
+						this.handleDraft('step');
 					}
+					// if (this.modelId) {
+					// 	if (this.chebi == false) {
+					// 		this.getFairValue();
+					// 	}
+					// } else {
+					// 	this.$modal.msg("请选择车型");
+					// }
 				})
 			},
 			// 点击车辆信息保存
@@ -1444,9 +1447,9 @@
 				let amount = _this.$amount.getDelcommafy(_this.sellerForm.vehicleReceiptAmount);
 				amount = amount / 10000;
 				if (_this.fairValue.value1 <= amount && amount <= _this.fairValue.value2) {
-					_this.fairVisible = true
+					_this.fairVisible = 1
 				} else {
-					_this.fairVisible = false
+					_this.fairVisible = 0
 
 				}
 				_this.saveSellerInfo(val);
