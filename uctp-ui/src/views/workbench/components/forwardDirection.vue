@@ -217,7 +217,10 @@
       <div class="prompt">
         <div>
           <span>个人开票:</span>
-          <span>买方信息的姓名</span>
+          <span>{{
+            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+              .buyerName
+          }}</span>
         </div>
         <div>
           <span
