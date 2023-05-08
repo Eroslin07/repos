@@ -87,6 +87,9 @@ public class MsgContentUtil {
                 case "43":
                     result = String.format("【翼龙科技】电子签章平台需要您进行一键签署授权，请访问%s完成授权操作。", map.get("url").replaceAll("https://",""));
                     break;
+                case "44":
+                    result = String.format("【翼龙科技】电子签章平台需要您进行印章及功能模块授权，请访问%s完成授权操作。", map.get("url").replaceAll("https://",""));
+                    break;
                 default:
                     result="无匹配模版";
             }

@@ -182,7 +182,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         SaaSUserAuthPageRequest request = new SaaSUserAuthPageRequest();
         User user = new User(contact, contactType);
         request.setUser(user);
-        request.setCallbackUrl("");
+        request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/certification/person");
         return this.saasUserAuthPage(request);
     }
 
@@ -203,9 +203,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/privilege");
         //TODO 成功后的地址需要商量
         request.setSuccessUrl("https://fssc.cloud:28000/");
-        //目前只授权印章
+        //授权印章,合同
         List<String> privilegeModules = Arrays.asList("SEAL","CONTRACT");
         request.setPrivilegeModules(privilegeModules);
+        //很关键，这里要重新生成，不然后合同收不到回调
+        request.setCreateToken(Boolean.TRUE);
         return this.saasPrivilegeUrl(request);
     }
 
@@ -298,7 +300,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name, String foot, String enterpriseCode) {
+    public QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name, String enterpriseCode) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
