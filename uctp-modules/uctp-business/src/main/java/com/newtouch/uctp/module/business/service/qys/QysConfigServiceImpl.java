@@ -14,26 +14,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
-import io.seata.spring.annotation.GlobalTransactional;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -97,6 +77,23 @@ import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import com.qiyuesuo.sdk.v2.utils.StringUtils;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
@@ -272,14 +269,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                     configDO.setCompanyId(Long.valueOf(companyId));
                     configDO.setBusinessId(deptDO.getId());
                     configDO.setBusinessName(deptDO.getName());
+                    configDO.setServerUrl("https://openapi.qiyuesuo.cn");
 
                     deptDO.setAuth(Integer.valueOf(status));
                     deptMapper.updateById(deptDO);
                     //保存回调信息
                     qysCallbackService.saveDO(json,
                             QysCallBackType.COMPANY_AUTH.value(), deptDO.getId());
-                    //更新契约锁client
-                    initLocalCache();
                     //继续做企业授权
                     List<AdminUserRespDTO> checkedData = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptDO.getId())).getCheckedData();
                     if (CollUtil.isNotEmpty(checkedData)) {
@@ -287,17 +283,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                         userRespDTO = checkedData.get(0);
 //                    this.privilegeUrl(userRespDTO.getId());
                         QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
-                        //这里先去生成一个企业公章
-                        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
-                        Seal seal = client.defaultSealAutoCreate("公章", deptDO.getTaxNum()).getCheckedData();
-                        log.info("企业公章生成，企业:{},公章id:{}",deptDO.getName(),seal.getId());
-                        //公章设置进去
-                        configDO.setSealId(seal.getId());
-                        SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()).getCheckedData();
-                        log.info("企业功能自动签授权【{}】,授权地址【{}】", deptDO.getName(), privilegeUrlResult.getPageUrl());
+                        SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()
+                                ,ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYE","ROLE_PERMISSION",
+                                        "BASE_INFO","FILE_STATISTICS","CATEGORY","FEE")).getCheckedData();
+                        log.info("企业功能授权【{}】,授权地址【{}】", deptDO.getName(), privilegeUrlResult.getPageUrl());
                         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(privilegeUrlResult.getPageUrl()));
                         Map<String, String> map = MapUtil
-                                .builder("title", "企业印章及功能授权")
+                                .builder("title", "企业token授权")
                                 .put("contentType", "44")
                                 .put("name", deptDO.getName())
                                 .put("url", urls.get(0))
@@ -330,8 +322,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                     } else {
                         qysConfigMapper.updateById(configDO);
                     }
-                    //刷新client
-                    this.initLocalCache();
                 }
             });
         } else {
@@ -609,7 +599,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             Object checkedData = client.defaultCompanysign(3088393275632066703L).getCheckedData();
             System.out.println(checkedData);
         } else if (type.equals(4)) {
-            SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816").getCheckedData();
+            SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816",ListUtil.of("CONTRACT")).getCheckedData();
             System.out.println(checkedData);
         } else if (type.equals(5)) {
             userAuthProducer.sendUserAuthMessage(666L, "17396202169", UserAuthProducer.FIVE_MINUTES);
@@ -1120,12 +1110,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                 deptRespDTO.getTaxNum(),
                 streamFile).getCheckedData();
         //保存config
-        QysConfigDO newConfigDO = new QysConfigDO();
-        newConfigDO.setCode("default");
-        newConfigDO.setBusinessId(deptRespDTO.getId());
-        newConfigDO.setBusinessName(deptRespDTO.getName());
-        newConfigDO.setStatus(0);
-        qysConfigMapper.insert(newConfigDO);
+//        QysConfigDO newConfigDO = new QysConfigDO();
+//        newConfigDO.setCode("default");
+//        newConfigDO.setBusinessId(deptRespDTO.getId());
+//        newConfigDO.setBusinessName(deptRespDTO.getName());
+//        newConfigDO.setStatus(0);
+//        qysConfigMapper.insert(newConfigDO);
         log.info("企业认证【{}】,认证地址【{}】", deptRespDTO.getName(), checkedData.getPageUrl());
         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getPageUrl()));
         Map<String, String> map = MapUtil
@@ -1221,7 +1211,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         }
         String accessToken = jsonObject.getString("accessToken");
         String accessSecret = jsonObject.getString("accessSecret");
-
+        Boolean existSeal = StrUtil.isBlank(configDO.getAccessKey()) ? Boolean.FALSE : Boolean.TRUE;
         TenantUtils.execute(configDO.getTenantId(), () -> {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, configDO.getTenantId());
             //设置当前登录人信息，免得保存报错
@@ -1234,9 +1224,26 @@ public class QysConfigServiceImpl implements QysConfigService {
 //            configDO.setServerUrl("https://openapi.qiyuesuo.cn");
             configDO.setAccessKey(accessToken);
             configDO.setAccessSecret(accessSecret);
+            //初始化client必须先存一次
             qysConfigMapper.updateById(configDO);
-            //获取企业印章自动签授权链接
+            //刷新client
+            this.initLocalCache();
+            DeptRespDTO deptRespDTO = deptApi.getDept(configDO.getBusinessId()).getCheckedData();
+            List<AdminUserRespDTO> adminUserRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptRespDTO.getId())).getCheckedData();
+            //这里先去生成一个企业公章
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+            Seal seal = client.defaultSealAutoCreate("公章", "").getCheckedData();
+            configDO.setSealId(seal.getId());
+            //保存公章
+            qysConfigMapper.updateById(configDO);
+            if (CollUtil.isEmpty(adminUserRespDTOS)) {
+                log.error("授权印章业务时，没有获取到部门下主要员工");
+                return;
+            }
+            log.info("企业公章生成，企业:{},公章id:{}", deptRespDTO.getName(), seal.getId());
+            AdminUserRespDTO adminUserRespDTO = adminUserRespDTOS.get(0);
             QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
+            //存在token，企业印章自动签授权
             List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
             if (CollUtil.isNotEmpty(userRespDTOS)) {
                 AdminUserRespDTO userRespDTO = userRespDTOS.get(0);
@@ -1244,17 +1251,52 @@ public class QysConfigServiceImpl implements QysConfigService {
                 SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
                         companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
                 log.info("企业印章自动签授权,用户【{}】,授权地址【{}】", userRespDTO.getNickname(), authUrlResult.getPageUrl());
-                List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
+                List<String> urls1 = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
                 //发送短信
-                Map<String, String> map = MapUtil
+                Map<String, String> map1 = MapUtil
                         .builder("title", "企业印章自动签授权")
                         .put("contentType", "43")
-                        .put("url", urls.get(0))
+                        .put("url", urls1.get(0))
                         .put("phone", userRespDTO.getMobile())
                         .put("businessId", configDO.getBusinessId().toString())
                         .put("type", "1").build();
-                noticeService.saveNotice(map);
+                noticeService.saveNotice(map1);
             }
+            /*if (existSeal) {
+                //存在token，企业印章自动签授权
+                List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
+                if (CollUtil.isNotEmpty(userRespDTOS)) {
+                    AdminUserRespDTO userRespDTO = userRespDTOS.get(0);
+                    DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 12);
+                    SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
+                            companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
+                    log.info("企业印章自动签授权,用户【{}】,授权地址【{}】", userRespDTO.getNickname(), authUrlResult.getPageUrl());
+                    List<String> urls1 = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
+                    //发送短信
+                    Map<String, String> map1 = MapUtil
+                            .builder("title", "企业印章自动签授权")
+                            .put("contentType", "43")
+                            .put("url", urls1.get(0))
+                            .put("phone", userRespDTO.getMobile())
+                            .put("businessId", configDO.getBusinessId().toString())
+                            .put("type", "1").build();
+                    noticeService.saveNotice(map1);
+                } else {
+                    //不存在token, 企业印章及功能模块授权
+                    SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), adminUserRespDTO.getMobile(), ListUtil.of("")).getCheckedData();
+                    log.info("企业印章及功能模块授权【{}】,授权地址【{}】", deptRespDTO.getName(), privilegeUrlResult.getPageUrl());
+                    List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(privilegeUrlResult.getPageUrl()));
+                    Map<String, String> map = MapUtil
+                            .builder("title", "企业印章及功能模块授权")
+                            .put("contentType", "44")
+                            .put("name", deptRespDTO.getName())
+                            .put("url", urls.get(0))
+                            .put("phone", adminUserRespDTO.getMobile())
+                            .put("businessId", deptRespDTO.getId().toString())
+                            .put("type", "1").build();
+                    noticeService.saveNotice(map);
+                }
+            }*/
         });
         return "success";
     }

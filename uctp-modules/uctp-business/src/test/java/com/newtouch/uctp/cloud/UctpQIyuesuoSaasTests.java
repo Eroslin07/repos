@@ -1,14 +1,15 @@
 package com.newtouch.uctp.cloud;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
-import com.qiyuesuo.sdk.v2.SdkClient;
+import com.qiyuesuo.sdk.v2.SaaSSdkClient;
 import com.qiyuesuo.sdk.v2.bean.Company;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
-import com.qiyuesuo.sdk.v2.request.CompanyDetailRequest;
+import com.qiyuesuo.sdk.v2.request.SaaSCompanyDetailRequest;
 import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
 import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
 import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
@@ -43,10 +44,9 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void companyAuth() {
-        String applicanInfo = "{\"name\":\"李杨\",\"contact\": \"17380123816\",\"contactType\": \"MOBILE\"}";
-        QiyuesuoCommonResult<SaaSCompanyAuthPageResult> result = client.saasCompanyAuthPageUrl("成都新致云服测试公司", applicanInfo);
-        System.out.println(result.getData().getPageUrl());
-        Assert.equals(result.getCode(), 0);
+        String applicanInfo = "{\"name\":\"蒋嵩巍\",\"contact\": \"18080072255\",\"contactType\": \"MOBILE\"}";
+        SaaSCompanyAuthPageResult checkedData = client.saasCompanyAuthPageUrl("666专业合作社", applicanInfo).getCheckedData();
+        System.out.println(checkedData.getPageUrl());
     }
 
     @Test
@@ -58,19 +58,24 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void privilegeUrl() {
-        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(2724174433890603381L, "17380123816").getCheckedData();
+        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(3093084876115751320L, "18080072255",
+                ListUtil.of()).getCheckedData();
         System.out.println(checkedData.getPageUrl());
     }
     @Test
     void companyDetail(){
-        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn", "q4xKsNcFI8", "qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
+        SaaSSdkClient saaSSdkClient = new SaaSSdkClient("yzFRkW26cb", "eiTI3RA2yaMBpwmCAZPiXmzewEZstT", "https://openapi.qiyuesuo.cn");
+//        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn", "yzFRkW26cb", "eiTI3RA2yaMBpwmCAZPiXmzewEZstT");
 // 公司信息
-        CompanyDetailRequest request = new CompanyDetailRequest("成都新致云服测试公司");
-        String response = sdkClient.service(request);
+        SaaSCompanyDetailRequest companyDetailRequest = new SaaSCompanyDetailRequest();
+        companyDetailRequest.setCompanyName("666专业合作社");
+        String response = saaSSdkClient.service(companyDetailRequest);
         SdkResponse<Company> responseObj = JSONUtils.toQysResponse(response, Company.class);
         if(responseObj.getCode() == 0) {
             Company result = responseObj.getResult();
+            System.out.println(JSONUtils.toJson(result));
         }
     }
+
 
 }

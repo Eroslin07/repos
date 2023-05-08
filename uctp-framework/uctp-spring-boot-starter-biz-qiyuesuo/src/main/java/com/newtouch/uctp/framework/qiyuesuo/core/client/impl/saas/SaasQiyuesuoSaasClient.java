@@ -15,7 +15,6 @@ import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 
 import java.io.FileOutputStream;
-import java.util.Arrays;
 import java.util.List;
 public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     /**
@@ -192,7 +191,9 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId, String contact) {
+    public QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId,
+                                                                         String contact,
+                                                                         List<String> privilegeModules) {
         Assert.notNull(companyId, "companyId 不能为空");
         Assert.notBlank(contact, "contact 不能为空");
         SaasPrivilegeUrlRequest request = new SaasPrivilegeUrlRequest();
@@ -204,7 +205,6 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         //TODO 成功后的地址需要商量
         request.setSuccessUrl("https://fssc.cloud:28000/");
         //授权印章,合同
-        List<String> privilegeModules = Arrays.asList("SEAL","CONTRACT");
         request.setPrivilegeModules(privilegeModules);
         //很关键，这里要重新生成，不然后合同收不到回调
         request.setCreateToken(Boolean.TRUE);

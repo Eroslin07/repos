@@ -4,6 +4,8 @@ import com.qiyuesuo.sdk.v2.http.StreamFile;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
 
+import java.util.List;
+
 /**
  * 用于对接各契约锁SAAS模式
  *
@@ -83,10 +85,12 @@ public interface QiyuesuoSaasClient {
      *
      * @param companyId 企业Id
      * @param contact 操作人电话
+     * @param privilegeModules 指定授权模块，指定的模块在授权页面默认勾选；可行值如下：SEAL（印章管理）、TEMPLATE（模板管理）、CONTRACT（合同管理）、COMPANY_EMPLOYEE（企业与成员）、ROLE_PERMISSION（角色与权限）、BASE_INFO（基本信息）、FILE_STATISTICS（文件统计）、CATEGORY（业务分类）、FEE（费用中心）
      * @return
      */
     QiyuesuoCommonResult<SaaSPrivilegeUrlResult> saasPrivilegeUrl(Long companyId,
-                                                              String contact);
+                                                              String contact,
+                                                                 List<String> privilegeModules);
 
     /**
      * 企业签字授权
