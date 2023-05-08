@@ -163,8 +163,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public ContractDO getCollectDraft(Long carId, Integer contractType, Long tenantId) {
-        return contractMapper.findCollectDraft(carId, contractType, tenantId);
+    public ContractDO getCollectDraft(Long carId, Integer contractType) {
+        return contractMapper.findCollectDraft(carId, contractType);
     }
 
     @Override

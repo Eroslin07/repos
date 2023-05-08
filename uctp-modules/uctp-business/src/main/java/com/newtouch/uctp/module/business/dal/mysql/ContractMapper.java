@@ -6,7 +6,6 @@ import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppContractarVO;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.CarDCVo;
-import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -44,11 +43,10 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
     @Select("select * from uctp_contract where CONTRACT_ID = #{contractId} AND DELETED = 0")
     ContractDO findByContractId(@Param("contractId") Long contractId);
 
-    default ContractDO findCollectDraft(Long carId, Integer contractType, Long tenantId){
+    default ContractDO findCollectDraft(Long carId, Integer contractType){
         return selectOne(new LambdaQueryWrapperX<ContractDO>()
                 .eq(ContractDO::getCarId,carId)
-                .eq(ContractDO::getContractType,contractType)
-                .eq(ContractDO::getTenantId,tenantId));
+                .eq(ContractDO::getContractType,contractType));
     }
 
     void updateContractByContractId(@Param("status") String status,@Param("contractId") Long contractId);
