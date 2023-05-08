@@ -215,12 +215,24 @@
       </div>
       <p style="font-weight: bold; margin: 10px 0">增值税通用发票</p>
       <div class="prompt">
-        <div>
-          <span>个人开票:</span>
-          <span>{{
-            baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
-              .buyerName
-          }}</span>
+        <div class="prompt-box">
+          <el-row>
+            <el-col :span="8">
+              <span>个人开票:</span>
+              <span>{{
+                baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+                  .buyerName
+              }}</span>
+            </el-col>
+            <el-col :span="8">
+              <span>税率：</span>
+              <span> 0.5%</span>
+            </el-col>
+            <el-col :span="8">
+              <span>价税合计：</span>
+              <span>取卖车款</span>
+            </el-col>
+          </el-row>
         </div>
         <div>
           <span
@@ -377,6 +389,11 @@ p {
   }
   > div:last-child {
     color: #f59a23;
+  }
+  .prompt-box {
+    :deep(.el-col) {
+      border: none;
+    }
   }
 }
 .content-box {

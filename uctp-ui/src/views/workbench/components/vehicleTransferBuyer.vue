@@ -250,12 +250,13 @@
             </el-col>
             <el-col :span="2" class="bg-yell">定金：</el-col>
             <el-col :span="4">
-              <div>{{
-                moneyFormat(
-                  baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .deposit
-                )
-              }}</div>
+              <div
+                >{{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfo.deposit
+                  )
+                }}元</div
+              >
             </el-col>
           </el-row>
           <el-row>
