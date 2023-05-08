@@ -398,8 +398,6 @@
                     .thirdSellerName
                 }}</div>
               </el-col>
-            </el-row>
-            <el-row>
               <el-col
                 :span="2"
                 class="bg-yell"
