@@ -501,7 +501,8 @@
 				showConfirm('删除检测报告后，您的车辆将无法发起卖车业务，若需要继续卖车请重新上传新的检测报告').then(res => {
 					if (res.confirm) {
 						deleteTestImage({
-							id: this.fileList1[0]?.id || this.carInfoAll.fileF[0].id
+							id: this.fileList1[0]?.id || this.carInfoAll.fileF[0].id,
+							carId:this.carInfoAll?.carInfo.id
 						}).then((res) => {
 							this.$modal.msg("删除成功");
 							this.carUpload = false
