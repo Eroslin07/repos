@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -178,9 +179,11 @@ public class QysConfigController {
     }
 
     @PostMapping("/user/auth")
+    @PermitAll
     @Operation(summary ="个人认证")
-    @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
-    public CommonResult<Boolean> userAuth(@RequestParam("userId") @NotNull  Long userId) {
+//    @Parameter(name = "userId", description = "用户id", required = true, example = "1024")
+    public CommonResult<Boolean> userAuth(@RequestBody @Valid  Map map) {
+        Long userId = Long.valueOf(map.get("userId").toString());
         qysConfigService.userAuth(userId);
         return success(true);
     }
