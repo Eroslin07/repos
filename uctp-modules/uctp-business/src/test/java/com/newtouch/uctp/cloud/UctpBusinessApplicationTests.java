@@ -36,8 +36,8 @@ class UctpBusinessApplicationTests {
         properties.setId(2L);
         properties.setCode(QiyuesuoChannelEnum.DEFAULT.getCode());
 //        ("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO")
-        properties.setAccessKey("q4xKsNcFI8");
-        properties.setAccessSecret("qKPK101VGyLsnSqFoLzSCu3JGiMAVO");
+        properties.setAccessKey("9oFYG0lOfG");
+        properties.setAccessSecret("PcUsF4Xkmq9JBFjqVlKsnnXWYmRBHr");
         properties.setServerUrl("https://openapi.qiyuesuo.cn");
         client = new DefaultQiyuesuoClient(properties);
         client.init();

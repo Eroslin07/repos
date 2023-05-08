@@ -1129,7 +1129,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 .put("type", "1").build();
         noticeService.saveNotice(map);
         //发送消息，做认证后结果查询
-        userAuthProducer.sendUserAuthMessage(userId, userRespDTO.getMobile(), UserAuthProducer.TWO_MINUTES);
+//        userAuthProducer.sendUserAuthMessage(userId, userRespDTO.getMobile(), UserAuthProducer.TWO_MINUTES);
     }
 
     @Override
@@ -1157,7 +1157,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else {
             if (ObjectUtil.equals(1, message.getCount())) {
                 //认证不通过，且为第一次发送消息，发一条5分钟的的延时消息
-                userAuthProducer.sendUserAuthMessage(contract, UserAuthProducer.ONE_MINUTES);
+//                userAuthProducer.sendUserAuthMessage(contract, UserAuthProducer.TEN_MINUTES);
             }
         }
     }
