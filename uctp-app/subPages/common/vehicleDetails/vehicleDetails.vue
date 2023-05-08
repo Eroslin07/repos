@@ -96,7 +96,7 @@
 					fileF: [],
 				},
 				currentNum: 0,
-				carUpload: true,
+				// carUpload: true,
 				carsList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
 					'https://img1.baidu.com/it/u=2974906504,2372510003&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -160,13 +160,16 @@
 
 				// 是否展示系统异常
 				isSHowTip: '',
+				
+				// 父组件传过来的id
+				carId:'',
 			};
 		},
 
 		onLoad(props) {
 			// console.log(props, 'this.fatherProps.id')
-			let id = JSON.parse(props.item)?.id || '1650085024672796674'
-			this.getCarDetails(id)
+			this.carId = JSON.parse(props.item)?.id || '1650085024672796674'
+			this.getCarDetails(this.carId)
 		},
 		computed: {
 			firstStatus() {
@@ -196,7 +199,8 @@
 			isShowTransfer() {
 				let arr = [22, 23, 42, 43]
 				let flag = arr.indexOf(this.carInfoAll.carInfo.status)
-				if (flag > 0) {
+				console.log(flag,this.carInfoAll.carInfo.status,8899)
+				if (flag > -1) {
 					return true
 				} else {
 					return false
@@ -279,6 +283,7 @@
 			},
 			changeTest(val) {
 				this.carUpload = val
+				this.getCarDetails(this.carId)
 			},
 
 			// 时间戳转天

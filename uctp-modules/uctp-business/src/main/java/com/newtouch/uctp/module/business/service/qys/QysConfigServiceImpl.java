@@ -1409,28 +1409,25 @@ public class QysConfigServiceImpl implements QysConfigService {
         String json = this.decryptMessage(content);
         JSONObject jsonObject = JSON.parseObject(json);
         log.info("个人认证参数：{}",jsonObject.toJSONString());
-        String companyName = jsonObject.getString("companyName");
+        String authId = jsonObject.getString("authId");
         String status = jsonObject.getString("status");
-        String companyId = jsonObject.getString("companyId");
-        String registerNo = jsonObject.getString("registerNo");
+        UserExtDO userExtDO = userExtMapper.selectOne("AUTH_ID", authId);
         //通过营业执照，和公司名称找到公司数据
-        DeptDO deptDO = deptMapper.findByNameAndTaxNum(companyName, registerNo);
-        if (ObjectUtil.isNotNull(deptDO)) {
+        if (ObjectUtil.isNotNull(userExtDO)) {
             //fengin接口回调，如果要用feign 那么这里必须卸载回调里，不然报错没传参数 tenant-id
-            TenantUtils.execute(deptDO.getTenantId(), () -> {
-                WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, deptDO.getTenantId());
+            TenantUtils.execute(userExtDO.getTenantId(), () -> {
+                WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, userExtDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
-                List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
-                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(adminUserRespDTOs.get(0).getId()));
-//                AdminUserDO user = new  AdminUserDO();
-//                user.setStatus(0);
-//                userMapper.updateById(user);
-//                UserExtDO userExtDO = new UserExtDO();
-//                userExtDO.setStatus(0);
-//                userExtMapper.updateById(userExtDO);
+                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(userExtDO.getUserId()));
+                userExtDO.setStatus(0);
+                userExtMapper.updateById(userExtDO);
+                AdminUserDO userDO = userMapper.selectById(userExtDO.getUserId());
+                userDO.setStatus(0);
+                userMapper.updateById(userDO);
             });
         } else {
-            log.error("[certification]根据返回的公司名称未查询到数据,companyName:{},tax_num:{}", companyName, registerNo);
+            log.warn("个人认证失败，找不到数据，authId：{}",authId);
+            return "fail";
         }
         return "success";
     }
