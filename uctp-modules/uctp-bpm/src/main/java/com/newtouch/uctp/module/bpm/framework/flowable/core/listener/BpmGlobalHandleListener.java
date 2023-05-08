@@ -176,7 +176,10 @@ public class BpmGlobalHandleListener {
                 carInfoMapper.updateById(carInfoDO);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 1);
-                qysConfigApi.send(contractDO.getContractId(), false);
+                boolean isSend = qysConfigApi.send(contractDO.getContractId(), false).getCheckedData();
+                if (!isSend) {
+                    throw new RuntimeException("自动发起并签署委托合同异常");
+                }
                 //qysConfigApi.companySign(contractDO.getContractId());  // TODO :调用有问题，需要调用同时支持合同发起、静默签章
                 noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
             }

@@ -323,6 +323,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                     } else {
                         qysConfigMapper.updateById(configDO);
                     }
+                    //刷新client
+                    this.initLocalCache();
                 }
             });
         } else {
@@ -1104,7 +1106,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                 deptRespDTO.getLegalRepresentative(),
                 deptRespDTO.getTaxNum(),
                 streamFile).getCheckedData();
-
+        //保存config
+        QysConfigDO newConfigDO = new QysConfigDO();
+        newConfigDO.setCode("default");
+        newConfigDO.setBusinessId(deptRespDTO.getId());
+        newConfigDO.setBusinessName(deptRespDTO.getName());
+        newConfigDO.setStatus(0);
+        qysConfigMapper.insert(newConfigDO);
         log.info("企业认证【{}】,认证地址【{}】", deptRespDTO.getName(), checkedData.getPageUrl());
         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getPageUrl()));
         Map<String, String> map = MapUtil
