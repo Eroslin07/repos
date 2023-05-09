@@ -25,12 +25,12 @@ public class AccountProfitControllerTest {
     @Resource
     private MockHttpServletRequest mockHttpServletRequest;
 
-    private String accountNo = "55555555";
+    private String accountNo = "666";
 
     @BeforeEach
     public void before() {
         LoginUser loginUser = new LoginUser();
-        loginUser.setId(211L);
+        loginUser.setId(100L);
         loginUser.setTenantId(150L);
         SecurityFrameworkUtils.setLoginUser(loginUser, mockHttpServletRequest);
 
@@ -57,7 +57,7 @@ public class AccountProfitControllerTest {
         ProfitPresentReqVO req = new ProfitPresentReqVO();
         req.setAccountNo(accountNo);
         req.setAmount(1L);
-        req.setMerchantBankId("2");
+        req.setMerchantBankId("3");
         List<ProfitPresentInvoiceReqVO> invoiceFiles = new ArrayList<>();
         ProfitPresentInvoiceReqVO f1 = new ProfitPresentInvoiceReqVO();
         f1.setFileId("1");

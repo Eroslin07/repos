@@ -14,11 +14,13 @@
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
-					<view v-else class="upload-text">
+					<view  v-else class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
-						<text>您已经上传检测报告!</text>
-						<u-icon v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30" @click="handleDelete" name="trash" color="#333333" style="width: 30rpx;height: 30rpx;">
-						</u-icon>
+						<text @click="handleImage(carInfoAll.fileF)">您已经上传检测报告!</text>
+						<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30"  @click="handleDelete" class="icon-right-box">
+							<u-icon  name="trash" color="#333333">
+							</u-icon>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -332,7 +334,6 @@
 				</view>
 			</view>
 		</view>
-
 	</view>
 </template>
 
@@ -363,7 +364,6 @@
 				drivingImg: '/static/images/home/driving-license.svg',
 				// 信息类型
 				infoType: null,
-
 			}
 		},
 		props: {
@@ -495,6 +495,16 @@
 					});
 				}
 			},
+			// 查看检测报告
+			handleImage(arr){
+				if(!arr[0]?.url) return this.$modal.msg('检测报告不存在!')
+				let urls=[arr[0].url]
+				uni.previewImage({
+					current:0,
+					urls,
+				})
+			},
+			
 			// 删除检测报告
 			handleDelete() {
 				// let _this=this
@@ -535,15 +545,12 @@
 			handleOwnerInfo(type) {
 				this.infoType = type
 				this.$tab.navigateTo(
-					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
+					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${encodeURIComponent(JSON.stringify(this.carInfoAll))}&&infoType=${this.infoType}`
 					)
 			},
 			// 作废
 			handleCancle(id) {
 				// console.log(id)
-				this.$tab.navigateTo(
-					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
-					)
 			},
 			// 签章
 			// handleSignature() {
@@ -552,10 +559,9 @@
 			// 		this.$tab.navigateTo('/subPages/home/bycar/agreement?carId='+id)
 			// 	}else{
 			// 		this.$tab.navigateTo('/subPages/home/sellingCar/agreement?carId='+id)
-			// 	}
-				
-				
+			// 	}			
 			// },
+			
 			// rpx转px
 			rpxToPx(rpx) {
 			  const screenWidth = uni.getSystemInfoSync().screenWidth
@@ -650,6 +656,10 @@
 				>text {
 					font-size: 28rpx;
 					margin: 0 3rpx;
+				}
+				.icon-right-box{
+					display: inline-block;
+					padding:0 50rpx 0 10rpx;
 				}
 			}
 		}

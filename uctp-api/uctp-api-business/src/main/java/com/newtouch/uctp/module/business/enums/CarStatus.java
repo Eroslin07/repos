@@ -12,26 +12,26 @@ public enum CarStatus {
     COLLECT_A(11,"草稿"),
     COLLECT_A_A(111,"草稿"),
 
-    COLLECT_A_B(12,"合同已发起"),
-    COLLECT_A_B_A(121,"公允审核"),
-    COLLECT_A_B_B(122,"委托合同已发起"),
-    COLLECT_A_B_C(123,"合同已发起"),
-    COLLECT_A_B_D(124,"待支付"),
-    COLLECT_A_B_E(125,"待开票"),
+    COLLECT_B(12,"合同已发起"),
+    COLLECT_B_A(121,"公允审核"),
+    COLLECT_B_B(122,"委托合同已发起"),
+    COLLECT_B_C(123,"合同已发起"),
+    COLLECT_B_D(124,"待支付"),
+    COLLECT_B_E(125,"待开票"),
 
-    COLLECT_A_C(13,"支付失败"),
-    COLLECT_A_C_A(131,"支付失败"),
+    COLLECT_C(13,"支付失败"),
+    COLLECT_C_A(131,"支付失败"),
 
     //--------------待售中-----------------------
     SALE(2,"待售中"),
     SALE_A(21,"待过户"),
     SALE_A_A(211,"待过户"),
 
-    SALE_A_B(22,"未检测"),
-    SALE_A_B_A(221,"未检测"),
+    SALE_B(22,"未检测"),
+    SALE_B_A(221,"未检测"),
 
-    SALE_A_C(23,"已检测"),
-    SALE_A_C_A(231,"已检测"),
+    SALE_C(23,"已检测"),
+    SALE_C_A(231,"已检测"),
     //--------------卖车中-----------------------
     SELL(3,"卖车中"),
     SELL_A(31,"草稿"),

@@ -22,6 +22,7 @@ const user = {
     accountNo: '55555555',
     staffType:uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
     loginStatus: true,
+	registerType:uni.getStorageSync('SET_REGISTERTYPE')||storage.get(constant.registerType)
   },
 
   mutations: {
@@ -76,6 +77,11 @@ const user = {
       storage.set(constant.staffType, staffType)
       uni.setStorageSync('SET_STAFFTYPE', staffType)
     },
+	SET_REGISTERTYPE: (state, registerType) => {
+	  state.registerType = registerType
+	  storage.set(constant.registerType, registerType)
+	  uni.setStorageSync('SET_REGISTERTYPE', registerType)
+	},
     LOGIN_STATUS: (state, loginStatus) => {
       state.loginStatus = loginStatus
     },
@@ -137,6 +143,7 @@ const user = {
           commit('SET_TENANTNAME', user.tenantName)
           commit('SET_ID', user.id)
           commit('SET_STAFFTYPE', user.staffType)
+          commit('SET_REGISTERTYPE', user.registerType)
           resolve(res)
         }).catch(error => {
           reject(error)

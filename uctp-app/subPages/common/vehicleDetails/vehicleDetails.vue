@@ -2,7 +2,7 @@
 	<view class="car-info">
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
-				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
+				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx" circular>
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
 						<text>{{firstStatus}}-{{secondStatus}}</text>
@@ -154,10 +154,7 @@
 				],
 				// 是否检测
 				carUpload: false,
-
-				// 父组件传过来的值
-				fatherProps: null,
-
+				
 				// 是否展示系统异常
 				isSHowTip: '',
 				
@@ -167,8 +164,7 @@
 		},
 
 		onLoad(props) {
-			// console.log(props, 'this.fatherProps.id')
-			this.carId = JSON.parse(props.item)?.id || '1650085024672796674'
+			this.carId = props.id || '1650085024672796674'
 			this.getCarDetails(this.carId)
 		},
 		computed: {

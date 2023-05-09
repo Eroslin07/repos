@@ -33,7 +33,7 @@
 						</view>
 					</u-form-item>
 					<u-form-item label="身份证号" :required="true" prop="idCard" borderBottom>
-						<u--input v-model="registerForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
+						<u--input v-model="registerForm.idCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="name" borderBottom>
 						<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>

@@ -1,6 +1,9 @@
 package com.newtouch.uctp.cloud;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
@@ -10,10 +13,7 @@ import com.qiyuesuo.sdk.v2.SaaSSdkClient;
 import com.qiyuesuo.sdk.v2.bean.Company;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.SaaSCompanyDetailRequest;
-import com.qiyuesuo.sdk.v2.response.SaaSCompanyAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SaaSPrivilegeUrlResult;
-import com.qiyuesuo.sdk.v2.response.SaaSUserAuthPageResult;
-import com.qiyuesuo.sdk.v2.response.SdkResponse;
+import com.qiyuesuo.sdk.v2.response.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,8 +58,17 @@ public class UctpQIyuesuoSaasTests {
 
     @Test
     void privilegeUrl() {
-        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(3093084876115751320L, "18080072255",
-                ListUtil.of()).getCheckedData();
+        SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(3093441290910712532L, "15037580053",
+                ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYE","ROLE_PERMISSION",
+                        "BASE_INFO","FILE_STATISTICS","CATEGORY","FEE","COMPANY_SETUP")).getCheckedData();
+        System.out.println(checkedData.getPageUrl());
+    }
+
+    @Test
+    void sealSignAuthUrl() {
+        DateTime dateTime = DateUtil.offset(DateUtil.date(), DateField.YEAR, 5);
+        String date = DateUtil.formatDate(dateTime);
+        SaaSSealSignAuthUrlResult checkedData = client.saasSealSignAuthUrl("15196636618", 3091676548563157410L, date, "啊哈").getCheckedData();
         System.out.println(checkedData.getPageUrl());
     }
     @Test
@@ -77,5 +86,12 @@ public class UctpQIyuesuoSaasTests {
         }
     }
 
+    @Test
+    void test(){
+        DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.YEAR, 5);
+        String formatDate = DateUtil.formatDate(authDeadline);
+        System.out.println(formatDate);
+
+    }
 
 }

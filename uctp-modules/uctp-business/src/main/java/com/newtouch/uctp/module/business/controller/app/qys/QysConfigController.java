@@ -94,7 +94,7 @@ public class QysConfigController {
     }
 
     @PostMapping("/callback/certification/person")
-    @Operation(summary = "saas模式契约锁回调-企业认证")
+    @Operation(summary = "saas模式契约锁回调-个人认证")
     public String callbackCertificationPerson(@RequestParam String signature,
                            @RequestParam String timestamp,
                            @RequestParam String content) throws Exception {

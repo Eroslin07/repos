@@ -37,6 +37,7 @@ public interface DictTypeConstants {
 
     String SETTLEMENT_INVOICE_STATUS = "Invoice_status"; //发票状态
     String SETTLEMENT_INVOICE_TYPE = "Invoice_type"; //发票类型
+    String TAX_TYPE = "tax_type"; //税费类型
 
 
 }

@@ -20,7 +20,7 @@ public class MerchantBankDO extends BaseDO {
     private String businessType; //业务类型',
     private String bankName; //开户银行名称',
     private String bankNo;//银行账号',
-    private String state; //状态',
+    private String childAcctNo;//结算银行子账号
     private Integer revision;//乐观锁
 
 }

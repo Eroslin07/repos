@@ -188,7 +188,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Transactional(rollbackFor = Exception.class)
     public Map registerAccount(AuthRegisterReqVO reqVO) {
         //查询是否有未注册数据，有则删除
-        List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 2);
+        List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 1);
         if(userDOS.size()>0){
             for (AdminUserDO user:userDOS) {
                 userService.deleteUser(user.getId());
@@ -294,16 +294,22 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public Map addAccount(AddAccountReqVO reqVO) {
         HashMap<Object, Object> map = new HashMap<>();
         AdminUserDO userDO = new AdminUserDO();
         UserExtDO userExtDO = new UserExtDO();
         if(null==reqVO.getId()){
+            List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
+            if(userDOS.size()>0){
+                throw exception(AUTH_MOBILE_IS_EXIST);
+            }
             try {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
                 userDO.setNickname(reqVO.getName());
-                userDO.setStatus(1);
+                userDO.setStatus(reqVO.getStatus());
                 userDO.setDeptId(reqVO.getDeptId());
                 userDO.setTenantId(reqVO.getTenantId());
                 userService.insertUser(userDO);
@@ -321,6 +327,14 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 throw exception(AUTH_ADDACCOUNT_ERROR);
             }
         }else{
+            List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
+            if(userDOS.size()>0){
+                for(AdminUserDO user:userDOS){
+                    if(!user.getId().equals(reqVO.getId())){
+                        throw exception(AUTH_MOBILE_IS_EXIST);
+                    }
+                }
+            }
             try {
                 AdminUserDO user = userService.getUser(reqVO.getId());
                 UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
@@ -331,11 +345,11 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                     adminUserMapper.updateById(user);
                     userExtMapper.updateById(userExtDOS);
                 }else{
-                    userExtDOS.setIdCard(reqVO.getIdCard());
-                    userExtDOS.setStatus(1);
-
+                    user.setStatus(reqVO.getStatus());
                     user.setUsername(reqVO.getPhone());
                     user.setMobile(reqVO.getPhone());
+
+                    userExtDOS.setIdCard(reqVO.getIdCard());
                     userExtDOS.setStatus(1);
                     adminUserMapper.updateById(user);
                     userExtMapper.updateById(userExtDOS);
@@ -350,14 +364,18 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public int deleteAccount(Long id) {
         AdminUserDO adminUserDO = adminUserMapper.selectById(id);
         adminUserMapper.deleteById(id);
         int delete = userExtMapper.deleteByUserId(id);
         if (delete >= 1) {
             QysConfigDTO configDTO = qysConfigApi.getByDeptId(adminUserDO.getDeptId()).getCheckedData();
-            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDTO.getBusinessId());
-            client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+            if(null!=configDTO){
+                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDTO.getId());
+                client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+            }
         }
         return delete;
     }

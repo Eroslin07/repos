@@ -14,7 +14,6 @@ import org.flowable.bpmn.model.FlowElement;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +27,7 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoDetailsMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.ContractMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
@@ -41,6 +41,7 @@ import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
+import com.newtouch.uctp.module.business.api.carinfodetails.CarInfoDetailsApi;
 import com.newtouch.uctp.module.business.api.contract.MerchantMoneyApi;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
@@ -81,6 +82,10 @@ public class BpmGlobalHandleListener {
     private BpmOpenInvoiceService bpmOpenInvoiceService;
     @Resource
     private BpmCarTransferService bpmCarTransferService;
+    @Resource
+    private CarInfoDetailsMapper carInfoDetailsMapper;
+    @Resource
+    private CarInfoDetailsApi carInfoDetailsApi;
 
     /**
      * 流程创建时处理
@@ -95,7 +100,7 @@ public class BpmGlobalHandleListener {
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
             // 收车公允价值流程发起，修改车辆状态
-            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A_B.value(),CarStatus.COLLECT_A_B_A.value(),"已发起","");
+            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
             // 预占保证金（通过车辆ID查询车辆的收车草稿合同）     合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
             ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
             if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
@@ -197,7 +202,11 @@ public class BpmGlobalHandleListener {
                 carInfoMapper.updateById(carInfoDO);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 3);
-                qysConfigApi.companySign(contractDO.getContractId());
+                boolean isSend = qysConfigApi.send(contractDO.getContractId(), false).getCheckedData();
+                if (!isSend) {
+                    throw new RuntimeException("自动发起并签署委托合同异常");
+                }
+                //qysConfigApi.companySign(contractDO.getContractId());
                 noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
             }
         }
@@ -213,6 +222,12 @@ public class BpmGlobalHandleListener {
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCKP.name())) {
             // 收车开票完成后，自动发起收车过户流程
             if ("pass".equals(approvalType)) {
+                // 写入转入地车辆管理所名称（收车）
+                //CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectByCarId(bpmFormMainVO.getThirdId());
+                String transManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("transManageName");
+                //carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), transManageName, null);
+                carInfoDetailsApi.updateTransManage(bpmFormMainVO.getThirdId(), transManageName, null);
+                // 默认发起过户流程
                 String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.SCGH.name());
                 if (!StringUtils.hasText(formMainId)) {
                     throw new RuntimeException("收车开票完成后，自动发起收车过户流程失败");
@@ -222,6 +237,12 @@ public class BpmGlobalHandleListener {
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCKP.name())) {
             // 卖车开票完成后，自动发起收车过户流程
             if ("pass".equals(approvalType)) {
+                // 写入转入地车辆管理所名称（卖车）
+                //CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectByCarId(bpmFormMainVO.getThirdId());
+                String sellTransManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("sellTransManageName");
+                //carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), carInfoDetailsDO.getTransManageName(), sellTransManageName);
+                carInfoDetailsApi.updateTransManage(bpmFormMainVO.getThirdId(), null, sellTransManageName);
+                // 默认发起过户流程
                 String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.MCGH.name());
                 if (!StringUtils.hasText(formMainId)) {
                     throw new RuntimeException("卖车开票完成后，自动发起卖车过户流程失败");
@@ -230,7 +251,7 @@ public class BpmGlobalHandleListener {
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCGH.name())) {
             // 1.收车过户成功，修改车辆状态为收车已过户
-            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_A_B.value(),CarStatus.SALE_A_B_A.value(),"收车过户成功",reason);
+            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCGH.name())) {
             // 1.卖车过户成功，修改车辆状态为卖车已过户
@@ -276,14 +297,12 @@ public class BpmGlobalHandleListener {
         String businessKey = String.valueOf(bpmFormMainDO.getId());
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
 
-
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.LRTX.name())) {
             String nodeSymbol = this.getTaskNodeExtPropByKey(taskEntity, "nodeSymbol");
 
             // ”提现审批“节点操作
             if (ObjectUtil.equals(nodeSymbol, "withdrawApprove")) {
                 Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId(); // 租户ID
-                String token = null; // 需要获得token
 
                 if ("pass".equals(approvalType)) {
                     // 审批通过
@@ -291,51 +310,17 @@ public class BpmGlobalHandleListener {
                     a.setBusinessKey(businessKey);
                     a.setAuditOpinion(1);
 
-                    accountProfitApi.presentAudit(tenantId, token, a);
+                    accountProfitApi.presentAudit(tenantId, a);
                 } else if ("disagree".equals(approvalType)) {
                     // 审批不通过
                     ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
                     a.setBusinessKey(businessKey);
                     a.setAuditOpinion(2);
 
-                    accountProfitApi.presentAudit(tenantId, token, a);
+                    accountProfitApi.presentAudit(tenantId, a);
                 }
             }
         }
-
-
-
-        String procDefKey = null; // 需要补充获取
-        String taskNode = null; // 需要获得任务节点
-        Task task = (Task) event.getEntity();
-        if (BpmDefTypeEnum.LRTX.name().equals(bpmFormMainVO.getBusiType()) && "提现审批".equals(taskNode)) {
-            // 当前流程是“利润提现流程”且当前任务是“提现审批”
-
-            // 获得“利润提现申请的业务ID”
-            //String businessKey = null; // 需要获得业务ID
-            Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId(); // 租户ID
-            String token = null; // 需要获得token
-
-            //String approvalType = StrUtil.toStringOrNull(task.getTaskLocalVariables().get("approvalType")); // 审批结果
-
-            if ("pass".equals(approvalType)) {
-                // 审批通过
-                ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
-                a.setBusinessKey(businessKey);
-                a.setAuditOpinion(1);
-
-                accountProfitApi.presentAudit(tenantId, token, a);
-            } else if ("disagree".equals(approvalType)) {
-                // 审批不通过
-                ProfitPresentAuditDTO a = new ProfitPresentAuditDTO();
-                a.setBusinessKey(businessKey);
-                a.setAuditOpinion(2);
-
-                accountProfitApi.presentAudit(tenantId, token, a);
-            }
-        }
-
-        System.out.println(event);
     }
 
     private BpmFormMainVO getBpmFormMainData(String businessKey) {

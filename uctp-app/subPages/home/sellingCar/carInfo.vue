@@ -131,8 +131,9 @@
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<!-- <u--input v-model="carForm.remarks" maxlength="68" type="text" showWordLimit border="none"
 							placeholder="请输入特殊约定"></u--input> -->
-						<u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
-							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea>
+						<!-- <u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
+							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea> -->
+						<textarea style="width:100%" v-model="carForm.remarks" placeholder="最大输入长度为68" auto-height @input="handleInput" />
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
@@ -142,7 +143,6 @@
 			</view>
 			<!-- 买家信息 -->
 			<view v-show="sellerInfor">
-				<view class="text">买家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
@@ -197,7 +197,7 @@
 						<view class="text">买家信息</view>
 					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
-						<u--input v-model="sellerForm.buyerIdCard" border="none" placeholder="请输入身份证号"></u--input>
+						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
 					</u-form-item>
 					<u-form-item borderBottom>
 						<view class="image">
@@ -245,7 +245,7 @@
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 					</view>
-					<view class="text"><text style="color:#f00">*</text> 车辆手续及备件</view>
+					<view class="text"><text style="color:#fa6400;margin-right: 1px;">*</text> 车辆手续及备件</view>
 				</view>
 				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
@@ -261,9 +261,10 @@
 										<view>组</view>
 									</template>
 								</u-input>
-								<u--input type="text" showWordLimit v-model="carForm.otherEvent"
+								<!-- <u--input type="text" showWordLimit v-model="carForm.otherEvent"
 									:disabled="isDisabledAcc" maxlength="10" v-if="item.name == 'accidentVehicle'"
-									disabledColor="#ffffff" border="none" placeholder="请输入"></u--input>
+									disabledColor="#ffffff" border="none" placeholder="请输入"></u--input> -->
+								<input  style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text" v-model="carForm.otherEvent" placeholder="最大输入长度为10" :disabled="isDisabledAcc" @input="otherEventInput" />
 							</view>
 							</u--text>
 						</u-form-item>
@@ -323,7 +324,9 @@
 					</view>
 
 					<u-radio-group v-model="feesForm.vehicle" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="租金相关" :required="true" prop="vehicle"></u-form-item>
+						<u-form-item label="租金相关" :required="true" prop="vehicle">
+							<view class="vehicle"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="vehicleA"></u-radio>
 							<text @click="feesForm.vehicle = 'vehicleA'">“轿车200元/天”</text>
@@ -343,7 +346,9 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.transfer" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="交易过户费" :required="true" prop="transfer"></u-form-item>
+						<u-form-item label="交易过户费" :required="true" prop="transfer">
+							<view class="transfer"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="transferA"></u-radio>
 							<text @click="feesForm.transfer = 'transferA'">销售车辆首次交易过户费(平台过户买方指定过户人)</text>
@@ -359,7 +364,9 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.loss" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="车辆折损费用" :required="true" prop="loss"></u-form-item>
+						<u-form-item label="车辆折损费用" :required="true" prop="loss">
+							<view class="loss"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="lossA"></u-radio>
 							<text @click="feesForm.loss = 'lossA'">依据本协议第二条车辆价款的5%支付车辆折损费用</text>
@@ -371,7 +378,9 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.testing" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="第三方检测费用" :required="true" prop="testing"></u-form-item>
+						<u-form-item label="第三方检测费用" :required="true" prop="testing">
+							<view class="testing"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="testingA"></u-radio>
 							<text @click="feesForm.testing = 'testingA'">全车检测费用</text>
@@ -384,8 +393,9 @@
 					<!-- <u-form-item label="其他"></u-form-item> -->
 					<u-form-item label="其他" borderBottom labelWidth="40">
 						<!-- <u--input v-model="other" maxlength="18" type="textarea" showWordLimit border="none" placeholder="请输入"></u--input> -->
-						<u--textarea v-model="carForm.other" height="24" maxlength="18" confirmType="done" count
-							border="none" placeholder="请输入"></u--textarea>
+						<!-- <u--textarea v-model="carForm.other" height="24" maxlength="18" confirmType="done" count
+							border="none" placeholder="请输入"></u--textarea> -->
+						<textarea style="margin-left:20rpx;width:100%" v-model="carForm.other" placeholder="最大输入长度为18" :disabled="disabledOther" @input="otherInput" auto-height />
 					</u-form-item>
 				</u--form>
 			</view>
@@ -808,7 +818,7 @@
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit);
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
@@ -838,7 +848,7 @@
 						this.carForm.checkboxValue.push(key);
 					}
 					if (key == 'vehicleKey') {
-						if (obj[key] != '') {
+						if (obj[key] != '' && obj[key]) {
 							this.carForm.vehicleKey = obj[key];
 							this.carForm.key = obj[key]
 							this.carForm.checkboxValue.push(key);
@@ -1124,16 +1134,22 @@
 					this.sellerForm.profit = res.data.profit;
 					this.amountDetails = res.data;
 				})
-				let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
-				this.$set(this.sellerForm, 'sellAmount', amount);
+				if (this.sellerForm.sellAmount == '') {
+					
+				} else {
+					let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
+					this.$set(this.sellerForm, 'sellAmount', amount);
+				}
 			},
 			//卖车金额获取焦点
 			handleFocus() {
+				if (this.sellerForm.sellAmount == '') return
 				let amount = this.$amount.getDelcommafy(this.sellerForm.sellAmount);
 				this.$set(this.sellerForm, 'sellAmount', amount);
 			},
 			//定金获取焦点
 			depositFocus() {
+				if (this.sellerForm.deposit == '') return
 				let amount = this.$amount.getDelcommafy(this.sellerForm.deposit);
 				this.$set(this.sellerForm, 'deposit', amount);
 			},
@@ -1168,6 +1184,16 @@
 					if (this.chebi == false) {
 						this.handleDraft('step');
 					}
+				}).catch((error) => {
+					let key = '.' + error[0].field;
+					const query = uni.createSelectorQuery()
+					query.select(key).boundingClientRect((data) => {
+						let pageScrollTop = Math.round(data.top)
+						uni.pageScrollTo({
+							scrollTop: pageScrollTop - 70, //滚动的距离
+							duration: 300, //过渡时间
+						})
+					}).exec()
 				})
 			},
 			// 点击车辆信息保存
@@ -1216,7 +1242,7 @@
 					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
-					proceduresAndSpareParts['vehicleKey'] = 0;
+					proceduresAndSpareParts['vehicleKey'] = '';
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
 					if (this.carForm.otherEvent == '' || !this.carForm.otherEvent) {
@@ -1338,6 +1364,28 @@
 				this.carForm.key = val.value[0].label;
 				this.showKey = false;
 			},
+			// 特殊约定字符限制
+			handleInput(event){
+				let str=event.detail.value.substring(0, 68)
+				this.$nextTick(()=>{
+					this.carForm.remarks=str;
+				})
+			},
+			// 其他字数控制
+			otherEventInput(event){
+				let str=event.detail.value.substring(0, 10)
+				this.$nextTick(()=>{
+					this.carForm.otherEvent=str;
+				})
+			},
+			// 最下面其他字数控制
+			otherInput(event){
+				let str=event.detail.value.substring(0, 18)
+				this.$nextTick(()=>{
+					this.carForm.other=str;
+				})
+				
+			}
 		}
 	}
 </script>

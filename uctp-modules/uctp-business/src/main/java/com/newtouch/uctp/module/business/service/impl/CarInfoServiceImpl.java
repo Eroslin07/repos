@@ -2,23 +2,6 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import lombok.extern.slf4j.Slf4j;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
-
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
@@ -42,6 +25,20 @@ import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
 import com.newtouch.uctp.module.system.enums.DictTypeConstants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
@@ -648,7 +645,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         List<APPContractCardVO> listN = new ArrayList<>();
 
         for (ContractDO contractDO:contractList) {//循环合同信息，查询中间表拿到文件url
-            List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getId());
+            List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getContractId());
             if(fileList.size()>0){
                 if(contractDO.getStatus()==2){
                     APPContractCardVO contractCardVO = new APPContractCardVO();
@@ -877,8 +874,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setRemarks(null);
         //此时状态为 待售中-已检测
         carInfo.setSalesStatus(CarStatus.SALE.value());
-        carInfo.setStatus(CarStatus.SALE_A_C.value());
-        carInfo.setStatusThree(CarStatus.SALE_A_C_A.value());
+        carInfo.setStatus(CarStatus.SALE_C.value());
+        carInfo.setStatusThree(CarStatus.SALE_C_A.value());
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(id);
         carInfoDetails.setBuyerAdder(null);
         carInfoDetails.setBuyerIdCard(null);

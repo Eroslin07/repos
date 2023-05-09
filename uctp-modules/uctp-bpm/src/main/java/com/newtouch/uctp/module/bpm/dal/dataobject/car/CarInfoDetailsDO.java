@@ -1,5 +1,9 @@
 package com.newtouch.uctp.module.bpm.dal.dataobject.car;
 
+import lombok.*;
+
+import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -8,9 +12,6 @@ import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import lombok.*;
-
-import java.math.BigDecimal;
 
 @TableName(value = "uctp_car_info_details",autoResultMap = true)
 //@KeySequence("uctp_car_info_details_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
@@ -135,9 +136,13 @@ public class CarInfoDetailsDO extends TenantBaseDO {
      */
     private String buyerAdder;
     /**
-     * 买转入地车辆管理所名称
+     * 转入地车辆管理所名称（收车）
      */
     private String transManageName;
+    /**
+     * 转入地车辆管理所名称（卖车）
+     */
+    private String sellTransManageName;
     /**
      * 车辆手续及备件（收车）
      */

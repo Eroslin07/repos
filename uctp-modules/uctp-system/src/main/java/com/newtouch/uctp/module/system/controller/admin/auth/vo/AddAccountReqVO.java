@@ -25,7 +25,7 @@ public class AddAccountReqVO {
     private String idCard;
 
     @Schema(description = "是否停用(0正常 1停用)" )
-    private String status;
+    private Integer status;
 
     @Schema(description = "商户id")
     private Long deptId;

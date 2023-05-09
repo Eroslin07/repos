@@ -7,38 +7,21 @@
 		<uni-card>
 			<view>
 				<view>提现金额</view>
-				<u-input
-					border="none"
-					v-model="amount"
-					type="digit"
-					:focus="true"
-					clearable
-					:customStyle="{'height': '50px'}"
-					@input="handleInput"
-					fontSize="24px"
-				>
-					<u--text
-						text="￥"
-						slot="prefix"
-						margin="0 3px 0 0"
-						type="tips"
-					></u--text>
+				<view style="height: 30rpx;">{{amountText}}</view>
+				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable
+					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
+					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 					<template slot="suffix">
 						<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
 					</template>
 				</u-input>
 			</view>
+			<view style="height: 30rpx;color: red;font-size: 20rpx;">{{amountVisible?'输入金额超过利润余额':''}}</view>
 			<view>可用利润余额{{ $amount.getComdify(allAmount / 100) }}元。</view>
 			<view style="margin-top: 10px;">上传利润发票</view>
 			<view style="margin-top: 10px;">
-				<u-upload
-					:fileList="fileList1"
-					@afterRead="afterRead"
-					@delete="deletePic"
-					name="1"
-					multiple
-					:maxCount="3"
-				></u-upload>
+				<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple
+					:maxCount="3"></u-upload>
 			</view>
 		</uni-card>
 		<view style="padding: 20px;">
@@ -49,8 +32,12 @@
 
 <script>
 	import config from '@/config'
-	import { deleteImage } from '@/api/register'
-	import { getPresent } from '@/api/account/profit.js'
+	import {
+		deleteImage
+	} from '@/api/register'
+	import {
+		getPresent
+	} from '@/api/account/profit.js'
 	export default {
 		data() {
 			return {
@@ -58,7 +45,9 @@
 				accountNo: this.$store.state.user.accountNo,
 				fileList1: [],
 				amount: '',
-				allAmount: 0
+				allAmount: 0,
+				amountText: '',
+				amountVisible: false
 			}
 		},
 		onBackPress(options) {
@@ -71,19 +60,40 @@
 		methods: {
 			// 输入金额回调
 			handleInput(val) {
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (val) {
 					this.$nextTick(() => {
+						if (parseFloat(val) > parseFloat(this.$amount.getDelcommafy(this.allAmount))) {
+							this.amountVisible = true
+						} else {
+							this.amountVisible = false
+						}
 						if (val.indexOf('.') > -1) {
 							let arr = val.split('.');
+							if (arr[0].length > 2) {
+								this.amountText = texts[arr[0].length - 3]
+							} else {
+								this.amountText = ''
+							}
 							arr[1] = arr[1].slice(0, 2);
 							this.amount = arr.join('.');
+						} else {
+							if (val.length > 2) {
+								this.amountText = texts[val.length - 3]
+							} else {
+								this.amountText = ''
+							}
 						}
 					})
+				} else {
+					this.amountText = ''
 				}
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({ id: event.file.id }).then((res) => {
+				deleteImage({
+					id: event.file.id
+				}).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
 				})
@@ -144,11 +154,18 @@
 					accountNo: this.accountNo,
 					merchantBankId: 2,
 					amount: Number(this.amount * 100),
-					invoiceFiles: this.fileList1.map((item) => { return {fileId: item.id, fileUrl: item.url} })
+					invoiceFiles: this.fileList1.map((item) => {
+						return {
+							fileId: item.id,
+							fileUrl: item.url
+						}
+					})
 				}
 				getPresent(data).then((res) => {
 					this.$modal.msg("利润提现流程发起成功");
-					uni.$emit('refresh', { refresh: true });
+					uni.$emit('refresh', {
+						refresh: true
+					});
 					this.$tab.navigateBack();
 					// this.$tab.redirectTo('/subPages/home/account/profit/progress');
 				})
@@ -164,7 +181,7 @@
 <style lang="scss" scoped>
 	.withdrawal {
 		border-top: 1px solid #f5f5f5;
-		
+
 		.button {
 			background-color: #fa6401;
 			color: #fff;

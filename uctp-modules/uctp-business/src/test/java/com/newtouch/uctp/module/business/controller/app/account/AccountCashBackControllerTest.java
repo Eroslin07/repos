@@ -29,7 +29,7 @@ public class AccountCashBackControllerTest {
     @BeforeEach
     public void before() {
         // 模拟登录
-        WebFrameworkUtils.setLoginUserId(mockHttpServletRequest, 211L);
+        WebFrameworkUtils.setLoginUserId(mockHttpServletRequest, 385L);
     }
 
     @Test

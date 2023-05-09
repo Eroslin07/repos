@@ -56,6 +56,9 @@ public class AuthPermissionInfoRespVO {
         @Schema(description = "用户类型(1 主账号 2 商户子账号)")
         private String staffType;
 
+        @Schema(description = "认证状态（0已认证 1未认证）")
+        private Integer registerType;
+
     }
 
 }

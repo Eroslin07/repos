@@ -217,7 +217,7 @@
 			//查看车辆明细
 			viewDetails(item) {
 				uni.navigateTo({
-					url: `/subPages/common/vehicleDetails/vehicleDetails?item=` + JSON.stringify(item)
+					url: `/subPages/common/vehicleDetails/vehicleDetails?id=` + item.id
 				})
 			}
 		}

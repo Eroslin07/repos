@@ -7,27 +7,16 @@
 		<uni-card>
 			<view>
 				<view>提现金额</view>
-				<u-input
-					border="none"
-					v-model="amount"
-					type="digit"
-					:focus="true"
-					clearable
-					:customStyle="{'height': '50px'}"
-					@input="handleInput"
-					fontSize="24px"
-				>
-					<u--text
-						text="￥"
-						slot="prefix"
-						margin="0 3px 0 0"
-						type="tips"
-					></u--text>
+				<view style="height: 30rpx;">{{amountText}}</view>
+				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable
+					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
+					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 					<template slot="suffix">
 						<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
 					</template>
 				</u-input>
 			</view>
+			<view style="height: 30rpx;color: red;font-size: 20rpx;">{{amountVisible?'输入金额超过保证金余额':''}}</view>
 			<view>可用保证金余额{{ $amount.getComdify(allAmount) }}元。</view>
 		</uni-card>
 		<view style="padding: 20px;">
@@ -37,13 +26,17 @@
 </template>
 
 <script>
-	import { getWithdraw } from '@/api/account/bond.js'
+	import {
+		getWithdraw
+	} from '@/api/account/bond.js'
 	export default {
 		data() {
 			return {
 				amount: '',
 				allAmount: null,
-				revision: 0
+				revision: 0,
+				amountText: '',
+				amountVisible: false
 			}
 		},
 		onLoad(options) {
@@ -56,14 +49,35 @@
 		methods: {
 			// 输入金额回调
 			handleInput(val) {
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (val) {
 					this.$nextTick(() => {
+
+						if (parseFloat(val) > parseFloat(this.$amount.getDelcommafy(this.allAmount))) {
+							this.amountVisible = true
+						} else {
+							this.amountVisible = false
+						}
+						console.log( this.amountVisible)
 						if (val.indexOf('.') > -1) {
 							let arr = val.split('.');
+							if (arr[0].length > 2) {
+								this.amountText = texts[arr[0].length - 3]
+							} else {
+								this.amountText = ''
+							}
 							arr[1] = arr[1].slice(0, 2);
 							this.amount = arr.join('.');
+						} else {
+							if (val.length > 2) {
+								this.amountText = texts[val.length - 3]
+							} else {
+								this.amountText = ''
+							}
 						}
 					})
+				} else {
+					this.amountText = ''
 				}
 			},
 			// 确定
@@ -83,7 +97,9 @@
 				}
 				getWithdraw(data).then((res) => {
 					this.$modal.msg("提现成功");
-					uni.$emit('refresh', { refresh: true });
+					uni.$emit('refresh', {
+						refresh: true
+					});
 					this.$tab.navigateBack();
 					// this.$tab.redirectTo('/subPages/home/account/bond/progress?data='+encodeURIComponent(JSON.stringify(res.data.cashDetails)));
 				})
@@ -99,7 +115,7 @@
 <style lang="scss" scoped>
 	.withdrawal {
 		border-top: 1px solid #f5f5f5;
-		
+
 		.button {
 			background-color: #fa6401;
 			color: #fff;

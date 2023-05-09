@@ -15,21 +15,21 @@
       <template #actionbtns_default="{ row }">
         <!-- 操作：修改 -->
         <XTextButton
-          v-hasPermi="['system:notice:update']"
+          v-hasPermi="['uctp:temp:update']"
           :title="t('action.edit')"
           preIcon="ep:edit"
           @click="handleUpdate(row.id)"
         />
         <!-- 操作：详情 -->
         <XTextButton
-          v-hasPermi="['system:notice:query']"
+          v-hasPermi="['uctp:temp:query']"
           :title="t('action.detail')"
           preIcon="ep:view"
           @click="handleDetail(row.id)"
         />
         <!-- 操作：删除 -->
         <XTextButton
-          v-hasPermi="['system:notice:delete']"
+          v-hasPermi="['uctp:temp:delete']"
           :title="t('action.del')"
           preIcon="ep:delete"
           @click="deleteData(row.id)"
@@ -38,7 +38,7 @@
     </XTable>
   </ContentWrap>
   <!-- 弹窗 -->
-  <XModal id="noticeModel" v-model="dialogVisible" :title="dialogTitle">
+  <XModal id="tempModel" v-model="dialogVisible" :title="dialogTitle">
     <!-- 对话框(添加 / 修改) -->
     <Form
       v-if="['create', 'update'].includes(actionType)"
@@ -70,7 +70,7 @@
     </template>
   </XModal>
 </template>
-<script lang="ts" name="Notice" setup>
+<script lang="ts" name="Temp" setup>
 import type { FormExpose } from '@/components/Form'
 // 业务相关的 import
 import { rules, allSchemas } from './contracttemp.data'
