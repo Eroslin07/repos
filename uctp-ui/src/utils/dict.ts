@@ -131,6 +131,7 @@ export enum DICT_TYPE {
   SETTLEMENT_INVOICE_TYPE = 'Invoice_type', //发票类型
 
   UCTP_STATUS = 'uctp_status', //发票类型
+  TAX_TYP = 'tax_type', //税费类型
   CONTRACT_TEMP_TYPE = 'contract_type', //合同类型
   CONTRACT_CONTRACT_STATUS = 'contract_status' //合同状态
 }

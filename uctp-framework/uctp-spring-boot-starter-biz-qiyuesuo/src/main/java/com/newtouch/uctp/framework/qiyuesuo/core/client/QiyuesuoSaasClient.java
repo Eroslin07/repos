@@ -93,7 +93,7 @@ public interface QiyuesuoSaasClient {
                                                                  List<String> privilegeModules);
 
     /**
-     * 企业签字授权
+     * 企业一键签章授权
      *
      * @param sealAdminContract 印章管理员电话
      * @param companyId 待授权印章自动签署的公司id
@@ -103,7 +103,7 @@ public interface QiyuesuoSaasClient {
      */
     QiyuesuoCommonResult<SaaSSealSignAuthUrlResult> saasSealSignAuthUrl(String sealAdminContract, Long companyId, String authDeadline, String remark);
     /**
-     * 企业签字授权
+     * 企业一键签章授权
      *
      * @param request 契约锁需要的参数
      * @return

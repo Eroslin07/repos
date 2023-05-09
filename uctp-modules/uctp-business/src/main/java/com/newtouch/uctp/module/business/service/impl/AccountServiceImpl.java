@@ -4,6 +4,9 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.newtouch.uctp.framework.common.exception.BankException;
+import com.newtouch.uctp.framework.common.exception.ServiceException;
+import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionLogDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
@@ -47,7 +50,9 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
     @Override
     @Transactional
     public boolean accountGenerate(AccountDTO accountDTO) {
-        LocalDateTime beginTime = LocalDateTime.now();
+        if (accountExists(accountDTO.getTenantId(), accountDTO.getMerchantId())) {
+            throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "该商户已开立虚拟账户，不可重复开户!");
+        }
         try {
             // 平台商户虚拟账号
             String accountNo = generateAccountNo();
@@ -91,6 +96,15 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean accountExists(long tenantId, long merchantId) {
+        MerchantAccountDO merchantAccountDO = getOne(new LambdaQueryWrapperX<MerchantAccountDO>()
+                .eq(MerchantAccountDO::getTenantId, tenantId)
+                .eq(MerchantAccountDO::getMerchantId, merchantId));
+        return merchantAccountDO != null;
+    }
+
 
     /**
      * 生成平台商户虚拟账户号

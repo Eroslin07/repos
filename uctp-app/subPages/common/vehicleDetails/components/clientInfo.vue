@@ -3,7 +3,7 @@
 		<view class="info-header">
 			<view class="icon-header">
 			</view>
-			<view class="text">{{'卖家信息'}}</view>
+			<view class="text">{{clientTitle}}</view>
 		</view>
 		<view class="client-content">
 			<u--form v-if="clientTitle=='卖家信息'" labelPosition="left" :model="clientINfoForm" ref="sellerForm" labelWidth="120px">
@@ -96,8 +96,8 @@
 			}
 		},
 		onLoad(prop) {
-			if (prop.carInfoAll) {
-				this.clientINfoForm = prop.carInfoAll.carInfoDetails
+			if(prop.carInfoAll){
+				this.clientINfoForm = JSON.parse(decodeURIComponent(prop.carInfoAll)).carInfoDetails
 			}
 			if (prop.infoType == 2) {
 				this.clientTitle = '卖家信息'

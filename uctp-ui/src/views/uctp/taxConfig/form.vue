@@ -4,41 +4,36 @@
     <XTable @register="registerTable">
       <!-- 操作：新增 -->
       <template #toolbar_buttons>
+        <!-- 操作：新增 -->
+        <XButton type="primary" preIcon="ep:zoom-in" title="新增" @click="handleCreate()" />
         <!-- 操作：导出 -->
         <XButton
           type="warning"
           title="下载"
           preIcon="ep:download"
-          @click="exportList('合同模板.xls')"
+          @click="exportList('税率配置.xls')"
         />
       </template>
       <template #actionbtns_default="{ row }">
         <!-- 操作：修改 -->
         <XTextButton
-          v-hasPermi="['uctp:temp:update']"
+          v-hasPermi="['uctp:tax:update']"
           :title="t('action.edit')"
           preIcon="ep:edit"
           @click="handleUpdate(row.id)"
         />
         <!-- 操作：详情 -->
         <XTextButton
-          v-hasPermi="['uctp:temp:query']"
+          v-hasPermi="['uctp:tax:query']"
           :title="t('action.detail')"
           preIcon="ep:view"
           @click="handleDetail(row.id)"
-        />
-        <!-- 操作：删除 -->
-        <XTextButton
-          v-hasPermi="['uctp:temp:delete']"
-          :title="t('action.del')"
-          preIcon="ep:delete"
-          @click="deleteData(row.id)"
         />
       </template>
     </XTable>
   </ContentWrap>
   <!-- 弹窗 -->
-  <XModal id="tempModel" v-model="dialogVisible" :title="dialogTitle">
+  <XModal id="taxModel" v-model="dialogVisible" :title="dialogTitle">
     <!-- 对话框(添加 / 修改) -->
     <Form
       v-if="['create', 'update'].includes(actionType)"
@@ -70,20 +65,19 @@
     </template>
   </XModal>
 </template>
-<script lang="ts" name="Temp" setup>
+<script lang="ts" name="Tax" setup>
 import type { FormExpose } from '@/components/Form'
 // 业务相关的 import
-import { rules, allSchemas } from './contracttemp.data'
-import * as ContractTempApi from '@/api/contract/temp'
+import { allSchemas } from './Tax.data'
+import * as TaxApi from '@/api/uctp/taxConfig'
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 // 列表相关的变量
-const [registerTable, { reload, deleteData, exportList }] = useXTable({
+const [registerTable, { reload, exportList }] = useXTable({
   allSchemas: allSchemas,
-  getListApi: ContractTempApi.getContractTempPageApi, // 查詢数据的 API
-  deleteApi: ContractTempApi.deleteContractTempApi, // 刪除数据的 API
-  exportListApi: ContractTempApi.exportContractTempApi // 导出数据的 API
+  getListApi: TaxApi.getTaxPageApi, // 查詢数据的 API
+  exportListApi: TaxApi.exportTaxApi // 导出数据的 API
 })
 // 弹窗相关的变量
 const dialogVisible = ref(false) // 是否显示弹出层
@@ -100,11 +94,16 @@ const setDialogTile = (type: string) => {
   dialogVisible.value = true
 }
 
+// 新增操作
+const handleCreate = () => {
+  setDialogTile('create')
+}
+
 // 修改操作
 const handleUpdate = async (rowId: number) => {
   setDialogTile('update')
   // 设置数据
-  const res = await ContractTempApi.getContractTempApi(rowId)
+  const res = await TaxApi.getTaxApi(rowId)
   unref(formRef)?.setValues(res)
 }
 
@@ -112,7 +111,7 @@ const handleUpdate = async (rowId: number) => {
 const handleDetail = async (rowId: number) => {
   setDialogTile('detail')
   // 设置数据
-  const res = await ContractTempApi.getContractTempApi(rowId)
+  const res = await TaxApi.getTaxApi(rowId)
   detailData.value = res
 }
 
@@ -125,9 +124,15 @@ const submitForm = async () => {
       actionLoading.value = true
       // 提交请求
       try {
-        const data = unref(formRef)?.formModel as ContractTempApi.ContractTempVO
-        if (actionType.value === 'update') {
-          await ContractTempApi.updateContractTempApi(data)
+        const data = unref(formRef)?.formModel as TaxApi.TaxVO
+        let taxRate = ''
+        taxRate = (data.taxRate * 100).toFixed(2) + '%'
+        data.taxRate = taxRate
+        if (actionType.value === 'create') {
+          await TaxApi.createTaxApi(data)
+          message.success(t('common.createSuccess'))
+        } else {
+          await TaxApi.updateTaxApi(data)
           message.success(t('common.updateSuccess'))
         }
         dialogVisible.value = false

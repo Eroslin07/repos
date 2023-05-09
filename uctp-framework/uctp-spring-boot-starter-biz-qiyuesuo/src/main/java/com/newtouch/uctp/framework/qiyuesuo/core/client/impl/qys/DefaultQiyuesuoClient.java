@@ -263,6 +263,7 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
             stamper.setSealId(seaLId);
             stampers.add(stamper);
         }
+        param.setSealId(seaLId);
         param.setStampers(stampers);
         ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);
         return this.defaultCompanysign(request);

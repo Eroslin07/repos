@@ -285,7 +285,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
                         SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()
                                 ,ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYE","ROLE_PERMISSION",
-                                        "BASE_INFO","FILE_STATISTICS","CATEGORY","FEE")).getCheckedData();
+                                        "BASE_INFO","FILE_STATISTICS","CATEGORY","FEE","COMPANY_SETUP")).getCheckedData();
                         log.info("企业功能授权【{}】,授权地址【{}】", deptDO.getName(), privilegeUrlResult.getPageUrl());
                         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(privilegeUrlResult.getPageUrl()));
                         Map<String, String> map = MapUtil
@@ -330,6 +330,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         return "success";
     }
 
+    @Transactional
     @Override
     public String status(String signature, String timestamp, String content) throws Exception {
         log.info("[status]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
@@ -360,8 +361,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //A-3 发起收车合同，
                         this.doService(contractDO, carInfo, 1
                                 , CarStatus.COLLECT.value(),
-                                CarStatus.COLLECT_A_B.value(),
-                                CarStatus.COLLECT_A_B.value(),
+                                CarStatus.COLLECT_B.value(),
+                                CarStatus.COLLECT_B_C.value(),
                                 Boolean.TRUE,
                                 Boolean.FALSE);
                         break;
@@ -390,13 +391,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //C-2 车辆状态待支付
                         this.doService(contractDO, carInfo, 1
                                 , CarStatus.COLLECT.value(),
-                                CarStatus.COLLECT_A_B.value(),
-                                CarStatus.COLLECT_A_B_D.value(),
+                                CarStatus.COLLECT_B.value(),
+                                CarStatus.COLLECT_B_D.value(),
                                 Boolean.FALSE,
                                 Boolean.TRUE);
-
                         // TODO: 暂时模拟收车合同签署完成，自动跳过支付进行开票（后续需删除）
-                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name());
+//                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name());
                         break;
                     case INVALIDED:
                         //D 收车合同作废->
@@ -404,8 +404,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //D-2 车辆状态
                         this.doService(contractDO, carInfo, 1
                                 , CarStatus.COLLECT.value(),
-                                CarStatus.COLLECT_A_B.value(),
-                                CarStatus.COLLECT_A_B_B.value(),
+                                CarStatus.COLLECT_B.value(),
+                                CarStatus.COLLECT_B_B.value(),
                                 Boolean.FALSE,
                                 Boolean.FALSE);
                         break;
@@ -515,11 +515,11 @@ public class QysConfigServiceImpl implements QysConfigService {
         carInfo.setStatusThree(statusThree);
         // 发起合同
         if (send) {
-            //这里提前注入录入tenant_id
-            ContractDO collectContractDO = contractService.getCollectDraft(carInfo.getId(), contractDO.getContractType());
+            //这里只会发起收/卖车合同，所以，合同状态是在原来的委托+1
+            ContractDO collectContractDO = contractService.getCollectDraft(carInfo.getId(), contractDO.getContractType() + 1);
             if (ObjectUtil.isNotNull(collectContractDO)) {
-                QysConfigDO configDO = getByDeptId(contractDO.getBusinessId());
-                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+//                QysConfigDO configDO = getByDeptId(contractDO.getBusinessId());
+                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
                 client.defaultContractSend(collectContractDO.getContractId()).getCheckedData();
             } else {
                 log.error("数据异常，未找到合同数据，carId:{},contractType:{},tenantId:{}", carInfo.getId(), contractDO.getContractType(), contractDO.getTenantId());
@@ -649,6 +649,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         contractMapper.updateContractByContractId("1", contractId);
         this.companySign(contractId);
 //        String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
+        //表示委托合同已发起
         return "OK";
 
 
@@ -1250,7 +1251,8 @@ public class QysConfigServiceImpl implements QysConfigService {
 //            List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
             //不存在token,企业印章自动签授权
             AdminUserRespDTO userRespDTO = adminUserRespDTOS.get(0);
-            DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 12);
+            //5年期限
+            DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.YEAR, 5);
             SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
                     companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
             log.info("企业印章自动签授权,用户【{}】,授权地址【{}】", userRespDTO.getNickname(), authUrlResult.getPageUrl());
@@ -1345,9 +1347,11 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
         //商户签章
-        this.companySign(configDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.FALSE)));
+//        log.info("商户签章：{}",configDO.getBusinessName());
+//        this.companySign(configDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.FALSE)));
         //平台方签章
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
+        log.info("平台方签章：{}",platformConfigDO.getBusinessName());
         this.companySign(platformConfigDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.TRUE)));
         //临时修改，发起收车合同
 //        if (ObjectUtil.equals(contractDO.getContractType(),1)) {
@@ -1504,13 +1508,14 @@ public class QysConfigServiceImpl implements QysConfigService {
                 WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(userExtDO.getUserId()));
                 userExtDO.setStatus(0);
                 userExtMapper.updateById(userExtDO);
-                AdminUserDO userDO = userMapper.selectById(userExtDO.getUserId());
-                userDO.setStatus(0);
-                userMapper.updateById(userDO);
-                QysConfigDO configDO = qysConfigMapper.selectOne(QysConfigDO::getBusinessId, userDO.getDeptId());
+                AdminUserRespDTO userRespDTO = adminUserApi.getUser(userExtDO.getUserId()).getCheckedData();
+//                AdminUserDO userDO = userMapper.selectById(userExtDO.getUserId());
+//                userDO.setStatus(0);
+//                userMapper.updateById(userDO);
+                QysConfigDO configDO = qysConfigMapper.selectOne(QysConfigDO::getBusinessId, userRespDTO.getDeptId());
                 //授权印章角色
                 QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
-                client.defaultRoleManage(ListUtil.of(userDO.getMobile())).getCheckedData();
+                client.defaultRoleManage(ListUtil.of(userRespDTO.getMobile())).getCheckedData();
             });
         } else {
             log.warn("个人认证失败，找不到数据，authId：{}",authId);

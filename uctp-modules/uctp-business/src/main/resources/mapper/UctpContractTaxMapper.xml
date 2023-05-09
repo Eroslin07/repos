@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.configurationMapper.TaxMapper">
+    <resultMap id="taxRespVO" type="com.newtouch.uctp.module.business.controller.admin.configuration.vo.TaxRespVO">
+        <id property="id" column="ID"/>
+        <result property="taxType" column="TAX_RATE_TYPE"/>
+        <result property="taxRate" column="TAX_RATE"/>
+        <result property="effectiveData" column="EFFECTIVE_DATA"/>
+        <result property="expirationData" column="EXPIRATION_DATA"/>
+        <result property="createdBy" column="CREATED_BY"/>
+        <result property="createdTime" column="CREATED_TIME"/>
+        <result property="updateTime" column="UPDATED_TIME"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="businessId" column="BUSINESS_ID"/>
+    </resultMap>
+
+    <sql id="TaxVo">
+        select rc.ID,
+               rc.TAX_RATE_TYPE,
+               rc.TAX_RATE,
+               rc.EFFECTIVE_DATA,
+               rc.EXPIRATION_DATA,
+               cu.nickname as CREATED_BY,
+               rc.CREATED_TIME,
+               rc.UPDATED_TIME,
+               rc.TENANT_ID
+        from uctp_rate_config rc
+        inner join system_users cu on rc.BUSINESS_ID = cu.id
+    </sql>
+
+    <!-- 新增税率信息 -->
+    <select id="createTax"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.TaxRespVO"
+            resultMap="taxRespVO">
+        insert into uctp_rate_config
+        <set>
+            <if test="reqVO.taxType != null and reqVO.taxType != ''">TAX_RATE_TYPE = #{reqVO.taxType},</if>
+            <if test="reqVO.taxRate != null and reqVO.taxRate != ''">TAX_RATE = #{reqVO.taxRate},</if>
+            <if test="reqVO.tenantId != null and reqVO.tenantId != ''">TENANT_ID = #{reqVO.tenantId},</if>
+            <if test="reqVO.businessId != null and reqVO.businessId != ''">CREATED_BY = (select nickname from system_users where id = #{reqVO.businessId}),</if>
+            <if test="reqVO.businessId != null and reqVO.businessId != ''">BUSINESS_ID = #{reqVO.businessId},</if>
+            <if test="reqVO.effectiveData != null">EFFECTIVE_DATA = #{reqVO.effectiveData},</if>
+            <if test="reqVO.expirationData != null">EXPIRATION_DATA = #{reqVO.expirationData},</if>
+            CREATED_TIME = sysdate()
+        </set>
+    </select>
+
+    <!-- 查询税率配置 -->
+    <select id="getTaxPage" resultMap="taxRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.TaxReqVO">
+        <include refid="TaxVo"/>
+        <where>
+            <if test="reqVO.taxType != null and reqVO.taxType != ''">
+                AND TAX_RATE_TYPE =#{reqVO.taxType}
+            </if>
+            <if test="reqVO.createdBy != null and reqVO.createdBy != ''">
+                AND CREATED_BY =#{reqVO.createdBy}
+            </if>
+        </where>
+    </select>
+
+    <!-- 导出税率配置 -->
+    <select id="listTax" resultMap="taxRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.TaxExportReqVO">
+        <include refid="TaxVo"/>
+    </select>
+
+    <!-- 获取税率配置详细 -->
+    <select id="getTax" parameterType="Long" resultMap="taxRespVO">
+        select ID,
+               TAX_RATE_TYPE,
+               TAX_RATE,
+               EFFECTIVE_DATA,
+               EXPIRATION_DATA,
+               CREATED_BY,
+               CREATED_TIME
+        from uctp_rate_config
+        where ID = #{id}
+    </select>
+
+    <!-- 修改税率配置 -->
+    <select id="updateTax" resultMap="taxRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.TaxUpdateReqVO">
+        update uctp_rate_config
+        <set>
+            <if test="reqVO.taxType != null and reqVO.taxType != ''">TAX_RATE_TYPE = #{reqVO.taxType},</if>
+            <if test="reqVO.taxRate != null and reqVO.taxRate != ''">TAX_RATE = #{reqVO.taxRate},</if>
+            <if test="reqVO.effectiveData != null">EFFECTIVE_DATA = #{reqVO.effectiveData},</if>
+            <if test="reqVO.expirationData != null">EXPIRATION_DATA = #{reqVO.expirationData},</if>
+            CREATED_TIME = sysdate(),
+            UPDATED_TIME = sysdate()
+        </set>
+        where ID = #{reqVO.id}
+    </select>
+</mapper>
