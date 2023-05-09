@@ -711,6 +711,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             QYSContractVO qysContractVO1 = new QYSContractVO();
 
             qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1",buyWTContract);
+            qysContractVOList.add(qysContractVO1);
             /*if (buyWTContract == null) {
                 qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1");
                 qysContractVOList.add(qysContractVO1);
