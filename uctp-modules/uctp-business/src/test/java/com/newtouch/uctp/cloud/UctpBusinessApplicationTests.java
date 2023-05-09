@@ -36,8 +36,8 @@ class UctpBusinessApplicationTests {
         properties.setId(2L);
         properties.setCode(QiyuesuoChannelEnum.DEFAULT.getCode());
 //        ("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO")
-        properties.setAccessKey("1hfWacKSld");
-        properties.setAccessSecret("edTbHSjoF1rVAj61QvIUvvDboWgJjb");
+        properties.setAccessKey("4GkEXxwqsb");
+        properties.setAccessSecret("K0ghEZGvmz2sALrE2Zs5WieCDR3jtx");
         properties.setServerUrl("https://openapi.qiyuesuo.cn");
         client = new DefaultQiyuesuoClient(properties);
         client.init();
@@ -116,6 +116,7 @@ class UctpBusinessApplicationTests {
         client.defaultContractSend(contract.getId()).getCheckedData();
 //        System.out.println(result1.getData());
     }
+
 
     @Test
     void http(){

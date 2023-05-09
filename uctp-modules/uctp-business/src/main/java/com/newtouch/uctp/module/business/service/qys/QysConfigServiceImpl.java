@@ -284,7 +284,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 //                    this.privilegeUrl(userRespDTO.getId());
                         QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
                         SaaSPrivilegeUrlResult privilegeUrlResult = saasClient.saasPrivilegeUrl(configDO.getCompanyId(), userRespDTO.getMobile()
-                                ,ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYE","ROLE_PERMISSION",
+                                ,ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYEE","ROLE_PERMISSION",
                                         "BASE_INFO","FILE_STATISTICS","CATEGORY","FEE","COMPANY_SETUP")).getCheckedData();
                         log.info("企业功能授权【{}】,授权地址【{}】", deptDO.getName(), privilegeUrlResult.getPageUrl());
                         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(privilegeUrlResult.getPageUrl()));
