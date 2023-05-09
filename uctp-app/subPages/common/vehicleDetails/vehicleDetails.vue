@@ -2,7 +2,7 @@
 	<view class="car-info">
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
-				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx">
+				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx" circular>
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
 						<text>{{firstStatus}}-{{secondStatus}}</text>
