@@ -44,6 +44,10 @@ public class MerchantMoneyServiceImpl implements MerchantMoneyService {
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public Boolean reserveCash(Long contractId) {
+        if (true) {
+            return true;
+        }
+
         // 1.拼装保证金预占的数据
         TransactionRecordReqVO transactionRecordReqVO = this.getTransactionRecordReqByContractId(contractId);
         // 2.进行预占
@@ -56,6 +60,9 @@ public class MerchantMoneyServiceImpl implements MerchantMoneyService {
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public Boolean releaseCash(Long contractId) {
+        if (true) {
+            return true;
+        }
         // 1.拼装保证金释放的数据
         TransactionRecordReqVO transactionRecordReqVO = this.getTransactionRecordReqByContractId(contractId);
         // 2.进行释放
@@ -68,6 +75,9 @@ public class MerchantMoneyServiceImpl implements MerchantMoneyService {
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public Boolean deductionCash(Long contractId) {
+        if (true) {
+            return true;
+        }
         // 1.拼装保证金实占的数据
         TransactionRecordReqVO transactionRecordReqVO = this.getTransactionRecordReqByContractId(contractId);
         // 2.进行实占
