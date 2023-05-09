@@ -158,8 +158,10 @@ public class ContractServiceImpl implements ContractService {
             client.defaultContractInvalid(contractDO.getContractId(),null,reason);
         }
         //修改合同状态为已作废
-        contractDO.setStatus(2);
+        contractDO.setStatus(3);
         contractMapper.updateById(contractDO);
+        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
+//        carInfo.setStatusThree();
     }
 
     @Override

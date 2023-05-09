@@ -85,6 +85,13 @@ public class QysConfigController {
         return success(QysConfigConvert.INSTANCE.convertPage(pageResult));
     }
 
+    @GetMapping("/init")
+    @Operation(summary ="初始化契约锁client")
+    public CommonResult<Boolean> initLocalCache() {
+        qysConfigService.initLocalCache();
+        return success(true);
+    }
+
     @PostMapping("/callback/certification")
     @Operation(summary = "saas模式契约锁回调-企业认证")
     public String callbackCertification(@RequestParam String signature,

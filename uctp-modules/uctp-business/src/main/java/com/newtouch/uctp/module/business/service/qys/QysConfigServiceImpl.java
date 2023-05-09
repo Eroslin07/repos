@@ -379,7 +379,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         break;
                     case SIGNING:
                         //签署中需要进行下一个企业静默签章
-                        this.companySign(contractDO.getContractId());
+//                        this.companySign(contractDO.getContractId());
                         break;
                 }
             } else if (contractDO.getContractType().equals(2)) {
@@ -411,7 +411,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         break;
                     case SIGNING:
                         //签署中需要进行下一个企业静默签章
-                        this.companySign(contractDO.getContractId());
+//                        this.companySign(contractDO.getContractId());
                         break;
                 }
             } else if (contractDO.getContractType().equals(3)) {
@@ -442,7 +442,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         break;
                     case SIGNING:
                         //签署中需要进行下一个企业静默签章
-                        this.companySign(contractDO.getContractId());
+//                        this.companySign(contractDO.getContractId());
                         break;
                 }
             } else if (contractDO.getContractType().equals(4)) {
@@ -475,7 +475,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         break;
                     case SIGNING:
                         //签署中需要进行下一个企业静默签章
-                        this.companySign(contractDO.getContractId());
+//                        this.companySign(contractDO.getContractId());
                         break;
                 }
             }
@@ -609,21 +609,6 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     @Transactional
     public String send(Long contractId,Boolean hasReserve) {
-//        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-        //AdminUserDO usersDO = usersMapper.selectById(294);
-//        AdminUserDO usersDO = usersMapper.selectById(loginUser.getId());
-//        if (ObjectUtil.isNull(usersDO)) {
-//            throw exception(USERS_INFO_ERROR);
-//        }
-////        DeptDO userDept = deptMapper.selectById(usersDO.getDeptId());
-////        if (ObjectUtil.isNull(userDept)) {
-////            throw exception(DEPT_INFO_ERROR);
-////        }
-////        DeptDO pDept = deptMapper.selectOne("id", userDept.getParentId());
-////        DeptDO platformDept = deptMapper.selectOne("parent_id", pDept.getParentId(), "attr", 1);
-////        if (ObjectUtil.isNull(platformDept)) {
-////            throw exception(DEPT_INFO_ERROR);
-////        }
         ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         if (ObjectUtil.equals(1,contractDO.getContractType()) && hasReserve) {
             ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
@@ -633,26 +618,29 @@ public class QysConfigServiceImpl implements QysConfigService {
                 throw exception(ACC_RESERVECASH_ERROR);
             }
         }
+        //这里修改合同状态,车辆状态
+        contractDO.setStatus(1);
+        contractService.update(contractDO);
+        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
+        carInfo.setSalesStatus(CarStatus.COLLECT.value());
+        carInfo.setStatus(CarStatus.COLLECT_B.value());
+        carInfo.setStatusThree(CarStatus.COLLECT_B_B.value());
+        carInfoService.update(carInfo);
         //这里必须要市场方发起
 //        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
         //发起方为平台方，平台方ID 为2L
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         //合同发起
         client.defaultContractSend(contractId).getCheckedData();
-
-
         //ContractDO buyContrsctDo = contractMapper.selectOne("CONTRACT_ID",contractId);
         //buyContrsctDo.setStatus(1);
         //存合同草稿合同到表
         //合同发起后修改状态为已发起
-
         contractMapper.updateContractByContractId("1", contractId);
         this.companySign(contractId);
 //        String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
         //表示委托合同已发起
         return "OK";
-
-
     }
 
     @Override
@@ -1460,17 +1448,12 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
         //商户签章
-//        log.info("商户签章：{}",configDO.getBusinessName());
-//        this.companySign(configDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.FALSE)));
+        log.info("商户签章：{}",configDO.getBusinessName());
+        this.companySign(configDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.FALSE)));
         //平台方签章
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
         log.info("平台方签章：{}",platformConfigDO.getBusinessName());
         this.companySign(platformConfigDO,contractDO,ListUtil.of(this.getKeyword(contractDO.getContractType(),Boolean.TRUE)));
-        //临时修改，发起收车合同
-//        if (ObjectUtil.equals(contractDO.getContractType(),1)) {
-//            ContractDO collectContractDO = contractMapper.selectOne("CAR_ID", contractDO.getCarId(), "CONTRACT_TYPE", 2);
-//            this.send(collectContractDO.getContractId(), false);
-//        }
     }
 
     /**
@@ -1484,9 +1467,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         String keyword = "";
         if (ObjectUtil.equals(1, contractType) || ObjectUtil.equals(3, contractType)) {
             if (isPlatform) {
-                keyword = "乙方（章）：";
-            } else {
                 keyword = "甲方（章）：";
+            } else {
+                keyword = "乙方（章）：";
             }
         }
         if (ObjectUtil.equals(2, contractType) || ObjectUtil.equals(4, contractType)) {
