@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
@@ -56,6 +57,19 @@ public class FileApiImpl implements FileApi {
         fileDTO.setUrl(fileNew.getUrl());
 
         return success(fileDTO);
+    }
+
+    @Override
+    public CommonResult<String> deleteFileNew(@Valid Long id) {
+        String result="失败";
+        try {
+            fileService.deleteFileNew(id);
+            result="成功";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return success(result);
     }
 
 

@@ -27,5 +27,12 @@
         </where>
     </delete>
 
+   <delete id="deleteInfraFile">
+        delete
+        from infra_file
+        where ID = #{id}
+
+    </delete>
+
 
 </mapper>

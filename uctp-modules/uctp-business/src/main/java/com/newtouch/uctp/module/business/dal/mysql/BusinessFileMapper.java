@@ -24,4 +24,7 @@ public interface BusinessFileMapper extends BaseMapperX<BusinessFileDO> {
     }
 
     int deleteByMainIdAndType(@Param("mainId") Long mainId, @Param("fileType") String fileType);
+
+
+    int updateBusiness(@Param("id") Long id,@Param("mainId") Long mainId);
 }

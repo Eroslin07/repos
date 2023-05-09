@@ -4,8 +4,6 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.lang.Assert;
-import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas.SaasQiyuesuoSaasClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.enums.QiyuesuoChannelEnum;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
@@ -43,23 +41,24 @@ public class UctpQIyuesuoSaasTests {
     }
 
     @Test
+    void personAuth() {
+        SaaSUserAuthPageResult data = client.saasUserAuthPage("19950180091").getCheckedData();
+        System.out.println(data.getAuthUrl());
+        System.out.println(data.getAuthId());
+    }
+
+    @Test
     void companyAuth() {
         String applicanInfo = "{\"name\":\"蒋嵩巍\",\"contact\": \"18080072255\",\"contactType\": \"MOBILE\"}";
         SaaSCompanyAuthPageResult checkedData = client.saasCompanyAuthPageUrl("666专业合作社", applicanInfo).getCheckedData();
         System.out.println(checkedData.getPageUrl());
     }
 
-    @Test
-    void personAuth() {
-        QiyuesuoCommonResult<SaaSUserAuthPageResult> result = client.saasUserAuthPage("15196636618");
-        System.out.println(result.getData().getAuthUrl());
-        Assert.equals(result.getCode(), 0);
-    }
 
     @Test
     void privilegeUrl() {
         SaaSPrivilegeUrlResult checkedData = client.saasPrivilegeUrl(3093441290910712532L, "15037580053",
-                ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYE","ROLE_PERMISSION",
+                ListUtil.of("SEAL","TEMPLATE","CONTRACT","COMPANY_EMPLOYEE","ROLE_PERMISSION",
                         "BASE_INFO","FILE_STATISTICS","CATEGORY","FEE","COMPANY_SETUP")).getCheckedData();
         System.out.println(checkedData.getPageUrl());
     }

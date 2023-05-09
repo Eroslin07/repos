@@ -330,7 +330,9 @@
 					</view>
 
 					<u-radio-group v-model="feesForm.vehicle" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="租金相关" :required="true" prop="vehicle"></u-form-item>
+						<u-form-item label="租金相关" :required="true" prop="vehicle">
+							<view class="vehicle"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="vehicleA"></u-radio>
 							<text @click="feesForm.vehicle = 'vehicleA'">“轿车200元/天”</text>
@@ -350,7 +352,9 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.transfer" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="交易过户费" :required="true" prop="transfer"></u-form-item>
+						<u-form-item label="交易过户费" :required="true" prop="transfer">
+							<view class="transfer"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="transferA"></u-radio>
 							<text @click="feesForm.transfer = 'transferA'">销售车辆首次交易过户费(平台过户买方指定过户人)</text>
@@ -366,7 +370,9 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.loss" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="车辆折损费用" :required="true" prop="loss"></u-form-item>
+						<u-form-item label="车辆折损费用" :required="true" prop="loss">
+							<view class="loss"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="lossA"></u-radio>
 							<text @click="feesForm.loss = 'lossA'">依据本协议第二条车辆价款的5%支付车辆折损费用</text>
@@ -378,7 +384,9 @@
 					</u-radio-group>
 
 					<u-radio-group v-model="feesForm.testing" placement="column" activeColor="#fd6404" shape="square">
-						<u-form-item label="第三方检测费用" :required="true" prop="testing"></u-form-item>
+						<u-form-item label="第三方检测费用" :required="true" prop="testing">
+							<view class="testing"></view>
+						</u-form-item>
 						<u-form-item borderBottom>
 							<u-radio name="testingA"></u-radio>
 							<text @click="feesForm.testing = 'testingA'">全车检测费用</text>
@@ -1205,6 +1213,16 @@
 					if (this.chebi == false) {
 						this.handleDraft('step');
 					}
+				}).catch((error) => {
+					let key = '.' + error[0].field;
+					const query = uni.createSelectorQuery()
+					query.select(key).boundingClientRect((data) => {
+						let pageScrollTop = Math.round(data.top)
+						uni.pageScrollTo({
+							scrollTop: pageScrollTop - 70, //滚动的距离
+							duration: 300, //过渡时间
+						})
+					}).exec()
 				})
 			},
 			// 点击车辆信息保存
