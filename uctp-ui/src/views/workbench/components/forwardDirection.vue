@@ -140,7 +140,7 @@
               v-if="!completedVisible"
               v-model="
                 baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
-                  .transManageName
+                  .sellTransManageName
               "
               class="car-input"
             ></el-input>
