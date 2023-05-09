@@ -6,13 +6,13 @@
 		<view class="headers">
 			<u-grid col="2" :border="true">
 				<u-grid-item @click="handleCar">
-					<image v-show="active == 0" src="../../../static/images/bycar/car.png" class="form-image"></image>
-					<image v-show="active == 1" src="../../../static/images/bycar/car1.png" class="form-image"></image>
+					<image v-show="active == 0" src="../../../static/images/bycar/car1.svg" class="form-image"></image>
+					<image v-show="active == 1" src="../../../static/images/bycar/car.svg" class="form-image"></image>
 					<text class="grid-text" :style="{'color': active == 0 ? '#fd6601' : ''}">车辆信息</text>
 				</u-grid-item>
 				<u-grid-item @click="handleStep">
-					<image v-show="active == 0" src="../../../static/images/bycar/car3.png" class="form-image"></image>
-					<image v-show="active == 1" src="../../../static/images/bycar/car2.png" class="form-image"></image>
+					<image v-show="active == 0" src="../../../static/images/bycar/car2.svg" class="form-image"></image>
+					<image v-show="active == 1" src="../../../static/images/bycar/car3.svg" class="form-image"></image>
 					<text class="grid-text" :style="{'color': active == 1 ? '#fd6601' : ''}">交易信息</text>
 				</u-grid-item>
 			</u-grid>
