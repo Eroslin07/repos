@@ -7,4 +7,6 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 public interface AccountService extends IService<MerchantAccountDO> {
 
     boolean accountGenerate(AccountDTO accountDTO);
+
+    boolean accountExists(long tenantId, long merchantId);
 }

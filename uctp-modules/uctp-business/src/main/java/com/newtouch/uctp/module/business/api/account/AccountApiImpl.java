@@ -1,6 +1,8 @@
 package com.newtouch.uctp.module.business.api.account;
 
 import com.newtouch.uctp.framework.common.exception.BankException;
+import com.newtouch.uctp.framework.common.exception.ServiceException;
+import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionLogDO;
@@ -37,7 +39,7 @@ public class AccountApiImpl implements AccountApi {
             accountService.accountGenerate(accountVO);
             return success("商户虚拟账户开户成功!");
         } catch (Exception e) {
-            if(e instanceof BankException) {
+            if (e instanceof BankException) {
                 transactionLogService.save(TransactionLogDO.builder()
                         .tranBeginTime(now)
                         .tranEndTime(LocalDateTime.now())
@@ -45,7 +47,10 @@ public class AccountApiImpl implements AccountApi {
                         .tranResponse(e.getMessage())
                         .build());
             }
-            return error(500, "商户虚拟账户开户失败");
+            if (e instanceof ServiceException) {
+                return error(((ServiceException) e).getCode(), e.getMessage());
+            }
+            return error(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "商户虚拟账户开户失败");
         }
     }
 }

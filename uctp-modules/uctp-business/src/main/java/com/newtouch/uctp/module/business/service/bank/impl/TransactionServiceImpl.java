@@ -191,7 +191,6 @@ public class TransactionServiceImpl implements TransactionService {
         } catch (Exception e) {
             log.error("调用银行接口失败", e);
             message = printExceptionMessage(e);
-
             throw new BankException(requestMessage, message);
 
         } finally {
