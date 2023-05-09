@@ -38,7 +38,10 @@ public interface AuthConvert {
 
     default AuthPermissionInfoRespVO convert(AdminUserDO user, UserExtDO userExt,DeptDO dept, TenantDO tenant) {
         return AuthPermissionInfoRespVO.builder()
-                .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).staffType(userExt.getStaffType()).nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId()).deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar()).build())
+                .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).staffType(userExt.getStaffType())
+                        .nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId())
+                        .deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar())
+                        .registerType(userExt.getStatus()).build())
                 .build();
     }
 
