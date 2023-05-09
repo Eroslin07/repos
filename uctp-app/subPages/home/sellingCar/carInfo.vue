@@ -255,7 +255,7 @@
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="changeValue">
-						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom>
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="handleCheckBox(item.name)">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;width: 100%">
 								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
@@ -812,11 +812,11 @@
 				id: options.id
 			}).then((res) => {
 				if (!res.data.other) res.data.other = ''
+				res.data.checkboxValue = [];
 				this.carForm = res.data;
 				this.carForm.scrapDate = parseTime(this.carForm.scrapDate, '{y}-{m}-{d}');
 				this.carForm.annualInspectionDate = parseTime(this.carForm.annualInspectionDate, '{y}-{m}-{d}');
 				this.carForm.insuranceEndData = parseTime(this.carForm.insuranceEndData, '{y}-{m}-{d}');
-				this.carForm.checkboxValue = [];
 				this.modelId = res.data.modelId;
 				// 收车金额
 				this.sellerForm.sellType = res.data.sellType;
@@ -1451,6 +1451,28 @@
 							this.sellerForm.deposit = arr.join('.');
 						}
 					})
+				}
+			},
+			// 点击车辆手续及备件
+			handleCheckBox(name) {
+				if (name != 'vehicleKey' && name != 'accidentVehicle') {
+					let index = this.carForm.checkboxValue.indexOf(name);
+					if (index == -1) {
+						this.carForm.checkboxValue.push(name)
+					} else {
+						this.carForm.checkboxValue.splice(index, 1);
+					}
+				} else {
+					let index = this.carForm.checkboxValue.indexOf(name);
+					if (index == -1) {
+						this.carForm.checkboxValue.push(name);
+						if (this.carForm.checkboxValue.indexOf('vehicleKey') > -1) {
+							this.disabledKey = false;
+						}
+						if (this.carForm.checkboxValue.indexOf('accidentVehicle') > -1) {
+							this.disabledOther = false;
+						}
+					}
 				}
 			}
 		}
