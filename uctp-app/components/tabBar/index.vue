@@ -93,7 +93,8 @@
 					if (index == 0) {
 						this.$tab.switchTab('/pages/index');
 					} else if (index == 1) {
-						this.$tab.switchTab('/pages/cost/index');
+						this.$modal.msg("费用分析开发中");
+						// this.$tab.switchTab('/pages/cost/index');
 					} else if (index == 2) {
 						this.$tab.switchTab('/pages/account/index');
 					} else if (index == 3) {
