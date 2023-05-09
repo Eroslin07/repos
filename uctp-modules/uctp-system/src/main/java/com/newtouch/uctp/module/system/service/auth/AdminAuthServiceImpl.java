@@ -298,13 +298,13 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Transactional(rollbackFor = Exception.class)
     public Map addAccount(AddAccountReqVO reqVO) {
         HashMap<Object, Object> map = new HashMap<>();
-        List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
-        if(userDOS.size()>0){
-            throw exception(AUTH_MOBILE_IS_EXIST);
-        }
         AdminUserDO userDO = new AdminUserDO();
         UserExtDO userExtDO = new UserExtDO();
         if(null==reqVO.getId()){
+            List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
+            if(userDOS.size()>0){
+                throw exception(AUTH_MOBILE_IS_EXIST);
+            }
             try {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
@@ -327,6 +327,14 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 throw exception(AUTH_ADDACCOUNT_ERROR);
             }
         }else{
+            List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
+            if(userDOS.size()>0){
+                for(AdminUserDO user:userDOS){
+                    if(!user.getId().equals(reqVO.getId())){
+                        throw exception(AUTH_MOBILE_IS_EXIST);
+                    }
+                }
+            }
             try {
                 AdminUserDO user = userService.getUser(reqVO.getId());
                 UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
