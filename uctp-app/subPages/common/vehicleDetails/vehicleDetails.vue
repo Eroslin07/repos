@@ -62,7 +62,7 @@
 			</view>
 			<!-- 卡片信息 -->
 			<ca-content ref="contractInfo" :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest"
-				@changeTest="changeTest">
+				@changeTest="changeTest" @inviladContract="inviladContract">
 			</ca-content>
 		</uni-card>
 		<!-- 提示信息 -->
@@ -205,12 +205,12 @@
 		},
 		methods: {
 			// 获取数据
-			getCarDetails(id) {
+			async getCarDetails(id) {
 				this.isSHowTip = 'onLoading'
 				let data = {
 					ID: id
 				}
-				getCarInfoById(data).then(res => {
+				await getCarInfoById(data).then(res => {
 					if (Object.keys(res.data)?.length) {
 						this.isSHowTip = ''
 					} else {
@@ -281,7 +281,16 @@
 				this.carUpload = val
 				this.getCarDetails(this.carId)
 			},
-
+			// 合同作废
+			async inviladContract(){
+				await this.getCarDetails(this.carId)
+				this.$nextTick(()=>{
+					this.currentNum=1;
+					this.tabCar=1;
+					// console.log(this.currentNum,this.tabCar,88999)
+				})
+				
+			},
 			// 时间戳转天
 			getDays(value = 0) {
 				let currentTime = new Date().getTime();

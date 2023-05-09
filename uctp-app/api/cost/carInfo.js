@@ -8,3 +8,10 @@ export function getCarInfoById(data) {
 		'params': data
 	})
 }
+// 合同作废
+export function contractInvalid(query){
+	return request({
+		url:`/uctp/contract/contract/invalid?${query}`,
+		method:'POST'
+	})
+}

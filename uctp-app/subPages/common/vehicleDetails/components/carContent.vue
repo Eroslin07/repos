@@ -129,7 +129,7 @@
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
 					<text @click="handleContact()">{{contract.contractDO.contractName}}合同</text>
-					<text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text>
+					<text class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
 				<view v-else class="flex contrart-info__row">
 					<view class="">
@@ -140,19 +140,8 @@
 							<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
 						</view>
 					</view>
-					<text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text>
+					<!-- <text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text> -->
 				</view>
-				<!-- <view class="flex  contrart-info__row">
-					<text>XXX某卖委托合同</text>
-					<text class="button">作废</text>
-				</view>
-				<view class="flex">
-					<text>XXX某卖车合同</text>
-					<view class="flex selInfo">
-						<text>买家信息</text>
-						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
-					</view>
-				</view> -->
 			</view>
 			<view v-if="!carInfoAll.contractCardVOS.length" class="empty-info">
 				<text>暂无合同</text>
@@ -189,22 +178,6 @@
 						<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
 					</view>
 				</view>
-				<!-- <view class="flex  contrart-info__row">
-					<view class="">
-						<text class="contrart-info__text">作废文件</text>
-						<text>XXX某卖委托合同（已作废）</text>
-					</view>
-				</view>
-				<view class="flex">
-					<view class="">
-						<text class="contrart-info__text">作废文件</text>
-						<text>XXX某卖车合同（已作废）</text>
-					</view>
-					<view class="flex">
-						<text>买家信息</text>
-						<u-icon name="arrow-right" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
-					</view>
-				</view> -->
 			</view>
 			<view v-if="!carInfoAll.contractCardNOS.length" class="empty-info">
 				<text>暂无合同</text>
@@ -334,6 +307,22 @@
 				</view>
 			</view>
 		</view>
+		<!-- 作废理由 -->
+		<u-modal :show="cancelModal" :closeOnClickOverlay="false" :showCancelButton="true" :negativeTop="100" width="700rpx" @cancel="cancelBtn" @confirm="confirmBtn">
+			<view slot-content style="width:100%">
+				<u--form
+					labelPosition="top"
+					:model="form"
+					:rules="rules"
+					ref="uForm"
+					errorType="toast"
+				>
+					<u-form-item label="理由:" prop="reason" required>
+						<u--textarea  v-model="form.reason" placeholder="请输入理由" ></u--textarea>
+					</u-form-item>
+				</u--form>
+			</view>
+		</u-modal>
 	</view>
 </template>
 
@@ -349,6 +338,7 @@
 	import {
 		deleteTestImage
 	} from '@/api/register'
+	import { contractInvalid } from '@/api/cost/carInfo.js'
 	export default {
 		data() {
 			return {
@@ -364,6 +354,22 @@
 				drivingImg: '/static/images/home/driving-license.svg',
 				// 信息类型
 				infoType: null,
+				//合同id
+				contractId:'',
+				cancelModal:false,
+				form:{
+					reason:'',
+				},
+				rules:{
+					reason:[
+						{
+							type: 'string',
+							required: true,
+							message: '请输入理由',
+							trigger: ['change','blur']
+						}
+					]
+				}
 			}
 		},
 		props: {
@@ -550,7 +556,29 @@
 			},
 			// 作废
 			handleCancle(id) {
-				// console.log(id)
+				this.contractId=id;
+				this.cancelModal=true;
+			},
+			confirmBtn(){
+				this.$refs.uForm.validate().then(res=>{
+					this.$emit('inviladContract')
+					return;
+					let data=`id=${this.contractId}&reason=${this.form.reason}`
+					contractInvalid(data).then(res=>{
+						this.$modal.msg('合同作废成功');
+						this.cancelModal=false;
+						this.form.reason='';
+						this.$emit('inviladContract')
+					}).catch(err=>{
+						this.$modal.msg(err.msg);
+					})
+				})
+				
+			},
+			// 弹框取消
+			cancelBtn(){
+				this.cancelModal=false;
+				this.form.reason='';
 			},
 			// 签章
 			// handleSignature() {
