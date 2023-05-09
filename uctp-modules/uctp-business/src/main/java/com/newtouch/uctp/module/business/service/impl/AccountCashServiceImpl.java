@@ -73,11 +73,21 @@ public class AccountCashServiceImpl implements AccountCashService {
                 .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING))
                 .stream().filter(x -> x != null && x.getPayAmount() != null && x.getPayAmount() > 0).mapToLong(MerchantCashDO::getPayAmount).sum();
 
+        MerchantBankDO merchantBankDO = merchantBankService.getOne(
+                new LambdaQueryWrapperX<MerchantBankDO>()
+                        .eq(MerchantBankDO::getAccountNo, accountNo)
+                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH.getKey())
+                        .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
+
         MerchantCashReqVO merchantCashReqVO = new MerchantCashReqVO().setAccountNo(accountNo);
         merchantCashReqVO.setPageSize(5);
         PageResult<CashDetailRespVO> list = list(merchantCashReqVO);
         AccountCashRespVO accountCashRespVO = AccountCashRespVO.build(merchantAccountDO, list.getList());
         accountCashRespVO.setWithdrawFreezeCash(withdrawFreezeCash);
+        if (merchantBankDO != null && StringUtils.isNotEmpty(merchantBankDO.getBankNo())) {
+            accountCashRespVO.setBankName(merchantBankDO.getBankName());
+            accountCashRespVO.setBankNo(merchantBankDO.getBankNo());
+        }
         return accountCashRespVO;
     }
 
@@ -199,29 +209,38 @@ public class AccountCashServiceImpl implements AccountCashService {
             throw new ServiceException(AccountConstants.ERROR_CODE_ACCOUNT_NOT_FOUND, AccountConstants.ERROR_MESSAGE_ACCOUNT_NOT_FOUND);
         }
 
-        TransactionRecordDO transactionRecordDO = transactionService.outGold(merchantBankDO.getBankNo(), tranAmount, AccountEnum.TRAN_TYPE_PRESENT_CASH.getKey(), transactionRecordReqVO.getContractNo());
-        if (transactionRecordDO.getTranState().equals(AccountConstants.TRAN_STATE_SUCCESS)) {
-            // 交易成功-当前调用方式为交易中
-        } else if (transactionRecordDO.getTranState().equals(AccountConstants.TRAN_STATE_DURING)){
-            //交易中
-            /**
-             * TODO::后续如何判定交易成功，交易成功后需调用
-             * {@link AccountCashServiceImpl#changeWithdrawState}
-             * 进行提现金额扣除
-             */
-            //新增保证金变动记录
-            String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
-            MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_WITHDRAWING, tradeRecordNo, null);
+//        TransactionRecordDO transactionRecordDO = transactionService.outGold(merchantBankDO.getBankNo(), tranAmount, AccountEnum.TRAN_TYPE_PRESENT_CASH.getKey(), transactionRecordReqVO.getContractNo());
+//        if (transactionRecordDO.getTranState().equals(AccountConstants.TRAN_STATE_SUCCESS)) {
+//            // 交易成功-当前调用方式为交易中
+//        } else if (transactionRecordDO.getTranState().equals(AccountConstants.TRAN_STATE_DURING)){
+//            //交易中
+//            /**
+//             * TODO::后续如何判定交易成功，交易成功后需调用
+//             * {@link AccountCashServiceImpl#changeWithdrawState}
+//             * 进行提现金额扣除
+//             */
+//            //新增保证金变动记录
+//            String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
+//            MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_WITHDRAWING, tradeRecordNo, null);
+//
+//            PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_APPLY);
+//            merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
+//            PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
+//            merchantPresentStatusRecordMapper.insert(presentStatusRecordDO1);
+//
+//        } else {
+//            //TODO:交易失败发起失败流程
+//
+//        }
 
-            PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_APPLY);
-            merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
-            PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
-            merchantPresentStatusRecordMapper.insert(presentStatusRecordDO1);
+        String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
+        MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_WITHDRAWING, tradeRecordNo, null);
 
-        } else {
-            //TODO:交易失败发起失败流程
-
-        }
+        PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_APPLY);
+        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
+        PresentStatusRecordDO presentStatusRecordDO1 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_PROCESSING);
+        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO1);
+        changeWithdrawState(tradeRecordNo);
 
         return this.detail(accountNo);
     }
@@ -240,17 +259,15 @@ public class AccountCashServiceImpl implements AccountCashService {
         }
 
         //扣除保证金金额及保证金冻结金额版本号加1
-        MerchantAccountDO merchantAccountDO = merchantAccountService.changeCash(merchantCash.getAccountNo(), merchantCash.getPayAmount(), null, AccountConstants.TRADE_TYPE_WITHDRAW);
+        merchantAccountService.changeCash(merchantCash.getAccountNo(), merchantCash.getPayAmount(), null, AccountConstants.TRADE_TYPE_WITHDRAW);
 
         //变更保证金提取中记录为保证金提取
-        MerchantCashDO merchantCashDO = merchantCashService.insertCash(merchantAccountDO, merchantCash.getPayAmount(), AccountConstants.TRADE_TYPE_WITHDRAWING, tradeRecordNo, null);
         merchantCashService.update(new MerchantCashDO(), new LambdaUpdateWrapper<MerchantCashDO>()
                 .set(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAW)
-                .eq(MerchantCashDO::getTranRecordNo, tradeRecordNo)
-                .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING));
+                .eq(MerchantCashDO::getId, merchantCash.getId()));
         //新增保证金提现状态-到账成功
-        PresentStatusRecordDO presentStatusRecordDO2 = buildPresentStatusRecordDO(merchantCashDO.getId(), AccountConstants.PRESENT_STATUS_CASH_SUCCESS);
-        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO2);
+        PresentStatusRecordDO presentStatusRecordDO = buildPresentStatusRecordDO(merchantCash.getId(), AccountConstants.PRESENT_STATUS_CASH_SUCCESS);
+        merchantPresentStatusRecordMapper.insert(presentStatusRecordDO);
 
         return Boolean.TRUE;
     }

@@ -10,7 +10,7 @@
 					<u--input v-model="staffForm.phone" border="none" placeholder="请输入11位手机号"></u--input>
 				</u-form-item>
 				<u-form-item label="身份证号" prop="idCard" borderBottom>
-					<u--input v-model="staffForm.idCard" border="none" placeholder="请输入身份证号"></u--input>
+					<u--input v-model="staffForm.idCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
 				</u-form-item>
 				<u-form-item label="是否停用" prop="status" borderBottom>
 					<uni-data-checkbox v-model="staffForm.status" :disabled="type == 'add'" selectedColor="#FA6400"

@@ -201,7 +201,6 @@
 			</view>
 			<!-- 卖家信息 -->
 			<view v-show="sellerInfor">
-				<view class="text">卖家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
@@ -250,7 +249,7 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="身份证号" :required="true" prop="sellerIdCard" borderBottom>
-						<u--input v-model="sellerForm.sellerIdCard" border="none" placeholder="请输入身份证号"></u--input>
+						<u--input v-model="sellerForm.sellerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
 					</u-form-item>
 					<u-form-item borderBottom>
 						<view class="image">
@@ -326,7 +325,7 @@
 					</view>
 					<view class="text" style="overflow: hidden;">
 						<view style="float: left;margin-right: 10px;">
-							<text style="color: #fa6400;">*</text>
+							<text style="color: #fa6400;margin-right: 1px;">*</text>
 							车辆手续及备件
 						</view>
 						<!-- <view style="float: left;">
@@ -350,10 +349,11 @@
 									</template>
 								</u-input>
 							</view>
-							<u--textarea v-model="carForm.other" :disabled="disabledOther"
+							<!-- <u--textarea v-model="carForm.other" :disabled="disabledOther"
 								v-if="item.name == 'accidentVehicle'" border="none" disabledColor="#ffffff"
 								placeholder="请输入内容" :maxlength="10" count confirmType="done"
-								:autoHeight="true"></u--textarea>
+								:autoHeight="true"></u--textarea> -->
+							<input  style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text" v-model="carForm.other" placeholder="最大输入长度为10" :disabled="disabledOther" @input="otherInput" />	
 						</u-form-item>
 					</u-checkbox-group>
 				</u--form>
@@ -1127,7 +1127,7 @@
 						this.carForm.checkboxValue.push(key);
 					}
 					if (key == 'vehicleKey') {
-						if (obj[key] != 0) {
+						if (obj[key] != 0 && obj[key]) {
 							this.carForm.checkboxValue.push(key);
 							this.disabledKey = false;
 						}
@@ -1347,7 +1347,7 @@
 					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
-					proceduresAndSpareParts['vehicleKey'] = 0;
+					proceduresAndSpareParts['vehicleKey'] = '';
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
 					if (this.carForm.other == '' || !this.carForm.other) {
@@ -1534,6 +1534,13 @@
 					}
 					this.$tab.switchTab('/pages/index')
 				}
+			},
+			otherInput(event){
+				let str=event.detail.value.substring(0, 10)
+				this.$nextTick(()=>{
+					this.carForm.other=str;
+				})
+				
 			}
 		}
 	}

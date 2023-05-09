@@ -9,6 +9,9 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.security.config.SecurityProperties;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
+import com.newtouch.uctp.module.bpm.api.task.BpmProcessInstanceApi;
+import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceByKeyReqDTO;
+import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
@@ -26,7 +29,6 @@ import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
-import com.newtouch.uctp.module.business.service.account.BpmService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
 import com.newtouch.uctp.module.business.service.account.dto.*;
@@ -92,7 +94,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     private HttpServletRequest request;
 
     @Resource
-    private BpmService bpmService;
+    private BpmProcessInstanceApi bpmProcessInstanceApi;
 
     @Resource
     private SecurityProperties securityProperties;
@@ -1201,7 +1203,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      */
     private String createProfitPresentProcess(String accountNo, Long profitId) {
         String token = SecurityFrameworkUtils.obtainAuthorization(request, securityProperties.getTokenHeader());
-        Map<String, Object> requestBody = new HashMap<>();
         Map<String, Object> variables = new HashMap<>();
         Map<String, Object> formDataJson = new HashMap<>();
         Map<String, Object> formMain = new HashMap<>();
@@ -1232,11 +1233,11 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         variables.put("startUserId", SecurityFrameworkUtils.getLoginUser().getId());
         variables.put("formDataJson", formDataJson);
 
-        requestBody.put("procDefKey", "LRTX");
-        requestBody.put("variables", variables);
-
         log.info("开始调用发起流程接口，利润提现ID: {}", profitId);
-        CommonResult<String> r = bpmService.create(SecurityFrameworkUtils.getLoginUser().getTenantId(), token, requestBody);
+        BpmProcessInstanceByKeyReqDTO req = new BpmProcessInstanceByKeyReqDTO();
+        req.setProcDefKey(BpmDefTypeEnum.LRTX.name());
+        req.setVariables(variables);
+        CommonResult<String> r = bpmProcessInstanceApi.createProcessInstanceByKey(req);
         log.info("利润提现ID{}， 创建利润提现流程结果：{}", profitId, r);
         if (r.isError()) {
             log.error("账户：{}，利润提现流程创建失败", accountNo);

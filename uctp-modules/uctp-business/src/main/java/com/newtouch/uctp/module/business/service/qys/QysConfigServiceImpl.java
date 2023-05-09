@@ -629,7 +629,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
             //保证金预占
             Boolean reserveCash = merchantMoneyService.reserveCash(contractDO1.getContractId());
-            if (reserveCash) {
+            if (!reserveCash) {
                 throw exception(ACC_RESERVECASH_ERROR);
             }
         }
