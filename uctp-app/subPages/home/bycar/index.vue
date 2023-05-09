@@ -849,11 +849,13 @@
 			},
 			// 失去焦点
 			handleBlur(val) {
+				if (this.sellerForm.vehicleReceiptAmount == '') return
 				let amount = this.$amount.getComdify(val);
 				this.$set(this.sellerForm, 'vehicleReceiptAmount', amount);
 			},
 			// 聚焦
 			handleFocus() {
+				if (this.sellerForm.vehicleReceiptAmount == '') return
 				let amount = this.$amount.getDelcommafy(this.sellerForm.vehicleReceiptAmount);
 				this.$set(this.sellerForm, 'vehicleReceiptAmount', amount);
 			},
