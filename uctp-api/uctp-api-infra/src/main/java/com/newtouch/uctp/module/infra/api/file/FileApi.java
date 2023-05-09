@@ -71,6 +71,10 @@ public interface FileApi {
     @Operation(summary = "保存文件，并返回文件实体")
     CommonResult<FileDTO>  createFileNew(@Valid @RequestBody FileCreateReqDTO createReqDTO);
 
+    @PostMapping(PREFIX + "/deleteFileNew")
+    @Operation(summary = "删除文件")
+    CommonResult<String>  deleteFileNew(@Valid @RequestParam(value = "id") Long id);
+
 
 
 

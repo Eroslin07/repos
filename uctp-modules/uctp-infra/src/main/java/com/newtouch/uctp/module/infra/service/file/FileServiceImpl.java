@@ -182,7 +182,20 @@ public class FileServiceImpl implements FileService {
         // 删除记录
         fileMapper.deleteById(id);
     }
+    @Override
+    public void deleteFileNew(Long id) throws Exception {
+        // 校验存在
+        FileDO file = validateFileExists(id);
 
+        // 从文件存储器中删除
+        S3FileClient client = (S3FileClient) fileConfigService.getFileClient(file.getConfigId());
+
+        Assert.notNull(client, "客户端({}) 不能为空", file.getConfigId());
+        client.delete(file.getPath());
+
+        // 删除记录
+        fileMapper.deleteInfraFile(id);
+    }
     @Override
     public void deleteReport(Long id,Long carId) throws Exception {
         // 校验存在

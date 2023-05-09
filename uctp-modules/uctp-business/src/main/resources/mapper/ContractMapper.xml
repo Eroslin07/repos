@@ -36,6 +36,7 @@
     <select id="getContractOneBuyType" resultType="com.newtouch.uctp.module.business.dal.dataobject.ContractDO">
         select
             CAR_ID as            carId
+            ,DOCUMENT_ID as documentId
             ,CONTRACT_ID as            contractId
             ,CONTRACT_NAME as            contractName
             ,FIRST_PARTY as            firstParty
@@ -61,5 +62,11 @@
             uctp_contract set STATUS=#{status}
         where CONTRACT_ID=#{contractId}
     </update>
+
+    <delete id="deleteByContractId" >
+        delete from
+            uctp_contract
+        where CONTRACT_ID=#{contractId}
+    </delete>
 
 </mapper>

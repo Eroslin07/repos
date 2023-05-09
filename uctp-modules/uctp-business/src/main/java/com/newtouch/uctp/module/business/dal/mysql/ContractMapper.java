@@ -50,4 +50,6 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
     }
 
     void updateContractByContractId(@Param("status") String status,@Param("contractId") Long contractId);
+
+    int deleteByContractId(@Param("contractId") Long contractId);
 }

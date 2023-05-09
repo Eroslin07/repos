@@ -50,6 +50,13 @@ public interface FileService {
      */
     void deleteFile(Long id) throws Exception;
 
+    /**
+     * 删除文件
+     *
+     * @param id 编号
+     */
+    void deleteFileNew(Long id) throws Exception;
+
     void deleteReport(Long id,Long carId) throws Exception;
 
     /**
