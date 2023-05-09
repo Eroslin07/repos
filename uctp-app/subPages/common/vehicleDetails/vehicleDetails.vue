@@ -57,7 +57,7 @@
 				</view>
 			</view>
 			<view class="car-status" id="carStatus">
-				<u-tabs :list="tabsData" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
+				<u-tabs :list="tabsData" :current="currentNum" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 			<!-- 卡片信息 -->
@@ -287,7 +287,6 @@
 				this.$nextTick(()=>{
 					this.currentNum=1;
 					this.tabCar=1;
-					// console.log(this.currentNum,this.tabCar,88999)
 				})
 				
 			},

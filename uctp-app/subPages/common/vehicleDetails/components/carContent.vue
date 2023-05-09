@@ -561,8 +561,6 @@
 			},
 			confirmBtn(){
 				this.$refs.uForm.validate().then(res=>{
-					this.$emit('inviladContract')
-					return;
 					let data=`id=${this.contractId}&reason=${this.form.reason}`
 					contractInvalid(data).then(res=>{
 						this.$modal.msg('合同作废成功');
