@@ -49,7 +49,7 @@
 				</u-list>
 			</view>
 			<view v-else class="empty-page">
-				<image class="empty-img" src=""@/subPages/static/images/index/noData.png" mode="widthFix"></image><br />
+				<image class="empty-img" src="@/subPages/static/images/index/noData.png" mode="widthFix"></image><br />
 				<text class="empty-text" v-if="status">暂无数据</text>
 			</view>
 		</view>
