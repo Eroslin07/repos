@@ -60,11 +60,9 @@
 										卖：<text>****万元</text>
 									</view>
 								</view>
-								<view class="show-money">
-									<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
-										@click.stop="handleShowMoney(tab,false)"></text>
-									<text v-else class="iconfont icon-close-eye"
-										@click.stop="handleShowMoney(tab,true)"></text>
+								<view class="show-money" @click.stop="handleShowMoney(tab)">
+									<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"></text>
+									<text v-else class="iconfont icon-close-eye"></text>
 								</view>
 							</view>
 
@@ -107,11 +105,9 @@
 												卖：<text>****万元</text>
 											</view>
 										</view>
-										<view class="show-money">
-											<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"
-												@click.stop="handleShowMoney(tab,false)"></text>
-											<text v-else class="iconfont icon-close-eye"
-												@click.stop="handleShowMoney(tab,true)"></text>
+										<view class="show-money" @click.stop="handleShowMoney(tab)">
+											<text v-if="tab.eyeIsShow" class="iconfont icon-open-eye"></text>
+											<text v-else class="iconfont icon-close-eye"></text>
 										</view>
 									</view>
 
@@ -340,7 +336,7 @@
 			},
 			// 显示隐藏金额
 			handleShowMoney(tab, flag) {
-				tab.eyeIsShow = flag;
+				tab.eyeIsShow = !tab.eyeIsShow;
 			},
 			// 删除草稿
 			removeItem(item, type) {
@@ -482,7 +478,7 @@
 		}
 
 		.show-money {
-			padding: 0 10rpx 5rpx;
+			padding: 0 30rpx 5rpx;
 			position: absolute;
 			right: 5rpx;
 			top: 0;
