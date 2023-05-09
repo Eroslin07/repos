@@ -100,6 +100,8 @@ public class AccountProfitController {
         return success(respVO);
     }
 
+    // TODO liujian 补充利润提现银行卡反显接口
+
     /**
      * 判断当前商户账户是不是当前登录用户名下的
      * @param accountNo
@@ -115,6 +117,7 @@ public class AccountProfitController {
             throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
         }
 
+        // TODO liujian
         if (!userId.equals(account.getMerchantId())) {
             // 传入的账户号不是当前用户名下的
             throw exception(ACC_MERCHANT_ACCOUNT_NOT_EXISTS);
