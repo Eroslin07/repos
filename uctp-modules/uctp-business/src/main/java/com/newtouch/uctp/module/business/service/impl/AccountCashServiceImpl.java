@@ -73,11 +73,21 @@ public class AccountCashServiceImpl implements AccountCashService {
                 .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING))
                 .stream().filter(x -> x != null && x.getPayAmount() != null && x.getPayAmount() > 0).mapToLong(MerchantCashDO::getPayAmount).sum();
 
+        MerchantBankDO merchantBankDO = merchantBankService.getOne(
+                new LambdaQueryWrapperX<MerchantBankDO>()
+                        .eq(MerchantBankDO::getAccountNo, accountNo)
+                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH.getKey())
+                        .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
+
         MerchantCashReqVO merchantCashReqVO = new MerchantCashReqVO().setAccountNo(accountNo);
         merchantCashReqVO.setPageSize(5);
         PageResult<CashDetailRespVO> list = list(merchantCashReqVO);
         AccountCashRespVO accountCashRespVO = AccountCashRespVO.build(merchantAccountDO, list.getList());
         accountCashRespVO.setWithdrawFreezeCash(withdrawFreezeCash);
+        if (merchantBankDO != null && StringUtils.isNotEmpty(merchantBankDO.getBankNo())) {
+            accountCashRespVO.setBankName(merchantBankDO.getBankName());
+            accountCashRespVO.setBankNo(merchantBankDO.getBankNo());
+        }
         return accountCashRespVO;
     }
 

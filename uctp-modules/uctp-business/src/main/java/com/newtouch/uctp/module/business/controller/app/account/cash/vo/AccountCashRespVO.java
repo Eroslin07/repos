@@ -29,6 +29,12 @@ public class AccountCashRespVO {
     @Schema(description = "保证金提现中冻结金额（单位：分）")
     private Long withdrawFreezeCash;
 
+    @Schema(description = "保证金交易银行账号")
+    private String bankNo;
+
+    @Schema(description = "保证金交易开户银行名称")
+    private String bankName;
+
     @Schema(description = "保证金交易明细")
     private List<CashDetailRespVO> cashDetails;
 
