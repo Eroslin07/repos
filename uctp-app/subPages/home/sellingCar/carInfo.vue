@@ -143,7 +143,6 @@
 			</view>
 			<!-- 买家信息 -->
 			<view v-show="sellerInfor">
-				<view class="text">买家信息</view>
 				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
 					labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
@@ -198,7 +197,7 @@
 						<view class="text">买家信息</view>
 					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
-						<u--input v-model="sellerForm.buyerIdCard" border="none" placeholder="请输入身份证号"></u--input>
+						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
 					</u-form-item>
 					<u-form-item borderBottom>
 						<view class="image">
@@ -246,7 +245,7 @@
 				<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 					<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 					</view>
-					<view class="text"><text style="color:#f00">*</text> 车辆手续及备件</view>
+					<view class="text"><text style="color:#fa6400;margin-right: 1px;">*</text> 车辆手续及备件</view>
 				</view>
 				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
@@ -841,7 +840,7 @@
 						this.carForm.checkboxValue.push(key);
 					}
 					if (key == 'vehicleKey') {
-						if (obj[key] != '') {
+						if (obj[key] != '' && obj[key]) {
 							this.carForm.vehicleKey = obj[key];
 							this.carForm.key = obj[key]
 							this.carForm.checkboxValue.push(key);
@@ -1219,7 +1218,7 @@
 					}
 					proceduresAndSpareParts['vehicleKey'] = this.carForm.key;
 				} else {
-					proceduresAndSpareParts['vehicleKey'] = 0;
+					proceduresAndSpareParts['vehicleKey'] = '';
 				}
 				if (proceduresAndSpareParts['accidentVehicle'] == true) {
 					if (this.carForm.otherEvent == '' || !this.carForm.otherEvent) {

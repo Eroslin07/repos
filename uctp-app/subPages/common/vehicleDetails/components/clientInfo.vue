@@ -20,7 +20,7 @@
 					</u--input>
 				</u-form-item>
 				<u-form-item label="身份证号" borderBottom>
-					<u--input disabled disabledColor="#ffffff" v-model="clientINfoForm.sellerIdCard"
+					<u--input disabled disabledColor="#ffffff" type="idcard" v-model="clientINfoForm.sellerIdCard"
 						border="none" placeholder=" "></u--input>
 				</u-form-item>
 
@@ -69,7 +69,7 @@
 					</u--input>
 				</u-form-item>
 				<u-form-item label="身份证号" borderBottom>
-					<u--input disabled disabledColor="#ffffff" v-model="clientINfoForm.buyerIdCard" border="none"
+					<u--input disabled disabledColor="#ffffff" type="idcard" v-model="clientINfoForm.buyerIdCard" border="none"
 						placeholder=" "></u--input>
 				</u-form-item>
 
