@@ -395,6 +395,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.FALSE,
                                 Boolean.TRUE);
                         // TODO: 暂时模拟收车合同签署完成，自动跳过支付进行开票（后续需删除）
+                        log.info("[status]收车委托：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
 //                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name());
                         break;
                     case INVALIDED:
