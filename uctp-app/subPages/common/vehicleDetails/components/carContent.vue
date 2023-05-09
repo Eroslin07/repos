@@ -497,9 +497,11 @@
 			},
 			// 查看检测报告
 			handleImage(arr){
+				if(!arr[0]?.url) return this.$modal.msg('检测报告不存在!')
+				let urls=[arr[0].url]
 				uni.previewImage({
 					current:0,
-					urls:arr[0]?.url
+					urls,
 				})
 			},
 			
@@ -543,15 +545,12 @@
 			handleOwnerInfo(type) {
 				this.infoType = type
 				this.$tab.navigateTo(
-					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
+					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${encodeURIComponent(JSON.stringify(this.carInfoAll))}&&infoType=${this.infoType}`
 					)
 			},
 			// 作废
 			handleCancle(id) {
 				// console.log(id)
-				this.$tab.navigateTo(
-					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${JSON.stringify(this.carInfoAll)}&&infoType=${this.infoType}`
-					)
 			},
 			// 签章
 			// handleSignature() {
@@ -560,10 +559,9 @@
 			// 		this.$tab.navigateTo('/subPages/home/bycar/agreement?carId='+id)
 			// 	}else{
 			// 		this.$tab.navigateTo('/subPages/home/sellingCar/agreement?carId='+id)
-			// 	}
-				
-				
+			// 	}			
 			// },
+			
 			// rpx转px
 			rpxToPx(rpx) {
 			  const screenWidth = uni.getSystemInfoSync().screenWidth
