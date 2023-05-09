@@ -462,7 +462,7 @@
               <span>
                 {{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceInfoVO
-                    .carInvoiceDetailVO.transManageName
+                    .carInvoiceDetailVO.sellTransManageName
                 }}
               </span>
             </el-col>
