@@ -9,6 +9,7 @@ import com.newtouch.uctp.module.business.service.contract.TempService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,7 @@ public class TempController {
 
     @PutMapping("/update")
     @Operation(summary = "修改模板")
+    @PreAuthorize("@ss.hasPermission('uctp:temp:update')")
     public CommonResult<Boolean> updatePost(@Valid @RequestBody TempUpdateReqVO reqVO) {
         tempService.updateTemp(reqVO);
         return success(true);
@@ -51,13 +53,15 @@ public class TempController {
     @GetMapping("/get")
     @Operation(summary = "获得合同模板")
     @Parameter(name = "id")
+    @PreAuthorize("@ss.hasPermission('uctp:temp:query')")
     public CommonResult<TempRespVO> getTemp(@RequestParam("id") Long id) {
         return success(tempService.getTemp(id));
     }
 
     @DeleteMapping("/delete")
-    @Operation(summary = "删除通知公告")
+    @Operation(summary = "删除合同模板")
     @Parameter(name = "id")
+    @PreAuthorize("@ss.hasPermission('uctp:temp:delete')")
     public CommonResult<Boolean> deleteNotice(@RequestParam("id") Long id) {
         tempService.deleteTemp(id);
         return success(true);
