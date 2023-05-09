@@ -1,5 +1,16 @@
 package com.newtouch.uctp.module.business.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.carinfodetails.vo.CarInfoDetailsCreateReqVO;
 import com.newtouch.uctp.module.business.controller.app.carinfodetails.vo.CarInfoDetailsPageReqVO;
@@ -8,13 +19,6 @@ import com.newtouch.uctp.module.business.convert.carInfo.CarInfoDetailsConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.List;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.CAR_INFO_DETAILS_NOT_EXISTS;
@@ -59,6 +63,23 @@ public class CarInfoDetailsServiceImpl implements CarInfoDetailsService {
     @Override
     public int deleteByCarId(Long carId) {
         return carInfoDetailsMapper.deleteByCarId(carId);
+    }
+
+    @Override
+    public void updateTransManage(Long carId, String transManageName, String sellTransManageName) {
+        CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, carId);
+        if (carInfoDetailsDO == null) {
+            throw exception(CAR_INFO_DETAILS_NOT_EXISTS);
+        }
+
+        if (StringUtils.hasText(transManageName)) {
+            carInfoDetailsDO.setTransManageName(transManageName);
+        }
+        if (StringUtils.hasText(sellTransManageName)) {
+            carInfoDetailsDO.setSellTransManageName(sellTransManageName);
+        }
+
+        this.updateCarInfoDetail(carInfoDetailsDO);
     }
 
     @Override

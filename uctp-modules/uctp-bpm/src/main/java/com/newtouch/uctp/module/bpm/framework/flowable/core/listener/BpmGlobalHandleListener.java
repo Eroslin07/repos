@@ -2,12 +2,28 @@ package com.newtouch.uctp.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.flowable.bpmn.model.ExtensionAttribute;
+import org.flowable.bpmn.model.ExtensionElement;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
-import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDetailsDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
@@ -25,24 +41,11 @@ import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
+import com.newtouch.uctp.module.business.api.carinfodetails.CarInfoDetailsApi;
 import com.newtouch.uctp.module.business.api.contract.MerchantMoneyApi;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
-import org.flowable.bpmn.model.ExtensionAttribute;
-import org.flowable.bpmn.model.ExtensionElement;
-import org.flowable.bpmn.model.FlowElement;
-import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.service.impl.persistence.entity.TaskEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 流程引擎全局业务处理器
@@ -81,6 +84,8 @@ public class BpmGlobalHandleListener {
     private BpmCarTransferService bpmCarTransferService;
     @Resource
     private CarInfoDetailsMapper carInfoDetailsMapper;
+    @Resource
+    private CarInfoDetailsApi carInfoDetailsApi;
 
     /**
      * 流程创建时处理
@@ -218,9 +223,10 @@ public class BpmGlobalHandleListener {
             // 收车开票完成后，自动发起收车过户流程
             if ("pass".equals(approvalType)) {
                 // 写入转入地车辆管理所名称（收车）
-                CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, bpmFormMainVO.getThirdId());
+                //CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectByCarId(bpmFormMainVO.getThirdId());
                 String transManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("transManageName");
-                carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), transManageName, null);
+                //carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), transManageName, null);
+                carInfoDetailsApi.updateTransManage(bpmFormMainVO.getThirdId(), transManageName, null);
                 // 默认发起过户流程
                 String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.SCGH.name());
                 if (!StringUtils.hasText(formMainId)) {
@@ -231,10 +237,11 @@ public class BpmGlobalHandleListener {
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCKP.name())) {
             // 卖车开票完成后，自动发起收车过户流程
             if ("pass".equals(approvalType)) {
-                // 写入转入地车辆管理所名称（收车）
-                CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, bpmFormMainVO.getThirdId());
+                // 写入转入地车辆管理所名称（卖车）
+                //CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectByCarId(bpmFormMainVO.getThirdId());
                 String sellTransManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("sellTransManageName");
-                carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), carInfoDetailsDO.getTransManageName(), sellTransManageName);
+                //carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), carInfoDetailsDO.getTransManageName(), sellTransManageName);
+                carInfoDetailsApi.updateTransManage(bpmFormMainVO.getThirdId(), null, sellTransManageName);
                 // 默认发起过户流程
                 String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.MCGH.name());
                 if (!StringUtils.hasText(formMainId)) {
