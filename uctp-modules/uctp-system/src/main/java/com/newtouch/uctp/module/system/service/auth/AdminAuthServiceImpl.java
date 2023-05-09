@@ -364,8 +364,10 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         int delete = userExtMapper.deleteByUserId(id);
         if (delete >= 1) {
             QysConfigDTO configDTO = qysConfigApi.getByDeptId(adminUserDO.getDeptId()).getCheckedData();
-            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDTO.getBusinessId());
-            client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+            if(null!=configDTO){
+                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDTO.getId());
+                client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+            }
         }
         return delete;
     }
