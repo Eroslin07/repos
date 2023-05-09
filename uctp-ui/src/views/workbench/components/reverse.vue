@@ -136,7 +136,9 @@
                 .model
             }}</span></el-col
           >
-          <el-col :span="4" class="bg-blue"><span>转入地车辆管理所名称</span></el-col>
+          <el-col :span="4" class="bg-blue"
+            ><span><span style="color: red">*</span>转入地车辆管理所名称</span></el-col
+          >
           <el-col :span="4">
             <el-input
               v-if="!completedVisible"

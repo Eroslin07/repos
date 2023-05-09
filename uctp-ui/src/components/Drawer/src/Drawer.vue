@@ -151,7 +151,21 @@ function tabChange(name) {
 }
 // 提交
 const submitBtn = (text) => {
-  console.log(text)
+  if (
+    props.status == 'SCKP' &&
+    !baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+      .transManageName
+  ) {
+    return message.error('请输入转入地车辆管理所名称！')
+  }
+  if (
+    props.status == 'MCKP' &&
+    !baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
+      .sellTransManageName
+  ) {
+    return message.error('请输入转入地车辆管理所名称！')
+  }
+
   dialogText.value = text
   form.value.reason = '审批' + text
   if (props.status == 'SKZH') {
@@ -218,8 +232,6 @@ const dialogSubmit = () => {
   }
 }
 const successText = (i) => {
-  console.log(i)
-
   if (i == 'ZHSQ' || i == 'SGYZ' || i == 'MGYZ') {
     return '同意'
   } else if (i == 'SCKP' || i == 'MCKP') {
