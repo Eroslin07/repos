@@ -153,7 +153,7 @@
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<u-form-item label="收车金额" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" disabled border="none" placeholder="请输入收车金额">
+						<u-input v-model="sellerForm.vehicleReceiptAmount" readonly border="none" placeholder="请输入收车金额">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
