@@ -52,9 +52,11 @@ import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.controller.admin.task.vo.task.*;
 import com.newtouch.uctp.module.bpm.convert.task.BpmTaskConvert;
+import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.definition.BpmProcessDefinitionExtDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.task.BpmTaskExtDO;
+import com.newtouch.uctp.module.bpm.dal.mysql.car.ContractMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.definition.BpmProcessDefinitionExtMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.task.BpmTaskExtMapper;
@@ -62,6 +64,7 @@ import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import com.newtouch.uctp.module.bpm.service.message.BpmMessageService;
+import com.newtouch.uctp.module.business.api.contract.ContractApi;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
 import com.newtouch.uctp.module.system.api.logger.OperateLogApi;
@@ -111,6 +114,10 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private BpmProcessDefinitionExtMapper bpmProcessDefinitionExtMapper;
     @Resource
     private OperateLogApi operateLogApi;
+    @Resource
+    private ContractApi contractApi;
+    @Resource
+    private ContractMapper contractMapper;
 
     @Override
     public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageVO) {
@@ -438,10 +445,21 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         BpmFormMainDO bpmFormMainDO = bpmFormMainMapper.selectOne(BpmFormMainDO::getProcInstId, processInstanceId);
         if (ObjectUtil.equals(bpmFormMainDO.getBusiType(), BpmDefTypeEnum.SKZH.name())) {
             // 进行委托合同作废、收车合同作废
-
+            // 合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）      合同状态(0 草稿 1已发起 2已完成 3已作废)
+            ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, bpmFormMainDO.getThirdId(), ContractDO::getContractType, 2);
+            if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getCarId())) {
+                throw new RuntimeException("提交作废失败，获取[收车合同]基础信息失败。");
+            }
+            ContractDO contract = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 1);
+            if (ObjectUtil.notEqual(contractDO.getStatus(), 3)) {
+                contractApi.contractInvalid(contractDO.getId(), reqVO.getReason());
+            }
+            if (ObjectUtil.isNotNull(contract) && ObjectUtil.notEqual(contract.getStatus(), 3)) {
+                contractApi.contractInvalid(contract.getId(), reqVO.getReason());
+            }
         }
         else if (ObjectUtil.equals(bpmFormMainDO.getBusiType(), BpmDefTypeEnum.LRTX.name())) {
-
+            
         }
     }
 

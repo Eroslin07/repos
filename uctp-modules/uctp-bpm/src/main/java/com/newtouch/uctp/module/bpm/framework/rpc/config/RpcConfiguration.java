@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.carinfodetails.CarInfoDetailsApi;
+import com.newtouch.uctp.module.business.api.contract.ContractApi;
 import com.newtouch.uctp.module.business.api.contract.MerchantMoneyApi;
 import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
@@ -22,7 +23,7 @@ import com.newtouch.uctp.module.system.api.user.AdminUserApi;
 @EnableFeignClients(clients = {RoleApi.class, DeptApi.class, PostApi.class, AdminUserApi.class,
         SmsSendApi.class, DictDataApi.class, NoticeApi.class, QysConfigApi.class,
         CarTransferApi.class, TenantApi.class, AccountProfitApi.class, AccountApi.class,
-        MerchantMoneyApi.class, CarInfoDetailsApi.class})
+        MerchantMoneyApi.class, CarInfoDetailsApi.class, ContractApi.class})
 public class RpcConfiguration {
 
 }
