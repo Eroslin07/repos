@@ -5,7 +5,9 @@
 		<uni-card>
 			<view>
 				<view>充值金额</view>
-				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable :customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
+				<view style="height: 30rpx;">{{amountText}}</view>
+				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable
+					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
@@ -16,7 +18,8 @@
 			<uni-card>
 				<view style="overflow: hidden;padding: 10px 0;border-bottom: 1px solid #f5f5f5;" @click="handleWeixin">
 					<view style="float: left;">
-						<image src="../../../../static/images/account/wxzf.png" class="form-image" style="width: 26px;height: 26px;"></image>
+						<image src="../../../../static/images/account/wxzf.png" class="form-image"
+							style="width: 26px;height: 26px;"></image>
 						<text style="margin-left: 10px;">微信支付</text>
 					</view>
 					<view style="float: right;padding-top: 5px;">
@@ -25,7 +28,8 @@
 				</view>
 				<view style="overflow: hidden;padding: 10px 0;" @click="handleYunshanfu">
 					<view style="float: left;">
-						<image src="../../../../static/images/account/ysf.png" class="form-image" style="width: 26px;height: 26px;"></image>
+						<image src="../../../../static/images/account/ysf.png" class="form-image"
+							style="width: 26px;height: 26px;"></image>
 						<text style="margin-left: 10px;">云闪付</text>
 					</view>
 					<view style="float: right">
@@ -41,13 +45,16 @@
 </template>
 
 <script>
-	import { getRecharge } from '@/api/account/bond.js'
+	import {
+		getRecharge
+	} from '@/api/account/bond.js'
 	export default {
 		data() {
 			return {
 				amount: '',
 				show: false,
-				revision: 0
+				revision: 0,
+				amountText: '',
 			}
 		},
 		onLoad(options) {
@@ -60,14 +67,28 @@
 			},
 			// 输入金额回调
 			handleInput(val) {
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (val) {
 					this.$nextTick(() => {
 						if (val.indexOf('.') > -1) {
 							let arr = val.split('.');
+							if (arr[0].length > 2) {
+								this.amountText = texts[arr[0].length - 3]
+							} else {
+								this.amountText = ''
+							}
 							arr[1] = arr[1].slice(0, 2);
 							this.amount = arr.join('.');
+						} else {
+							if (val.length > 2) {
+								this.amountText = texts[val.length - 3]
+							} else {
+								this.amountText = ''
+							}
 						}
 					})
+				} else {
+					this.amountText = ''
 				}
 			},
 			// 确定
@@ -82,7 +103,9 @@
 					}
 					getRecharge(data).then((res) => {
 						this.$modal.msg("充值成功");
-						uni.$emit('refresh', { refresh: true });
+						uni.$emit('refresh', {
+							refresh: true
+						});
 						this.$tab.navigateBack();
 					})
 					// this.show = true;
@@ -101,7 +124,9 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
-					uni.$emit('refresh', { refresh: true });
+					uni.$emit('refresh', {
+						refresh: true
+					});
 					this.$tab.navigateBack();
 				})
 			},
@@ -114,7 +139,9 @@
 					revision: this.revision
 				}
 				getRecharge(data).then((res) => {
-					uni.$emit('refresh', { refresh: true });
+					uni.$emit('refresh', {
+						refresh: true
+					});
 					this.$tab.navigateBack();
 				})
 			}
