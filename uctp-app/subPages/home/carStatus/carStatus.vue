@@ -371,7 +371,7 @@
 						this.$tab.navigateTo('/subPages/home/bycar/index?id=' + item.id)
 						return;
 					} else {
-						this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?item=' + JSON.stringify(item))
+						this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?id=' + item.id)
 					}
 				}
 			}

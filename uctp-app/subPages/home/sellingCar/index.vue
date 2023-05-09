@@ -77,6 +77,7 @@
 				// 加载图标
 				loadStatus: 'loadmore',
 				isSHowTip:'',
+				carId:'',
 			}
 		},
 		components: {
@@ -193,6 +194,7 @@
 			},
 			// 点击车辆卡片
 			handleCard(item) {
+				this.carId=item.id
 				// this.show = true;
 				// this.$tab.navigateTo('/subPages/home/sellingCar/vehicleDetails');
 				// return
@@ -202,10 +204,10 @@
 				}
 				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
 			},
-			// 选择其它车辆
+			// 上传检测报告
 			handleConfirm() {
 				this.show = false;
-				this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails');
+				this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?id='+this.carId);
 			},
 			// 关闭卖车页面
 			handleCancel() {
