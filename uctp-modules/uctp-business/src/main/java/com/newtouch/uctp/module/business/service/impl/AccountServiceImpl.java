@@ -12,6 +12,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantAccountMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
+import com.newtouch.uctp.module.business.enums.bank.BankTransFormat;
 import com.newtouch.uctp.module.business.enums.bank.CertificationType;
 import com.newtouch.uctp.module.business.service.account.AccountService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
@@ -28,6 +29,7 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Validated
@@ -88,9 +90,10 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
     }
 
     private NominalAccountRequest buildNominalAccountRequest(AccountDTO accountDTO, String busType) {
+        LocalDateTime now = LocalDateTime.now();
         NominalAccountRequest request = new NominalAccountRequest();
-        request.setTranDate(LocalDate.now().format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
-        request.setTranTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
+        request.setTranDate(BankTransFormat.TRANS_DATE_FORMAT.get(now));
+        request.setTranTime(BankTransFormat.TRANS_TIME_FORMAT.get(now));
         request.setChannelSeqNo(UUID.randomUUID().toString(true));
         request.setAreaCode(BankConstants.AREA_CODE);
         request.setAcctNo(BankConstants.ACCT_NO);
@@ -123,9 +126,5 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantBankDO.setBankName(BankConstants.CASH_OPEN_BANK_NAME);
         }
         merchantBankService.save(merchantBankDO);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(UUID.randomUUID().toString(true));
     }
 }
