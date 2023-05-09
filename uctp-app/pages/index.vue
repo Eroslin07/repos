@@ -14,7 +14,7 @@
 		<view :style="{height: `${navigateBarHeight}px`}"></view>
 		<!-- 轮播 -->
 		<view class="swiper-box" id="swiperBox">
-			<u-swiper indicator indicatorMode="dot" :list="swiperList"></u-swiper>
+			<u-swiper indicator indicatorMode="dot" :list="swiperList" circular></u-swiper>
 		</view>
 		<!-- 收车/卖车 -->
 		<view class="menu-box">
