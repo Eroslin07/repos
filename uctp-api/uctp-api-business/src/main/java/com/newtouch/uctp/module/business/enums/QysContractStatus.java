@@ -38,7 +38,7 @@ public enum QysContractStatus {
 
     public static QysContractStatus toType(String value){
         return Stream.of(QysContractStatus.values())
-                .filter(c -> c.value == value)
+                .filter(c -> c.value.equalsIgnoreCase(value))
                 .findAny()
                 .orElse(null);
     }
