@@ -14,9 +14,13 @@ public class BankConstants {
     public final static String MERCHANT_ID = "";
 
     // 市场方母账号
-    public final static String ACCT_NO = "";
-    // 交易地区代码 TODO 银行确认
-    public final static String AREA_CODE = "";
+    public final static String ACCT_NO = "88010078801200000403";
+    // 交易地区代码
+    public final static String AREA_CODE = "tyesc001";
+    // 母账号名称
+    public final static String ACCT_NAME = "自动化测试438114";
+    // 充值保证金默认开户行
+    public final static String CASH_OPEN_BANK_NAME = "浦发银行";
 
 
     // 子账号互转API
