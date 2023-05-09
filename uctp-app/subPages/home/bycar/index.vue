@@ -352,7 +352,7 @@
 							</view>
 							<u--textarea v-model="carForm.other" :disabled="disabledOther"
 								v-if="item.name == 'accidentVehicle'" border="none" disabledColor="#ffffff"
-								placeholder="请输入内容" maxlength="10" :count="true" confirmType="done"
+								placeholder="请输入内容" :maxlength="10" count confirmType="done"
 								:autoHeight="true"></u--textarea>
 						</u-form-item>
 					</u-checkbox-group>
@@ -1623,7 +1623,7 @@
 
 	/* #ifdef H5 */
 	/deep/ .u-form-item__body__right__content__slot>uni-view {
-		flex: 1;
+		// flex: 1;
 	}
 
 	/* #endif */
@@ -1631,7 +1631,7 @@
 
 	/* #ifdef MP-WEIXIN */
 	/deep/ .u-form-item__body__right__content__slot>view {
-		flex: 1;
+		// flex: 1;
 	}
 
 	/* #endif */
