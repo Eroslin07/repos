@@ -105,12 +105,12 @@
 						<u--input v-model="carForm.brandType" border="none" placeholder="请输入品牌型号"></u--input>
 					</u-form-item>
 					<u-form-item label="品牌/车型" :required="true" prop="model" borderBottom>
-						<view @click="handleShow()">
+						<view>
 							<!-- <u--input v-model="carForm.model" border="none" readonly placeholder="请输入品牌/车系/车型"></u--input> -->
 							<u-textarea v-model="carForm.model" disabledColor="#ffffff" border="none" confirmType="done"
 								placeholder="请输入品牌/车系/车型" :autoHeight="true"></u-textarea>
 						</view>
-						<u-icon slot="right" name="arrow-right"></u-icon>
+						<u-icon slot="right" name="arrow-right" @click="handleShow()"></u-icon>
 					</u-form-item>
 					<u-form-item label="上传机动车登记证书" :required="true" labelWidth="150px">
 					</u-form-item>
