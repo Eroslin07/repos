@@ -378,10 +378,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.FALSE);
                         break;
                     case SIGNING:
-                        //如果是个人签署，进行企业静默签章
-                        if (ObjectUtil.equals("tenantType",contractStatusDTO.getTenantType())) {
-                            this.companySign(contractDO.getContractId());
-                        }
+
                         break;
                 }
             } else if (contractDO.getContractType().equals(2)) {
@@ -412,8 +409,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.FALSE);
                         break;
                     case SIGNING:
-                        //签署中需要进行下一个企业静默签章
-//                        this.companySign(contractDO.getContractId());
+                        //如果是个人签署，进行企业静默签章
+                        if (ObjectUtil.equals("PERSONAL",contractStatusDTO.getTenantType())) {
+                            this.companySign(contractDO.getContractId());
+                        }
                         break;
                 }
             } else if (contractDO.getContractType().equals(3)) {
