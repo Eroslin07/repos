@@ -133,7 +133,8 @@
 							placeholder="请输入特殊约定"></u--input> -->
 						<!-- <u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
 							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea> -->
-						<textarea style="width:100%" v-model="carForm.remarks" placeholder="最大输入长度为68" auto-height @input="handleInput" />
+						<textarea style="width:100%" v-model="carForm.remarks" placeholder="最大输入长度为68" auto-height
+							@input="handleInput" />
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
@@ -158,9 +159,10 @@
 							</template>
 						</u-input>
 					</u-form-item>
+					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
 						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
-							@blur="handleBlur" placeholder="0.00">
+							@blur="handleBlur" @input="handleInput" placeholder="0.00">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -172,7 +174,8 @@
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看 ></text>
+							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。<text @click="handleDetail">明细请查看
+								></text>
 						</view>
 					</view>
 					<u-form-item label="收款方式" :required="true" prop="sellType" borderBottom>
@@ -184,7 +187,7 @@
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
 						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit"
-							@focus="depositFocus" @blur="depositBlur">
+							@focus="depositFocus" @blur="depositBlur"  @input="handleDeposit">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -197,7 +200,8 @@
 						<view class="text">买家信息</view>
 					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
-						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
+						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none"
+							placeholder="请输入身份证号"></u--input>
 					</u-form-item>
 					<u-form-item borderBottom>
 						<view class="image">
@@ -264,7 +268,9 @@
 								<!-- <u--input type="text" showWordLimit v-model="carForm.otherEvent"
 									:disabled="isDisabledAcc" maxlength="10" v-if="item.name == 'accidentVehicle'"
 									disabledColor="#ffffff" border="none" placeholder="请输入"></u--input> -->
-								<input  style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text" v-model="carForm.otherEvent" placeholder="最大输入长度为10" :disabled="isDisabledAcc" @input="otherEventInput" />
+								<input style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text"
+									v-model="carForm.otherEvent" placeholder="最大输入长度为10" :disabled="isDisabledAcc"
+									@input="otherEventInput" />
 							</view>
 							</u--text>
 						</u-form-item>
@@ -387,7 +393,8 @@
 						<!-- <u--input v-model="other" maxlength="18" type="textarea" showWordLimit border="none" placeholder="请输入"></u--input> -->
 						<!-- <u--textarea v-model="carForm.other" height="24" maxlength="18" confirmType="done" count
 							border="none" placeholder="请输入"></u--textarea> -->
-						<textarea style="margin-left:20rpx;width:100%" v-model="carForm.other" placeholder="最大输入长度为18" :disabled="disabledOther" @input="otherInput" auto-height />
+						<textarea style="margin-left:20rpx;width:100%" v-model="carForm.other" placeholder="最大输入长度为18"
+							:disabled="disabledOther" @input="otherInput" auto-height />
 					</u-form-item>
 				</u--form>
 			</view>
@@ -764,7 +771,8 @@
 				// 是否是子账户
 				isChildAccount: false,
 				fairStatus: null,
-				gxzStatus: 1
+				gxzStatus: 1,
+				amountText: '',
 			}
 		},
 		onReady() {
@@ -810,7 +818,8 @@
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount.getComdify(res.data.deposit);
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount
+					.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
@@ -820,6 +829,26 @@
 							this.fileList5 = [i]
 						}
 					})
+				}
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
+				if (res.data.sellAmount) {
+					const sellAmount = res.data.sellAmount + ''
+					if (sellAmount.indexOf('.') > -1) {
+						let arr = sellAmount.split('.');
+						if (arr[0].length > 2) {
+							this.amountText = texts[arr[0].length - 3]
+						} else {
+							this.amountText = ''
+						}
+					} else {
+						if (sellAmount.length > 2) {
+							this.amountText = texts[sellAmount.length - 3]
+						} else {
+							this.amountText = ''
+						}
+					}
+				} else {
+					this.amountText = ''
 				}
 				this.handleBlur(res.data.sellAmount);
 				let obj;
@@ -1127,7 +1156,7 @@
 					this.amountDetails = res.data;
 				})
 				if (this.sellerForm.sellAmount == '') {
-					
+
 				} else {
 					let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
 					this.$set(this.sellerForm, 'sellAmount', amount);
@@ -1262,12 +1291,13 @@
 					buyerAdder: this.sellerForm.buyerAdder,
 					buyerTel: this.sellerForm.buyerTel,
 					sellType: this.sellerForm.sellType,
-					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm.deposit),
+					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
+						.deposit),
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
-					other: this.carForm.other ,//其他,
-					sellCarFair:`${this.fairValue.value1}万元-${this.fairValue.value2}万元`
+					other: this.carForm.other, //其他,
+					sellCarFair: `${this.fairValue.value1}万元-${this.fairValue.value2}万元`
 				}
 
 				this.showOverlay = true;
@@ -1333,7 +1363,7 @@
 					} else {
 						_this.gxzStatus = 0;
 					}
-						// _this.gxzStatus = 0;
+					// _this.gxzStatus = 0;
 					_this.handleDraft('entrust');
 				})
 			},
@@ -1347,26 +1377,63 @@
 				this.showKey = false;
 			},
 			// 特殊约定字符限制
-			handleInput(event){
-				let str=event.detail.value.substring(0, 68)
-				this.$nextTick(()=>{
-					this.carForm.remarks=str;
+			handleInput(event) {
+				let str = event.detail.value.substring(0, 68)
+				this.$nextTick(() => {
+					this.carForm.remarks = str;
 				})
 			},
 			// 其他字数控制
-			otherEventInput(event){
-				let str=event.detail.value.substring(0, 10)
-				this.$nextTick(()=>{
-					this.carForm.otherEvent=str;
+			otherEventInput(event) {
+				let str = event.detail.value.substring(0, 10)
+				this.$nextTick(() => {
+					this.carForm.otherEvent = str;
 				})
 			},
 			// 最下面其他字数控制
-			otherInput(event){
-				let str=event.detail.value.substring(0, 18)
-				this.$nextTick(()=>{
-					this.carForm.other=str;
+			otherInput(event) {
+				let str = event.detail.value.substring(0, 18)
+				this.$nextTick(() => {
+					this.carForm.other = str;
 				})
-				
+
+			},
+			// 输入金额回调
+			handleInput(val) {
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							if (arr[0].length > 2) {
+								this.amountText = texts[arr[0].length - 3]
+							} else {
+								this.amountText = ''
+							}
+							arr[1] = arr[1].slice(0, 2);
+							this.sellerForm.sellAmount = arr.join('.');
+						} else {
+							if (val.length > 2) {
+								this.amountText = texts[val.length - 3]
+							} else {
+								this.amountText = ''
+							}
+						}
+					})
+				} else {
+					this.amountText = ''
+				}
+			},
+			handleDeposit(val){
+				if(val){
+					this.$nextTick(()=>{
+						if(val.indexOf('.')>-1){
+							let arr = val.split('.');
+							arr[1] = arr[1].slice(0, 2);
+							this.sellerForm.deposit = arr.join('.');
+						}
+					})
+				}
 			}
 		}
 	}
@@ -1442,7 +1509,7 @@
 				}
 			}
 		}
-		
+
 		.headers {
 			width: 100%;
 			position: fixed;
