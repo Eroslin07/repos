@@ -5,12 +5,14 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.newtouch.uctp.framework.common.exception.BankException;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionLogDO;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
+import com.newtouch.uctp.module.business.enums.TranType;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
 import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
@@ -31,10 +33,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static org.codehaus.groovy.runtime.IOGroovyMethods.newPrintWriter;
 
 @Service
 @Validated
@@ -172,9 +178,10 @@ public class TransactionServiceImpl implements TransactionService {
         String requestMessage = JSONObject.toJSONString(nominalAccountRequest);
 
         String responseMessage = null;
+        String message = "";
         // 调用银行接口
         try {
-            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.NOMINAL_ACCOUNT_API, requestMessage);
+            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.API_URL + BankConstants.NOMINAL_ACCOUNT_API, requestMessage);
             if (responseMessage == null) {
                 throw new RuntimeException("银行响应报文为空，交易失败");
             }
@@ -183,9 +190,20 @@ public class TransactionServiceImpl implements TransactionService {
             return response;
         } catch (Exception e) {
             log.error("调用银行接口失败", e);
-            throw new RuntimeException("调用银行接口失败", e);
+            message = printExceptionMessage(e);
+
+            throw new BankException(requestMessage, message);
+
         } finally {
             // TODO 记录交易日志
+            if (StringUtils.isNotBlank(message)) {
+                transactionLogService.save(TransactionLogDO.builder()
+                        .tranBeginTime(now)
+                        .tranEndTime(LocalDateTime.now())
+                        .tranRequest(requestMessage)
+                        .tranResponse(message)
+                        .build());
+            }
         }
     }
 
@@ -498,6 +516,14 @@ public class TransactionServiceImpl implements TransactionService {
         // 十位随机字符
         tranNo.append(RandomUtil.randomNumbers(10));
         return tranNo.toString();
+    }
+
+    private String printExceptionMessage(Exception e) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = newPrintWriter(stringWriter);
+        e.printStackTrace(writer);
+        StringBuffer buffer = stringWriter.getBuffer();
+        return buffer.toString();
     }
 
     public static void main(String[] args) {

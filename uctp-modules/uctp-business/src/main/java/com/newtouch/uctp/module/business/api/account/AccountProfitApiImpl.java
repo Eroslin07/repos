@@ -29,7 +29,6 @@ public class AccountProfitApiImpl implements AccountProfitApi {
 
     @Override
     public CommonResult<String> presentAudit(@RequestHeader("tenant-id") Long tenantId,
-                                             @RequestHeader("Authorization") String token,
                                              @RequestBody ProfitPresentAuditDTO audit) {
         String businessKey = audit.getBusinessKey();
         log.info("审核利润提取{}，意见{}", businessKey, audit.getAuditOpinion());

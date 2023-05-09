@@ -648,7 +648,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         List<APPContractCardVO> listN = new ArrayList<>();
 
         for (ContractDO contractDO:contractList) {//循环合同信息，查询中间表拿到文件url
-            List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getId());
+            List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getContractId());
             if(fileList.size()>0){
                 if(contractDO.getStatus()==2){
                     APPContractCardVO contractCardVO = new APPContractCardVO();

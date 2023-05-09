@@ -18,4 +18,5 @@ import com.newtouch.uctp.module.system.api.user.AdminUserApi;
         AdminUserApi.class, BpmOpenInvoiceApi.class, BpmCarTransferApi.class,
         PayFailedApi.class, BpmTaskApi.class, BpmProcessInstanceApi.class})
 public class RpcConfiguration {
+
 }

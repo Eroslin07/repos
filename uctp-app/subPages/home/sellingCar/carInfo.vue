@@ -810,7 +810,7 @@
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit);
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
@@ -1126,16 +1126,22 @@
 					this.sellerForm.profit = res.data.profit;
 					this.amountDetails = res.data;
 				})
-				let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
-				this.$set(this.sellerForm, 'sellAmount', amount);
+				if (this.sellerForm.sellAmount == '') {
+					
+				} else {
+					let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
+					this.$set(this.sellerForm, 'sellAmount', amount);
+				}
 			},
 			//卖车金额获取焦点
 			handleFocus() {
+				if (this.sellerForm.sellAmount == '') return
 				let amount = this.$amount.getDelcommafy(this.sellerForm.sellAmount);
 				this.$set(this.sellerForm, 'sellAmount', amount);
 			},
 			//定金获取焦点
 			depositFocus() {
+				if (this.sellerForm.deposit == '') return
 				let amount = this.$amount.getDelcommafy(this.sellerForm.deposit);
 				this.$set(this.sellerForm, 'deposit', amount);
 			},

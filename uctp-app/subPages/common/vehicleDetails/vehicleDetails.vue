@@ -154,10 +154,7 @@
 				],
 				// 是否检测
 				carUpload: false,
-
-				// 父组件传过来的值
-				fatherProps: null,
-
+				
 				// 是否展示系统异常
 				isSHowTip: '',
 				
@@ -167,8 +164,7 @@
 		},
 
 		onLoad(props) {
-			// console.log(props, 'this.fatherProps.id')
-			this.carId = JSON.parse(props.item)?.id || '1650085024672796674'
+			this.carId = props.id || '1650085024672796674'
 			this.getCarDetails(this.carId)
 		},
 		computed: {

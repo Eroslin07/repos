@@ -16,12 +16,10 @@ public interface AccountProfitApi {
     /**
      * 利润提现审核处理接口，当“接收任务”、“审核通过”、“审核不通过”时回调该接口改变利润提现状态
      * @param tenantId 租户id
-     * @param token token
      * @param audit 提现审核意见
      * @return
      */
     @PostMapping("/uctp/account/profit/presentAudit")
     CommonResult<String> presentAudit(@RequestHeader("tenant-id") Long tenantId,
-                                @RequestHeader("Authorization") String token,
                                 @RequestBody ProfitPresentAuditDTO audit);
 }

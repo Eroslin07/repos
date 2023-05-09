@@ -1,0 +1,18 @@
+###
+POST http://localhost:48085/rpc-api/business/account/open
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
+{
+  "idCard": "152104199903065791",
+  "tenantId": "1",
+  "merchantId": "327",
+  "businessName": "浙江新梅赛自",
+  "legalRepresentative": "李琦灏",
+  "taxNum": "91330782MA29MW17XK",
+  "bankName": "浦发银行",
+  "bankNo": "6225220124728533",
+  "cashBankNo": "12345678987654321"
+}
+
+###
