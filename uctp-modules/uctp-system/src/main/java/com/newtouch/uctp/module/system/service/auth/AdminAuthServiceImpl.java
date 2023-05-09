@@ -188,7 +188,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Transactional(rollbackFor = Exception.class)
     public Map registerAccount(AuthRegisterReqVO reqVO) {
         //查询是否有未注册数据，有则删除
-        List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 2);
+        List<AdminUserDO> userDOS = userService.selectIsExist(reqVO.getPhone(), 1);
         if(userDOS.size()>0){
             for (AdminUserDO user:userDOS) {
                 userService.deleteUser(user.getId());
@@ -298,7 +298,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Transactional(rollbackFor = Exception.class)
     public Map addAccount(AddAccountReqVO reqVO) {
         HashMap<Object, Object> map = new HashMap<>();
-        List<AdminUserDO> userDOS = userService.selectByMobileAndBusiness(reqVO.getPhone(), reqVO.getDeptId());
+        List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
         if(userDOS.size()>0){
             throw exception(AUTH_MOBILE_IS_EXIST);
         }

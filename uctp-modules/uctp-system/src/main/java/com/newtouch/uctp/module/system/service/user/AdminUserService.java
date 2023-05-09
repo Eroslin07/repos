@@ -113,7 +113,7 @@ public interface AdminUserService {
      * @param mobile
      * @return
      */
-    List<AdminUserDO> selectByMobileAndBusiness(String mobile,Long businessId);
+    List<AdminUserDO> selectByMobil(String mobile);
 
     /**
      * 通过手机号和状态获取用户

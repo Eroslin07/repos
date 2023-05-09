@@ -228,8 +228,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public List<AdminUserDO> selectByMobileAndBusiness(String mobile,Long businessId) {
-        return userMapper.selectByMobileAndBusiness(mobile,businessId);
+    public List<AdminUserDO> selectByMobil(String mobile) {
+        return userMapper.selectByMobil(mobile);
     }
 
     @Override

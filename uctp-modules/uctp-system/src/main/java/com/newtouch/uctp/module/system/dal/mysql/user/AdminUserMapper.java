@@ -28,10 +28,9 @@ public interface AdminUserMapper extends BaseMapperX<AdminUserDO> {
         return selectOne(AdminUserDO::getMobile, mobile);
     }
 
-    default List<AdminUserDO> selectByMobileAndBusiness(String mobile,Long businessId) {
+    default List<AdminUserDO> selectByMobil(String mobile) {
         return selectList(new LambdaQueryWrapperX<AdminUserDO>()
-                .eqIfPresent(AdminUserDO::getMobile, mobile)
-                .eqIfPresent(AdminUserDO::getDeptId,businessId));
+                .eqIfPresent(AdminUserDO::getMobile, mobile));
     }
 
     default AdminUserDO selectByMobileAndStatus(String mobile,int status) {
