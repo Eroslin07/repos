@@ -1211,7 +1211,12 @@ public class QysConfigServiceImpl implements QysConfigService {
         }
         String accessToken = jsonObject.getString("accessToken");
         String accessSecret = jsonObject.getString("accessSecret");
+        //判断是否存在token标志
         Boolean existSeal = StrUtil.isBlank(configDO.getAccessKey()) ? Boolean.FALSE : Boolean.TRUE;
+        if (existSeal) {
+            //如果存在表示授权完成，不用走下面的业务，会导致重复制作印章，发送短息
+            return "success";
+        }
         TenantUtils.execute(configDO.getTenantId(), () -> {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, configDO.getTenantId());
             //设置当前登录人信息，免得保存报错
@@ -1226,7 +1231,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             configDO.setAccessSecret(accessSecret);
             //初始化client必须先存一次
             qysConfigMapper.updateById(configDO);
-            //刷新client
+            //刷新client，里面的url这个时候获取不到yaml配置的
             this.initLocalCache();
             DeptRespDTO deptRespDTO = deptApi.getDept(configDO.getBusinessId()).getCheckedData();
             List<AdminUserRespDTO> adminUserRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptRespDTO.getId())).getCheckedData();
@@ -1241,27 +1246,24 @@ public class QysConfigServiceImpl implements QysConfigService {
                 return;
             }
             log.info("企业公章生成，企业:{},公章id:{}", deptRespDTO.getName(), seal.getId());
-            AdminUserRespDTO adminUserRespDTO = adminUserRespDTOS.get(0);
             QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
-            //存在token，企业印章自动签授权
-            List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
-            if (CollUtil.isNotEmpty(userRespDTOS)) {
-                AdminUserRespDTO userRespDTO = userRespDTOS.get(0);
-                DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 12);
-                SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
-                        companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
-                log.info("企业印章自动签授权,用户【{}】,授权地址【{}】", userRespDTO.getNickname(), authUrlResult.getPageUrl());
-                List<String> urls1 = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
-                //发送短信
-                Map<String, String> map1 = MapUtil
-                        .builder("title", "企业印章自动签授权")
-                        .put("contentType", "43")
-                        .put("url", urls1.get(0))
-                        .put("phone", userRespDTO.getMobile())
-                        .put("businessId", configDO.getBusinessId().toString())
-                        .put("type", "1").build();
-                noticeService.saveNotice(map1);
-            }
+//            List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
+            //不存在token,企业印章自动签授权
+            AdminUserRespDTO userRespDTO = adminUserRespDTOS.get(0);
+            DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.MONTH, 12);
+            SaaSSealSignAuthUrlResult authUrlResult = saasClient.saasSealSignAuthUrl(userRespDTO.getMobile(),
+                    companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
+            log.info("企业印章自动签授权,用户【{}】,授权地址【{}】", userRespDTO.getNickname(), authUrlResult.getPageUrl());
+            List<String> urls1 = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
+            //发送短信
+            Map<String, String> map1 = MapUtil
+                    .builder("title", "企业印章自动签授权")
+                    .put("contentType", "43")
+                    .put("url", urls1.get(0))
+                    .put("phone", userRespDTO.getMobile())
+                    .put("businessId", configDO.getBusinessId().toString())
+                    .put("type", "1").build();
+            noticeService.saveNotice(map1);
             /*if (existSeal) {
                 //存在token，企业印章自动签授权
                 List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
