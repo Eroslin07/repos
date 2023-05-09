@@ -709,7 +709,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             ContractDO buyWTContract = contractMapper.getContractOneBuyType(carId, "1");
             //判断收车委托合同是否存在，不存在则存入草稿
             QYSContractVO qysContractVO1 = new QYSContractVO();
-            if (buyWTContract == null) {
+
+            qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1",buyWTContract);
+            /*if (buyWTContract == null) {
                 qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "1");
                 qysContractVOList.add(qysContractVO1);
             } else {
@@ -727,56 +729,79 @@ public class QysConfigServiceImpl implements QysConfigService {
                     qysContractVO1.setUrl(listCommonResult.getData().get(0).getUrl());
                 }
                 qysContractVOList.add(qysContractVO1);
-            }
+            }*/
 
             ContractDO buyContract = contractMapper.getContractOneBuyType(carId, "2");
 
             businessFile.setFileType("11");//收车合同类型
             qysContractVO.setType("1");
             qysContractVO.setContractName("二手车收购协议");
-            if (buyContract == null) {
-                //收车合同构建
-                contract = this.buildBuyContract(carInfo, carInfoDetailsDO, userDept, platformDept);
-                Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
-                //收车合同模版参数
-                String buyCode = contractService.GenerateCode(2);
-                template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "3", buyCode);
-                contractId = checkContract.getId();
-                //选模版
-                DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853213923414533L, template, "二手车收购协议").getData();
-                documentId = documentAddResult.getDocumentId();
-                ContractDO buyContrsctDo = new ContractDO();
-                buyContrsctDo.setCarId(carId);
-                buyContrsctDo.setContractId(contractId);
-                buyContrsctDo.setContractName("二手车收购协议");
-                buyContrsctDo.setStatus(0);
-                buyContrsctDo.setContractType(2);
-                buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
-                buyContrsctDo.setBusinessId(usersDO.getDeptId());
-                buyContrsctDo.setDocumentId(documentId);
-                buyContrsctDo.setCode(buyCode);
-                //存合同草稿合同到表
-                contractMapper.insert(buyContrsctDo);
 
-                FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
-                //通过契约锁文档ID将文档内容转为字节流
-                byte[] bytes = ContractUtil.ContractDown(documentId);
-//                byte[] bytes = this.documentDownload(documentId);
-                fileCreateReqDTO.setContent(bytes);
-                fileCreateReqDTO.setName(contractName);
-                fileCreateReqDTO.setPath(null);
-                //文件上传致服务器
-                CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
-                FileDTO FileDTO = resultFile.getData();
-                if (ObjectUtil.isNull(FileDTO)) {
-                    throw exception(FILL_ERROR);
+            //收车合同构建
+            contract = this.buildBuyContract(carInfo, carInfoDetailsDO, userDept, platformDept);
+            Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
+            //收车合同模版参数
+            String buyCode = contractService.GenerateCode(2);
+            template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "3", buyCode);
+            contractId = checkContract.getId();
+            //选模版
+            DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853213923414533L, template, "二手车收购协议").getData();
+            documentId = documentAddResult.getDocumentId();
+
+            if (buyContract != null) {
+                FileRespDTO fileRespDTO=new FileRespDTO();
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", buyContract.getContractId());
+                List<Long> contractIds = new ArrayList<>();
+                contractIds.add(businessFileDO.getId());
+                CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+                if (listCommonResult.getData() != null) {
+                    fileRespDTO = listCommonResult.getData().get(0);
+                    //将服务器上的文件和表数据删除
+                    fileApi.deleteFileNew(fileRespDTO.getId());
+
                 }
-                businessFile.setId(FileDTO.getId());
-                businessFile.setTenantId(TenantContextHolder.getTenantId());
-                businessFile.setMainId(contractId);
-                businessFileMapper.insert(businessFile);
-                qysContractVO.setUrl(FileDTO.getUrl());
-                System.out.println("访问路径-----》" + FileDTO.getUrl());
+                //删除中间表business的数据
+                businessFileService.deleteByMainId(contractId);
+                //删除合同表数据
+                contractMapper.deleteByContractId(buyContract.getContractId());
+
+
+            }
+            ContractDO buyContrsctDo = new ContractDO();
+            buyContrsctDo.setCarId(carId);
+            buyContrsctDo.setContractId(contractId);
+            buyContrsctDo.setContractName("二手车收购协议");
+            buyContrsctDo.setStatus(0);
+            buyContrsctDo.setContractType(2);
+            buyContrsctDo.setTenantId(TenantContextHolder.getTenantId());
+            buyContrsctDo.setBusinessId(usersDO.getDeptId());
+            buyContrsctDo.setDocumentId(documentId);
+            buyContrsctDo.setCode(buyCode);
+            //存合同草稿合同到表
+            contractMapper.insert(buyContrsctDo);
+
+            FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+            //通过契约锁文档ID将文档内容转为字节流
+            byte[] bytes = ContractUtil.ContractDown(documentId);
+//                byte[] bytes = this.documentDownload(documentId);
+            fileCreateReqDTO.setContent(bytes);
+            fileCreateReqDTO.setName(contractName);
+            fileCreateReqDTO.setPath(null);
+            //文件上传致服务器
+            CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
+            FileDTO FileDTO = resultFile.getData();
+            if (ObjectUtil.isNull(FileDTO)) {
+                throw exception(FILL_ERROR);
+            }
+            businessFile.setId(FileDTO.getId());
+            businessFile.setTenantId(TenantContextHolder.getTenantId());
+            businessFile.setMainId(contractId);
+            businessFileMapper.insert(businessFile);
+            qysContractVO.setUrl(FileDTO.getUrl());
+            System.out.println("访问路径-----》" + FileDTO.getUrl());
+            /*
+            if (buyContract == null) {
+
 
             } else {
 
@@ -790,22 +815,24 @@ public class QysConfigServiceImpl implements QysConfigService {
                     qysContractVO.setUrl(listCommonResult.getData().get(0).getUrl());
                 }
 
-            }
+            }*/
 
         } else if (type.equals("2")) {
             Integer sellType = carInfo.getSellType();
 
             ContractDO sellWTContract = contractMapper.getContractOneBuyType(carId, "3");
             QYSContractVO qysContractVO1 = new QYSContractVO();
-            //判断卖车委托合同是否存在，不存在则存入草稿
-            if (sellWTContract == null) {
+            //判断付款方式
+            if (sellType == 0) {//全款方式
+                qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "2",sellWTContract);
+            } else {//按揭方式
+                qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "3",sellWTContract);
+            }
+            qysContractVOList.add(qysContractVO1);
 
-                if (sellType == 0) {//全款方式
-                    qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "2");
-                } else {//按揭方式
-                    qysContractVO1 = ContractWTSave(carInfo, carInfoDetailsDO, userDept, platformDept, usersDO, userExtDO, "3");
-                }
-                qysContractVOList.add(qysContractVO1);
+            /*if (sellWTContract == null) {
+
+
             } else {
 
                 contractId = sellWTContract.getContractId();
@@ -821,7 +848,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                     qysContractVO1.setUrl(listCommonResult.getData().get(0).getUrl());
                 }
                 qysContractVOList.add(qysContractVO1);
-            }
+            }*/
 
             String sellCode = contractService.GenerateCode(4);
             DocumentAddResult documentAddResult = new DocumentAddResult();
@@ -831,58 +858,83 @@ public class QysConfigServiceImpl implements QysConfigService {
             contractName = "二手车销售协议.pdf";
             qysContractVO.setType("2");
             qysContractVO.setContractName("二手车销售协议");
+            //---------卖车合同--------------
             ContractDO sellContract = contractMapper.getContractOneBuyType(carId, "4");
             // ContractDO contractDO = contractMapper.selectOne("contract_id", contractId, "status", "0");
-            if (sellContract == null) {
-                //卖车
-                contract = this.buildSellContract(carInfo, carInfoDetailsDO, userDept, platformDept);
-                Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
-                //模版参数
 
-                contractId = checkContract.getId();
-                //选模版
-                // 旧模板 3086576170024633076L
-                //  二手车销售协议V1.0  3089853375219569187L
+            contract = this.buildSellContract(carInfo, carInfoDetailsDO, userDept, platformDept);
+            Contract checkContract = client.defaultDraftSend(contract).getCheckedData();
+            //模版参数
 
+            contractId = checkContract.getId();
 
-                if (sellType == 0) {//全款方式
-                    template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "4", sellCode);
-                    documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853375219569187L, template, "二手车代销售协议").getData();
-                } else {//按揭方式
-                    template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "41", sellCode);
-                    documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853343477006794L, template, "二手车代销售协议").getData();
+            if (sellType == 0) {//全款方式
+                template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "4", sellCode);
+                documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853375219569187L, template, "二手车代销售协议").getData();
+            } else {//按揭方式
+                template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "41", sellCode);
+                documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853343477006794L, template, "二手车代销售协议").getData();
+            }
+
+            if (sellContract != null) {
+                FileRespDTO fileRespDTO=new FileRespDTO();
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", sellContract.getContractId());
+                List<Long> contractIds = new ArrayList<>();
+                contractIds.add(businessFileDO.getId());
+                CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+                if (listCommonResult.getData() != null) {
+                     fileRespDTO = listCommonResult.getData().get(0);
+                    //将服务器上的文件和表数据删除
+                    fileApi.deleteFileNew(fileRespDTO.getId());
+
                 }
-                documentId = documentAddResult.getDocumentId();
-                ContractDO sellContrsctDo = new ContractDO();
-                sellContrsctDo.setCarId(carId);
-                sellContrsctDo.setContractId(contractId);
-                sellContrsctDo.setContractName("二手车销售协议");
-                sellContrsctDo.setStatus(0);
-                sellContrsctDo.setContractType(4);
-                sellContrsctDo.setTenantId(TenantContextHolder.getTenantId());
-                sellContrsctDo.setBusinessId(usersDO.getDeptId());
-                sellContrsctDo.setDocumentId(documentId);
-                sellContrsctDo.setCode(sellCode);
-                contractMapper.insert(sellContrsctDo);
+                //删除中间表business的数据
+                businessFileService.deleteByMainId(contractId);
+                //删除合同表数据
+                contractMapper.deleteByContractId(sellContract.getContractId());
 
-                FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
-                byte[] bytes = ContractUtil.ContractDown(documentId);
+
+            }
+
+
+
+            documentId = documentAddResult.getDocumentId();
+            ContractDO sellContrsctDo = new ContractDO();
+            sellContrsctDo.setCarId(carId);
+            sellContrsctDo.setContractId(contractId);
+            sellContrsctDo.setContractName("二手车销售协议");
+            sellContrsctDo.setStatus(0);
+            sellContrsctDo.setContractType(4);
+            sellContrsctDo.setTenantId(TenantContextHolder.getTenantId());
+            sellContrsctDo.setBusinessId(usersDO.getDeptId());
+            sellContrsctDo.setDocumentId(documentId);
+            sellContrsctDo.setCode(sellCode);
+            contractMapper.insert(sellContrsctDo);
+
+            FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+            byte[] bytes = ContractUtil.ContractDown(documentId);
 //                byte[] bytes = this.documentDownload(documentId);
-                fileCreateReqDTO.setContent(bytes);
-                fileCreateReqDTO.setName(contractName);
-                fileCreateReqDTO.setPath(null);
-                CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
-                FileDTO FileDTO = resultFile.getData();
-                if (ObjectUtil.isNull(FileDTO)) {
-                    throw exception(FILL_ERROR);
-                }
-                businessFile.setId(FileDTO.getId());
-                businessFile.setTenantId(TenantContextHolder.getTenantId());
-                businessFile.setMainId(contractId);
-                businessFileMapper.insert(businessFile);
+            fileCreateReqDTO.setContent(bytes);
+            fileCreateReqDTO.setName(contractName);
+            fileCreateReqDTO.setPath(null);
+            CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
+            FileDTO FileDTO = resultFile.getData();
+            if (ObjectUtil.isNull(FileDTO)) {
+                throw exception(FILL_ERROR);
+            }
+            businessFile.setId(FileDTO.getId());
+            businessFile.setTenantId(TenantContextHolder.getTenantId());
+            businessFile.setMainId(contractId);
+            businessFileMapper.insert(businessFile);
 
-                qysContractVO.setUrl(FileDTO.getUrl());
-                System.out.println("访问路径-----》" + FileDTO.getUrl());
+            qysContractVO.setUrl(FileDTO.getUrl());
+            System.out.println("访问路径-----》" + FileDTO.getUrl());
+
+
+        /*    if (sellContract == null) {
+
+
+
             } else {
                 contractId = sellContract.getContractId();
                 BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractId);
@@ -893,12 +945,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                     qysContractVO.setUrl(listCommonResult.getData().get(0).getUrl());
                 }
 
-            }
+            }*/
         }
         qysContractVO.setContractType("2");
         qysContractVO.setCarId(carId);
         qysContractVO.setContractId(contractId);
-//        qysContractVO.
         //正常合同放入
         qysContractVOList.add(qysContractVO);
 
@@ -911,7 +962,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     //回显合同时保存委托合同
-    private QYSContractVO ContractWTSave(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO, DeptDO userDept, DeptDO platformDept, AdminUserDO usersDO, UserExtDO userExtDO, String type) {
+    private QYSContractVO ContractWTSave(CarInfoDO carInfo, CarInfoDetailsDO carInfoDetailsDO, DeptDO userDept, DeptDO platformDept, AdminUserDO usersDO, UserExtDO userExtDO, String type,ContractDO contractDO) {
         QYSContractVO qysContractVO = new QYSContractVO();
         //这里必须要市场方去发起合同
         QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
@@ -937,6 +988,27 @@ public class QysConfigServiceImpl implements QysConfigService {
             //选模版
             DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089851249420403111L, template, "二手车委托收购协议").getData();
             documentId = documentAddResult.getDocumentId();
+
+            if (contractDO!=null){
+                FileRespDTO fileRespDTO=new FileRespDTO();
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractDO.getContractId());
+                List<Long> contractIds = new ArrayList<>();
+                contractIds.add(businessFileDO.getId());
+                CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+                if (listCommonResult.getData() != null) {
+                    fileRespDTO = listCommonResult.getData().get(0);
+                    //将服务器上的文件和表数据删除
+                    fileApi.deleteFileNew(fileRespDTO.getId());
+
+                }
+                //删除中间表business的数据
+                businessFileService.deleteByMainId(contractId);
+                //删除合同表数据
+                contractMapper.deleteByContractId(contractDO.getContractId());
+
+
+            }
+
             businessFile.setFileType("10");//收车委托合同类型
 
             ContractDO buyContrsctDo = new ContractDO();
@@ -973,6 +1045,26 @@ public class QysConfigServiceImpl implements QysConfigService {
             documentId = documentAddResult.getDocumentId();
             businessFile.setFileType("12");//卖车委托合同类型
             contractName = "二手车委托代销售协议.pdf";
+            //删除旧逻辑
+            if (contractDO!=null){
+                FileRespDTO fileRespDTO=new FileRespDTO();
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractDO.getContractId());
+                List<Long> contractIds = new ArrayList<>();
+                contractIds.add(businessFileDO.getId());
+                CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+                if (listCommonResult.getData() != null) {
+                    fileRespDTO = listCommonResult.getData().get(0);
+                    //将服务器上的文件和表数据删除
+                    fileApi.deleteFileNew(fileRespDTO.getId());
+
+                }
+                //删除中间表business的数据
+                businessFileService.deleteByMainId(contractId);
+                //删除合同表数据
+                contractMapper.deleteByContractId(contractDO.getContractId());
+
+
+            }
 
             ContractDO sellWTContrsctDo = new ContractDO();
             sellWTContrsctDo.setCarId(carInfo.getId());
@@ -1002,6 +1094,26 @@ public class QysConfigServiceImpl implements QysConfigService {
             //
             DocumentAddResult documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853299281699606L, template, "二手车委托代销售协议").getData();
             documentId = documentAddResult.getDocumentId();
+            if (contractDO!=null){
+                FileRespDTO fileRespDTO=new FileRespDTO();
+                BusinessFileDO businessFileDO = businessFileMapper.selectOne("main_id", contractDO.getContractId());
+                List<Long> contractIds = new ArrayList<>();
+                contractIds.add(businessFileDO.getId());
+                CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+                if (listCommonResult.getData() != null) {
+                    fileRespDTO = listCommonResult.getData().get(0);
+                    //将服务器上的文件和表数据删除
+                    fileApi.deleteFileNew(fileRespDTO.getId());
+
+                }
+                //删除中间表business的数据
+                businessFileService.deleteByMainId(contractId);
+                //删除合同表数据
+                contractMapper.deleteByContractId(contractDO.getContractId());
+
+
+            }
+
             businessFile.setFileType("12");//卖车委托合同类型
             contractName = "二手车委托代销售协议.pdf";
 
@@ -1759,10 +1871,10 @@ public class QysConfigServiceImpl implements QysConfigService {
             if (parts.getSpecification() != null && parts.getSpecification()) {
                 result += "、有说明书";
             }
-            if (parts.getVehicleKey() != null) {
+            if (parts.getVehicleKey() != null&&parts.getVehicleKey()!=0) {
                 result += "、钥匙数量:" + parts.getVehicleKey() + "组";
             }
-            if (parts.getAccidentVehicle() != null) {
+            if (StringUtils.isNotEmpty(parts.getAccidentVehicle())) {
                 result += "、" + parts.getAccidentVehicle();
             }
         }
@@ -1802,10 +1914,10 @@ public class QysConfigServiceImpl implements QysConfigService {
             if (parts.getSpecification() != null && parts.getSpecification()) {
                 result += "、有说明书";
             }
-            if (parts.getVehicleKey() != null) {
+            if (parts.getVehicleKey() != null&&parts.getVehicleKey()!=0) {
                 result += "、钥匙数量:" + parts.getVehicleKey() + "组";
             }
-            if (parts.getAccidentVehicle() != null) {
+            if (StringUtils.isNotEmpty(parts.getAccidentVehicle())) {
                 result += "、" + parts.getAccidentVehicle();
             }
         }

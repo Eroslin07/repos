@@ -19,7 +19,12 @@
             </if>
         </where>
     </delete>
+    <update id="updateBusiness">
+        update uctp_business_file
+        set id=#{id}
+        where main_id =#{mainId}
 
+    </update>
 
 
 </mapper>
