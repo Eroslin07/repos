@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceByKeyReqDTO;
@@ -32,7 +33,9 @@ public interface BpmProcessInstanceApi {
      * @param reqDTO 创建信息
      * @return 实例的编号
      */
-    String createProcessInstance(Long userId, @Valid BpmProcessInstanceCreateReqDTO reqDTO);
+    @PostMapping(PREFIX + "/create")
+    @Operation(summary = "创建流程实例（提供给内部）")
+    String createProcessInstance(@RequestParam("userId") Long userId, @Valid BpmProcessInstanceCreateReqDTO reqDTO);
 
     /**
      * 利润提现流程可远程调用
