@@ -294,8 +294,14 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public Map addAccount(AddAccountReqVO reqVO) {
         HashMap<Object, Object> map = new HashMap<>();
+        List<AdminUserDO> userDOS = userService.selectByMobileAndBusiness(reqVO.getPhone(), reqVO.getDeptId());
+        if(userDOS.size()>0){
+            throw exception(AUTH_MOBILE_IS_EXIST);
+        }
         AdminUserDO userDO = new AdminUserDO();
         UserExtDO userExtDO = new UserExtDO();
         if(null==reqVO.getId()){
@@ -303,7 +309,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
                 userDO.setNickname(reqVO.getName());
-                userDO.setStatus(1);
+                userDO.setStatus(reqVO.getStatus());
                 userDO.setDeptId(reqVO.getDeptId());
                 userDO.setTenantId(reqVO.getTenantId());
                 userService.insertUser(userDO);
@@ -331,11 +337,11 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                     adminUserMapper.updateById(user);
                     userExtMapper.updateById(userExtDOS);
                 }else{
-                    userExtDOS.setIdCard(reqVO.getIdCard());
-                    userExtDOS.setStatus(1);
-
+                    user.setStatus(reqVO.getStatus());
                     user.setUsername(reqVO.getPhone());
                     user.setMobile(reqVO.getPhone());
+
+                    userExtDOS.setIdCard(reqVO.getIdCard());
                     userExtDOS.setStatus(1);
                     adminUserMapper.updateById(user);
                     userExtMapper.updateById(userExtDOS);
@@ -350,6 +356,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public int deleteAccount(Long id) {
         AdminUserDO adminUserDO = adminUserMapper.selectById(id);
         adminUserMapper.deleteById(id);
