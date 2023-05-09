@@ -131,8 +131,9 @@
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
 						<!-- <u--input v-model="carForm.remarks" maxlength="68" type="text" showWordLimit border="none"
 							placeholder="请输入特殊约定"></u--input> -->
-						<u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
-							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea>
+						<!-- <u-textarea disabledColor="#ffffff" v-model="carForm.remarks" height="24" maxlength="68"
+							confirmType="done" count border="none" placeholder="请输入特殊约定"></u-textarea> -->
+						<textarea style="width:100%" v-model="carForm.remarks" placeholder="最大输入长度为68" auto-height @input="handleInput" />
 					</u-form-item>
 				</u--form>
 				<!-- 选择登记日期 -->
@@ -261,9 +262,10 @@
 										<view>组</view>
 									</template>
 								</u-input>
-								<u--input type="text" showWordLimit v-model="carForm.otherEvent"
+								<!-- <u--input type="text" showWordLimit v-model="carForm.otherEvent"
 									:disabled="isDisabledAcc" maxlength="10" v-if="item.name == 'accidentVehicle'"
-									disabledColor="#ffffff" border="none" placeholder="请输入"></u--input>
+									disabledColor="#ffffff" border="none" placeholder="请输入"></u--input> -->
+								<input  style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text" v-model="carForm.otherEvent" placeholder="最大输入长度为10" :disabled="isDisabledAcc" @input="otherEventInput" />
 							</view>
 							</u--text>
 						</u-form-item>
@@ -384,8 +386,9 @@
 					<!-- <u-form-item label="其他"></u-form-item> -->
 					<u-form-item label="其他" borderBottom labelWidth="40">
 						<!-- <u--input v-model="other" maxlength="18" type="textarea" showWordLimit border="none" placeholder="请输入"></u--input> -->
-						<u--textarea v-model="carForm.other" height="24" maxlength="18" confirmType="done" count
-							border="none" placeholder="请输入"></u--textarea>
+						<!-- <u--textarea v-model="carForm.other" height="24" maxlength="18" confirmType="done" count
+							border="none" placeholder="请输入"></u--textarea> -->
+						<textarea style="margin-left:20rpx;width:100%" v-model="carForm.other" placeholder="最大输入长度为18" :disabled="disabledOther" @input="otherInput" auto-height />
 					</u-form-item>
 				</u--form>
 			</view>
@@ -1338,6 +1341,28 @@
 				this.carForm.key = val.value[0].label;
 				this.showKey = false;
 			},
+			// 特殊约定字符限制
+			handleInput(event){
+				let str=event.detail.value.substring(0, 68)
+				this.$nextTick(()=>{
+					this.carForm.remarks=str;
+				})
+			},
+			// 其他字数控制
+			otherEventInput(event){
+				let str=event.detail.value.substring(0, 10)
+				this.$nextTick(()=>{
+					this.carForm.otherEvent=str;
+				})
+			},
+			// 最下面其他字数控制
+			otherInput(event){
+				let str=event.detail.value.substring(0, 18)
+				this.$nextTick(()=>{
+					this.carForm.other=str;
+				})
+				
+			}
 		}
 	}
 </script>

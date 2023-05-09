@@ -350,10 +350,11 @@
 									</template>
 								</u-input>
 							</view>
-							<u--textarea v-model="carForm.other" :disabled="disabledOther"
+							<!-- <u--textarea v-model="carForm.other" :disabled="disabledOther"
 								v-if="item.name == 'accidentVehicle'" border="none" disabledColor="#ffffff"
 								placeholder="请输入内容" :maxlength="10" count confirmType="done"
-								:autoHeight="true"></u--textarea>
+								:autoHeight="true"></u--textarea> -->
+							<input  style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text" v-model="carForm.other" placeholder="最大输入长度为10" :disabled="disabledOther" @input="otherInput" />	
 						</u-form-item>
 					</u-checkbox-group>
 				</u--form>
@@ -1534,6 +1535,13 @@
 					}
 					this.$tab.switchTab('/pages/index')
 				}
+			},
+			otherInput(event){
+				let str=event.detail.value.substring(0, 10)
+				this.$nextTick(()=>{
+					this.carForm.other=str;
+				})
+				
 			}
 		}
 	}
