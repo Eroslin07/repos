@@ -36,6 +36,9 @@
 				<button @click="handleauthentication" class="button edit-button">重新认证</button>
 			</view>
 		</view>
+		
+		<!-- 遮罩层 -->
+		<u-overlay :show="showOverlay"></u-overlay>
 	</view>
 </template>
 
@@ -58,18 +61,40 @@
 						message: '请填写姓名',
 						trigger: ['blur']
 					},
-					phone: {
+					phone: [{
 						type: 'string',
 						required: true,
 						message: '请填写手机号',
 						trigger: ['blur']
-					},
-					idCard: {
+					}, {
+						validator(rule, value, data, callback) {
+							let iphoneReg = (
+								/^(13[0-9]|14[1579]|15[0-3,5-9]|16[6]|17[0123456789]|18[0-9]|19[89])\d{8}$/
+							);
+							if (!iphoneReg.test(value)) {
+								return false
+							}
+						},
+						message: '手机号格式不正确',
+						trigger: ['change', 'blur'],
+					}],
+					idCard: [{
 						type: 'string',
 						required: true,
 						message: '请填写身份证号',
 						trigger: ['blur']
-					},
+					}, {
+						validator(rule, value, data, callback) {
+							let iphoneReg = (
+								/^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+							);
+							if (!iphoneReg.test(value)) {
+								return false;
+							}
+						},
+						message: "身份证格式不正确",
+						trigger: ['blur', 'change'],
+					}],
 					status: {
 						type: 'string',
 						required: true,
@@ -84,8 +109,13 @@
 					text: '是',
 					value: '1'
 				}],
-				type: ''
+				type: '',
+				showOverlay: false,
 			}
+		},
+		onReady() {
+			//onReady 为uni-app支持的生命周期之一
+			this.$refs.staffForm.setRules(this.rules)
 		},
 		onLoad(options) {
 			// console.log(options)
@@ -119,8 +149,12 @@
 						deptId: _this.type == 'add' ? _this.$store.state.user.deptId : _this.staffForm.deptId,
 						tenantId: _this.type == 'add' ? _this.$store.state.user.tenantId : _this.staffForm.tenantId,
 					}
+					_this.showOverlay = true;
+					_this.$modal.loading("数据保存中，请耐心等待...");
 					if (_this.type == 'add') {
 						setAccount(data).then((res) => {
+							_this.$modal.closeLoading();
+							_this.showOverlay = false;
 							uni.showModal({
 								title: '提示',
 								showCancel: false,
@@ -132,9 +166,17 @@
 									_this.$tab.navigateBack()
 								}
 							})
+						}).catch((error) => {
+							_this.$modal.closeLoading();
+							_this.showOverlay = false;
+						}).finally(() => {
+							_this.$modal.closeLoading();
+							_this.showOverlay = false;
 						})
-					}else{
+					} else {
 						setAccount(data).then((res) => {
+							_this.$modal.closeLoading();
+							_this.showOverlay = false;
 							if (_this.oldData.phone != data.phone || _this.oldData.idCard != data.idCard) {
 								uni.showModal({
 									title: '提示',
@@ -160,6 +202,12 @@
 									}
 								})
 							}
+						}).catch((error) => {
+							_this.$modal.closeLoading();
+							_this.showOverlay = false;
+						}).finally(() => {
+							_this.$modal.closeLoading();
+							_this.showOverlay = false;
 						})
 					}
 				})
@@ -170,7 +218,11 @@
 				let data = {
 					userId: _this.staffForm.id
 				}
+				_this.showOverlay = true;
+				_this.$modal.loading("重新认证中，请耐心等待...");
 				getAuth(data).then((res) => {
+					_this.$modal.closeLoading();
+					_this.showOverlay = false;
 					uni.showModal({
 						title: '提示',
 						showCancel: false,
@@ -182,6 +234,12 @@
 							_this.$tab.navigateBack()
 						}
 					})
+				}).catch((error) => {
+					_this.$modal.closeLoading();
+					_this.showOverlay = false;
+				}).finally(() => {
+					_this.$modal.closeLoading();
+					_this.showOverlay = false;
 				})
 			}
 		}
