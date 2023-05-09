@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.framework.security.config.SecurityProperties;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.bpm.api.task.BpmProcessInstanceApi;
+import com.newtouch.uctp.module.bpm.api.task.BpmTaskApi;
 import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceByKeyReqDTO;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -91,13 +90,10 @@ public class AccountProfitServiceImpl implements AccountProfitService {
     private RedissonClient redissonClient;
 
     @Resource
-    private HttpServletRequest request;
-
-    @Resource
     private BpmProcessInstanceApi bpmProcessInstanceApi;
 
     @Resource
-    private SecurityProperties securityProperties;
+    private BpmTaskApi bpmTaskApi;
 
     @Resource
     private TransactionService transactionService;
@@ -338,6 +334,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Override
     @TenantIgnore
+    @GlobalTransactional
     @Transactional
     public void auditProfitPressent(String businessKey, ProfitPressentAuditOpinion auditOpinion) {
         if (businessKey == null) {
@@ -396,6 +393,21 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
             // 调用银行出金接口 TODO 暂时注释，待银行接口调通后再开放，避免影响调试
             // this.outGold(mp);
+
+            // 推动流程
+            boolean outGoldSuccess = true;
+            String submitType = "disagree";
+            String reason = "银行处理失败";
+            if (outGoldSuccess) {
+                submitType = "pass";
+                reason = "银行处理成功";
+            }
+            CommonResult<Boolean> r = bpmTaskApi.payWaitingSubmitTask(Long.valueOf(mp.getBusinessKey()), submitType, reason);
+            Boolean b = r.getData();
+            if (!b) {
+                log.error("利润提现{}，银行处理后回调失败", businessKey);
+                throw exception(ACC_PRESENT_ERROR);
+            }
         }
     }
 
@@ -1202,7 +1214,6 @@ public class AccountProfitServiceImpl implements AccountProfitService {
      * @return
      */
     private String createProfitPresentProcess(String accountNo, Long profitId) {
-        String token = SecurityFrameworkUtils.obtainAuthorization(request, securityProperties.getTokenHeader());
         Map<String, Object> variables = new HashMap<>();
         Map<String, Object> formDataJson = new HashMap<>();
         Map<String, Object> formMain = new HashMap<>();
