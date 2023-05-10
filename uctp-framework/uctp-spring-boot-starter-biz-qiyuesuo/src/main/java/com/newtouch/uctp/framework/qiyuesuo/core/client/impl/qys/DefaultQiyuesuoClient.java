@@ -3,7 +3,6 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
@@ -152,7 +151,6 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     @Override
     protected QiyuesuoCommonResult<Contract> doDefaultSend(Contract contract){
         ContractDraftRequest request = new ContractDraftRequest(contract);
-        System.out.println("--------------发起合同草稿："+JSONUtil.toJsonStr(contract));
         String response = this.client.service(request);
         SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response, Contract.class);
         return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()

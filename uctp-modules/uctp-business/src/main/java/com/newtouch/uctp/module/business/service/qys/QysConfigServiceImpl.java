@@ -261,7 +261,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, deptDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
-                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(adminUserRespDTOs.get(0).getId()));
                 QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
                 AdminUserRespDTO userRespDTO = null;
                 //如果回调数据为认证成功，保存公司id
@@ -578,19 +577,25 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public String login(String signature, String timestamp, String content){
-        QysConfigDO configDO = new QysConfigDO();
-        configDO.setCode("default");
-        configDO.setStatus(0);
-        configDO.setBusinessId(324L);
-        configDO.setServerUrl("https://openapi.qiyuesuo.cn");
-        configDO.setBusinessName("成都森斯尔科技有限公司1");
-        configDO.setCompanyId(3093050858133467346L);
-        configDO.setTenantId(150L);
-        configDO.setAccessKey("5XsdYvfo1v");
-        configDO.setAccessSecret("GxmoAnxUQrSMyTQ0pfxBsUN9yOZfK3");
-        qysConfigMapper.insert(configDO);
-        this.initLocalCache();
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+        TenantUtils.execute(150L, () -> {
+            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, 150L);
+            //设置当前登录人信息，免得保存报错
+            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(236L));
+            QysConfigDO configDO = new QysConfigDO();
+            configDO.setCode("default");
+            configDO.setStatus(0);
+            configDO.setBusinessId(324L);
+//            configDO.setServerUrl("https://openapi.qiyuesuo.cn");
+            configDO.setBusinessName("成都森斯尔科技有限公司1");
+            configDO.setCompanyId(3093050858133467346L);
+            configDO.setTenantId(150L);
+            configDO.setAccessKey("5XsdYvfo1v");
+            configDO.setAccessSecret("GxmoAnxUQrSMyTQ0pfxBsUN9yOZfK3");
+            qysConfigMapper.insert(configDO);
+            this.initLocalCache();
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+            System.out.println("woqu");
+        });
         return "success";
     }
 
