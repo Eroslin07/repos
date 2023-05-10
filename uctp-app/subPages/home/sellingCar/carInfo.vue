@@ -671,8 +671,8 @@
 				//其他
 				other: '',
 				fairValue: {
-					value1: '',
-					value2: ''
+					value1: 10,
+					value2: 20
 				},
 				// 卖车方式
 				sexs: [{
@@ -1333,7 +1333,7 @@
 						});
 						this.showOverlay = false;
 						this.$modal.closeLoading()
-						this.getFairValue();
+						// this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
 						this.$modal.closeLoading()
