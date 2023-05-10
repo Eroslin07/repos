@@ -174,7 +174,7 @@
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。
+							预计费用{{sellerForm.total || '0.00'}}元，利润{{sellerForm.profit || '0.00'}}元。
 							<text @click="handleDetail">明细请查看 ></text>
 						</view>
 					</view>
@@ -883,7 +883,9 @@
 				} else {
 					this.depositText = ''
 				}
-				this.handleBlur(res.data.sellAmount);
+				if (res.data.sellAmount) {
+					this.handleBlur(res.data.sellAmount);
+				}
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -1186,7 +1188,7 @@
 				}
 				this.showDetail = true;
 			},
-			// 卖车金额失焦获取公允价值
+			// 卖车金额失焦计算利润
 			handleBlur(val) {
 				let data = {
 					id: this.carId,
