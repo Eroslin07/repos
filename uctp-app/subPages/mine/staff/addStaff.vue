@@ -7,7 +7,7 @@
 					<u-input v-model="staffForm.name" border="none" placeholder="请输入姓名"></u-input>
 				</u-form-item>
 				<u-form-item label="手机号" prop="phone" borderBottom>
-					<u--input v-model="staffForm.phone" type="number" border="none" placeholder="请输入11位手机号"></u--input>
+					<u--input v-model="staffForm.phone" type="number" border="none" placeholder="请输入11位手机号" @change="handleChange2"></u--input>
 				</u-form-item>
 				<u-form-item label="身份证号" prop="idCard" borderBottom>
 					<u--input v-model="staffForm.idCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
@@ -71,7 +71,8 @@
 							let iphoneReg = (
 								/^(13[0-9]|14[1579]|15[0-3,5-9]|16[6]|17[0123456789]|18[0-9]|19[89])\d{8}$/
 							);
-							if (!iphoneReg.test(value)) {
+							let str = value.replace(/\s*/g, "")
+							if (!iphoneReg.test(str)) {
 								return false
 							}
 						},
@@ -123,6 +124,7 @@
 				this.oldData = {};
 				this.staffForm = JSON.parse(decodeURIComponent(options.data));
 				this.oldData = JSON.parse(decodeURIComponent(options.data));
+				this.handleChange2(this.staffForm.phone);
 			}
 			if (options.type == 'add') {
 				uni.setNavigationBarTitle({
@@ -136,6 +138,15 @@
 			this.type = options.type
 		},
 		methods: {
+			handleChange2(data) {
+				let phone = '';
+				if (data.length > 3 && data.length < 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})/g, '$1 ')
+				} else if (data.length >= 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})(\d{4})/g, '$1 $2 ')
+				}
+				this.$set(this.staffForm, 'phone', phone)
+			},
 			// 保存
 			handleSave() {
 				let _this = this;
@@ -143,7 +154,7 @@
 					let data = {
 						id: _this.type == 'add' ? null : _this.staffForm.id,
 						name: _this.staffForm.name,
-						phone: _this.staffForm.phone,
+						phone: _this.staffForm.phone.replace(/\s*/g, ""),
 						idCard: _this.staffForm.idCard,
 						status: _this.staffForm.status,
 						deptId: _this.type == 'add' ? _this.$store.state.user.deptId : _this.staffForm.deptId,

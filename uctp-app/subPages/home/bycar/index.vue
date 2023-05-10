@@ -306,7 +306,7 @@
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="sellerTel" borderBottom>
 						<u--input v-model="sellerForm.sellerTel" type="number" border="none"
-							placeholder="请输入11位手机号"></u--input>
+							placeholder="请输入11位手机号" @change="handleChange1"></u--input>
 					</u-form-item>
 					<u-form-item label="第三方姓名" :required="true" prop="thirdSellerName" borderBottom
 						v-if="sellerForm.collection == 1">
@@ -672,7 +672,8 @@
 							let iphoneReg = (
 								/^(13[0-9]|14[1579]|15[0-3,5-9]|16[6]|17[0123456789]|18[0-9]|19[89])\d{8}$/
 							);
-							if (!iphoneReg.test(value)) {
+							let str = value.replace(/\s*/g, "")
+							if (!iphoneReg.test(str)) {
 								return false
 							}
 						},
@@ -874,6 +875,15 @@
 				} else if (this.sellerForm.collection == 1) {
 					this.$set(this.sellerForm, 'thirdBankCard', account);
 				}
+			},
+			handleChange1(data) {
+				let phone = '';
+				if (data.length > 3 && data.length < 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})/g, '$1 ')
+				} else if (data.length >= 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})(\d{4})/g, '$1 $2 ')
+				}
+				this.$set(this.sellerForm, 'sellerTel', phone);
 			},
 			// 失去焦点
 			handleBlur(val) {
@@ -1210,6 +1220,7 @@
 				} else if (this.sellerForm.collection == 1) {
 					this.handleChange(this.sellerForm.thirdBankCard);
 				}
+				this.handleChange1(this.sellerForm.sellerTel);
 				this.fairStatus = data.carInfo.bpmStatus;
 				data.fileD.forEach((item, index) => {
 					if (index == 0) {
@@ -1535,7 +1546,7 @@
 					sellerName: this.sellerForm.sellerName,
 					thirdSellerName: this.sellerForm.collection == 1 ? this.sellerForm.thirdSellerName : null,
 					sellerAdder: this.sellerForm.sellerAdder,
-					sellerTel: this.sellerForm.sellerTel,
+					sellerTel: this.sellerForm.sellerTel.replace(/\s*/g, ""),
 					remitType: this.sellerForm.remitType,
 					bankName: this.sellerForm.bankName,
 					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g, "") : null,
