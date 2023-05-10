@@ -14,6 +14,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -1604,6 +1605,21 @@ public class QysConfigServiceImpl implements QysConfigService {
             return "fail";
         }
         return "success";
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @GlobalTransactional
+    @Override
+    public Map addAccount(AddAccountDTO reqVO) {
+        HashMap<Object, Object> maps = new HashMap<>();
+        Map map = adminUserApi.addAccount(reqVO);
+        String type =map.get("type").toString();
+        if("1".equals(type)){
+            Long userId = Long.valueOf(map.get("userId").toString());
+            userAuth(userId);
+        }
+        maps.put("success","0");
+        return maps;
     }
 
 

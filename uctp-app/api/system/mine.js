@@ -30,7 +30,8 @@ export function deleteAccount(data) {
 // 新增/修改子账号
 export function setAccount(data) {
   return request({
-    url: '/system/appAuth/addAccount',
+    // url: '/system/appAuth/addAccount',
+    url: '/uctp/qys/addAccount',
     method: 'POST',
 		data: data
   })

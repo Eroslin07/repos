@@ -23,6 +23,9 @@
 						</view>
 					</view>
 				</view>
+				<view v-if="carInfoAll.carInfo.status==23" class="btn-box">
+					<u-button type="primary" size="mini" shape="circle" @click="sellCarBtn(carInfoAll.carInfo.id)" text="我要卖车"></u-button>
+				</view>
 			</view>
 			<view class="driving-license car-registration">
 				<view class="driving-license__icon">
@@ -128,7 +131,7 @@
 			<view class="contrart-info" v-for="(contract,index) in carInfoAll.contractCardVOS" :key="index">
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
-					<text @click="handleContact()">{{contract.contractDO.contractName}}合同</text>
+					<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}合同</text>
 					<text class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
 				<view v-else class="flex contrart-info__row">
@@ -462,7 +465,7 @@
 							'carId': _this.carInfoAll.carInfo.id
 						},
 						success: (ress) => {
-							this.$modal.closeLoading();
+							_this.$modal.closeLoading();
 							setTimeout(() => {
 								let fileListLen = 0;
 								let data = JSON.parse(ress.data).data;
@@ -531,9 +534,15 @@
 					}
 				})
 			},
+			// 我要卖车
+			sellCarBtn(id){
+				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id='+id)
+			},
 			// 预览合同
 			handleContact(url) {
 				// console.log(url)
+				let _this=this
+				_this.$modal.loading('正在打开...')
 				uni.downloadFile({
 					url: url,
 					success: function(res) {
@@ -544,6 +553,7 @@
 							showMenu: true,
 							success: function(res) {
 								console.log('打开文档成功');
+								_this.$modal.closeLoading();
 							}
 						});
 					}
@@ -628,7 +638,12 @@
 			background: rgba(249, 249, 249, 0.02);
 			border-radius: 8rpx;
 			border: 2rpx solid #EDF3F6;
-
+			position:relative;
+			.btn-box{
+				position:absolute;
+				right:16rpx;
+				top:19rpx;
+			}
 			.car-upload-title {
 				width: 698rpx;
 				height: 78rpx;
@@ -690,6 +705,7 @@
 					padding:0 50rpx 0 10rpx;
 				}
 			}
+			
 		}
 
 		.driving-license {

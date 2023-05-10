@@ -26,14 +26,14 @@
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>{{ carInfoAll.carInfoDetails.remitType || '暂无'}}</text>
+						<text>{{ carInfoAll.carInfoDetails.payType==='0'?'全款':'暂无'}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>{{carInfoAll.carInfo.paymentType || '暂无'}}</text>
+						<text>{{carInfoAll.carInfo.sellType==='0'?'全款':carInfoAll.carInfo.sellType==='1'?'分期':'暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">

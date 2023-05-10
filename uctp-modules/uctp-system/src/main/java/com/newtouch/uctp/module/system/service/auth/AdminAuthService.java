@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.system.service.auth;
 
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import com.newtouch.uctp.module.system.controller.admin.auth.vo.*;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 
@@ -47,6 +48,8 @@ public interface AdminAuthService {
 
 
     Map addAccount(AddAccountReqVO reqVO);
+
+    Map addAccount(AddAccountDTO reqVO);
 
     int deleteAccount(Long id);
 
