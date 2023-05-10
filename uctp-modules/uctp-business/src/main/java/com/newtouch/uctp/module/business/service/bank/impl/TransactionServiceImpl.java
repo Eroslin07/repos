@@ -3,31 +3,31 @@ package com.newtouch.uctp.module.business.service.bank.impl;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.exception.BankException;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
-import com.newtouch.uctp.module.business.dal.dataobject.TransactionLogDO;
 import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
-import com.newtouch.uctp.module.business.enums.TranType;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
-import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.bank.BankAPIService;
 import com.newtouch.uctp.module.business.service.bank.TransactionLogService;
 import com.newtouch.uctp.module.business.service.bank.TransactionRecordService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
-import com.newtouch.uctp.module.business.service.bank.request.*;
-import com.newtouch.uctp.module.business.service.bank.response.*;
+import com.newtouch.uctp.module.business.service.bank.request.BalancesWithdrawalRequest;
+import com.newtouch.uctp.module.business.service.bank.request.InnerTransferRequest;
+import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
+import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
+import com.newtouch.uctp.module.business.service.bank.response.BalancesWithdrawalResponse;
+import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
+import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
+import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
-import com.newtouch.uctp.module.business.util.bank.SPDBSMSignature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,43 +72,43 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public String orderPayment(String contractNo) {
 
-        String mrchNo = "";
-        String pymtMd = "";
-        String strNo = "";
-        String stdntId = "";
-        String ordrAmt = "";
-        String mrchOrdrNo = "";
-
-        OrderPayRequest param = OrderPayRequest.buildPayReq(mrchNo, pymtMd, strNo, stdntId, ordrAmt, mrchOrdrNo);
-
-        String url = BankConstants.API_URL + BankConstants.ORDERS_PAY_API;
-        OrderPayResponse response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, OrderPayResponse.class);
-        String statusCode = response.getStatusCode();
-
-        TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
-        transactionRecordDO.setTranNo(response.getTransNo());
-        transactionRecordDO.setTranType("");
-        transactionRecordDO.setContractNo("");
-        transactionRecordDO.setPayerName("");
-        transactionRecordDO.setPayerBankName("");
-        transactionRecordDO.setPayerBankAccount("");
-        transactionRecordDO.setPayeeName("");
-        transactionRecordDO.setPayeeBankName("");
-        transactionRecordDO.setPayeeBankAccount("");
-        transactionRecordDO.setApproveAccount("");
-        transactionRecordDO.setTranAmount(0L);
-        transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
-        transactionRecordDO.setBankResultCode(response.getStatusCode());
-        transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
-        transactionRecordService.save(transactionRecordDO);
-
-        transactionLogService.save(TransactionLogDO.builder()
-                .tranId(mrchOrdrNo)
-                .tranBeginTime(LocalDateTime.now())
-                .tranEndTime(LocalDateTime.now())
-                .tranRequest(JSON.toJSONString(param))
-                .tranResponse(JSON.toJSONString(response))
-                .tranStatus(response.getStatusCode()).build());
+//        String mrchNo = "";
+//        String pymtMd = "";
+//        String strNo = "";
+//        String stdntId = "";
+//        String ordrAmt = "";
+//        String mrchOrdrNo = "";
+//
+//        OrderPayRequest param = OrderPayRequest.buildPayReq(mrchNo, pymtMd, strNo, stdntId, ordrAmt, mrchOrdrNo);
+//
+//        String url = BankConstants.API_URL + BankConstants.ORDERS_PAY_API;
+//        OrderPayResponse response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, OrderPayResponse.class);
+//        String statusCode = response.getStatusCode();
+//
+//        TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
+//        transactionRecordDO.setTranNo(response.getTransNo());
+//        transactionRecordDO.setTranType("");
+//        transactionRecordDO.setContractNo("");
+//        transactionRecordDO.setPayerName("");
+//        transactionRecordDO.setPayerBankName("");
+//        transactionRecordDO.setPayerBankAccount("");
+//        transactionRecordDO.setPayeeName("");
+//        transactionRecordDO.setPayeeBankName("");
+//        transactionRecordDO.setPayeeBankAccount("");
+//        transactionRecordDO.setApproveAccount("");
+//        transactionRecordDO.setTranAmount(0L);
+//        transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+//        transactionRecordDO.setBankResultCode(response.getStatusCode());
+//        transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
+//        transactionRecordService.save(transactionRecordDO);
+//
+//        transactionLogService.save(TransactionLogDO.builder()
+//                .tranId(mrchOrdrNo)
+//                .tranBeginTime(LocalDateTime.now())
+//                .tranEndTime(LocalDateTime.now())
+//                .tranRequest(JSON.toJSONString(param))
+//                .tranResponse(JSON.toJSONString(response))
+//                .tranStatus(response.getStatusCode()).build());
 
 
         return null;
@@ -119,51 +119,51 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionRecordDO orderPayStatus(String tranNo) {
         //交易处理中订单查询浦发接口，其余状态查询系统数据
         TransactionRecordDO transactionRecord = transactionRecordService.getOne(new LambdaQueryWrapperX<TransactionRecordDO>().eq(TransactionRecordDO::getTranNo, tranNo));
-
-        //只查询系统状态为 交易处理中 的数据
-        if (transactionRecord != null && AccountEnum.TRAN_STATE_DURING.getKey().equals(transactionRecord.getTranState())) {
-
-            String mrchOrdrNo = "";
-            OrdersPayStatusRequest param = OrdersPayStatusRequest.builder()
-                    //TODO:商户编号-必填
-                    .mrchNo("")
-                    //TODO:商户订单号-必填
-                    //TODO:商户订单号不能使用交易合同号，一个交易合同号有可能会产生多笔流水
-                    .mrchOrdrNo("")
-                    //TODO:订单支付日期-必填
-                    .pymtDt("").build();
-
-            String url = BankConstants.API_URL + BankConstants.ORDERS_PAY_STATUS;
-
-            OrderPayResponse response = new OrderPayResponse();
-            try {
-                response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, OrderPayResponse.class);
-            } catch (Exception e) {
-                log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
-                response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
-                response.setStatusMsg(e.getCause().toString());
-            } finally {
-                //接口调用日志
-                transactionLogService.save(TransactionLogDO.builder()
-                        .tranId(mrchOrdrNo)
-                        .tranBeginTime(LocalDateTime.now())
-                        .tranEndTime(LocalDateTime.now())
-                        .tranRequest(JSON.toJSONString(param))
-                        .tranResponse(JSON.toJSONString(response))
-                        .tranStatus(StringUtils.isEmpty(response.getStatusCode()) ? AccountEnum.TRAN_STATE_FAIL.getKey() : response.getStatusCode())
-                        .build());
-            }
-
-            //银行返回支付状态后落表
-            String bankResultCode = response.getStatusCode();
-            if (StringUtils.isNotEmpty(bankResultCode) && !bankResultCode.equals(transactionRecord.getBankResultCode())) {
-
-                transactionRecord.setTranState(AccountEnum.bankResultCodeMap.get(bankResultCode));
-                transactionRecord.setBankResultCode(bankResultCode);
-                transactionRecord.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(bankResultCode));
-                transactionRecordService.updateById(transactionRecord);
-            }
-        }
+//
+//        //只查询系统状态为 交易处理中 的数据
+//        if (transactionRecord != null && AccountEnum.TRAN_STATE_DURING.getKey().equals(transactionRecord.getTranState())) {
+//
+//            String mrchOrdrNo = "";
+//            OrdersPayStatusRequest param = OrdersPayStatusRequest.builder()
+//                    //TODO:商户编号-必填
+//                    .mrchNo("")
+//                    //TODO:商户订单号-必填
+//                    //TODO:商户订单号不能使用交易合同号，一个交易合同号有可能会产生多笔流水
+//                    .mrchOrdrNo("")
+//                    //TODO:订单支付日期-必填
+//                    .pymtDt("").build();
+//
+//            String url = BankConstants.API_URL + BankConstants.ORDERS_PAY_STATUS;
+//
+//            OrderPayResponse response = new OrderPayResponse();
+//            try {
+//                response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, OrderPayResponse.class);
+//            } catch (Exception e) {
+//                log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
+//                response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
+//                response.setStatusMsg(e.getCause().toString());
+//            } finally {
+//                //接口调用日志
+//                transactionLogService.save(TransactionLogDO.builder()
+//                        .tranId(mrchOrdrNo)
+//                        .tranBeginTime(LocalDateTime.now())
+//                        .tranEndTime(LocalDateTime.now())
+//                        .tranRequest(JSON.toJSONString(param))
+//                        .tranResponse(JSON.toJSONString(response))
+//                        .tranStatus(StringUtils.isEmpty(response.getStatusCode()) ? AccountEnum.TRAN_STATE_FAIL.getKey() : response.getStatusCode())
+//                        .build());
+//            }
+//
+//            //银行返回支付状态后落表
+//            String bankResultCode = response.getStatusCode();
+//            if (StringUtils.isNotEmpty(bankResultCode) && !bankResultCode.equals(transactionRecord.getBankResultCode())) {
+//
+//                transactionRecord.setTranState(AccountEnum.bankResultCodeMap.get(bankResultCode));
+//                transactionRecord.setBankResultCode(bankResultCode);
+//                transactionRecord.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(bankResultCode));
+//                transactionRecordService.updateById(transactionRecord);
+//            }
+//        }
 
         return transactionRecord;
     }
@@ -232,47 +232,48 @@ public class TransactionServiceImpl implements TransactionService {
         String url = BankConstants.API_URL + BankConstants.BALANCES_WITHDRAWALS_API;
 
         BalancesWithdrawalResponse response = new BalancesWithdrawalResponse();
-        try {
-            response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, BalancesWithdrawalResponse.class);
-
-            if (null == response) {
-                response = new BalancesWithdrawalResponse();
-                response.setStatusCode(AccountEnum.BANK_RESULT_CODE_UNKNOWN.getKey());
-            }
-        } catch (Exception e) {
-            log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
-            response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
-            response.setStatusMsg(e.getCause().toString());
-
-        } finally {
-            //接口调用日志
-            transactionLogService.save(TransactionLogDO.builder()
-                    .tranId(tranNo)
-                    .tranBeginTime(LocalDateTime.now())
-                    .tranEndTime(LocalDateTime.now())
-                    .tranRequest(JSON.toJSONString(param))
-                    .tranResponse(JSON.toJSONString(response))
-                    .tranStatus(StringUtils.isEmpty(response.getStatusCode()) ? AccountEnum.TRAN_STATE_FAIL.getKey() : response.getStatusCode())
-                    .build());
-        }
-
-        TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
-        transactionRecordDO.setTranNo(tranNo);
-        transactionRecordDO.setTranType(tranType);
-        transactionRecordDO.setContractNo(contractNo);
-        transactionRecordDO.setPayerName("子账户");
-        transactionRecordDO.setPayerBankName("浦发银行");
-        transactionRecordDO.setPayerBankAccount(capitalAcctNo);
-        transactionRecordDO.setPayeeName("");
-        transactionRecordDO.setPayeeBankName("浦发银行");
-        transactionRecordDO.setPayeeBankAccount(bankNo);
-        transactionRecordDO.setApproveAccount("");
-        transactionRecordDO.setTranAmount(amount);
-        transactionRecordDO.setBankResultCode(response.getStatusCode());
-        transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
-        transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
-        transactionRecordService.save(transactionRecordDO);
-        return transactionRecordDO;
+//        try {
+//            response = SPDBSMSignature.request(url, SPDBSMSignature.REQUEST_METHOD_POST, param, Boolean.FALSE, BalancesWithdrawalResponse.class);
+//
+//            if (null == response) {
+//                response = new BalancesWithdrawalResponse();
+//                response.setStatusCode(AccountEnum.BANK_RESULT_CODE_UNKNOWN.getKey());
+//            }
+//        } catch (Exception e) {
+//            log.error("当前接口调用失败 url:{}, err msg:{}", url, e.getMessage());
+//            response.setStatusCode(AccountEnum.BANK_RESULT_CODE_FAIL.getKey());
+//            response.setStatusMsg(e.getCause().toString());
+//
+//        } finally {
+//            //接口调用日志
+//            transactionLogService.save(TransactionLogDO.builder()
+//                    .tranId(tranNo)
+//                    .tranBeginTime(LocalDateTime.now())
+//                    .tranEndTime(LocalDateTime.now())
+//                    .tranRequest(JSON.toJSONString(param))
+//                    .tranResponse(JSON.toJSONString(response))
+//                    .tranStatus(StringUtils.isEmpty(response.getStatusCode()) ? AccountEnum.TRAN_STATE_FAIL.getKey() : response.getStatusCode())
+//                    .build());
+//        }
+//
+//        TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
+//        transactionRecordDO.setTranNo(tranNo);
+//        transactionRecordDO.setTranType(tranType);
+//        transactionRecordDO.setContractNo(contractNo);
+//        transactionRecordDO.setPayerName("子账户");
+//        transactionRecordDO.setPayerBankName("浦发银行");
+//        transactionRecordDO.setPayerBankAccount(capitalAcctNo);
+//        transactionRecordDO.setPayeeName("");
+//        transactionRecordDO.setPayeeBankName("浦发银行");
+//        transactionRecordDO.setPayeeBankAccount(bankNo);
+//        transactionRecordDO.setApproveAccount("");
+//        transactionRecordDO.setTranAmount(amount);
+//        transactionRecordDO.setBankResultCode(response.getStatusCode());
+//        transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+//        transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
+//        transactionRecordService.save(transactionRecordDO);
+        // return transactionRecordDO;
+        return null;
     }
 
     @Override
@@ -348,139 +349,140 @@ public class TransactionServiceImpl implements TransactionService {
 
         String responseMessage = null;
         InnerTransferResponse response = null;
-        // 调用银行接口
-        try {
-            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
-            log.info("合同：{}的银行响应报文是：{}", contractNo, responseMessage);
-            if (responseMessage == null) {
-                log.error("银行响应报文为空，交易失败");
-                response = new InnerTransferResponse();
-                response.setStatusCode(ResponseStatusCode.UNKNOWN_ERROR.getCode());
-                response.setStatusMsg(ResponseStatusCode.UNKNOWN_ERROR.getValue());
-            } else {
-                response = JSONObject.parseObject(responseMessage, InnerTransferResponse.class);
-            }
-
-            // 交易记录
-            TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
-            transactionRecordDO.setTranNo(tranNo);
-            transactionRecordDO.setTranType(tranType);
-            transactionRecordDO.setContractNo(contractNo);
-            transactionRecordDO.setPayerName(outSubAccountName);
-            transactionRecordDO.setPayerBankName("浦发银行");
-            transactionRecordDO.setPayerBankAccount(outSubAccountNo);
-            transactionRecordDO.setPayeeName("");
-            transactionRecordDO.setPayeeBankName("浦发银行");
-            transactionRecordDO.setPayeeBankAccount(inSubAccountNo);
-            transactionRecordDO.setApproveAccount("");
-            transactionRecordDO.setTranAmount(tranAmount);
-            transactionRecordDO.setBankResultCode(response.getStatusCode());
-            transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
-            transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
-            transactionRecordService.save(transactionRecordDO);
-
-            return response;
-        } catch (Exception e) {
-            log.error("调用银行接口失败", e);
-            throw new RuntimeException("调用银行接口失败", e);
-        } finally {
-            // 记录交易日志
-            transactionLogService.save(TransactionLogDO.builder()
-                    .tranId(tranNo)
-                    .tranBeginTime(now)
-                    .tranEndTime(now)
-                    .tranRequest(requestMessage)
-                    .tranResponse(responseMessage)
-                    .tranStatus(response.getStatusCode())
-                    .build());
-        }
+//        // 调用银行接口
+//        try {
+//            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
+//            log.info("合同：{}的银行响应报文是：{}", contractNo, responseMessage);
+//            if (responseMessage == null) {
+//                log.error("银行响应报文为空，交易失败");
+//                response = new InnerTransferResponse();
+//                response.setStatusCode(ResponseStatusCode.UNKNOWN_ERROR.getCode());
+//                response.setStatusMsg(ResponseStatusCode.UNKNOWN_ERROR.getValue());
+//            } else {
+//                response = JSONObject.parseObject(responseMessage, InnerTransferResponse.class);
+//            }
+//
+//            // 交易记录
+//            TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
+//            transactionRecordDO.setTranNo(tranNo);
+//            transactionRecordDO.setTranType(tranType);
+//            transactionRecordDO.setContractNo(contractNo);
+//            transactionRecordDO.setPayerName(outSubAccountName);
+//            transactionRecordDO.setPayerBankName("浦发银行");
+//            transactionRecordDO.setPayerBankAccount(outSubAccountNo);
+//            transactionRecordDO.setPayeeName("");
+//            transactionRecordDO.setPayeeBankName("浦发银行");
+//            transactionRecordDO.setPayeeBankAccount(inSubAccountNo);
+//            transactionRecordDO.setApproveAccount("");
+//            transactionRecordDO.setTranAmount(tranAmount);
+//            transactionRecordDO.setBankResultCode(response.getStatusCode());
+//            transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
+//            transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
+//            transactionRecordService.save(transactionRecordDO);
+//
+//            return response;
+//        } catch (Exception e) {
+//            log.error("调用银行接口失败", e);
+//            throw new RuntimeException("调用银行接口失败", e);
+//        } finally {
+//            // 记录交易日志
+//            transactionLogService.save(TransactionLogDO.builder()
+//                    .tranId(tranNo)
+//                    .tranBeginTime(now)
+//                    .tranEndTime(now)
+//                    .tranRequest(requestMessage)
+//                    .tranResponse(responseMessage)
+//                    .tranStatus(response.getStatusCode())
+//                    .build());
+//        }
+        return null;
     }
 
     @Override
     public String unKnowClearing(String contractNo) {
-        LocalDateTime now = LocalDateTime.now();
-
-        UnKnowClearingRequest request = new UnKnowClearingRequest();
-        request.setTranDate(now.format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
-        request.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
-        request.setAreaCode(BankConstants.AREA_CODE);
-        request.setSettleAcctNo(BankConstants.ACCT_NO);
-        request.setChannelSeqNo(this.generateTranNo());
-
-        request.setYlkTranSeqNo(null); // 还不确定该值从哪来
-        request.setOrgTranSeqNo(null);
-
-        boolean transExists = true; // TODO 需要判断该笔交易是否真实存在
-        if (transExists) { // 存在该笔交易，则按子账号入金
-            log.info("存在交易：{}，按子账号入金", contractNo);
-            request.setClrgTp(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getCode());
-            request.setClrgRsltDsc(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getValue());
-        } else { // 不存在该笔交易，则原路退回
-            log.warn("不存在交易：{}，原路退回", contractNo);
-            request.setClrgTp(ClearingType.ORIGINAL_WAY_BACK.getCode());
-            request.setClrgRsltDsc(ClearingType.ORIGINAL_WAY_BACK.getValue());
-        }
-        request.setRsrvFld(null);
-        request.setRsrvFld1(null);
-        request.setRsrvFld2(null);
-
-        String requestMessage = JSONObject.toJSONString(request);
-        log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
-
-        String responseMessage = null;
-        // 调用银行接口
-        try {
-            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
-            log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
-            if (responseMessage == null) {
-                throw new RuntimeException("银行响应报文为空，交易失败");
-            }
-
-            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
-
-            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
-                // 交易成功
-
-            }
-
-        } catch (Exception e) {
-            log.error("调用银行接口失败", e);
-
-        } finally {
-            // TODO 记录交易日志
-        }
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        UnKnowClearingRequest request = new UnKnowClearingRequest();
+//        request.setTranDate(now.format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
+//        request.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
+//        request.setAreaCode(BankConstants.AREA_CODE);
+//        request.setSettleAcctNo(BankConstants.ACCT_NO);
+//        request.setChannelSeqNo(this.generateTranNo());
+//
+//        request.setYlkTranSeqNo(null); // 还不确定该值从哪来
+//        request.setOrgTranSeqNo(null);
+//
+//        boolean transExists = true; // TODO 需要判断该笔交易是否真实存在
+//        if (transExists) { // 存在该笔交易，则按子账号入金
+//            log.info("存在交易：{}，按子账号入金", contractNo);
+//            request.setClrgTp(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getCode());
+//            request.setClrgRsltDsc(ClearingType.DEPOSITS_BY_SUB_ACCOUNT.getValue());
+//        } else { // 不存在该笔交易，则原路退回
+//            log.warn("不存在交易：{}，原路退回", contractNo);
+//            request.setClrgTp(ClearingType.ORIGINAL_WAY_BACK.getCode());
+//            request.setClrgRsltDsc(ClearingType.ORIGINAL_WAY_BACK.getValue());
+//        }
+//        request.setRsrvFld(null);
+//        request.setRsrvFld1(null);
+//        request.setRsrvFld2(null);
+//
+//        String requestMessage = JSONObject.toJSONString(request);
+//        log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
+//
+//        String responseMessage = null;
+//        // 调用银行接口
+//        try {
+//            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
+//            log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
+//            if (responseMessage == null) {
+//                throw new RuntimeException("银行响应报文为空，交易失败");
+//            }
+//
+//            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
+//
+//            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+//                // 交易成功
+//
+//            }
+//
+//        } catch (Exception e) {
+//            log.error("调用银行接口失败", e);
+//
+//        } finally {
+//            // TODO 记录交易日志
+//        }
 
         return null;
     }
 
     @Override
     public TechAddressesResponse techAddressesGenerate(TechAddressesRequest techAddressesRequest) {
-        techAddressesRequest.setMrchId(BankConstants.MERCHANT_ID);
-        String requestMessage = JSONObject.toJSONString(techAddressesRequest);
-        // log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
-
-        String responseMessage = null;
-        // 调用银行接口
-        try {
-            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
-            // log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
-            if (responseMessage == null) {
-                throw new RuntimeException("银行响应报文为空，交易失败");
-            }
-
-            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
-
-            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
-                // 交易成功
-
-            }
-
-        } catch (Exception e) {
-            log.error("调用银行接口失败", e);
-
-        } finally {
-            // TODO 记录交易日志
-        }
+//        techAddressesRequest.setMrchId(BankConstants.MERCHANT_ID);
+//        String requestMessage = JSONObject.toJSONString(techAddressesRequest);
+//        // log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
+//
+//        String responseMessage = null;
+//        // 调用银行接口
+//        try {
+//            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
+//            // log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
+//            if (responseMessage == null) {
+//                throw new RuntimeException("银行响应报文为空，交易失败");
+//            }
+//
+//            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
+//
+//            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+//                // 交易成功
+//
+//            }
+//
+//        } catch (Exception e) {
+//            log.error("调用银行接口失败", e);
+//
+//        } finally {
+//            // TODO 记录交易日志
+//        }
 
         return null;
     }
