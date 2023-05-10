@@ -44,3 +44,11 @@ export function deleteSellDraft(id){
 		method:'GET'
 	})
 }
+
+//查询车辆收车合同
+export function FindBuyAndWTContract(id){
+	return request({
+		url:`/uctp/qys/FindBuyAndWTContract/?carId=${id}`,
+		method:'GET'
+	})
+}

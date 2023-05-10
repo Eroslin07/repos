@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.system.api.user;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 import com.newtouch.uctp.module.system.enums.ApiConstants;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,12 +10,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.validation.Valid;
+import java.util.*;
 
 @FeignClient(name = ApiConstants.NAME) // TODO 芋艿：fallbackFactory =
 @Tag(name = "RPC 服务 - 管理员用户")
@@ -61,4 +62,8 @@ public interface AdminUserApi {
     @Operation(summary = "查询部门下主用户")
     @Parameter(name = "deptId", description = "用户编号", example = "1", required = true)
     CommonResult<AdminUserRespDTO> getMasterUser(@RequestParam("deptId") Long deptId);
+
+    @PostMapping(PREFIX + "/addAccount")
+    @Operation(summary = "新增&修改子账号")
+    Map addAccount(@RequestBody @Valid AddAccountDTO reqVO);
 }

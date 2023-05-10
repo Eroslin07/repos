@@ -1,18 +1,18 @@
 package com.newtouch.uctp.module.system.api.user;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import com.newtouch.uctp.module.system.api.user.dto.AdminUserRespDTO;
 import com.newtouch.uctp.module.system.convert.user.UserConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
+import com.newtouch.uctp.module.system.service.auth.AdminAuthService;
 import com.newtouch.uctp.module.system.service.user.AdminUserService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -24,7 +24,8 @@ public class AdminUserApiImpl implements AdminUserApi {
 
     @Resource
     private AdminUserService userService;
-
+    @Resource
+    private AdminAuthService authService;
     @Override
     public CommonResult<AdminUserRespDTO> getUser(Long id) {
         AdminUserDO user = userService.getUser(id);
@@ -59,6 +60,11 @@ public class AdminUserApiImpl implements AdminUserApi {
     public CommonResult<AdminUserRespDTO> getMasterUser(Long deptId) {
         AdminUserDO user = userService.getMasterUser(deptId);
         return success(UserConvert.INSTANCE.convert4(user));
+    }
+
+    @Override
+    public Map addAccount(AddAccountDTO reqVO) {
+       return authService.addAccount(reqVO);
     }
 
 }

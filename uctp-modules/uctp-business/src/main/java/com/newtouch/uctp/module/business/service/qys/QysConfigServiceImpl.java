@@ -14,6 +14,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -659,6 +660,28 @@ public class QysConfigServiceImpl implements QysConfigService {
 //        String ssoUrl = getSsoUrl("CONTRACT_DETAIL_PAGE", contractId);
         //表示委托合同已发起
         return "OK";
+    }
+
+    public void updateContract(Long contractId){
+        FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+        ContractDO contractDO = contractMapper.selectByContractId(contractId);
+        //通过契约锁文档ID将文档内容转为字节流
+        byte[] bytes = ContractUtil.ContractDownDone(contractId);
+
+        fileCreateReqDTO.setContent(bytes);
+        fileCreateReqDTO.setName(contractDO.getContractName()+".pdf");
+        fileCreateReqDTO.setPath(null);
+        //文件上传致服务器
+        CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
+        FileDTO FileDTO = resultFile.getData();
+
+        BusinessFileDO bDO = businessFileMapper.selectOne("main_id", contractId);
+        bDO.setId(FileDTO.getId());
+        //删除中间表business的数据
+        businessFileService.deleteByMainId(contractId);
+
+        businessFileMapper.insert(bDO);
+
     }
 
     @Override
@@ -1638,6 +1661,21 @@ public class QysConfigServiceImpl implements QysConfigService {
             return "fail";
         }
         return "success";
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @GlobalTransactional
+    @Override
+    public Map addAccount(AddAccountDTO reqVO) {
+        HashMap<Object, Object> maps = new HashMap<>();
+        Map map = adminUserApi.addAccount(reqVO);
+        String type =map.get("type").toString();
+        if("1".equals(type)){
+            Long userId = Long.valueOf(map.get("userId").toString());
+            userAuth(userId);
+        }
+        maps.put("success","0");
+        return maps;
     }
 
 

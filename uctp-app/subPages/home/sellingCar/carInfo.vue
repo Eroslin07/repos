@@ -174,7 +174,7 @@
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							预计费用{{sellerForm.total}}元，利润{{sellerForm.profit}}元。
+							预计费用{{sellerForm.total || '0.00'}}元，利润{{sellerForm.profit || '0.00'}}元。
 							<text @click="handleDetail">明细请查看 ></text>
 						</view>
 					</view>
@@ -234,7 +234,8 @@
 						<u--input v-model="sellerForm.buyerAdder" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
-						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号" @change="handleChange2"></u--input>
+						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号"
+							@change="handleChange2"></u--input>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
@@ -256,7 +257,8 @@
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="changeValue">
-						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="handleCheckBox(item.name)">
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom
+							@click="handleCheckBox(item.name)">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;width: 100%">
 								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
@@ -473,12 +475,10 @@
 		getSellCarInfo,
 		setSellCarInfo,
 		getAmount,
-		deleteSellDraft
+		deleteSellDraft,
+		FindBuyAndWTContract
 	} from '@/api/home/sellingCar.js'
-	import {
-		getFairValue,
-		getContractEcho
-	} from '@/api/home/bycar.js'
+	import {getFairValue} from '@/api/home/bycar.js'
 	import {
 		setCreate
 	} from '@/api/home'
@@ -783,7 +783,7 @@
 				fairStatus: null,
 				gxzStatus: 1,
 				amountText: '',
-				depositText:''
+				depositText: ''
 			}
 		},
 		onReady() {
@@ -822,13 +822,14 @@
 				this.carForm.insuranceEndData = parseTime(this.carForm.insuranceEndData, '{y}-{m}-{d}');
 				this.modelId = res.data.modelId;
 				// 收车金额
-				this.sellerForm.sellType = res.data.sellType;
+				this.sellerForm.sellType = res.data.sellType || 0;
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
 				this.sellerForm.buyerName = res.data.buyerName
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this
+					.$amount.getComdify(res.data.sellAmount);
 				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount
 					.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
@@ -841,7 +842,9 @@
 						}
 					})
 				}
-				this.handleChange2(this.sellerForm.buyerTel);
+				if (this.sellerForm.buyerTel) {
+					this.handleChange2(this.sellerForm.buyerTel);
+				}
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (res.data.sellAmount) {
 					const sellAmount = res.data.sellAmount + ''
@@ -881,7 +884,9 @@
 				} else {
 					this.depositText = ''
 				}
-				this.handleBlur(res.data.sellAmount);
+				if (res.data.sellAmount) {
+					this.handleBlur(res.data.sellAmount);
+				}
 				let obj;
 				if (this.draftStatus == 31) {
 					obj = res.data.proceduresAndSpareSell;
@@ -945,8 +950,8 @@
 				this.$modal.closeLoading();
 			})
 
-			let hetongData = `carId=${options.id}&&type=1`
-			getContractEcho(hetongData).then(res => {
+			let hetongData = options.id
+			FindBuyAndWTContract(hetongData).then(res => {
 				this.contractDtail = res.data
 			}).catch(err => {
 				this.$modal.msg('获取合同失败')
@@ -1122,40 +1127,54 @@
 			upload(res, index) {
 				let _this = this;
 				for (let i = 0; i < res.tempFilePaths.length; i++) {
-					uni.uploadFile({
-						url: config.uploadUrl, // 仅为示例，非真实的接口地址
-						// #ifdef H5
-						file: res.tempFiles[i],
-						// #endif
-						// #ifdef MP-WEIXIN || APP
-						filePath: res.tempFilePaths[i],
-						// #endif
-						name: 'file',
-						header: {
-							Authorization: 'Bearer ' + getAccessToken()
-						},
-						success: (ress) => {
-							setTimeout(() => {
-								let fileListLen = 0;
-								let data = JSON.parse(ress.data).data;
-								if (data) {
-									for (let i = 0; i < data.length; i++) {
-										let item = _this[`fileList${index}`][fileListLen]
-										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(
-											item, {
-												status: 'success',
-												message: '',
-												url: data[i].url,
-												id: data[i].id
-											}))
-										fileListLen++;
-									}
-								} else {
-									_this.$modal.msg("上传失败");
-									_this[`fileList${index}`] = [];
-									_this.sellerForm.buyerIdCardUrl = [];
+					// 图片压缩
+					uni.compressImage({
+						src: res.tempFilePaths[i],
+						compressedWidth: 120,
+						success: (r) => {
+							// 上传
+							uni.uploadFile({
+								url: config.uploadUrl, // 仅为示例，非真实的接口地址
+								// #ifdef H5
+								file: res.tempFiles[i],
+								// #endif
+								// #ifdef MP-WEIXIN || APP
+								filePath: r.tempFilePath,
+								// #endif
+								name: 'file',
+								header: {
+									Authorization: 'Bearer ' + getAccessToken()
+								},
+								success: (ress) => {
+									setTimeout(() => {
+										let fileListLen = 0;
+										let data = JSON.parse(ress.data).data;
+										if (data) {
+											for (let i = 0; i < data.length; i++) {
+												let item = _this[`fileList${index}`][
+													fileListLen
+												]
+												_this[`fileList${index}`].splice(
+													fileListLen, 1, Object.assign(
+														item, {
+															status: 'success',
+															message: '',
+															url: data[i].url,
+															id: data[i].id
+														}))
+												fileListLen++;
+											}
+										} else {
+											_this.$modal.msg("上传失败");
+											_this[`fileList${index}`] = [];
+											_this.sellerForm.buyerIdCardUrl = [];
+										}
+									}, 1000)
 								}
-							}, 1000)
+							});
+						},
+						fail: (f) => {
+							_this.$modal.msg("图片压缩失败");
 						}
 					});
 				}
@@ -1184,7 +1203,7 @@
 				}
 				this.showDetail = true;
 			},
-			// 卖车金额失焦获取公允价值
+			// 卖车金额失焦计算利润
 			handleBlur(val) {
 				let data = {
 					id: this.carId,
@@ -1331,7 +1350,8 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.$amount.getDelcommafy(this.sellerForm.sellAmount),
+					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
+						.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: idcards.map((item) => {
@@ -1339,7 +1359,8 @@
 					}),
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
-					buyerTel: this.sellerForm.buyerTel.replace(/\s*/g, ""),
+					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm
+						.buyerTel,
 					sellType: this.sellerForm.sellType,
 					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
 						.deposit),

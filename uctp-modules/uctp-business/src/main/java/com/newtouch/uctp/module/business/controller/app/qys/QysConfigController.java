@@ -2,14 +2,13 @@ package com.newtouch.uctp.module.business.controller.app.qys;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
 import com.newtouch.uctp.module.business.controller.app.contact.vo.QYSContractVO;
-import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigCreateReqVO;
-import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqVO;
-import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigRespVO;
-import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
+import com.newtouch.uctp.module.business.controller.app.qys.vo.*;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.service.qys.QysConfigService;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -214,5 +213,12 @@ public class QysConfigController {
         return success(id);
     }
 
-
+    @PostMapping("/addAccount")
+    @PermitAll
+    @Operation(summary = "新增&修改子账号")
+    @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
+    public CommonResult<Map> addAccount(@RequestBody @Valid AddAccountDTO reqVO) {
+        Map map = qysConfigService.addAccount(reqVO);
+        return success(map);
+    }
 }

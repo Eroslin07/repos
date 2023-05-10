@@ -47,7 +47,7 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
 
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = BankException.class)
     public boolean accountGenerate(AccountDTO accountDTO) {
         if (accountExists(accountDTO.getTenantId(), accountDTO.getMerchantId())) {
             throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "该商户已开立虚拟账户，不可重复开户!");
@@ -59,25 +59,27 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantAccount.setAccountNo(accountNo);
             merchantAccount.setMerchantId(accountDTO.getMerchantId());
             merchantAccount.setTenantId(accountDTO.getTenantId());
-            save(merchantAccount);
 
             // 创建银行保证经充值子账号
             NominalAccountRequest requestCash = buildNominalAccountRequest(accountDTO, AccountEnum.BANK_NO_CASH.getKey());
             NominalAccountResponse bankAccountNoCash = transactionService.nominalAccountGenerate(requestCash);
-            saveMerchantBank(bankAccountNoCash, AccountEnum.BANK_NO_CASH.getKey(), accountDTO, accountNo);
-
 
             // 创建银行对公利润提现子账号
             NominalAccountRequest requestProfit = buildNominalAccountRequest(accountDTO, AccountEnum.BANK_NO_PROFIT.getKey());
             NominalAccountResponse bankAccountNoProfit = transactionService.nominalAccountGenerate(requestProfit);
+
+
+
+            save(merchantAccount);
+            saveMerchantBank(bankAccountNoCash, AccountEnum.BANK_NO_CASH.getKey(), accountDTO, accountNo);
             saveMerchantBank(bankAccountNoProfit, AccountEnum.BANK_NO_PROFIT.getKey(), accountDTO, accountNo);
             return true;
+        } catch (BankException e) {
+            log.error(e.getMessage());
+            throw new BankException(e.getRequest(), e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
-            if (e instanceof BankException) {
-                throw new BankException(((BankException) e).getRequest(), e.getMessage());
-            }
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 

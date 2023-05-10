@@ -7,6 +7,7 @@ import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigPageReqV
 import com.newtouch.uctp.module.business.controller.app.qys.vo.QysConfigUpdateReqVO;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
@@ -201,4 +202,6 @@ public interface QysConfigService {
      * @return
      */
     String callbackCertificationPerson(String signature, String timestamp, String content) throws Exception;
+
+    Map addAccount(@Valid AddAccountDTO reqVO);
 }

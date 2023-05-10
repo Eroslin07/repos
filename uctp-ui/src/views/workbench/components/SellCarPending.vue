@@ -281,7 +281,7 @@
               <el-col :span="4">
                 <div>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .sellerName
+                    .buyerName
                 }}</div>
               </el-col>
               <el-col :span="2" class="bg-yell">身份证：</el-col>
@@ -289,21 +289,21 @@
                 <div style="display: flex; align-items: center">
                   <span class="identify identify-eye" v-if="identifyShow">
                     {{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.buyerIdCard.substr(
                         0,
                         1
                       )
                     }}*****************{{
-                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.sellerIdCard.substr(
+                      baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails.buyerIdCard.substr(
                         baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                          .carInfoDetails.sellerIdCard.length - 1,
+                          .carInfoDetails.buyerIdCard.length - 1,
                         1
                       )
                     }}</span
                   >
                   <span class="identify" v-else>{{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .sellerIdCard
+                      .buyerIdCard
                   }}</span>
                   <Icon
                     style="margin-right: 5px"
@@ -336,7 +336,7 @@
               <el-col :span="4">
                 <div>{{
                   baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                    .sellerTel
+                    .buyerTel
                 }}</div>
               </el-col>
               <el-col :span="2" class="bg-yell">联系地址：</el-col>
@@ -344,7 +344,7 @@
                 <div>
                   {{
                     baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInfoDetails
-                      .sellerAdder
+                      .buyerAdder
                   }}</div
                 >
               </el-col>

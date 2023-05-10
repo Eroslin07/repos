@@ -113,6 +113,9 @@ const handleApplication = (row) => {
 const handleUpdateList = () => {
   reload()
 }
+onActivated(() => {
+  handleUpdateList()
+})
 // 关闭弹框
 // const closeDialog = () => {
 //   dialogVisible.value = false

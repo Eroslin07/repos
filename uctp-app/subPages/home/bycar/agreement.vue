@@ -3,7 +3,7 @@
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full>
 			<view class="contract-box">
 				<view class="text" @click="handleViewContract('1')">
-					<image src="../../../static/images/bycar/entrust.png" class="hetong_image"></image>
+					<image src="/subPages/static/images/bycar/entrust.png" class="hetong_image"></image>
 					<view style="margin-top: 20px;">
 						<u-checkbox-group v-model="entrustValue" activeColor="#fe7345">
 							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托收购协议">
@@ -12,7 +12,7 @@
 					</view>
 				</view>
 				<view class="text" @click="handleViewContract('2')">
-					<image src="../../../static/images/bycar/coll-contract.png" class="hetong_image"></image>
+					<image src="/subPages/static/images/bycar/coll-contract.png" class="hetong_image"></image>
 					<view style="margin-top: 20px;">
 						<u-checkbox-group v-model="contractValue" activeColor="#fe7345">
 							<u-checkbox labelColor="#fa6400" :label="contractName" name="收购协议">
@@ -118,7 +118,7 @@
 					confirmText: '前往充值',
 					confirmColor: '#fa6401',
 					success(res){
-						_this.$tab.switchTab('/subPages/home/account/bond/recharge');
+						_this.$tab.navigateTo('/subPages/home/account/bond/recharge');
 					}
 
 				})
@@ -238,8 +238,8 @@
 	}
 
 	.hetong_image {
-		width: 185rpx;
-		height: 160rpx;
+		width: 170rpx;
+		height: 190rpx;
 	}
 
 	.text {

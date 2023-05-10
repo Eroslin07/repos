@@ -35,11 +35,11 @@
 					<u-list-item v-for="(item, index) in indexList" :key="index">
 						<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
 							<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
-								<u-col span="8">
+								<u-col span="7">
 									<view class="title">{{ item.tradeTypeName }}</view>
 									<view class="note">{{ item.createTime }}</view>
 								</u-col>
-								<u-col span="4">
+								<u-col span="5">
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeName == '收入'">+</text>
 										<text v-if="item.profitLossTypeName == '支出'">-</text>
@@ -69,6 +69,10 @@
 				available: 0,
 				// 冻结余额
 				blockedBalances: 0,
+				// 银行
+				bankName: '',
+				// 账号
+				bankNo: '',
 				indexList: [],
 				revision: 0,
 				status: false
@@ -101,6 +105,8 @@
 				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
 					this.available = this.$amount.getComdify(res.data.availableCash / 100);
 					this.blockedBalances = this.$amount.getComdify(res.data.freezeCash / 100);
+					this.bankName = res.data.bankName;
+					this.bankNo = res.data.bankNo;
 					this.indexList = res.data.cashDetails;
 					this.revision = res.data.revision;
 					this.status = true;
@@ -112,7 +118,7 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available + '&revision=' + this.revision);
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available + '&revision=' + this.revision + '&bankName=' + this.bankName + '&bankNo=' + this.bankNo);
 			},
 			// 充值
 			handleRecharge() {

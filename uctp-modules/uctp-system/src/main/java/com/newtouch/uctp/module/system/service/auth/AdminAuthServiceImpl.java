@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.system.service.auth;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.newtouch.uctp.module.system.api.user.dto.AddAccountDTO;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -364,7 +365,78 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                     userExtDOS.setStatus(1);
                     adminUserMapper.updateById(user);
                     userExtMapper.updateById(userExtDOS);
-                    CommonResult<Boolean> booleanCommonResult = qysConfigApi.userAuth(userDO.getId());
+                    CommonResult<Boolean> booleanCommonResult = qysConfigApi.userAuth(user.getId());
+                }
+
+            }catch (Exception e){
+                throw exception(AUTH_UPDATEACCOUNT_ERROR);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
+    public Map addAccount(AddAccountDTO reqVO) {
+        HashMap<Object, Object> map = new HashMap<>();
+        AdminUserDO userDO = new AdminUserDO();
+        UserExtDO userExtDO = new UserExtDO();
+        if(null==reqVO.getId()){
+            List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
+            if(userDOS.size()>0){
+                throw exception(AUTH_MOBILE_IS_EXIST);
+            }
+            try {
+                userDO.setUsername(reqVO.getPhone());
+                userDO.setMobile(reqVO.getPhone());
+                userDO.setNickname(reqVO.getName());
+                userDO.setStatus(reqVO.getStatus());
+                userDO.setDeptId(reqVO.getDeptId());
+                userDO.setTenantId(reqVO.getTenantId());
+                userService.insertUser(userDO);
+
+                userExtDO.setUserId(userDO.getId());
+                userExtDO.setStaffType("2");
+                userExtDO.setStatus(1);
+                userExtDO.setBusinessId(reqVO.getDeptId());
+                userExtDO.setTenantId(reqVO.getTenantId());
+                userExtDO.setIdCard(reqVO.getIdCard());
+                userExtService.insertUser(userExtDO);
+                map.put("type","1");
+                map.put("userId",userDO.getId());
+            }catch (Exception e){
+                throw exception(AUTH_ADDACCOUNT_ERROR);
+            }
+        }else{
+            List<AdminUserDO> userDOS = userService.selectByMobil(reqVO.getPhone());
+            if(userDOS.size()>0){
+                for(AdminUserDO user:userDOS){
+                    if(!user.getId().equals(reqVO.getId())){
+                        throw exception(AUTH_MOBILE_IS_EXIST);
+                    }
+                }
+            }
+            try {
+                AdminUserDO user = userService.getUser(reqVO.getId());
+                UserExtDO userExtDOS = userExtService.selectByUserId(reqVO.getId()).get(0);
+                user.setNickname(reqVO.getName());
+                user.setStatus(Integer.valueOf(reqVO.getStatus()));
+                //如果身份证&身份证变更，修改为未激活（未认证）
+                if(userExtDOS.getIdCard().equals(reqVO.getIdCard()) &&user.getMobile().equals(reqVO.getPhone())){
+                    adminUserMapper.updateById(user);
+                    userExtMapper.updateById(userExtDOS);
+                }else{
+                    user.setStatus(reqVO.getStatus());
+                    user.setUsername(reqVO.getPhone());
+                    user.setMobile(reqVO.getPhone());
+
+                    userExtDOS.setIdCard(reqVO.getIdCard());
+                    userExtDOS.setStatus(1);
+                    adminUserMapper.updateById(user);
+                    userExtMapper.updateById(userExtDOS);
+                    map.put("type","1");
+                    map.put("userId",user.getId());
                 }
 
             }catch (Exception e){
