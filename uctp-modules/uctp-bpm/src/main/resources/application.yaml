@@ -145,6 +145,9 @@ uctp:
       - /admin-api/bpm/car/transfer/createTransferBpm
       - /admin-api/bpm/payfailed/create
       - /admin-api/bpm/task/payWaitingSubmitTask
+      - /rpc-api/bpm/car/openinvoice/createOpenInvoiceBpm
+      - /rpc-api/bpm/payfailed/create
+      - /rpc-api/bpm/task/payWaitingSubmitTask
   security:
     permit-all-urls:
       - /app-api/bpm/app/process-instance/v3/create
@@ -152,5 +155,8 @@ uctp:
       - /admin-api/bpm/car/transfer/createTransferBpm
       - /admin-api/bpm/payfailed/create
       - /admin-api/bpm/task/payWaitingSubmitTask
+      - /rpc-api/bpm/car/openinvoice/createOpenInvoiceBpm
+      - /rpc-api/bpm/payfailed/create
+      - /rpc-api/bpm/task/payWaitingSubmitTask
 
 debug: false

@@ -14,6 +14,26 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -77,23 +97,6 @@ import com.qiyuesuo.sdk.v2.utils.CryptUtils;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import com.qiyuesuo.sdk.v2.utils.MD5;
 import com.qiyuesuo.sdk.v2.utils.StringUtils;
-import io.seata.spring.annotation.GlobalTransactional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
@@ -330,8 +333,9 @@ public class QysConfigServiceImpl implements QysConfigService {
         return "success";
     }
 
-    @Transactional
     @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
     public String status(String signature, String timestamp, String content) throws Exception {
         log.info("[status]电子签回调参数：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
         //验证签名
@@ -396,7 +400,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.TRUE);
                         // TODO: 暂时模拟收车合同签署完成，自动跳过支付进行开票（后续需删除）
                         log.info("[status]收车委托：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
-//                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name());
+                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name()).getCheckedData();
                         break;
                     case INVALIDED:
                         //D 收车合同作废->
@@ -462,7 +466,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.TRUE);
 
                         // TODO: 暂时模拟卖车合同签署完成，自动跳过支付进行开票（后续需删除）
-                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name());
+                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name()).getCheckedData();
                         break;
                     case INVALIDED:
                         //H 卖车合同作废->
