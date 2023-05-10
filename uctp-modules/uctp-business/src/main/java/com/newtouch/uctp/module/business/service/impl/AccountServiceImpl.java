@@ -99,18 +99,24 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         request.setChannelSeqNo(UUID.randomUUID().toString(true));
         request.setAreaCode(BankConstants.AREA_CODE);
         request.setAcctNo(BankConstants.ACCT_NO);
-        request.setBidsSnglFlgCd(BankConstants.ACCT_NO);
-        request.setBscAcctNo(BankConstants.ACCT_NO);
-        request.setAcctName(BankConstants.ACCT_NAME);
-        request.setCtfType(CertificationType.ID_CARD.getCode());
-        request.setCtfId(accountDTO.getIdCard());
-        request.setClientName(accountDTO.getLegalRepresentative());
+        request.setBidsSnglFlgCd(UUID.randomUUID().toString(true));
+
         if (AccountEnum.BANK_NO_PROFIT.getKey().equals(busType)) {
             request.setOpenBrNo(accountDTO.getBankNo());
             request.setOpenBranchName(accountDTO.getBankName());
+            request.setBscAcctNo(accountDTO.getBankNo());
+            request.setAcctName(accountDTO.getBusinessName());
+            request.setCtfType(CertificationType.BUSINESS_LICENSE.getCode());
+            request.setCtfId(accountDTO.getTaxNum());
+            request.setClientName(accountDTO.getBusinessName());
         } else if (AccountEnum.BANK_NO_CASH.getKey().equals(busType)) {
-            request.setOpenBrNo(accountDTO.getBankNo());
+            request.setOpenBrNo(accountDTO.getCashBankNo());
             request.setOpenBranchName(BankConstants.CASH_OPEN_BANK_NAME);
+            request.setBscAcctNo(accountDTO.getCashBankNo());
+            request.setAcctName(accountDTO.getLegalRepresentative());
+            request.setCtfType(CertificationType.ID_CARD.getCode());
+            request.setCtfId(accountDTO.getIdCard());
+            request.setClientName(accountDTO.getLegalRepresentative());
         }
         return request;
     }
