@@ -42,6 +42,15 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Boolean> doDefaultContractDownload(ContractDownloadRequest request, FileOutputStream fos) throws Throwable {
+        this.client.download(request,fos);
+        return QiyuesuoCommonResult.build("0".toString()
+                , ""
+                , true
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Boolean> doDefaultDocumentDownload(DocumentDownloadRequest request, FileOutputStream fos) throws Throwable {
         this.client.download(request,fos);
         return QiyuesuoCommonResult.build("0".toString()

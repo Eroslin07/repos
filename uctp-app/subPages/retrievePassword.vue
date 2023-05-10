@@ -8,7 +8,7 @@
 				<view class="text">请填写您要找回密码的账号</view>
 				<u--form labelPosition="left" :model="registerForm" :rules="rules" ref="valiForm" labelWidth="60px">
 					<u-form-item label="手机号" prop="phone" borderBottom>
-						<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
+						<u-input v-model="registerForm.phone" type="number" border="none" placeholder="请输入手机号">
 							<template slot="suffix">
 								<view @click="getVerification" style="color: #50a8bc;" v-if="getTime">获取验证码</view>
 								<view class="login-code-img" style="color: #50a8bc;" v-else>已发送({{ time }})</view>

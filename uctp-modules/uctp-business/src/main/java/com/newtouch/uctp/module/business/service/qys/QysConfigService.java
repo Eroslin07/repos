@@ -99,7 +99,7 @@ public interface QysConfigService {
      * @param content 内容
      * @return
      */
-    String login(String signature, String timestamp, String content) throws Exception;
+    String login(String signature, String timestamp, String content) ;
 
     void test(Long id,Integer type) throws Exception;
 

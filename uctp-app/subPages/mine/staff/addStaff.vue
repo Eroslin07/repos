@@ -7,7 +7,7 @@
 					<u-input v-model="staffForm.name" border="none" placeholder="请输入姓名"></u-input>
 				</u-form-item>
 				<u-form-item label="手机号" prop="phone" borderBottom>
-					<u--input v-model="staffForm.phone" border="none" placeholder="请输入11位手机号"></u--input>
+					<u--input v-model="staffForm.phone" type="number" border="none" placeholder="请输入11位手机号"></u--input>
 				</u-form-item>
 				<u-form-item label="身份证号" prop="idCard" borderBottom>
 					<u--input v-model="staffForm.idCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>

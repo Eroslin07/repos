@@ -234,4 +234,20 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Boolean> defaultDocumentDownload(FileOutputStream fos, Long documentId);
+
+    /**
+     * 下载合同与附属文件
+     *
+     * @param fos 输出流
+     * @param contractId 合同id
+     * @param downloadItems 下载子项目，子项目可选项：CONTRACT（"合同原文"）、SIGNLOG（"签署日志"）、ATTACHMENT（"附件"）、NOTARY（"存证报告"）、ENDSIGN_ATTACHMENT（“强制结束附件”）;默认为合同文件与签署日志
+     * @param needCompressForOneFile 当下载的文件为单份文件时，是否压缩；默认压缩
+     * @return
+     */
+    QiyuesuoCommonResult<Boolean> defaultContractDownload(FileOutputStream fos,
+                                                          Long contractId,
+                                                          List<String> downloadItems,
+                                                          Boolean needCompressForOneFile);
+
+
 }

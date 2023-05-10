@@ -379,6 +379,7 @@
 								:autoHeight="true"></u--textarea> -->
 							<input style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text"
 								v-model="carForm.other" placeholder="最大输入长度为10" :disabled="disabledOther"
+								placeholder-style="color:#c0c4cc"
 								@input="otherInput" />
 						</u-form-item>
 					</u-checkbox-group>
@@ -1736,16 +1737,16 @@
 	}
 
 	/* #ifdef H5 */
-	/deep/ .u-form-item__body__right__content__slot>uni-view {
-		// flex: 1;
+	/deep/ .u-form-item__body__right__content__slot>.model {
+		flex: 1;
 	}
 
 	/* #endif */
 
 
 	/* #ifdef MP-WEIXIN */
-	/deep/ .u-form-item__body__right__content__slot>view {
-		// flex: 1;
+	/deep/ .u-form-item__body__right__content__slot>.model {
+		flex: 1;
 	}
 
 	/* #endif */

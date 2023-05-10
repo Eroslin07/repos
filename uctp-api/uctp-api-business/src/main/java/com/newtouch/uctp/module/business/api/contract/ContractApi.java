@@ -24,6 +24,6 @@ public interface ContractApi {
     @Operation(summary = "合同作废")
     @Parameter(name = "id", description = "合同id", required = true, example = "1024")
     @Parameter(name = "reason", description = "合同作废原因", required = true, example = "合同作废")
-    public CommonResult<Boolean> contractInvalid(@RequestParam Long id,
-                                               @RequestParam String reason);
+    public CommonResult<Boolean> contractInvalid(@RequestParam("id") Long id,
+                                               @RequestParam("reason") String reason);
 }
