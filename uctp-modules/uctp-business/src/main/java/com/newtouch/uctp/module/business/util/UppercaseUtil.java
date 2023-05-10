@@ -72,7 +72,7 @@ public class UppercaseUtil {
 
     public static String convert(BigDecimal money) {
         String[] upNum = {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"};
-        String[] danwei = {"圆", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾", "佰", "仟"};
+        String[] danwei = {"元", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾", "佰", "仟"};
         //取消科学记数法
         NumberFormat numFormat = NumberFormat.getInstance();
         numFormat.setMaximumFractionDigits(2);//设置小数位个数
@@ -96,7 +96,7 @@ public class UppercaseUtil {
         //大于12位就直接返回。
         int moneyLen = strMoney.length();
         if (money == BigDecimal.valueOf(0)) {
-            return "零圆整";
+            return "零元整";
         }
         if (moneyLen > 12) {
             return "金额：" + money + "元，超出大写转换范围。最大金额：999999999999.99元";
@@ -144,8 +144,8 @@ public class UppercaseUtil {
                 String substring = result.substring(0, result.length() - 1);
                 result = substring;
             }
-            result = result.concat("圆");
-            result = result.replaceAll("圆圆", "圆");
+            result = result.concat("元");
+            result = result.replaceAll("元元", "元");
             result = result.replaceAll("万万", "万");
 
         }
