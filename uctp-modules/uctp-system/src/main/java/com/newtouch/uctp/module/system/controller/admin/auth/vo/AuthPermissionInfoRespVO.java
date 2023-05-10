@@ -59,6 +59,9 @@ public class AuthPermissionInfoRespVO {
         @Schema(description = "认证状态（0已认证 1未认证）")
         private Integer registerType;
 
+        @Schema(description = "虚拟账号")
+        private String accountNo;
+
     }
 
 }

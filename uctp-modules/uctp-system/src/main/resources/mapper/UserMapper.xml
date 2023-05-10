@@ -22,4 +22,14 @@
             and su.status in(0,1) and su.deleted=0
     </select>
 
+
+    <select id="getAccountNo" resultType="java.lang.String">
+        select
+           uma.account_no accountNo
+        from
+            uctp_merchant_account uma
+        where
+            uma.merchant_id =#{deptId}
+    </select>
+
 </mapper>

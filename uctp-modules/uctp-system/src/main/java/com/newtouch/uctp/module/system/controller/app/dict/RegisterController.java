@@ -282,12 +282,13 @@ public class RegisterController {
         AdminUserDO user = userService.getUser(getLoginUserId());
         DeptDO dept = deptService.getDept(user.getDeptId());
         UserExtDO userExtDOS = userExtService.selectByUserId(user.getId()).get(0);
+        String accountNo = userExtService.getAccountNo(user.getDeptId());
         TenantDO tenant = tenantService.getTenant(user.getTenantId());
         if (user == null) {
             return null;
         }
         // 拼接结果返回
-        return success(AuthConvert.INSTANCE.convert(user,userExtDOS,dept,tenant));
+        return success(AuthConvert.INSTANCE.convert(user,userExtDOS,dept,tenant,accountNo));
     }
 
     @PostMapping("/logout")
