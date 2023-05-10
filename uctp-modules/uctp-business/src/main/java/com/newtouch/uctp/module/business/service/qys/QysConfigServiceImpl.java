@@ -662,6 +662,28 @@ public class QysConfigServiceImpl implements QysConfigService {
         return "OK";
     }
 
+    public void updateContract(Long contractId){
+        FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+        ContractDO contractDO = contractMapper.selectByContractId(contractId);
+        //通过契约锁文档ID将文档内容转为字节流
+        byte[] bytes = ContractUtil.ContractDownDone(contractId);
+
+        fileCreateReqDTO.setContent(bytes);
+        fileCreateReqDTO.setName(contractDO.getContractName()+".pdf");
+        fileCreateReqDTO.setPath(null);
+        //文件上传致服务器
+        CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
+        FileDTO FileDTO = resultFile.getData();
+
+        BusinessFileDO bDO = businessFileMapper.selectOne("main_id", contractId);
+        bDO.setId(FileDTO.getId());
+        //删除中间表business的数据
+        businessFileService.deleteByMainId(contractId);
+
+        businessFileMapper.insert(bDO);
+
+    }
+
     @Override
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
@@ -966,6 +988,40 @@ public class QysConfigServiceImpl implements QysConfigService {
         }*/
 
 
+        return qysContractVOList;
+    }
+
+    @Override
+    public List<QYSContractVO> FindQYSContract(Long carId) {
+        List<QYSContractVO> qysContractVOList =new ArrayList<>();
+        QYSContractVO qysContractVO1=new QYSContractVO();
+        QYSContractVO qysContractVO=new QYSContractVO();
+        //收车委托合同
+        ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
+        BusinessFileDO byWTBusinessFile = businessFileMapper.selectOne("main_id", buyWTContractDO.getContractId());
+        List<Long> contractIds = new ArrayList<>();
+        contractIds.add(byWTBusinessFile.getId());
+        CommonResult<List<FileRespDTO>> listCommonResult = fileApi.fileList(contractIds);
+        if (listCommonResult.getData() != null) {
+            qysContractVO1.setUrl(listCommonResult.getData().get(0).getUrl());
+            qysContractVO1.setContractName(listCommonResult.getData().get(0).getName());
+            qysContractVO1.setContractType("1");
+            qysContractVOList.add(qysContractVO1);
+
+        }
+        //收车合同
+        ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
+        BusinessFileDO buyBusinessFile = businessFileMapper.selectOne("main_id", buyContractDO.getContractId());
+        List<Long> contractIdList = new ArrayList<>();
+        contractIdList.add(buyBusinessFile.getId());
+        CommonResult<List<FileRespDTO>> buyCommonResult = fileApi.fileList(contractIdList);
+        if (buyCommonResult.getData() != null) {
+            qysContractVO.setUrl(buyCommonResult.getData().get(0).getUrl());
+            qysContractVO.setContractName(buyCommonResult.getData().get(0).getName());
+            qysContractVO.setContractType("2");
+            qysContractVOList.add(qysContractVO);
+
+        }
         return qysContractVOList;
     }
 
