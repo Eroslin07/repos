@@ -459,7 +459,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             }
         }
         else if (ObjectUtil.equals(bpmFormMainDO.getBusiType(), BpmDefTypeEnum.LRTX.name())) {
-            
+
         }
     }
 
