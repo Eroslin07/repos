@@ -1039,7 +1039,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         invoiceDetailVO.setCarType(carInfoDO.getCarType());
         invoiceDetailVO.setVin(carInfoDO.getVin());
         invoiceDetailVO.setModel(carInfoDO.getModel());
-        invoiceDetailVO.setTransManageName(infoDetails.getTransManageName());
+        invoiceDetailVO.setTransManageName(infoDetails.getSellTransManageName());
         invoiceDetailVO.setSellAmount(carInfoDO.getSellAmount());
         invoiceDetailVO.setMarketName(titleDO.getRepresent());
         invoiceDetailVO.setTaxNum(titleDO.getTaxNum());
