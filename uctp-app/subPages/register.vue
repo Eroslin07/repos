@@ -39,7 +39,7 @@
 						<u--input v-model="registerForm.name" border="none" placeholder="请输入姓名"></u--input>
 					</u-form-item>
 					<u-form-item label="手机号" :required="true" prop="phone" borderBottom>
-						<u-input v-model="registerForm.phone" border="none" placeholder="请输入手机号">
+						<u-input v-model="registerForm.phone" type="number" border="none" placeholder="请输入手机号" @change="handleChange2">
 							<!-- <template slot="suffix">
 								<view @click="getVerification" style="color: #fd6601;" v-if="getTime">获取验证码</view>
 								<view class="login-code-img" style="color: #fd6601;" v-else>已发送({{ time }})</view>
@@ -195,7 +195,8 @@
 							let iphoneReg = (
 								/^(13[0-9]|14[1579]|15[0-3,5-9]|16[6]|17[0123456789]|18[0-9]|19[89])\d{8}$/
 							);
-							if (!iphoneReg.test(value)) {
+							let str = value.replace(/\s*/g, "")
+							if (!iphoneReg.test(str)) {
 								return false
 							}
 						},
@@ -364,7 +365,13 @@
 			// 获取手机号
 			// #ifdef MP-WEIXIN
 			if (this.$store.state.user.phone) {
-				this.registerForm.phone = this.$store.state.user.phone;
+				let phone = this.$store.state.user.phone;
+				if (phone.length > 3 && phone.length < 8) {
+					phone = phone.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})/g, '$1 ')
+				} else if (phone.length >= 8) {
+					phone = phone.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})(\d{4})/g, '$1 $2 ')
+				}
+				this.registerForm.phone = phone;
 			}
 			// #endif
 			// 查询市场所在地
@@ -394,6 +401,15 @@
 			handleChange1(data) {
 				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
 				this.$set(this.registerForm, 'bondBankAccount', account)
+			},
+			handleChange2(data) {
+				let phone = '';
+				if (data.length > 3 && data.length < 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})/g, '$1 ')
+				} else if (data.length >= 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})(\d{4})/g, '$1 $2 ')
+				}
+				this.$set(this.registerForm, 'phone', phone)
 			},
 			handleCircle() {
 				uni.showModal({
@@ -614,7 +630,7 @@
 					}
 					// 提交审核
 					let data = {
-						phone: this.registerForm.phone,
+						phone: this.registerForm.phone.replace(/\s*/g, ""),
 						// captcha: this.registerForm.captcha,
 						name: this.registerForm.name,
 						idCard: this.registerForm.idCard,

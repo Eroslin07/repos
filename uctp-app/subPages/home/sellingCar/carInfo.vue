@@ -234,7 +234,7 @@
 						<u--input v-model="sellerForm.buyerAdder" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
-						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号"></u--input>
+						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号" @change="handleChange2"></u--input>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
@@ -760,7 +760,8 @@
 							let iphoneReg = (
 								/^(13[0-9]|14[1579]|15[0-3,5-9]|16[6]|17[0123456789]|18[0-9]|19[89])\d{8}$/
 							);
-							if (!iphoneReg.test(value)) {
+							let str = value.replace(/\s*/g, "")
+							if (!iphoneReg.test(str)) {
 								return false
 							}
 						},
@@ -840,6 +841,7 @@
 						}
 					})
 				}
+				this.handleChange2(this.sellerForm.buyerTel);
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (res.data.sellAmount) {
 					const sellAmount = res.data.sellAmount + ''
@@ -1003,6 +1005,15 @@
 						duration: 300
 					});
 				}
+			},
+			handleChange2(data) {
+				let phone = '';
+				if (data.length > 3 && data.length < 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})/g, '$1 ')
+				} else if (data.length >= 8) {
+					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})(\d{4})/g, '$1 $2 ')
+				}
+				this.$set(this.sellerForm, 'buyerTel', phone)
 			},
 			// 点击车辆信息图片
 			handleCar() {
@@ -1328,7 +1339,7 @@
 					}),
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
-					buyerTel: this.sellerForm.buyerTel,
+					buyerTel: this.sellerForm.buyerTel.replace(/\s*/g, ""),
 					sellType: this.sellerForm.sellType,
 					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
 						.deposit),
