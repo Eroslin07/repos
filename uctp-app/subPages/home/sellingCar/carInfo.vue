@@ -234,7 +234,8 @@
 						<u--input v-model="sellerForm.buyerAdder" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
-						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号" @change="handleChange2"></u--input>
+						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号"
+							@change="handleChange2"></u--input>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
@@ -256,7 +257,8 @@
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="changeValue">
-						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="handleCheckBox(item.name)">
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom
+							@click="handleCheckBox(item.name)">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;width: 100%">
 								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
@@ -473,12 +475,10 @@
 		getSellCarInfo,
 		setSellCarInfo,
 		getAmount,
-		deleteSellDraft
+		deleteSellDraft,
+		FindBuyAndWTContract
 	} from '@/api/home/sellingCar.js'
-	import {
-		getFairValue,
-		getContractEcho
-	} from '@/api/home/bycar.js'
+	import {getFairValue} from '@/api/home/bycar.js'
 	import {
 		setCreate
 	} from '@/api/home'
@@ -783,7 +783,7 @@
 				fairStatus: null,
 				gxzStatus: 1,
 				amountText: '',
-				depositText:''
+				depositText: ''
 			}
 		},
 		onReady() {
@@ -828,7 +828,8 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount.getComdify(res.data.sellAmount);
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this
+					.$amount.getComdify(res.data.sellAmount);
 				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount
 					.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
@@ -949,8 +950,8 @@
 				this.$modal.closeLoading();
 			})
 
-			let hetongData = `carId=${options.id}&&type=1`
-			getContractEcho(hetongData).then(res => {
+			let hetongData = options.id
+			FindBuyAndWTContract(hetongData).then(res => {
 				this.contractDtail = res.data
 			}).catch(err => {
 				this.$modal.msg('获取合同失败')
@@ -1150,14 +1151,17 @@
 										let data = JSON.parse(ress.data).data;
 										if (data) {
 											for (let i = 0; i < data.length; i++) {
-												let item = _this[`fileList${index}`][fileListLen]
-												_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(
-													item, {
-														status: 'success',
-														message: '',
-														url: data[i].url,
-														id: data[i].id
-													}))
+												let item = _this[`fileList${index}`][
+													fileListLen
+												]
+												_this[`fileList${index}`].splice(
+													fileListLen, 1, Object.assign(
+														item, {
+															status: 'success',
+															message: '',
+															url: data[i].url,
+															id: data[i].id
+														}))
 												fileListLen++;
 											}
 										} else {
@@ -1346,7 +1350,8 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm.sellAmount),
+					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
+						.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: idcards.map((item) => {
@@ -1354,7 +1359,8 @@
 					}),
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
-					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm.buyerTel,
+					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm
+						.buyerTel,
 					sellType: this.sellerForm.sellType,
 					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
 						.deposit),
