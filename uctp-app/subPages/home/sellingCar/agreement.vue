@@ -3,22 +3,12 @@
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full>
 			<view class="contract-box">
 				<view class="text" @click="handleViewContract('1')">
-					<image src="../../../static/images/bycar/entrust.png" class="hetong_image"></image>
-					<view style="margin-top: 20px;">
-						<u-checkbox-group v-model="entrustValue" activeColor="#fe7345">
-							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托销售协议">
-							</u-checkbox>
-						</u-checkbox-group>
-					</view>
+					<image src="/subPages/static/images/bycar/sell-entrust.png" class="hetong_image"></image>
+					<image v-show="entrustChecked" class="badge" src="/subPages/static/images/bycar/checkedIcons.png"></image>
 				</view>
 				<view class="text"  @click="handleViewContract('2')">
-					<image src="../../../static/images/bycar/sell-contract.png" class="hetong_image"></image>
-					<view style="margin-top: 20px;">
-						<u-checkbox-group v-model="contractValue" activeColor="#fe7345">
-							<u-checkbox labelColor="#fa6400" :label="contractName" name="二手车销售协议">
-							</u-checkbox>
-						</u-checkbox-group>
-					</view>
+					<image src="/subPages/static/images/bycar/sell-contract.png" class="hetong_image"></image>
+					<image v-show="contractChecked" class="badge" src="/subPages/static/images/bycar/checkedIcons.png"></image>
 				</view>
 			</view>
 			
@@ -51,13 +41,13 @@
 				isSHowTip:'',
 				contractDtail:[],
 				carId:'',
-				contractName: '二手车销售协议',
-				entrustName: '委托销售协议',
-				contractValue: [],
-				entrustValue: [],
 				fairValue: undefined,
 				carData: undefined,
 				gxzStatus: 1,
+				// 委托选中
+				entrustChecked:false,
+				// 合同选中
+				contractChecked:false
 			}
 		},
 		components: {
@@ -78,8 +68,6 @@
 				getContractEcho(data).then(res => {
 					this.isSHowTip = ''
 					this.contractDtail = res.data
-					this.contractName = res.data.find(v => v.contractType == '2')?.contractName || '二手车销售协议'
-					this.entrustName = res.data.find(v => v.contractType == '1')?.contractName || '委托销售协议'
 				}).catch(err => {
 					// this.$modal.msg('获取合同失败')
 					this.isSHowTip = 'createFail'
@@ -102,9 +90,9 @@
 								console.log('打开文档成功');
 								setTimeout(()=>{
 									if(text=='1'){
-										_this.entrustValue=['委托销售协议']
+										_this.entrustChecked=true;
 									}else{
-										_this.contractValue=['二手车销售协议']
+										_this.contractChecked=true;
 									}
 								},1000)
 							}
@@ -117,8 +105,8 @@
 			},
 			// 合同签章
 			handleAffirm() {
+				if(!this.entrustChecked || !this.contractChecked) return this.$modal.msg('请查看协议和合同！')
 				let _this = this;
-				if(!_this.contractValue.length || !_this.entrustValue.length) return _this.$modal.msg('请勾选协议和委托协议！')
 				// 判断是否超出公允值
 				if (_this.gxzStatus == 0) {
 					uni.showModal({
@@ -223,18 +211,29 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-around;
-	}
-	.hetong_image {
-		width: 185rpx;
-		height: 160rpx;
+		.text {
+			// padding: 200rpx 0;
+			margin:200rpx auto;
+			font-size: 30rpx;
+			text-align: center;
+			color: #fa6400;
+			position:relative;
+			.hetong_image {
+				width: 170rpx;
+				height: 190rpx;
+			}
+			.badge{
+				position:absolute;
+				width:38rpx;
+				height: 38rpx;
+				top:0;
+				left:0;
+			}
+		}
 	}
 	
-	.text {
-		padding: 200rpx 0;
-		font-size: 30rpx;
-		text-align: center;
-		color: #fa6400;
-	}
+	
+	
 	
 	.button {
 		margin-top: 10px;
