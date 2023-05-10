@@ -444,6 +444,7 @@
 			},
 			upload(res, index) {
 				let _this = this;
+				_this.$modal.loading('正在上传中')
 				for (let i = 0; i < res.tempFilePaths.length; i++) {
 					uni.uploadFile({
 						url: config.upLoadTestUrl, // 仅为示例，非真实的接口地址
@@ -461,6 +462,7 @@
 							'carId': _this.carInfoAll.carInfo.id
 						},
 						success: (ress) => {
+							this.$modal.closeLoading();
 							setTimeout(() => {
 								let fileListLen = 0;
 								let data = JSON.parse(ress.data).data;
