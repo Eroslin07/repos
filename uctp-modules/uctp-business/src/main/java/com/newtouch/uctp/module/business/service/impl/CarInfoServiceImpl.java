@@ -2,6 +2,23 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
@@ -25,20 +42,6 @@ import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.system.api.dict.DictDataApi;
 import com.newtouch.uctp.module.system.api.dict.dto.DictDataRespDTO;
 import com.newtouch.uctp.module.system.enums.DictTypeConstants;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
@@ -979,6 +982,31 @@ public class CarInfoServiceImpl implements CarInfoService {
         if (ObjectUtil.isNotNull(carInfo)) {
             carInfoMapper.updateById(carInfo);
         }
+    }
+
+    @Override
+    public void updateBpmApproveInfo(Long carId, String bpmStatus, String bpmReason) {
+        CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
+        if (ObjectUtil.isNull(carInfoDO)) {
+            return;
+        }
+        carInfoDO.setBpmStatus(bpmStatus);
+        carInfoDO.setBpmReason(bpmReason);
+        carInfoMapper.updateById(carInfoDO);
+    }
+
+    @Override
+    public void updateCarStatus(Long carId, Integer salesStatus, Integer status, Integer statusThree, String bpmStatus, String bpmReason) {
+        CarInfoDO carInfoDO = carInfoMapper.selectById(carId);
+        if (ObjectUtil.isNull(carInfoDO)) {
+            return;
+        }
+        carInfoDO.setSalesStatus(salesStatus);//1级状态
+        carInfoDO.setStatus(status);//2级状态
+        carInfoDO.setStatusThree(statusThree);//3级状态
+        carInfoDO.setBpmStatus(bpmStatus);//流程状态
+        carInfoDO.setBpmReason(bpmReason);//意见
+        carInfoMapper.updateById(carInfoDO);
     }
 
 
