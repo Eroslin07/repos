@@ -1247,6 +1247,16 @@
 					if (this.chebi == false) {
 						this.handleDraft('step');
 					}
+				}).catch((error) => {
+					let key = '.' + error[0].field;
+					const query = uni.createSelectorQuery()
+					query.select(key).boundingClientRect((data) => {
+						let pageScrollTop = Math.round(data.top)
+						uni.pageScrollTo({
+							scrollTop: pageScrollTop - 70, //滚动的距离
+							duration: 300, //过渡时间
+						})
+					}).exec()
 				})
 			},
 			// 点击车辆信息保存
@@ -1323,7 +1333,7 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.sellerForm.sellAmount = '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm.sellAmount),
+					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: idcards.map((item) => {
