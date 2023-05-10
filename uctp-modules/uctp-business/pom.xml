@@ -186,6 +186,14 @@
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-excel</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.spdb</groupId>
+            <artifactId>spdb-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spdb-api-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

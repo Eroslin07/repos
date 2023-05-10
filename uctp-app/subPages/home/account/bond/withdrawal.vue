@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>浦发银行（***1167）</view>
+			<view>{{ bankName }}（{{ formatBank(bankNo) }}）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -34,6 +34,8 @@
 			return {
 				amount: '',
 				allAmount: null,
+				bankName: '',
+				bankNo: '',
 				revision: 0,
 				amountText: '',
 				amountVisible: false,
@@ -43,11 +45,21 @@
 		onLoad(options) {
 			this.allAmount = options.amount;
 			this.revision = options.revision;
+			this.bankName = options.bankName;
+			this.bankNo = options.bankNo;
 			uni.setNavigationBarTitle({
 				title: '保证金提现'
 			});
 		},
 		methods: {
+			// 格式化银行卡
+			formatBank(val){
+				if(val){
+					return val.replace(/\s*/g,"").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2")
+				}else{
+					return ''
+				}
+			},
 			// 输入金额回调
 			handleInput(val) {
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
