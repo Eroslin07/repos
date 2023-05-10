@@ -151,7 +151,7 @@ public class QysConfigController {
     @Operation(summary = "saas模式契约锁回调-登录")
     public String callbackLogin(@RequestParam String signature,
                            @RequestParam String timestamp,
-                           @RequestParam String content) throws Exception {
+                           @RequestParam String content) {
         return qysConfigService.login(signature, timestamp, content);
     }
 

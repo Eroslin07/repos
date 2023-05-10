@@ -499,7 +499,7 @@ public class QiYueSuoUtil {
         }
         User user = new User(contact, contactType);
         OpenSSOPrivilegeUrlRequest request = new OpenSSOPrivilegeUrlRequest(company, user);
-        request.setSuccessUrl("www.baidu.com");
+        request.setSuccessUrl("");
         return this.execute(request, OpenSSOPrivilegeUrlResult.class);
     }
 
