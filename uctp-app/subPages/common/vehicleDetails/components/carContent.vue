@@ -24,7 +24,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="driving-license">
+			<view class="driving-license car-registration">
 				<view class="driving-license__icon">
 
 				</view>

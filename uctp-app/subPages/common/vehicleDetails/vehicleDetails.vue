@@ -1,8 +1,9 @@
 <template>
 	<view class="car-info">
 		<uni-card v-if="!isSHowTip" :is-shadow="false" is-full padding="0" spacing="0" style="height:100%">
+		 <view class="fixed-box">
 			<u-swiper :list="carsList" @change="e => currentNum = e.current"
-				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" height="426rpx" circular>
+				indicatorStyle="right: 30rpx;left:36rpx;bottom:44rpx;" :height="pxToRpx(160)+'rpx'" circular>
 				<view slot="indicator" style="display: flex;justify-content: space-between;">
 					<view class="header-text">
 						<text>{{firstStatus}}-{{secondStatus}}</text>
@@ -60,6 +61,8 @@
 				<u-tabs :list="tabsData" :current="currentNum" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
+		 </view>
+		 <view :style="{height:pxToRpx(355)+'rpx'}"></view>
 			<!-- 卡片信息 -->
 			<ca-content ref="contractInfo" :tabCar="tabCar" :carInfoAll="carInfoAll" :isShowTest="isShowTest"
 				@changeTest="changeTest" @inviladContract="inviladContract">
@@ -228,6 +231,7 @@
 					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.insuranceEndData = parseTime(insuranceEndData, '{y}-{m}-{d}')
 					this.carsList = this.carInfoAll.fileA.map(v => v.url);
+					console.log(this.carsList.length,9999)
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
 						.createTime))
@@ -294,6 +298,11 @@
 			getDays(value = 0) {
 				let currentTime = new Date().getTime();
 				return Math.floor((currentTime - value) / 1000 / 3600 / 24)
+			},
+			// px转rpx
+			pxToRpx(val){
+				const screenWidth = uni.getSystemInfoSync().screenWidth
+				return (750*Number.parseInt(val))/screenWidth
 			}
 		}
 	}
@@ -302,7 +311,7 @@
 <style lang="scss" scoped>
 	.car-info {
 		height: 100%;
-
+		overflow:hidden;
 		.img-error {
 			width: 246rpx;
 			height: 208rpx;
@@ -359,7 +368,8 @@
 	}
 
 	.indicator-num {
-		padding: 2px 0;
+		// padding: 2px 0;
+		margin-top:2px;
 		background-color: rgba(0, 0, 0, 0.35);
 		border-radius: 100px;
 		width: 35px;
@@ -382,15 +392,15 @@
 		margin-top: -22rpx;
 		position: relative;
 		z-index: 10;
-		border-bottom: 20rpx solid #FAFAFA;
+		border-bottom: 12rpx solid #FAFAFA;
 
 		>view {
-			margin-bottom: 18rpx;
+			margin-bottom: 10rpx;
 		}
 
 		.car-title {
 			box-sizing: border-box;
-			padding: 42rpx 0 0;
+			padding: 20rpx 0 0;
 			font-weight: 500;
 			font-size: 36rpx;
 		}
@@ -545,5 +555,11 @@
 
 	::v-deep #carStatus .u-tabs__wrapper__nav__item {
 		padding: 0 !important;
+	}
+	.fixed-box{
+		position:fixed;
+		width:100%;
+		z-index:999;
+		background-color:#fff;
 	}
 </style>
