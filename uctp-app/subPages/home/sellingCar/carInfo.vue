@@ -162,7 +162,7 @@
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
 						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
-							@blur="handleBlur" @input="handleInput" placeholder="0.00">
+							@blur="handleBlur" @input="amountInput" placeholder="0.00">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -185,9 +185,10 @@
 							</u-radio>
 						</u-radio-group>
 					</u-form-item>
+					<view style="height: 30rpx;padding-left: 120px;">{{depositText}}</view>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
 						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit"
-							@focus="depositFocus" @blur="depositBlur">
+							@focus="depositFocus" @blur="depositBlur" @input="depositInput">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -781,6 +782,7 @@
 				fairStatus: null,
 				gxzStatus: 1,
 				amountText: '',
+				depositText:''
 			}
 		},
 		onReady() {
@@ -857,6 +859,25 @@
 					}
 				} else {
 					this.amountText = ''
+				}
+				if (res.data.deposit) {
+					const deposit = res.data.deposit + ''
+					if (deposit.indexOf('.') > -1) {
+						let arr = deposit.split('.');
+						if (arr[0].length > 2) {
+							this.depositText = texts[arr[0].length - 3]
+						} else {
+							this.depositText = ''
+						}
+					} else {
+						if (deposit.length > 2) {
+							this.depositText = texts[deposit.length - 3]
+						} else {
+							this.depositText = ''
+						}
+					}
+				} else {
+					this.depositText = ''
 				}
 				this.handleBlur(res.data.sellAmount);
 				let obj;
@@ -1417,7 +1438,7 @@
 
 			},
 			// 输入金额回调
-			handleInput(val) {
+			amountInput(val) {
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (val) {
 					this.$nextTick(() => {
@@ -1438,6 +1459,29 @@
 					})
 				} else {
 					this.amountText = ''
+				}
+			},
+			depositInput(val) {
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
+				if (val) {
+					this.$nextTick(() => {
+						if (val.indexOf('.') > -1) {
+							let arr = val.split('.');
+							if (arr[0].length > 2) {
+								this.depositText = texts[arr[0].length - 3]
+							} else {
+								this.depositText = ''
+							}
+						} else {
+							if (val.length > 2) {
+								this.depositText = texts[val.length - 3]
+							} else {
+								this.depositText = ''
+							}
+						}
+					})
+				} else {
+					this.depositText = ''
 				}
 			},
 			// 点击车辆手续及备件
