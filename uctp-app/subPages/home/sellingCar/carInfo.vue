@@ -233,7 +233,7 @@
 						<u--input v-model="sellerForm.buyerAdder" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
-						<u--input v-model="sellerForm.buyerTel" border="none" placeholder="请输入11位手机号"></u--input>
+						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号"></u--input>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">

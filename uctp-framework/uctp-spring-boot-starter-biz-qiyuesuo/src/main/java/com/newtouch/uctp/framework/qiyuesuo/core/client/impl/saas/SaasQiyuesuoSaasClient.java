@@ -39,6 +39,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Boolean> doDefaultContractDownload(ContractDownloadRequest request, FileOutputStream fos) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Boolean> doDefaultDocumentDownload(DocumentDownloadRequest request, FileOutputStream fos) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -203,7 +208,7 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
         request.setCreateToken(true);
         request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/privilege");
         //TODO 成功后的地址需要商量
-        request.setSuccessUrl("https://fssc.cloud:28000/");
+        request.setSuccessUrl("");
         //授权印章,合同
         request.setPrivilegeModules(privilegeModules);
         //很关键，这里要重新生成，不然后合同收不到回调

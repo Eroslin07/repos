@@ -24,6 +24,7 @@ public interface ErrorCodeConstants {
     ErrorCode AUTH_REGISTER_ERROR = new ErrorCode(1002000013, "注册失败");
     ErrorCode AUTH_ADDACCOUNT_ERROR = new ErrorCode(1002000014, "新增子账号失败");
     ErrorCode AUTH_UPDATEACCOUNT_ERROR = new ErrorCode(1002000015, "修改子账号失败");
+    ErrorCode AUTH_MOBILE_NOT_AUTH = new ErrorCode(1002000016, "该手机号未完成认证");
 
     // ========== 菜单模块 1002001000 ==========
     ErrorCode MENU_NAME_DUPLICATE = new ErrorCode(1002001000, "已经存在该名字的菜单");

@@ -155,6 +155,13 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         //查询该手机号是否注册
         if(null==user){
             throw exception(AUTH_MOBILE_NOT_EXIST);
+        }else{
+            //未认证完成无法登陆
+            List<UserExtDO> userExtDOS = userExtService.selectByUserId(user.getId());
+            Integer status = userExtDOS.get(0).getStatus();
+            if(1==status){
+                throw exception(AUTH_MOBILE_NOT_AUTH);
+            }
         }
         // 创建 Token 令牌，记录登录日志
         return createTokenAfterLoginSuccess(user.getId(), reqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
