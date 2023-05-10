@@ -128,23 +128,15 @@
 			},
 			uploadFilePromise(url) {
 				return new Promise((resolve, reject) => {
-					// 图片压缩
-					uni.compressImage({
-						src: url,
-						compressedWidth: 120,
-						success: (r) => {
-							// 上传
-							let a = uni.uploadFile({
-								url: config.uploadUrl, // 仅为示例，非真实的接口地址
-								filePath: r.tempFilePath,
-								name: 'file',
-								success: (res) => {
-									setTimeout(() => {
-										let data = JSON.parse(res.data).data
-										resolve(data)
-									}, 1000)
-								}
-							});
+					let a = uni.uploadFile({
+						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						filePath: url,
+						name: 'file',
+						success: (res) => {
+							setTimeout(() => {
+								let data = JSON.parse(res.data).data
+								resolve(data)
+							}, 1000)
 						}
 					});
 				})
