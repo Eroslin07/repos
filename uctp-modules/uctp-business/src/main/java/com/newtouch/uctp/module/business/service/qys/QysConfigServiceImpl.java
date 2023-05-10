@@ -398,9 +398,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.COLLECT_B_D.value(),
                                 Boolean.FALSE,
                                 Boolean.TRUE);
-                        // TODO: 暂时模拟收车合同签署完成，自动跳过支付进行开票（后续需删除）
-                        log.info("[status]收车委托：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
-                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name()).getCheckedData();
                         break;
                     case INVALIDED:
                         //D 收车合同作废->
@@ -417,6 +414,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("PERSONAL",contractStatusDTO.getTenantType())) {
                             this.companySign(contractDO.getContractId());
+                            // TODO: 暂时模拟收车合同签署完成，自动跳过支付进行开票（后续需删除）
+                            log.info("[status]收车合同：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
+                            this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name()).getCheckedData();
                         }
                         break;
                 }
@@ -464,9 +464,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.SELL_B_D.value(),
                                 Boolean.FALSE,
                                 Boolean.TRUE);
-
-                        // TODO: 暂时模拟卖车合同签署完成，自动跳过支付进行开票（后续需删除）
-                        this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name()).getCheckedData();
                         break;
                     case INVALIDED:
                         //H 卖车合同作废->
@@ -483,6 +480,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("tenantType",contractStatusDTO.getTenantType())) {
                             this.companySign(contractDO.getContractId());
+                            // TODO: 暂时模拟卖车合同签署完成，自动跳过支付进行开票（后续需删除）
+                            log.info("[status]卖车合同：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
+                            this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name()).getCheckedData();
                         }
                         break;
                 }
