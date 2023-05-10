@@ -822,13 +822,13 @@
 				this.carForm.insuranceEndData = parseTime(this.carForm.insuranceEndData, '{y}-{m}-{d}');
 				this.modelId = res.data.modelId;
 				// 收车金额
-				this.sellerForm.sellType = res.data.sellType;
+				this.sellerForm.sellType = res.data.sellType || 0;
 				this.sellerForm.vehicleReceiptAmount = this.$amount.getComdify(res.data.vehicleReceiptAmount);
 				this.sellerForm.buyerName = res.data.buyerName
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount);
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount.getComdify(res.data.sellAmount);
 				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount
 					.getComdify(res.data.deposit);
 				this.fairStatus = res.data.bpmStatus;
@@ -841,7 +841,9 @@
 						}
 					})
 				}
-				this.handleChange2(this.sellerForm.buyerTel);
+				if (this.sellerForm.buyerTel) {
+					this.handleChange2(this.sellerForm.buyerTel);
+				}
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (res.data.sellAmount) {
 					const sellAmount = res.data.sellAmount + ''
@@ -1245,16 +1247,6 @@
 					if (this.chebi == false) {
 						this.handleDraft('step');
 					}
-				}).catch((error) => {
-					let key = '.' + error[0].field;
-					const query = uni.createSelectorQuery()
-					query.select(key).boundingClientRect((data) => {
-						let pageScrollTop = Math.round(data.top)
-						uni.pageScrollTo({
-							scrollTop: pageScrollTop - 70, //滚动的距离
-							duration: 300, //过渡时间
-						})
-					}).exec()
 				})
 			},
 			// 点击车辆信息保存
@@ -1331,7 +1323,7 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.$amount.getDelcommafy(this.sellerForm.sellAmount),
+					sellAmount: this.sellerForm.sellAmount = '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm.sellAmount),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: idcards.map((item) => {
@@ -1339,7 +1331,7 @@
 					}),
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
-					buyerTel: this.sellerForm.buyerTel.replace(/\s*/g, ""),
+					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm.buyerTel,
 					sellType: this.sellerForm.sellType,
 					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
 						.deposit),

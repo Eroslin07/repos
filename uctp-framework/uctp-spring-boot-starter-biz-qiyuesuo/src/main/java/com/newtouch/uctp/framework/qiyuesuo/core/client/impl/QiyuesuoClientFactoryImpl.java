@@ -1,5 +1,6 @@
 package com.newtouch.uctp.framework.qiyuesuo.core.client.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
@@ -31,6 +32,10 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
      */
     private String serverUrl;
     /**
+     * 契约锁请求地址,无赖之举
+     */
+    private String defaultServerUrl = "https://openapi.qiyuesuo.cn";
+    /**
      * 契约锁客户端 Map
      * key：渠道编码，使用 {@link QiyuesuoChannelProperties#getCode()} ()}
      *
@@ -55,7 +60,9 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
     private AbstractQiyuesuoClient createQiyuesuoClient(QiyuesuoChannelProperties properties) {
         QiyuesuoChannelEnum channelEnum = QiyuesuoChannelEnum.getByCode(properties.getCode());
         Assert.notNull(channelEnum, String.format("渠道类型(%s) 为空", channelEnum));
-        properties.setServerUrl(this.serverUrl);
+        if (StrUtil.isBlank(properties.getServerUrl())) {
+            properties.setServerUrl(StrUtil.isBlank(this.serverUrl)?this.defaultServerUrl:this.serverUrl);
+        }
         // 创建客户端
         switch (channelEnum) {
             case DEFAULT: return new DefaultQiyuesuoClient(properties);

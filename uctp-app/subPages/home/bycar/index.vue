@@ -1220,7 +1220,9 @@
 				} else if (this.sellerForm.collection == 1) {
 					this.handleChange(this.sellerForm.thirdBankCard);
 				}
-				this.handleChange1(this.sellerForm.sellerTel);
+				if (this.sellerForm.sellerTel) {
+					this.handleChange1(this.sellerForm.sellerTel);
+				}
 				this.fairStatus = data.carInfo.bpmStatus;
 				data.fileD.forEach((item, index) => {
 					if (index == 0) {

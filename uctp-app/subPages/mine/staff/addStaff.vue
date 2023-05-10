@@ -124,7 +124,9 @@
 				this.oldData = {};
 				this.staffForm = JSON.parse(decodeURIComponent(options.data));
 				this.oldData = JSON.parse(decodeURIComponent(options.data));
-				this.handleChange2(this.staffForm.phone);
+				if (this.staffForm.phone) {
+					this.handleChange2(this.staffForm.phone);
+				}
 			}
 			if (options.type == 'add') {
 				uni.setNavigationBarTitle({

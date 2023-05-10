@@ -261,7 +261,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, deptDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
-                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(adminUserRespDTOs.get(0).getId()));
                 QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
                 AdminUserRespDTO userRespDTO = null;
                 //如果回调数据为认证成功，保存公司id
@@ -578,19 +577,25 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public String login(String signature, String timestamp, String content){
-        QysConfigDO configDO = new QysConfigDO();
-        configDO.setCode("default");
-        configDO.setStatus(0);
-        configDO.setBusinessId(324L);
-        configDO.setServerUrl("https://openapi.qiyuesuo.cn");
-        configDO.setBusinessName("成都森斯尔科技有限公司1");
-        configDO.setCompanyId(3093050858133467346L);
-        configDO.setTenantId(150L);
-        configDO.setAccessKey("5XsdYvfo1v");
-        configDO.setAccessSecret("GxmoAnxUQrSMyTQ0pfxBsUN9yOZfK3");
-        qysConfigMapper.insert(configDO);
-        this.initLocalCache();
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+        TenantUtils.execute(150L, () -> {
+            WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, 150L);
+            //设置当前登录人信息，免得保存报错
+            WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(236L));
+            QysConfigDO configDO = new QysConfigDO();
+            configDO.setCode("default");
+            configDO.setStatus(0);
+            configDO.setBusinessId(324L);
+//            configDO.setServerUrl("https://openapi.qiyuesuo.cn");
+            configDO.setBusinessName("成都森斯尔科技有限公司1");
+            configDO.setCompanyId(3093050858133467346L);
+            configDO.setTenantId(150L);
+            configDO.setAccessKey("5XsdYvfo1v");
+            configDO.setAccessSecret("GxmoAnxUQrSMyTQ0pfxBsUN9yOZfK3");
+            qysConfigMapper.insert(configDO);
+            this.initLocalCache();
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+            System.out.println("woqu");
+        });
         return "success";
     }
 
@@ -1026,6 +1031,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //存合同草稿合同到表
             contractMapper.insert(buyContrsctDo);
             qysContractVO.setType("1");
+            qysContractVO.setContractName("委托收购协议");
 
         } else if (type.equals("2")) {//卖车委托直接付款
             String sellWTCode = contractService.GenerateCode(3);
@@ -1081,6 +1087,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //存合同草稿合同到表
             contractMapper.insert(sellWTContrsctDo);
             qysContractVO.setType("2");
+            qysContractVO.setContractName("委托销售协议");
 
         } else if (type.equals("3")) {////卖车委托按揭付款
             String sellWTCode = contractService.GenerateCode(3);
@@ -1132,6 +1139,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //存合同草稿合同到表
             contractMapper.insert(sellWTContrsctDo);
             qysContractVO.setType("2");
+            qysContractVO.setContractName("委托销售协议");
 
         }
 
@@ -1804,41 +1812,42 @@ public class QysConfigServiceImpl implements QysConfigService {
         String result = "";
         if (parts != null) {
             if (parts.getDrivingLicense() != null && parts.getDrivingLicense()) {
-                result += "有行驶证(正/副)本";
+                result += "行驶证(正/副)本、";
             }
             if (parts.getCarInvoice() != null && parts.getCarInvoice()) {
-                result += "、有购车发票";
+                result += "购车发票、";
             }
             if (parts.getRegistrationCertificate() != null && parts.getRegistrationCertificate()) {
-                result += "、有机动车登记证";
+                result += "机动车登记证、";
             }
             if (parts.getPurchaseTax() != null && parts.getPurchaseTax()) {
-                result += "、有购置税完税凭证";
+                result += "购置税完税凭证、";
             }
             if (parts.getSpareTire() != null && parts.getSpareTire()) {
-                result += "、有备胎";
+                result += "备胎、";
             }
             if (parts.getCarShipTax() != null && parts.getCarShipTax()) {
-                result += "、有车船使用税完税凭证";
+                result += "车船使用税完税凭证、";
             }
             if (parts.getHeavyTrafficInsurance() != null && parts.getHeavyTrafficInsurance()) {
-                result += "、有交强险保单";
+                result += "交强险保单、";
             }
             if (parts.getCommercialInsurance() != null && parts.getCommercialInsurance()) {
-                result += "、有商业险保单";
+                result += "商业险保单、";
             }
             if (parts.getJack() != null && parts.getJack()) {
-                result += "、有千斤顶";
+                result += "千斤顶、";
             }
             if (parts.getSpecification() != null && parts.getSpecification()) {
-                result += "、有说明书";
+                result += "说明书、";
             }
             if (parts.getVehicleKey() != null&&parts.getVehicleKey()!=0) {
-                result += "、钥匙数量:" + parts.getVehicleKey() + "组";
+                result += "钥匙数量:" + parts.getVehicleKey() + "组、";
             }
             if (StringUtils.isNotEmpty(parts.getAccidentVehicle())) {
-                result += "、" + parts.getAccidentVehicle();
+                result += parts.getAccidentVehicle()+"、";
             }
+            result=result.substring(0,result.length()-1);
         }
         return result;
     }
@@ -1847,41 +1856,42 @@ public class QysConfigServiceImpl implements QysConfigService {
         String result = "";
         if (parts != null) {
             if (parts.getDrivingLicense() != null && parts.getDrivingLicense()) {
-                result += "有行驶证(正/副)本";
+                result += "行驶证(正/副)本、";
             }
             if (parts.getCarInvoice() != null && parts.getCarInvoice()) {
-                result += "、有购车发票";
+                result += "购车发票、";
             }
             if (parts.getRegistrationCertificate() != null && parts.getRegistrationCertificate()) {
-                result += "、有机动车登记证";
+                result += "机动车登记证、";
             }
             if (parts.getPurchaseTax() != null && parts.getPurchaseTax()) {
-                result += "、有购置税完税凭证";
+                result += "购置税完税凭证、";
             }
             if (parts.getSpareTire() != null && parts.getSpareTire()) {
-                result += "、有备胎";
+                result += "备胎、";
             }
             if (parts.getCarShipTax() != null && parts.getCarShipTax()) {
-                result += "、有车船使用税完税凭证";
+                result += "车船使用税完税凭证、";
             }
             if (parts.getHeavyTrafficInsurance() != null && parts.getHeavyTrafficInsurance()) {
-                result += "、有交强险保单";
+                result += "交强险保单、";
             }
             if (parts.getCommercialInsurance() != null && parts.getCommercialInsurance()) {
-                result += "、有商业险保单";
+                result += "商业险保单、";
             }
             if (parts.getJack() != null && parts.getJack()) {
-                result += "、有千斤顶";
+                result += "千斤顶、";
             }
             if (parts.getSpecification() != null && parts.getSpecification()) {
-                result += "、有说明书";
+                result += "说明书、";
             }
             if (parts.getVehicleKey() != null&&parts.getVehicleKey()!=0) {
-                result += "、钥匙数量:" + parts.getVehicleKey() + "组";
+                result += "钥匙数量:" + parts.getVehicleKey() + "组、";
             }
             if (StringUtils.isNotEmpty(parts.getAccidentVehicle())) {
-                result += "、" + parts.getAccidentVehicle();
+                result += parts.getAccidentVehicle()+"、";
             }
+            result=result.substring(0,result.length()-1);
         }
         return result;
     }
@@ -1957,8 +1967,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //收车委托合同
             if ("1".equals(type)) {
                 params.add(new TemplateParam("合同编号", code));
-                if (StringUtils.isEmpty(platformDept.getName()))
-                    params.add(new TemplateParam("受托人", platformDept.getName()));
+                params.add(new TemplateParam("受托人", platformDept.getName()));
                 params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
                 params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
                 params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
@@ -2082,7 +2091,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("平台受托人", platformDept.getName()));
                 params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
                 params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
-                params.add(new TemplateParam("乙方联系电话", platformDept.getPhone()));
+                params.add(new TemplateParam("乙方联系电话", platformUserDO.getMobile()));
                 params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
 
                 params.add(new TemplateParam("车商公司名称", userDept.getName()));
