@@ -6,7 +6,7 @@
 					<image src="../../../static/images/bycar/entrust.png" class="hetong_image"></image>
 					<view style="margin-top: 20px;">
 						<u-checkbox-group v-model="entrustValue" activeColor="#fe7345">
-							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托收购协议">
+							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托销售协议">
 							</u-checkbox>
 						</u-checkbox-group>
 					</view>
@@ -15,7 +15,7 @@
 					<image src="../../../static/images/bycar/sell-contract.png" class="hetong_image"></image>
 					<view style="margin-top: 20px;">
 						<u-checkbox-group v-model="contractValue" activeColor="#fe7345">
-							<u-checkbox labelColor="#fa6400" :label="contractName" name="销售协议">
+							<u-checkbox labelColor="#fa6400" :label="contractName" name="二手车销售协议">
 							</u-checkbox>
 						</u-checkbox-group>
 					</view>
@@ -51,8 +51,8 @@
 				isSHowTip:'',
 				contractDtail:[],
 				carId:'',
-				contractName: '收购协议',
-				entrustName: '委托收购协议',
+				contractName: '二手车销售协议',
+				entrustName: '委托销售协议',
 				contractValue: [],
 				entrustValue: [],
 				fairValue: undefined,
@@ -78,8 +78,8 @@
 				getContractEcho(data).then(res => {
 					this.isSHowTip = ''
 					this.contractDtail = res.data
-					this.contractName = res.data.find(v => v.contractType == '2')?.contractName || '收购协议'
-					this.entrustName = res.data.find(v => v.contractType == '1')?.contractName || '委托收购协议'
+					this.contractName = res.data.find(v => v.contractType == '2')?.contractName || '二手车销售协议'
+					this.entrustName = res.data.find(v => v.contractType == '1')?.contractName || '委托销售协议'
 				}).catch(err => {
 					// this.$modal.msg('获取合同失败')
 					this.isSHowTip = 'createFail'
@@ -102,9 +102,9 @@
 								console.log('打开文档成功');
 								setTimeout(()=>{
 									if(text=='1'){
-										_this.entrustValue=['委托收购协议']
+										_this.entrustValue=['委托销售协议']
 									}else{
-										_this.contractValue=['收购协议']
+										_this.contractValue=['二手车销售协议']
 									}
 								},1000)
 							}
