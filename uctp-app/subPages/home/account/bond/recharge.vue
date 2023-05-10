@@ -7,7 +7,7 @@
 				<view>充值金额</view>
 				<view style="height: 30rpx;">{{amountText}}</view>
 				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable
-					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
+					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px" :maxlength='maxlength'>
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
@@ -55,6 +55,7 @@
 				show: false,
 				revision: 0,
 				amountText: '',
+				maxlength: 12
 			}
 		},
 		onLoad(options) {
@@ -77,14 +78,18 @@
 							} else {
 								this.amountText = ''
 							}
-							arr[1] = arr[1].slice(0, 2);
-							this.amount = arr.join('.');
+							if (arr[0].length > 9) {
+								this.maxlength = 12
+							} else {
+								this.maxlength = arr[0].length + 3
+							}
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = 12
 						}
 					})
 				} else {

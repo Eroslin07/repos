@@ -187,7 +187,7 @@
 					</u-form-item>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
 						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit"
-							@focus="depositFocus" @blur="depositBlur"  @input="handleDeposit">
+							@focus="depositFocus" @blur="depositBlur">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -1428,8 +1428,6 @@
 							} else {
 								this.amountText = ''
 							}
-							arr[1] = arr[1].slice(0, 2);
-							this.sellerForm.sellAmount = arr.join('.');
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
@@ -1440,17 +1438,6 @@
 					})
 				} else {
 					this.amountText = ''
-				}
-			},
-			handleDeposit(val){
-				if(val){
-					this.$nextTick(()=>{
-						if(val.indexOf('.')>-1){
-							let arr = val.split('.');
-							arr[1] = arr[1].slice(0, 2);
-							this.sellerForm.deposit = arr.join('.');
-						}
-					})
 				}
 			},
 			// 点击车辆手续及备件

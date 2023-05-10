@@ -9,7 +9,7 @@
 				<view>提现金额</view>
 				<view style="height: 30rpx;">{{amountText}}</view>
 				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable
-					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px">
+					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px" :maxlength='maxlength'>
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 					<template slot="suffix">
 						<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
@@ -36,7 +36,8 @@
 				allAmount: null,
 				revision: 0,
 				amountText: '',
-				amountVisible: false
+				amountVisible: false,
+				maxlength: 12
 			}
 		},
 		onLoad(options) {
@@ -52,13 +53,11 @@
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (val) {
 					this.$nextTick(() => {
-
 						if (parseFloat(val) > parseFloat(this.$amount.getDelcommafy(this.allAmount))) {
 							this.amountVisible = true
 						} else {
 							this.amountVisible = false
 						}
-						console.log( this.amountVisible)
 						if (val.indexOf('.') > -1) {
 							let arr = val.split('.');
 							if (arr[0].length > 2) {
@@ -66,14 +65,18 @@
 							} else {
 								this.amountText = ''
 							}
-							arr[1] = arr[1].slice(0, 2);
-							this.amount = arr.join('.');
+							if(arr[0].length>9){
+								this.maxlength=12
+							}else{
+								this.maxlength = arr[0].length + 3
+							}
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = 12
 						}
 					})
 				} else {

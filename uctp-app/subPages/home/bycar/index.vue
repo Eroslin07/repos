@@ -1636,8 +1636,6 @@
 							} else {
 								this.amountText = ''
 							}
-							arr[1] = arr[1].slice(0, 2);
-							this.sellerForm.vehicleReceiptAmount = arr.join('.');
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
