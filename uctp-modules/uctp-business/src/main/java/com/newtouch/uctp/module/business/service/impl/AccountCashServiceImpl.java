@@ -7,18 +7,13 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.AccountCashRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
-import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
-import com.newtouch.uctp.module.business.dal.mysql.TransactionRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.service.AccountCashService;
@@ -26,7 +21,6 @@ import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import com.newtouch.uctp.module.business.service.cash.MerchantCashService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -383,6 +377,35 @@ public class AccountCashServiceImpl implements AccountCashService {
         //更改保证金预占记录为实占
         merchantCashService.insertCash(merchantAccountDO, payAmount, AccountConstants.TRADE_TYPE_RELEASE, null, transactionRecordReqVO.getContractNo());
         return Boolean.TRUE;
+    }
+
+    //商户银行信息查询
+    @Override
+    public MerchantBankRespVO bankInfo(String accountNo) {
+        log.info("商户银行信息查询 accountNo:{}", accountNo);
+        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
+        if (merchantAccountDO == null || StringUtils.isEmpty(merchantAccountDO.getAccountNo())) {
+            log.info("商户银行信息查询-未获取到当前账户信息 accountNo:{}", accountNo);
+            throw new ServiceException(AccountConstants.ERROR_CODE_ACCOUNT_NOT_FOUND, AccountConstants.ERROR_MESSAGE_ACCOUNT_NOT_FOUND);
+        }
+
+        MerchantBankDO merchantBankDO = merchantBankService.getOne(
+                new LambdaQueryWrapperX<MerchantBankDO>()
+                        .eq(MerchantBankDO::getAccountNo, accountNo)
+                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_PROFIT.getKey())
+                        .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
+
+        MerchantBankRespVO merchantBankRespVO = new MerchantBankRespVO();
+        if (merchantBankDO != null && StringUtils.isNotEmpty(merchantBankDO.getBankNo())) {
+            StringBuffer stringBuffer = new StringBuffer();
+            int length = merchantBankDO.getBankNo().length();
+            stringBuffer.append("****");
+            stringBuffer.append(merchantBankDO.getBankNo().substring(length - 4, length));
+            merchantBankRespVO.setBankNo(stringBuffer.toString());
+            merchantBankRespVO.setBankName(merchantBankDO.getBankName());
+            merchantBankRespVO.setAccountNo(accountNo);
+        }
+        return merchantBankRespVO;
     }
 
     private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {

@@ -1,10 +1,7 @@
 package com.newtouch.uctp.module.business.service;
 
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.AccountCashRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -98,4 +95,12 @@ public interface AccountCashService {
      */
     Boolean release(TransactionRecordReqVO transactionRecordReqVO);
 
+
+    /**
+     * 商户银行信息查询
+     *
+     * @param accountNo 商户账户号
+     * @return MerchantBankRespVO 商户银行信息
+     */
+    MerchantBankRespVO bankInfo(String accountNo);
 }

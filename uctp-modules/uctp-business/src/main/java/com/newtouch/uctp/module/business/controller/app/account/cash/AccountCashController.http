@@ -102,3 +102,8 @@ GET {{appBusinessUrl}}/uctp/account/cash/detail?accountNo=1234567
 Content-Type: application/json
 tenant-id: {{adminTenentId}}
 
+###商户银行信息查询
+GET {{appBusinessUrl}}/uctp/account/cash/bankInfo?accountNo=666
+Content-Type: application/json
+tenant-id: {{adminTenentId}}
+
