@@ -118,7 +118,7 @@
 					confirmText: '前往充值',
 					confirmColor: '#fa6401',
 					success(res){
-						_this.$tab.switchTab('/subPages/home/account/bond/recharge');
+						_this.$tab.navigateTo('/subPages/home/account/bond/recharge');
 					}
 
 				})
