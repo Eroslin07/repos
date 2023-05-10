@@ -114,6 +114,11 @@ public interface QysConfigService {
      * @param carId 车辆Id
      */
     List<QYSContractVO> ContractEcho(Long carId, String type);
+    /**
+     * 获取收车合同/委托合同
+     * @param carId 车辆Id
+     */
+    List<QYSContractVO> FindQYSContract(Long carId);
 
     /**
      * 获取到契约锁单点登录地址

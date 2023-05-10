@@ -174,6 +174,13 @@ public class QysConfigController {
         return success(qysConfigService.ContractEcho(carId,type));
     }
 
+    @GetMapping("/FindBuyAndWTContract")
+    @Operation(summary ="收车合同/委托合同查看")
+    @Parameter(name = "carId", description = "车辆id", required = true, example = "1024")
+    public CommonResult<List<QYSContractVO>> FindQYSContract(@RequestParam("carId") @NotNull  Long carId) {
+        return success(qysConfigService.FindQYSContract(carId));
+    }
+
     @PostMapping("/user/auth")
     @PermitAll
     @Operation(summary ="个人认证")
