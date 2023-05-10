@@ -134,10 +134,10 @@
                 <!-- Redis 端口 -->
                 <redis.port>6379</redis.port>
                 <!-- Redis 密码 -->
-                <!--                <redis.password>j47qendm4bA7f7k</redis.password>-->
-                <redis.password>123456</redis.password>
+                <redis.password>j47qendm4bA7f7k</redis.password>
+                <!--<redis.password>123456</redis.password>-->
                 <!-- Nacos 命名空间 -->
-                <nacos.namespace>uctp_ly</nacos.namespace>
+                <nacos.namespace>uctp_dev</nacos.namespace>
                 <!-- 契约锁请求地址  -->
                 <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
                 <!-- 银行测试API平台配置信息 begin -->

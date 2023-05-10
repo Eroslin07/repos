@@ -98,17 +98,24 @@ public class BpmGlobalHandleListener {
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
             // 收车公允价值流程发起，修改车辆状态
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
-            //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
             // 预占保证金（通过车辆ID查询车辆的收车草稿合同）     合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
             ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
             if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
                 throw new RuntimeException("车辆ID[" + bpmFormMainVO.getThirdId() + "]预占保证金失败，原因：未获取到收车合同信息");
             }
             merchantMoneyApi.reserveCash(contractDO.getContractId());
-        }else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允价值流程发起，修改车辆状态
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
-            //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SKZH.name())) {
+            // 收车款支付失败流程发起时，修改车辆状态
+            ContractDO contractDO = contractMapper.selectByContractIdAndContractType(bpmFormMainVO.getThirdId(), 2);
+            if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getCarId())) {
+                throw new RuntimeException("根据（契约锁）收车合同ID【" + bpmFormMainVO.getThirdId() + "】获取合同的基本信息失败。");
+            }
+            carInfoApi.updateCarStatus(contractDO.getCarId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_C.value(),CarStatus.COLLECT_C_A.value(),"支付失败","流程发起");
         }
         // TODO: 根据业务场景进行个性化处理
         System.out.println(bpmFormMainVO);
@@ -164,7 +171,6 @@ public class BpmGlobalHandleListener {
             if ("disagree".equals(approvalType)) {
                 //修改车辆状态
                 carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
-                //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
                 // 释放保证金
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
                 if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
@@ -176,9 +182,6 @@ public class BpmGlobalHandleListener {
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
-                /*carInfoDO.setBpmStatus("通过");
-                carInfoDO.setBpmReason(reason);
-                carInfoMapper.updateById(carInfoDO);*/
                 carInfoApi.updateBpmApproveInfo(bpmFormMainVO.getThirdId(), "通过", reason);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 1);
@@ -186,7 +189,6 @@ public class BpmGlobalHandleListener {
                 if (!isSend) {
                     throw new RuntimeException("自动发起并签署委托合同异常");
                 }
-                //qysConfigApi.companySign(contractDO.getContractId());  // TODO :调用有问题，需要调用同时支持合同发起、静默签章
                 noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
@@ -194,14 +196,10 @@ public class BpmGlobalHandleListener {
             if ("disagree".equals(approvalType)) {
                 //修改车辆状态
                 carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
-                //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
                 noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
-                /*carInfoDO.setBpmStatus("通过");
-                carInfoDO.setBpmReason(reason);
-                carInfoMapper.updateById(carInfoDO);*/
                 carInfoApi.updateBpmApproveInfo(bpmFormMainVO.getThirdId(), "通过", reason);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 3);
@@ -209,7 +207,6 @@ public class BpmGlobalHandleListener {
                 if (!isSend) {
                     throw new RuntimeException("自动发起并签署委托合同异常");
                 }
-                //qysConfigApi.companySign(contractDO.getContractId());
                 noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
             }
         }
@@ -226,9 +223,7 @@ public class BpmGlobalHandleListener {
             // 收车开票完成后，自动发起收车过户流程
             if ("pass".equals(approvalType)) {
                 // 写入转入地车辆管理所名称（收车）
-                //CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectByCarId(bpmFormMainVO.getThirdId());
                 String transManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("transManageName");
-                //carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), transManageName, null);
                 carInfoDetailsApi.updateTransManage(bpmFormMainVO.getThirdId(), transManageName, null);
                 // 默认发起过户流程
                 String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.SCGH.name());
@@ -241,9 +236,7 @@ public class BpmGlobalHandleListener {
             // 卖车开票完成后，自动发起收车过户流程
             if ("pass".equals(approvalType)) {
                 // 写入转入地车辆管理所名称（卖车）
-                //CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsMapper.selectByCarId(bpmFormMainVO.getThirdId());
-                String sellTransManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("sellTransManageName");
-                //carInfoDetailsMapper.updateTransManageName(carInfoDetailsDO.getId(), carInfoDetailsDO.getTransManageName(), sellTransManageName);
+                String sellTransManageName = bpmFormMainVO.getFormDataJson().getJSONObject("carInvoiceDetailVO").getString("transManageName");
                 carInfoDetailsApi.updateTransManage(bpmFormMainVO.getThirdId(), null, sellTransManageName);
                 // 默认发起过户流程
                 String formMainId = bpmCarTransferService.createTransferBpm(bpmFormMainVO.getThirdId(), BpmDefTypeEnum.MCGH.name());
@@ -255,7 +248,6 @@ public class BpmGlobalHandleListener {
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCGH.name())) {
             // 1.收车过户成功，修改车辆状态为收车已过户
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
-            //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCGH.name())) {
             // 1.卖车过户成功，修改车辆状态为卖车已过户
