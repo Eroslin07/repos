@@ -23,6 +23,9 @@
 						</view>
 					</view>
 				</view>
+				<view v-if="carInfoAll.carInfo.status==23" class="btn-box">
+					<u-button type="primary" size="mini" shape="circle" @click="sellCarBtn(carInfoAll.carInfo.id)" text="我要卖车"></u-button>
+				</view>
 			</view>
 			<view class="driving-license car-registration">
 				<view class="driving-license__icon">
@@ -531,6 +534,10 @@
 					}
 				})
 			},
+			// 我要卖车
+			sellCarBtn(id){
+				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id='+id)
+			},
 			// 预览合同
 			handleContact(url) {
 				// console.log(url)
@@ -628,7 +635,12 @@
 			background: rgba(249, 249, 249, 0.02);
 			border-radius: 8rpx;
 			border: 2rpx solid #EDF3F6;
-
+			position:relative;
+			.btn-box{
+				position:absolute;
+				right:16rpx;
+				top:19rpx;
+			}
 			.car-upload-title {
 				width: 698rpx;
 				height: 78rpx;
@@ -690,6 +702,7 @@
 					padding:0 50rpx 0 10rpx;
 				}
 			}
+			
 		}
 
 		.driving-license {
