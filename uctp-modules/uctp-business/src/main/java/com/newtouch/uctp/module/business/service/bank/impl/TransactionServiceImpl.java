@@ -17,6 +17,7 @@ import com.newtouch.uctp.module.business.enums.bank.BankConstants;
 import com.newtouch.uctp.module.business.enums.bank.ClearingType;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
+import com.newtouch.uctp.module.business.service.bank.BankAPIService;
 import com.newtouch.uctp.module.business.service.bank.TransactionLogService;
 import com.newtouch.uctp.module.business.service.bank.TransactionRecordService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
@@ -58,6 +59,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Resource
     private MerchantAccountService merchantAccountService;
+
+    @Resource
+    private BankAPIService bankAPIService;
 
 
     @Override
@@ -167,42 +171,22 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public NominalAccountResponse nominalAccountGenerate(NominalAccountRequest nominalAccountRequest) {
-        LocalDateTime now = LocalDateTime.now();
-        nominalAccountRequest.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
-        nominalAccountRequest.setTranTime(now.format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
-        nominalAccountRequest.setChannelSeqNo(generateTranNo());
-        nominalAccountRequest.setAreaCode("");//todo bank
-        nominalAccountRequest.setAcctNo("");//todo bank
-        nominalAccountRequest.setBidsSnglFlgCd(""); //todo bank
-
         String requestMessage = JSONObject.toJSONString(nominalAccountRequest);
-
         String responseMessage = null;
-        String message = "";
         // 调用银行接口
         try {
-            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.API_URL + BankConstants.NOMINAL_ACCOUNT_API, requestMessage);
-            if (responseMessage == null) {
-                throw new RuntimeException("银行响应报文为空，交易失败");
+            responseMessage = bankAPIService.post(BankConstants.NOMINAL_ACCOUNT_API, requestMessage);
+            NominalAccountResponse response = null;
+            if (responseMessage != null) {
+                response = JSONObject.parseObject(responseMessage, NominalAccountResponse.class);
+                if (!ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+                    throw new BankException(requestMessage, response.getStatusMsg());
+                }
             }
-
-            NominalAccountResponse response = JSONObject.parseObject(responseMessage, NominalAccountResponse.class);
             return response;
         } catch (Exception e) {
-            log.error("调用银行接口失败", e);
-            message = printExceptionMessage(e);
-            throw new BankException(requestMessage, message);
-
-        } finally {
-            // TODO 记录交易日志
-            if (StringUtils.isNotBlank(message)) {
-                transactionLogService.save(TransactionLogDO.builder()
-                        .tranBeginTime(now)
-                        .tranEndTime(LocalDateTime.now())
-                        .tranRequest(requestMessage)
-                        .tranResponse(message)
-                        .build());
-            }
+            log.error("调用银行接口异常", e);
+            throw e;
         }
     }
 

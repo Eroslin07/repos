@@ -35,4 +35,10 @@ public class BankConstants {
     public final static String ORDERS_PAY_API = "/api/acquiring/orders/pay";
     // 订单支付结果查询API
     public final static String ORDERS_PAY_STATUS = "/api/acquiring/orders/payStatus";
+
+
+    public final static String REQUEST_METHOD_POST = "POST";
+    public final static String REQUEST_METHOD_GET = "GET";
+
+    public final static int BANK_STATUS_CODE_SUCCESS = 200;
 }

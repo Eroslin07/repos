@@ -8,7 +8,7 @@ public enum ResponseStatusCode {
     TRAN_SUCCESS("0000", "交易成功"),
     TRAN_PROCESSING("1000", "交易处理中"),
     UNKNOWN_ERROR("0001", "未知错误"),
-    PARAM_VALID_FAILED("0002", "参数校验失败"),
+    PARAM_VALID_FAILED("ZJJGPA000002", "参数校验失败"),
     ASYNC_TRAN_FAILED("0003", "异步交易失败");
 
     private String code;
