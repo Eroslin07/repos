@@ -21,7 +21,7 @@
 		</view> -->
 		<view class="login-form-content">
 			<view class="input-item flex align-center">
-				<u--input v-model="loginForm.username" border="bottom" type="text" placeholder="请输入手机号" maxlength="30" />
+				<u--input v-model="loginForm.username" border="bottom" type="number" placeholder="请输入手机号" maxlength="30" />
 			</view>
 			<view class="input-item flex align-center" v-if="changing">
 				<u--input v-model="loginForm.password" border="bottom" type="password" placeholder="请输入密码" maxlength="32" />
