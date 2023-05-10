@@ -36,7 +36,7 @@ import * as ToDoList from '@/api/workbench/toDoList'
 import { baseInfoData, completedVisible } from '../basInfoValue'
 import { Drawer } from '@/components/Drawer'
 // 列表相关的变量
-const [registerTable] = useXTable({
+const [registerTable, { reload }] = useXTable({
   allSchemas: allSchemas,
   getListApi: Finished.getFinished
 })
@@ -85,7 +85,9 @@ const handleApplication = (row) => {
       loadingInstance.close()
     })
 }
-
+onActivated(() => {
+  reload()
+})
 // 关闭弹框
 // const closeDialog = () => {
 //   dialogVisible.value = false
