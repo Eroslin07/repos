@@ -662,6 +662,28 @@ public class QysConfigServiceImpl implements QysConfigService {
         return "OK";
     }
 
+    public void updateContract(Long contractId){
+        FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+        ContractDO contractDO = contractMapper.selectByContractId(contractId);
+        //通过契约锁文档ID将文档内容转为字节流
+        byte[] bytes = ContractUtil.ContractDownDone(contractId);
+
+        fileCreateReqDTO.setContent(bytes);
+        fileCreateReqDTO.setName(contractDO.getContractName()+".pdf");
+        fileCreateReqDTO.setPath(null);
+        //文件上传致服务器
+        CommonResult<FileDTO> resultFile = fileApi.createFileNew(fileCreateReqDTO);
+        FileDTO FileDTO = resultFile.getData();
+
+        BusinessFileDO bDO = businessFileMapper.selectOne("main_id", contractId);
+        bDO.setId(FileDTO.getId());
+        //删除中间表business的数据
+        businessFileService.deleteByMainId(contractId);
+
+        businessFileMapper.insert(bDO);
+
+    }
+
     @Override
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
