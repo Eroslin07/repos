@@ -1,6 +1,5 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo;
 
-import com.alibaba.fastjson.JSONArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
@@ -505,5 +505,35 @@ public class AppCarInfoController {
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
     public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey){
         return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId, procDefKey)));
+    }
+
+    @PutMapping("/updateBpmApproveInfo")
+    @Operation(summary = "记录车辆的流程审批状态、审批意见（提供bpm使用）")
+    @Parameter(name = "carId", description = "车辆ID", required = true)
+    @Parameter(name = "bpmStatus", description = "审批状态", required = true)
+    @Parameter(name = "bpmReason", description = "审批意见", required = true)
+    public CommonResult<Boolean> updateBpmApproveInfo(@RequestParam("carId") Long carId,
+                                                      @RequestParam("bpmStatus") String bpmStatus,
+                                                      @RequestParam("bpmReason") String bpmReason) {
+        carInfoService.updateBpmApproveInfo(carId, bpmStatus, bpmReason);
+        return success(true);
+    }
+
+    @PutMapping("/updateCarStatus")
+    @Operation(summary = "修改车辆状态（提供bpm使用）")
+    @Parameter(name = "carId", description = "车辆ID", required = true)
+    @Parameter(name = "salesStatus", description = "一级状态", required = true)
+    @Parameter(name = "status", description = "二级状态", required = true)
+    @Parameter(name = "statusThree", description = "三级状态", required = true)
+    @Parameter(name = "bpmStatus", description = "审批状态", required = true)
+    @Parameter(name = "bpmReason", description = "审批意见", required = true)
+    public CommonResult<Boolean> updateCarStatus(@RequestParam("carId") Long carId,
+                                                 @RequestParam("salesStatus") Integer salesStatus,
+                                                 @RequestParam("status") Integer status,
+                                                 @RequestParam("statusThree") Integer statusThree,
+                                                 @RequestParam("bpmStatus") String bpmStatus,
+                                                 @RequestParam("bpmReason") String bpmReason) {
+        carInfoService.updateCarStatus(carId, salesStatus, status, statusThree, bpmStatus, bpmReason);
+        return success(true);
     }
 }

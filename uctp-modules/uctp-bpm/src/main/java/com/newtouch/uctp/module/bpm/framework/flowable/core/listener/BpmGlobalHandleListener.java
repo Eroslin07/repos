@@ -27,7 +27,6 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.form.BpmFormMainDO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoDetailsMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.CarInfoMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.car.ContractMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
@@ -41,9 +40,9 @@ import com.newtouch.uctp.module.business.api.account.AccountApi;
 import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.account.dto.AccountDTO;
 import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
+import com.newtouch.uctp.module.business.api.carInfo.CarInfoApi;
 import com.newtouch.uctp.module.business.api.carinfodetails.CarInfoDetailsApi;
 import com.newtouch.uctp.module.business.api.contract.MerchantMoneyApi;
-import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 
@@ -56,8 +55,6 @@ import com.newtouch.uctp.module.business.enums.CarStatus;
 public class BpmGlobalHandleListener {
     @Resource
     private BpmFormMainMapper bpmFormMainMapper;
-    @Resource
-    private NoticeApi noticeApi;
     @Resource
     private NoticeService noticeService;
     @Resource
@@ -83,9 +80,9 @@ public class BpmGlobalHandleListener {
     @Resource
     private BpmCarTransferService bpmCarTransferService;
     @Resource
-    private CarInfoDetailsMapper carInfoDetailsMapper;
-    @Resource
     private CarInfoDetailsApi carInfoDetailsApi;
+    @Resource
+    private CarInfoApi carInfoApi;
 
     /**
      * 流程创建时处理
@@ -100,7 +97,8 @@ public class BpmGlobalHandleListener {
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
             // 收车公允价值流程发起，修改车辆状态
-            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
+            //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
             // 预占保证金（通过车辆ID查询车辆的收车草稿合同）     合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
             ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
             if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
@@ -109,7 +107,8 @@ public class BpmGlobalHandleListener {
             merchantMoneyApi.reserveCash(contractDO.getContractId());
         }else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允价值流程发起，修改车辆状态
-            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
+            //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
         }
         // TODO: 根据业务场景进行个性化处理
         System.out.println(bpmFormMainVO);
@@ -164,7 +163,8 @@ public class BpmGlobalHandleListener {
            //收车公允审批不通过
             if ("disagree".equals(approvalType)) {
                 //修改车辆状态
-                carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
+                carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
+                //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
                 // 释放保证金
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
                 if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
@@ -176,9 +176,10 @@ public class BpmGlobalHandleListener {
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
-                carInfoDO.setBpmStatus("通过");
+                /*carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
-                carInfoMapper.updateById(carInfoDO);
+                carInfoMapper.updateById(carInfoDO);*/
+                carInfoApi.updateBpmApproveInfo(bpmFormMainVO.getThirdId(), "通过", reason);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 1);
                 boolean isSend = qysConfigApi.send(contractDO.getContractId(), false).getCheckedData();
@@ -192,14 +193,16 @@ public class BpmGlobalHandleListener {
             //卖车公允审批不通过
             if ("disagree".equals(approvalType)) {
                 //修改车辆状态
-                carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
+                carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
+                //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
                 noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
-                carInfoDO.setBpmStatus("通过");
+                /*carInfoDO.setBpmStatus("通过");
                 carInfoDO.setBpmReason(reason);
-                carInfoMapper.updateById(carInfoDO);
+                carInfoMapper.updateById(carInfoDO);*/
+                carInfoApi.updateBpmApproveInfo(bpmFormMainVO.getThirdId(), "通过", reason);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
                 ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 3);
                 boolean isSend = qysConfigApi.send(contractDO.getContractId(), false).getCheckedData();
@@ -251,7 +254,8 @@ public class BpmGlobalHandleListener {
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCGH.name())) {
             // 1.收车过户成功，修改车辆状态为收车已过户
-            carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
+            //carInfoMapper.updateStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCGH.name())) {
             // 1.卖车过户成功，修改车辆状态为卖车已过户
