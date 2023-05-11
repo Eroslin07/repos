@@ -2262,7 +2262,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 params.add(new TemplateParam("平台受托人", platformDept.getName()));
                 params.add(new TemplateParam("乙方营业执照号", platformDept.getTaxNum()));
                 params.add(new TemplateParam("乙方法定代表人", platformDept.getLegalRepresentative()));
-                params.add(new TemplateParam("乙方联系电话", platformDept.getPhone()));
+                params.add(new TemplateParam("乙方联系电话", platformUserDO.getMobile()));
                 params.add(new TemplateParam("乙方联系地址", platformDept.getAddress()));
 
                 params.add(new TemplateParam("车商公司名称", userDept.getName()));
