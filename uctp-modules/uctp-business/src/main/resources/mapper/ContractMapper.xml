@@ -52,8 +52,9 @@
             ,UPDATE_TIME as            updateTime
             ,BUSINESS_ID as            businessId
             ,DELETED
+            ,INVALIDED
          from uctp_contract
-         where CAR_ID =#{carId} and CONTRACT_TYPE=#{contractType} and STATUS in('0','1','2')
+         where CAR_ID =#{carId} and CONTRACT_TYPE=#{contractType} and STATUS in('0','1','2') and INVALIDED=0
     </select>
 
 
