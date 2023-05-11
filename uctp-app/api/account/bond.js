@@ -35,3 +35,12 @@ export function getRecharge(data) {
 		'data': data
 	})
 }
+
+// 查询保证金银行账户
+export function getBankInfo(data) {
+	return request({
+		url: '/uctp/account/cash/bankInfo',
+		'method': 'GET',
+		params: data
+	})
+}

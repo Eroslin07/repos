@@ -69,10 +69,6 @@
 				available: 0,
 				// 冻结余额
 				blockedBalances: 0,
-				// 银行
-				bankName: '',
-				// 账号
-				bankNo: '',
 				indexList: [],
 				revision: 0,
 				status: false
@@ -118,7 +114,7 @@
 			},
 			// 提现
 			handleWithdrawal() {
-				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available + '&revision=' + this.revision + '&bankName=' + this.bankName + '&bankNo=' + this.bankNo);
+				this.$tab.navigateTo('/subPages/home/account/bond/withdrawal?amount=' + this.available + '&revision=' + this.revision);
 			},
 			// 充值
 			handleRecharge() {

@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>{{ bankName }}（{{ formatBank(bankNo) }}）</view>
+			<view>{{ bankName }}（{{ bankNo }}）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -27,7 +27,8 @@
 
 <script>
 	import {
-		getWithdraw
+		getWithdraw,
+		getBankInfo
 	} from '@/api/account/bond.js'
 	export default {
 		data() {
@@ -43,22 +44,24 @@
 			}
 		},
 		onLoad(options) {
+			this.getBank();
 			this.allAmount = options.amount;
 			this.revision = options.revision;
-			this.bankName = options.bankName;
-			this.bankNo = options.bankNo;
 			uni.setNavigationBarTitle({
 				title: '保证金提现'
 			});
 		},
 		methods: {
-			// 格式化银行卡
-			formatBank(val) {
-				if (val) {
-					return val.replace(/\s*/g, "").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2")
-				} else {
-					return ''
+			// 查询保证金银行账户
+			getBank() {
+				let data = {
+					accountNo: this.$store.state.user.accountNo,
+					busType: '1'
 				}
+				getBankInfo(data).then((res) => {
+					this.bankName = res.data.bankName;
+					this.bankNo = res.data.bankNo;
+				})
 			},
 			// 输入金额回调
 			handleInput(val) {
