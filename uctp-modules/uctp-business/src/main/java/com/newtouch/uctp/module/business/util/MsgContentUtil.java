@@ -103,7 +103,7 @@ public class MsgContentUtil {
                     title= StationInfoEnum.RECEIVE_FAIR_FAIL.getDesc();
                     break;
                 case "12":
-                    result = "您的收车价格"+amount+"元价格偏离了市场公允价值，经由市场方审核通过，请及时处理合同签章。";
+                    result = "您的收车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续卖方合同签署！";
                     //title="公允价值通过";
                     title= StationInfoEnum.RECEIVE_FAIR_SUCCESS.getDesc();
                     break;
