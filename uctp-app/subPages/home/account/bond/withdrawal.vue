@@ -53,10 +53,10 @@
 		},
 		methods: {
 			// 格式化银行卡
-			formatBank(val){
-				if(val){
-					return val.replace(/\s*/g,"").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2")
-				}else{
+			formatBank(val) {
+				if (val) {
+					return val.replace(/\s*/g, "").replace(/^(.{1})(?:\d+)(.{1})$/, "$1***********$2")
+				} else {
 					return ''
 				}
 			},
@@ -77,9 +77,9 @@
 							} else {
 								this.amountText = ''
 							}
-							if(arr[0].length>9){
-								this.maxlength=12
-							}else{
+							if (arr[0].length > 9) {
+								this.maxlength = 12
+							} else {
 								this.maxlength = arr[0].length + 3
 							}
 						} else {
@@ -122,6 +122,26 @@
 			// 点击全部提现
 			handleQuanbu() {
 				this.amount = this.$amount.getDelcommafy(this.allAmount)
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
+				if (this.amount) {
+
+					if (this.amount.indexOf('.') > -1) {
+						let arr = this.amount.split('.')
+						if (arr[0].length > 2) {
+							this.amountText = texts[arr[0].length - 3]
+						} else {
+							this.amountText = ''
+						}
+					} else {
+						if (this.amount.length > 2) {
+							this.amountText = texts[this.amount.length - 3]
+						} else {
+							this.amountText = ''
+						}
+					}
+				} else {
+					this.amountText = ''
+				}
 			}
 		}
 	}

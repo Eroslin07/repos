@@ -178,6 +178,26 @@
 			// 点击全部提现
 			handleQuanbu() {
 				this.amount = this.allAmount / 100;
+				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
+				if (this.amount) {
+					if (this.amount.indexOf('.') > -1) {
+						let arr = this.amount.split('.')
+						if (arr[0].length > 2) {
+							this.amountText = texts[arr[0].length - 3]
+						} else {
+							this.amountText = ''
+						}
+					} else {
+						if (this.amount.length > 2) {
+							this.amountText = texts[this.amount.length - 3]
+						} else {
+							this.amountText = ''
+						}
+					}
+				} else {
+					this.amountText = ''
+				}
+
 			}
 		}
 	}
