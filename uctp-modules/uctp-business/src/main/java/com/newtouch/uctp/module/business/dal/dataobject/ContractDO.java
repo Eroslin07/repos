@@ -1,14 +1,15 @@
 package com.newtouch.uctp.module.business.dal.dataobject;
 
+import lombok.*;
+
+import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
-import lombok.*;
-
-import java.time.LocalDateTime;
 
 /**
  * 合同主表 DO
@@ -68,7 +69,7 @@ public class ContractDO extends TenantBaseDO {
     private String signUpAmount;
 
     /**
-     * 合同状态
+     * 合同状态(0 草稿 1已发起 2已完成)
      */
     private Integer status;
     /**

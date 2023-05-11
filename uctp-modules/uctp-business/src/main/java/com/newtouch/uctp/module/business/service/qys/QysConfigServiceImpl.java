@@ -742,9 +742,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         contractDO.setStatus(1);
         contractService.update(contractDO);
         CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
-        carInfo.setSalesStatus(CarStatus.COLLECT.value());
-        carInfo.setStatus(CarStatus.COLLECT_B.value());
-        carInfo.setStatusThree(CarStatus.COLLECT_B_B.value());
+        //合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+        if (ObjectUtil.equals(1, contractDO.getContractType())) {
+            carInfo.setSalesStatus(CarStatus.COLLECT.value());
+            carInfo.setStatus(CarStatus.COLLECT_B.value());
+            carInfo.setStatusThree(CarStatus.COLLECT_B_B.value());
+        }
+        else if (ObjectUtil.equals(3, contractDO.getContractType())) {
+            carInfo.setSalesStatus(CarStatus.SELL.value());
+            carInfo.setStatus(CarStatus.SELL_B.value());
+            carInfo.setStatusThree(CarStatus.SELL_B_B.value());
+        }
         carInfoService.update(carInfo);
         //这里必须要市场方发起
 //        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
