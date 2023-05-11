@@ -100,10 +100,15 @@ public class AccountProfitController {
         return success(respVO);
     }
 
-    // TODO liujian 补充利润提现银行卡反显接口
+    @PutMapping("/release/{businessKey}")
+    @Operation(summary = "提现利润释放")
+    public CommonResult<String> profitRelease(@PathVariable("businessKey") String businessKey) {
+        return success("释放成功");
+    }
 
     /**
      * 判断当前商户账户是不是当前登录用户名下的
+     *
      * @param accountNo
      */
     private void checkAccount(String accountNo) {

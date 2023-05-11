@@ -199,11 +199,11 @@ public class TransactionServiceImpl implements TransactionService {
 
         String accountNo = merchantBankDO.getAccountNo();
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
-        String tranNo = "generateTranNo();";
+        String tranNo = SPDBBankTrans.TRAN_SEQ_NO.get(LocalDateTime.now());
 
         BalancesWithdrawalRequest param = new BalancesWithdrawalRequest();
         //TODO:交易地区代码-必填 约定的代发平台专用代码
-        param.setAreaCode("");
+        param.setAreaCode(BankConstants.AREA_CODE);
         //TODO:监管账号-必填 代发平台子公司存管账户账号
         param.setSettleAcctNo("");
         //TODO:子账号-必填 发薪企业台账子账户出金类型为06时必输
@@ -212,7 +212,7 @@ public class TransactionServiceImpl implements TransactionService {
         //商户交易流水号-必填
         param.setChannelSeqNo(tranNo);
         //出金类型-必填 06-按子账户出金
-        param.setGldYldTypeCd("06");
+        param.setGldYldTypeCd("");
         //TODO:授权码-必填
         param.setAuthrCd("");
         //收款方开户行名称-必填
