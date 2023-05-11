@@ -16,6 +16,7 @@ interface UserInfoVO {
   roles: string[]
   isSetUser: boolean
   user: UserVO
+  userRedirect: boolean
 }
 
 export const useUserStore = defineStore('admin-user', {
@@ -27,7 +28,8 @@ export const useUserStore = defineStore('admin-user', {
       id: 0,
       avatar: '',
       nickname: ''
-    }
+    },
+    userRedirect: false
   }),
   getters: {
     getPermissions(): string[] {
@@ -41,6 +43,9 @@ export const useUserStore = defineStore('admin-user', {
     },
     getUser(): UserVO {
       return this.user
+    },
+    getUserRedirect(): boolean {
+      return this.userRedirect
     }
   },
   actions: {
@@ -74,6 +79,9 @@ export const useUserStore = defineStore('admin-user', {
         avatar: '',
         nickname: ''
       }
+    },
+    setUserRedirect() {
+      this.userRedirect = !this.userRedirect
     }
   }
 })

@@ -140,7 +140,7 @@ import * as authUtil from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import * as LoginApi from '@/api/login'
 import { LoginStateEnum, useLoginState, useFormValid } from './useLogin'
-
+import { useUserStoreWithOut } from '@/store/modules/user'
 const { t } = useI18n()
 // const message = useMessage()
 const iconHouse = useIcon({ icon: 'ep:house' })
@@ -239,6 +239,9 @@ const handleLogin = async (params) => {
       authUtil.removeLoginForm()
     }
     authUtil.setToken(res)
+    const userStore = useUserStoreWithOut()
+    userStore.setUserRedirect()
+    await permissionStore.generateRoutes()
     if (!redirect.value) {
       redirect.value = '/'
     }

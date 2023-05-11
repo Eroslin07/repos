@@ -1111,6 +1111,13 @@
 						this.carForm.brand = '';
 						this.carForm.brandType = '';
 						this.carForm.firstRegistDate = dateTime;
+						this.carForm.drivingLicenseUrl = [];
+					}
+					if (this.fileList4.length == 0 && this.fileList8.length == 0) {
+						this.sellerForm.sellerIdCard = '';
+						this.sellerForm.sellerAdder = '';
+						this.sellerForm.sellerName = '';
+						this.sellerForm.sellerIdCardUrl = [];
 					}
 				})
 			},

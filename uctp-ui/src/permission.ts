@@ -40,6 +40,10 @@ router.beforeEach(async (to, from, next) => {
       if (!userStore.getIsSetUser) {
         isRelogin.show = true
         await userStore.setUserInfoAction()
+        if (userStore.getUserRedirect) {
+          next({ path: '/' })
+          userStore.setUserRedirect()
+        }
         isRelogin.show = false
         // 后端过滤菜单
         await permissionStore.generateRoutes()
