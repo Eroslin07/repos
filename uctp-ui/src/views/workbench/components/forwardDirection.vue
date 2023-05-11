@@ -232,7 +232,14 @@
             </el-col>
             <el-col :span="8">
               <span>价税合计：</span>
-              <span>取卖车款</span>
+              <span
+                >{{
+                  moneyFormat(
+                    baseInfoData.data.variables.formDataJson.formMain.formDataJson
+                      .carInvoiceDetailVO.sellAmount
+                  )
+                }}元</span
+              >
             </el-col>
           </el-row>
         </div>
