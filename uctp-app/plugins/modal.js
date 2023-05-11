@@ -40,7 +40,7 @@ export default {
         content: content,
         cancelText: '取消',
         confirmText: '确定',
-        success: function(res) {
+        success: function (res) {
           if (res.confirm) {
             resolve(res.confirm)
           }
@@ -64,7 +64,8 @@ export default {
   loading(content) {
     uni.showLoading({
       title: content,
-      icon: 'none'
+      icon: 'none',
+      mask: true
     })
   },
   // 关闭遮罩层
