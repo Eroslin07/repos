@@ -40,7 +40,7 @@ public class AccountProfitController {
     public CommonResult<ProfitSummaryRespVO> summary(@RequestParam String accountNo) {
         log.info("查询账户{}的利润概要信息", accountNo);
 
-        this.checkAccount(accountNo);
+        //this.checkAccount(accountNo);
         ProfitSummaryRespVO summary = accountProfitService.summary(accountNo);
 
         return success(summary);
@@ -52,7 +52,7 @@ public class AccountProfitController {
         String accountNo = profitPresentReqVO.getAccountNo();
         log.info("账户{}提出利润", accountNo);
 
-        this.checkAccount(accountNo);
+        //this.checkAccount(accountNo);
         Long profitId = accountProfitService.profitPresent(accountNo, Long.valueOf(profitPresentReqVO.getMerchantBankId()),
                 profitPresentReqVO.getAmount(), profitPresentReqVO.getInvoiceFiles());
 
@@ -70,7 +70,7 @@ public class AccountProfitController {
         String accountNo = query.getAccountNo();
         log.info("查询账户{}的利润明细", accountNo);
 
-        this.checkAccount(accountNo);
+        //this.checkAccount(accountNo);
         PageResult<ProfitRespVO> pr = accountProfitService.profitList(accountNo, query);
 
         return success(pr);
@@ -81,7 +81,7 @@ public class AccountProfitController {
     public CommonResult<ProfitDetailRespVO> profitDetail(@RequestParam String accountNo, @RequestParam String profitId) {
         log.info("查询账户{}的{}利润详情", accountNo, profitId);
 
-        this.checkAccount(accountNo);
+        //this.checkAccount(accountNo);
         Long id = null;
         if (profitId != null) {
             id = Long.valueOf(profitId);
@@ -95,7 +95,7 @@ public class AccountProfitController {
     public CommonResult<List<ProfitCostMonthRespVO>> costList(@Valid ProfitCostQueryReqVO query) {
         log.info("查询账户{}的费用情况", query.getAccountNo());
 
-        this.checkAccount(query.getAccountNo());
+        //this.checkAccount(query.getAccountNo());
         List<ProfitCostMonthRespVO> respVO = accountProfitService.getMonthCostByQuarter(query.getAccountNo(), query.getQuarter());
         return success(respVO);
     }
