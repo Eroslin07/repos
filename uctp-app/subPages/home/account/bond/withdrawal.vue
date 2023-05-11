@@ -96,6 +96,7 @@
 					})
 				} else {
 					this.amountText = ''
+					this.amountVisible = false
 				}
 			},
 			// 确定
@@ -127,7 +128,6 @@
 				this.amount = this.$amount.getDelcommafy(this.allAmount)
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']
 				if (this.amount) {
-
 					if (this.amount.indexOf('.') > -1) {
 						let arr = this.amount.split('.')
 						if (arr[0].length > 2) {
