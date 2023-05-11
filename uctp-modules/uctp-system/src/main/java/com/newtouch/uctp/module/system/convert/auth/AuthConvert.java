@@ -36,12 +36,12 @@ public interface AuthConvert {
             .build();
     }
 
-    default AuthPermissionInfoRespVO convert(AdminUserDO user, UserExtDO userExt,DeptDO dept, TenantDO tenant) {
+    default AuthPermissionInfoRespVO convert(AdminUserDO user, UserExtDO userExt,DeptDO dept, TenantDO tenant,String accountNo) {
         return AuthPermissionInfoRespVO.builder()
                 .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).staffType(userExt.getStaffType())
                         .nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId())
                         .deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar())
-                        .registerType(userExt.getStatus()).build())
+                        .registerType(userExt.getStatus()).accountNo(accountNo).build())
                 .build();
     }
 

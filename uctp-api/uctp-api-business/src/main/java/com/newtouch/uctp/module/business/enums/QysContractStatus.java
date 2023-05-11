@@ -12,11 +12,11 @@ public enum QysContractStatus {
     SIGNING("SIGNING","签署中"),
     REJECTED("REJECTED","已退回"),
     COMPLETE("COMPLETE","已完成"),
-    EXPIRED("EXPIRED","已截止签署"),
+    EXPIRED("EXPIRED","已过期"),
     FILLING("FILLING","拟定中"),
-    INVALIDING("INVALIDING","草稿"),
-    COLLECT("DRAFT","作废中"),
-    FORCE_END("FORCE_END","强制结束"),
+    FAILED("FAILED","签署失败"),
+    INVALIDING("INVALIDING","作废中"),
+    END("END","强制结束"),
     INVALIDED("INVALIDED","已作废");
 
 

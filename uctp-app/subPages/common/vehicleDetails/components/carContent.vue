@@ -493,6 +493,10 @@
 													_this.carUpload = true;
 													_this.$emit('changeTest', _this
 														.carUpload)
+														
+													uni.$emit('listRefresh', {
+													      refresh: true
+													});
 												}
 											}
 										})

@@ -4,21 +4,11 @@
 			<view class="contract-box">
 				<view class="text" @click="handleViewContract('1')">
 					<image src="/subPages/static/images/bycar/entrust.png" class="hetong_image"></image>
-					<view style="margin-top: 20px;">
-						<u-checkbox-group v-model="entrustValue" activeColor="#fe7345">
-							<u-checkbox labelColor="#fa6400" :label="entrustName" name="委托收购协议">
-							</u-checkbox>
-						</u-checkbox-group>
-					</view>
+					<image v-show="entrustChecked" class="badge" src="/subPages/static/images/bycar/checkedIcons.png"></image>
 				</view>
 				<view class="text" @click="handleViewContract('2')">
 					<image src="/subPages/static/images/bycar/coll-contract.png" class="hetong_image"></image>
-					<view style="margin-top: 20px;">
-						<u-checkbox-group v-model="contractValue" activeColor="#fe7345">
-							<u-checkbox labelColor="#fa6400" :label="contractName" name="收购协议">
-							</u-checkbox>
-						</u-checkbox-group>
-					</view>
+					<image v-show="contractChecked" class="badge" src="/subPages/static/images/bycar/checkedIcons.png"></image>
 				</view>
 			</view>
 
@@ -51,17 +41,17 @@
 				// 合同详情
 				contractDtail: [],
 				isSHowTip: '',
-				contractName: '收购协议',
-				entrustName: '委托收购协议',
 				fairVisible: 1,
-				contractValue: [],
-				entrustValue: [],
 				jsonData: {},
 				fairValue: {
 					value1: '',
 					value2: ''
 				},
-				available: ''
+				available: '',
+				// 委托选中
+				entrustChecked:false,
+				// 合同选中
+				contractChecked:false
 			}
 		},
 		components: {
@@ -92,13 +82,13 @@
 							showMenu: false,
 							success: function(res) {
 								console.log('打开文档成功');
-								setTimeout(()=>{
-									if(text=='1'){
-										_this.entrustValue=['委托收购协议']
-									}else{
-										_this.contractValue=['收购协议']
+								setTimeout(() => {
+									if (text == '1') {
+										_this.entrustChecked = true;
+									} else {
+										_this.contractChecked = true;
 									}
-								},1000)
+								}, 1000)
 							}
 						});
 					},
@@ -110,7 +100,7 @@
 			// 合同签章
 			handleAffirm() {
 				let _this = this
-				if (!this.contractValue.length || !this.entrustValue.length) return this.$modal.msg('请勾选协议和委托协议！')
+				if(!this.entrustChecked || !this.contractChecked) return this.$modal.msg('请查看协议和合同！')
 				if (this.jsonData.carInfo.vehicleReceiptAmount > this.available) return uni.showModal({
 					title: '提示',
 					content: `收车金额${this.$amount.getComdify(this.jsonData.carInfo.vehicleReceiptAmount)}元超过保证金余额${this.$amount.getComdify(this.available)}元，余额不足，不能发起收车，请充值后再发起收车操作。`,
@@ -198,8 +188,6 @@
 				getContractEcho(data).then(res => {
 					this.isSHowTip = ''
 					this.contractDtail = res.data
-					this.contractName = res.data.find(v => v.contractType == '2')?.contractName || '收购协议'
-					this.entrustName = res.data.find(v => v.contractType == '1')?.contractName || '委托收购协议'
 				}).catch(err => {
 					// this.$modal.msg('获取合同失败')
 					this.isSHowTip = 'createFail'
@@ -235,20 +223,26 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-around;
+		.text {
+			margin:200rpx auto;
+			font-size: 30rpx;
+			text-align: center;
+			color: #fa6400;
+			position:relative;
+			.hetong_image {
+				width: 170rpx;
+				height: 190rpx;
+			}
+			.badge{
+				position:absolute;
+				width:38rpx;
+				height: 38rpx;
+				top:0;
+				left:0;
+			}
+		}
+		
 	}
-
-	.hetong_image {
-		width: 170rpx;
-		height: 190rpx;
-	}
-
-	.text {
-		padding: 200rpx 0;
-		font-size: 30rpx;
-		text-align: center;
-		color: #fa6400;
-	}
-
 	.button {
 		margin-top: 10px;
 		background-color: #fa6400;

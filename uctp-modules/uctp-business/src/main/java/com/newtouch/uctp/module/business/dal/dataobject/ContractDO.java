@@ -72,6 +72,10 @@ public class ContractDO extends TenantBaseDO {
      */
     private Integer status;
     /**
+     * 是否作废 ；0未作废，1作废
+     */
+    private Integer invalided;
+    /**
      * 合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
      */
     private Integer contractType;
@@ -85,8 +89,6 @@ public class ContractDO extends TenantBaseDO {
      * 签约时间
      */
     private LocalDateTime signingDate;
-
-
     /**
      * 合同编码
      */

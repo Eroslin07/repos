@@ -288,14 +288,20 @@
 		},
 		// 收车状态
 		tabCarStatus(item, allChild) {
+			// this.$tab.navigateTo(
+			// 	`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
+			// )
 			this.$tab.navigateTo(
-				`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&allChild=${JSON.stringify(allChild)}`
+				`/subPages/home/carStatus/carStatus?fatherStatus=${item.status}`
 			)
 		},
 		// 收车状态子项
 		handleTabItem(item, childStatus, allChild) {
+			// this.$tab.navigateTo(
+			// 	`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&childStatus=${childStatus}&&allChild=${JSON.stringify(allChild)}`
+			// )
 			this.$tab.navigateTo(
-				`/subPages/home/carStatus/carStatus?item=${JSON.stringify(item)}&&childStatus=${childStatus}&&allChild=${JSON.stringify(allChild)}`
+				`/subPages/home/carStatus/carStatus?fatherStatus=${item.status}&&childStatus=${childStatus}`
 			)
 		},
 

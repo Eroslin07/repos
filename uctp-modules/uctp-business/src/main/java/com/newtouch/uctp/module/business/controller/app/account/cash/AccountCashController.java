@@ -2,10 +2,7 @@ package com.newtouch.uctp.module.business.controller.app.account.cash;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.AccountCashRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.CashDetailRespVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
-import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.impl.ValidatedGroup;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,5 +79,11 @@ public class AccountCashController {
     @Operation(summary = "保证金释放")
     public CommonResult<Boolean> release(@Validated(ValidatedGroup.Release.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
         return CommonResult.success(accountCashService.release(transactionRecordReqVO));
+    }
+
+    @GetMapping("/bankInfo")
+    @Operation(summary = "商户银行信息查询")
+    public CommonResult<MerchantBankRespVO> bankInfo(@RequestParam(name = "accountNo") String accountNo) {
+        return CommonResult.success(accountCashService.bankInfo(accountNo));
     }
 }

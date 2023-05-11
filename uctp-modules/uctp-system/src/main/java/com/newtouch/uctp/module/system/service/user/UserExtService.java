@@ -8,6 +8,7 @@ import com.newtouch.uctp.module.system.controller.admin.user.vo.profile.UserProf
 import com.newtouch.uctp.module.system.controller.admin.user.vo.user.*;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.UserExtDO;
+import org.apache.ibatis.annotations.Param;
 
 import javax.validation.Valid;
 import java.io.InputStream;
@@ -35,4 +36,6 @@ public interface UserExtService {
     List<UserExtDO> selectByIDCard(String IDCard);
 
     List<UserExtDO> selectByUserId(Long IDCard);
+
+    String getAccountNo(@Param("deptId") Long deptId);
 }

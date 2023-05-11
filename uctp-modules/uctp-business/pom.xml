@@ -192,7 +192,7 @@
             <artifactId>spdb-api</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spdb-api-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${pom.basedir}/lib/spdb-api-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
 

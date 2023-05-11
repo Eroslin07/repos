@@ -153,6 +153,99 @@
 				}],
 				// tab导航
 				navList: [],
+				navListArr: [{
+						status: 1,
+						label: '收车中',
+						child: [{
+								label: '全部',
+								status: '',
+								current: 0
+							},
+							{
+								status: 11,
+								label: '草稿',
+								current: 1
+							}, {
+								status: 12,
+								label: '合同已发起',
+								current: 2
+							}, {
+								status: 13,
+								label: '支付失败',
+								current: 3
+							}
+						]
+					},
+					{
+						status: 2,
+						label: '待售中',
+						child: [{
+								label: '全部',
+								status: '',
+								current: 0
+							},
+							{
+								status: 21,
+								label: '待过户',
+								current: 1
+							}, {
+								status: 22,
+								label: '未检测',
+								current: 2
+							}, {
+								status: 23,
+								label: '已检测',
+								current: 3
+							}
+						]
+					},
+					{
+						status: 3,
+						label: '卖车中',
+						child: [{
+								label: '全部',
+								status: '',
+								current: 0
+							},
+							{
+								status: 31,
+								label: '草稿',
+								current: 1
+							}, {
+								status: 32,
+								label: '合同已发起',
+								current: 2
+							}, {
+								status: 33,
+								label: '待支付',
+								current: 3
+							}
+						]
+					},
+					{
+						status: 4,
+						label: '已售出',
+						child: [{
+								label: '全部',
+								status: '',
+								current: 0
+							},
+							{
+								status: 41,
+								label: '待过户',
+								current: 1
+							}, {
+								status: 42,
+								label: '待分账',
+								current: 2
+							}, {
+								status: 43,
+								label: '已分账',
+								current: 3
+							}
+						]
+					}
+				],
 				current: 0,
 				// 列表
 				tabList: [],
@@ -198,23 +291,28 @@
 		mounted() {
 			this.getList(this.formData)
 		},
+		onShow(){
+			console.log(11111)
+			uni.$on('listRefresh', (data) => {
+			    if (data.refresh) {
+					console.log(22222)
+					this.getList(this.formData)
+			    }
+			});
+		},
 		onLoad(props) {
-			// console.log(props)
-			this.allChild = JSON.parse(props.allChild)
-			this.detailData = JSON.parse(props.item)
+			if(!props.fatherStatus)return this.$modal.msg('参数错误')
+			let fatherObj=this.navListArr.find(v=>v.status==props.fatherStatus) || {}
+			this.navList=fatherObj.child		
 			// 导航栏标题
-			this.title = this.detailData.label
-			// tab
-			this.navList = [{
-				label: '全部',
-				status: ''
-			}, ...this.detailData.child]
-			this.formData.salesStatus = this.detailData.status
-			if (props.childStatus) {
+			this.title = fatherObj.label
+			// 一级
+			this.formData.salesStatus = props.fatherStatus
+			// 二级 当前选中tab
+			if(props.childStatus){
 				this.formData.status = props.childStatus;
-				this.current = this.detailData.child.findIndex((val) => val.status == props.childStatus) + 1;
+				this.current=this.navList.find(val=>val.status==props.childStatus).current
 			}
-
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
@@ -231,6 +329,11 @@
 			this.formData.pageNo += 1
 			this.getMore(this.formData)
 		},
+		
+		// 卸载
+		onUnload(){
+			 uni.$off('listRefresh'); // 需要手动解绑自定义事件
+		},
 		methods: {
 			// 页面返回
 			back() {
@@ -243,7 +346,6 @@
 				this.tabList = []
 				getHomePageList(params).then(res => {
 					let secondTime = new Date().getTime();
-					// console.log(secondTime,firstTime,secondTime - firstTime)
 					if (secondTime - firstTime > 1000) {
 						if (res.data.list.length > 0) {
 							this.isSHowTip = ''
@@ -262,7 +364,8 @@
 					}
 
 					this.tabList = res.data.list.map(item => {
-						let label = this.allChild.find(v => v.status == item.status)?.label
+						// let label = this.allChild.find(v => v.status == item.status)?.label
+						let label = this.navList.find(v => v.status == item.status)?.label
 						this.$set(item, 'eyeIsShow', false)
 						return {
 							...item,
@@ -293,7 +396,8 @@
 			getMore(params) {
 				getHomePageList(params).then(res => {
 					this.tabList = [...this.tabList, ...res.data.list].map(item => {
-						let label = this.allChild.find(v => v.status == item.status)?.label
+						// let label = this.allChild.find(v => v.status == item.status)?.label
+						let label = this.navList.find(v => v.status == item.status)?.label
 						this.$set(item, 'eyeIsShow', false)
 						return {
 							...item,
@@ -374,7 +478,7 @@
 						this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?id=' + item.id)
 					}
 				}
-			}
+			},
 		}
 	}
 </script>

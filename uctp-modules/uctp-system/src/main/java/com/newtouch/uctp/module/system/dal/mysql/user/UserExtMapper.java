@@ -34,4 +34,6 @@ public interface UserExtMapper extends BaseMapperX<UserExtDO> {
     }
 
     List<AddAccountRespVO> getAccountList(@Param("deptId") Long deptId);
+
+    String getAccountNo(@Param("deptId") Long deptId);
 }

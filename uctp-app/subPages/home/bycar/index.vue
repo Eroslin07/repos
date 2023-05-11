@@ -1051,58 +1051,47 @@
 			upload(res, index) {
 				let _this = this;
 				for (let i = 0; i < res.tempFilePaths.length; i++) {
-					// 图片压缩
-					uni.compressImage({
-						src: res.tempFilePaths[i],
-						compressedWidth: 120,
-						success: (r) => {
-							// 上传
-							uni.uploadFile({
-								url: config.uploadUrl, // 仅为示例，非真实的接口地址
-								// #ifdef H5
-								file: res.tempFiles[i],
-								// #endif
-								// #ifdef MP-WEIXIN || APP
-								filePath: r.tempFilePath,
-								// #endif
-								name: 'file',
-								header: {
-									Authorization: 'Bearer ' + getAccessToken()
-								},
-								success: (ress) => {
-									setTimeout(() => {
-										let fileListLen = 0;
-										let data = JSON.parse(ress.data).data;
-										if (data) {
-											for (let i = 0; i < data.length; i++) {
-												let item = _this[`fileList${index}`][fileListLen]
-												_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
-														status: 'success',
-														message: '',
-														url: data[i].url,
-														id: data[i].id
-													}))
-												fileListLen++;
-											}
-										} else {
-											_this.$modal.msg("上传失败");
-											_this[`fileList${index}`] = [];
-											if (index == 1) {
-												_this.carForm.drivingLicenseUrl = [];
-											} else if (index == 2) {
-												_this.carForm.carUrl = [];
-											} else if (index == 3) {
-												_this.carForm.certificateUrl = [];
-											} else if (index == 4) {
-												_this.sellerForm.sellerIdCardUrl = [];
-											}
-										}
-									}, 1000)
-								}
-							});
+					uni.uploadFile({
+						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						// #ifdef H5
+						file: res.tempFiles[i],
+						// #endif
+						// #ifdef MP-WEIXIN || APP
+						filePath: res.tempFilePaths[i],
+						// #endif
+						name: 'file',
+						header: {
+							Authorization: 'Bearer ' + getAccessToken()
 						},
-						fail: (f) => {
-							_this.$modal.msg("图片压缩失败");
+						success: (ress) => {
+							setTimeout(() => {
+								let fileListLen = 0;
+								let data = JSON.parse(ress.data).data;
+								if (data) {
+									for (let i = 0; i < data.length; i++) {
+										let item = _this[`fileList${index}`][fileListLen]
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
+												status: 'success',
+												message: '',
+												url: data[i].url,
+												id: data[i].id
+											}))
+										fileListLen++;
+									}
+								} else {
+									_this.$modal.msg("上传失败");
+									_this[`fileList${index}`] = [];
+									if (index == 1) {
+										_this.carForm.drivingLicenseUrl = [];
+									} else if (index == 2) {
+										_this.carForm.carUrl = [];
+									} else if (index == 3) {
+										_this.carForm.certificateUrl = [];
+									} else if (index == 4) {
+										_this.sellerForm.sellerIdCardUrl = [];
+									}
+								}
+							}, 1000)
 						}
 					});
 				}
