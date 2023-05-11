@@ -49,7 +49,7 @@ public enum CarStatus {
     SOLD(4,"已售出"),
     SOLD_A(41,"待过户"),
     SOLD_A_A(411,"待开票"),
-    SOLD_A_B(411,"待过户"),
+    SOLD_A_B(412,"待过户"),
 
     SOLD_B(42,"待分账"),
     SOLD_B_A(421,"待分账"),
