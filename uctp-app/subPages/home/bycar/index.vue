@@ -963,9 +963,15 @@
 														}
 													}
 												} else if (result.data['2']) {
-													_this.$modal.msg("车辆已存在");
 													_this[`fileList${index}`] = [];
 													_this.carForm.drivingLicenseUrl = [];
+													uni.showModal({
+														title: '提示',
+														showCancel: false,
+														content: '车辆已存在，请重新上传',
+														confirmText: '知道了',
+														confirmColor: '#fa6401'
+													})
 												} else if (result.data['3']) {
 													_this.carForm.vin = vin;
 													_this.carForm.carType = data.words_result['车辆类型'].words;
