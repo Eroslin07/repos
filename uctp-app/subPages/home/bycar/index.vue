@@ -275,7 +275,7 @@
 						<u--input v-model="sellerForm.sellerIdCard" type="idcard" border="none"
 							placeholder="请输入身份证号"></u--input>
 					</u-form-item>
-					<u-form-item borderBottom>
+					<u-form-item borderBottom prop="sellerIdCardUrl">
 						<view class="image">
 							<u-grid col="2">
 								<u-grid-item>
@@ -650,6 +650,16 @@
 						message: "身份证格式不正确",
 						trigger: ['blur', 'change'],
 					}],
+					sellerIdCardUrl: {
+						validator(rule, value, data, callback) {
+							if (value.length == 0) {
+								return false;
+							}
+						},
+						required: true,
+						message: '请上传身份证',
+						trigger: ['blur', 'change']
+					},
 					sellerName: {
 						type: 'string',
 						required: true,
@@ -818,6 +828,10 @@
 				this.sellerInfor = false;
 				this.active = 0;
 				this.$refs.sellerForm.clearValidate();
+				uni.pageScrollTo({
+					scrollTop: 0,
+					duration: 300
+				});
 			},
 			getAvailableCash() {
 				getDetail({
@@ -935,6 +949,7 @@
 										_this.$modal.msg("请上传正确且清晰的行驶证照片");
 										_this[`fileList${index}`] = [];
 									} else {
+										_this.$refs.carForm.clearValidate();
 										if (data.words_result['发动机号码']) {
 											let vin = data.words_result['车辆识别代号'].words;
 											getCarInfo({ VIN: vin, deptId: _this.$store.state.user.deptId }).then((result) => {
@@ -1023,6 +1038,7 @@
 										_this.$modal.msg("请上传正确且清晰的身份证照照片");
 										_this[`fileList${index}`] = [];
 									} else {
+										_this.$refs.sellerForm.clearValidate();
 										if (data.words_result['公民身份号码']) {
 											_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
 											_this.sellerForm.sellerAdder = data.words_result['住址'].words;
