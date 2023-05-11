@@ -135,7 +135,7 @@
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
 					<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}合同</text>
-					<text class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
+					<text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==1) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==3)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
 				<view v-else class="flex contrart-info__row">
 					<view class="">
