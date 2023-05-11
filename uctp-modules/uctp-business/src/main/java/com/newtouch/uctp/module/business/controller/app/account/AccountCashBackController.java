@@ -43,7 +43,7 @@ public class AccountCashBackController {
         String accountNo = query.getAccountNo();
         log.info("查询账户{}的待回填明细查询", accountNo);
 
-        this.checkAccount(accountNo);
+        //this.checkAccount(accountNo);
         PageResult<CashBackRespVO> pr = merchantCashBackService.list(accountNo, query);
 
         return success(pr);
@@ -54,7 +54,7 @@ public class AccountCashBackController {
     public CommonResult<CashBackRespVO> detail(@RequestParam String accountNo, @RequestParam String id) {
         log.info("查询账户{}的{}利润详情", accountNo, id);
 
-        this.checkAccount(accountNo);
+        //this.checkAccount(accountNo);
         Long idValue = null;
         if (id != null) {
             idValue = Long.valueOf(id);
