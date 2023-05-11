@@ -292,13 +292,7 @@
 			this.getList(this.formData)
 		},
 		onShow(){
-			console.log(11111)
-			uni.$on('listRefresh', (data) => {
-			    if (data.refresh) {
-					console.log(22222)
-					this.getList(this.formData)
-			    }
-			});
+			
 		},
 		onLoad(props) {
 			if(!props.fatherStatus)return this.$modal.msg('参数错误')
@@ -313,6 +307,13 @@
 				this.formData.status = props.childStatus;
 				this.current=this.navList.find(val=>val.status==props.childStatus).current
 			}
+			
+			// 卡片上传检测报告刷新页面
+			uni.$on('listRefresh', (data) => {
+				if (data.refresh) {
+					this.getList(this.formData)
+					}
+				});
 		},
 		// 下拉刷新
 		onPullDownRefresh() {

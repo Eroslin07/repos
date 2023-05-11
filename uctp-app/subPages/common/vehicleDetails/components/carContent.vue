@@ -532,6 +532,9 @@
 							this.$modal.msg("删除成功");
 							this.carUpload = false
 							this.$emit('changeTest', this.carUpload)
+							uni.$emit('listRefresh', {
+							      refresh: true
+							});
 						}).catch(err => {
 							this.$modal.msgError('删除失败')
 						})
