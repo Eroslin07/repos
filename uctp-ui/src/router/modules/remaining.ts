@@ -53,22 +53,12 @@ const remainingRouter: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/index',
+    redirect: '/workbench/toDoList',
     name: 'Home',
-    meta: {},
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/Home/Index.vue'),
-        name: 'Index',
-        meta: {
-          title: t('router.home'),
-          icon: 'ep:home-filled',
-          noCache: false,
-          affix: true
-        }
-      }
-    ]
+    meta: {
+      hidden: true,
+      noTagsView: true
+    }
   },
   {
     path: '/user',
