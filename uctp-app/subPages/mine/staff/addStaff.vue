@@ -168,6 +168,26 @@
 						setAccount(data).then((res) => {
 							_this.$modal.closeLoading();
 							_this.showOverlay = false;
+							if (res.data.code) {
+								uni.showModal({
+									title: '提示',
+									showCancel: false,
+									content: res.data.msg,
+									confirmText: '知道了',
+									confirmColor: '#fa6401',
+									success: function (res) {
+										if (res.confirm) {
+											_this.staffForm = {
+												name: '',
+												phone: '',
+												idCard: '',
+												status: '0'
+											}
+										}
+									}
+								})
+								return
+							}
 							uni.showModal({
 								title: '提示',
 								showCancel: false,
@@ -190,6 +210,26 @@
 						setAccount(data).then((res) => {
 							_this.$modal.closeLoading();
 							_this.showOverlay = false;
+							if (res.data.code) {
+								uni.showModal({
+									title: '提示',
+									showCancel: false,
+									content: res.data.msg,
+									confirmText: '知道了',
+									confirmColor: '#fa6401',
+									success: function (res) {
+										if (res.confirm) {
+											_this.staffForm = {
+												name: '',
+												phone: '',
+												idCard: '',
+												status: '0'
+											}
+										}
+									}
+								})
+								return
+							}
 							if (_this.oldData.phone != data.phone || _this.oldData.idCard != data.idCard) {
 								uni.showModal({
 									title: '提示',
