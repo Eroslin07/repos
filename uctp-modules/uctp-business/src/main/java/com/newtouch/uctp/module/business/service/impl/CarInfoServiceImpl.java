@@ -23,6 +23,7 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
@@ -650,7 +651,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         for (ContractDO contractDO:contractList) {//循环合同信息，查询中间表拿到文件url
             List<FileRespDTO> fileList = businessFileService.getDTOByMainId(contractDO.getContractId());
             if(fileList.size()>0){
-                if(contractDO.getStatus()==2){
+                if(contractDO.getInvalided()==1){
                     APPContractCardVO contractCardVO = new APPContractCardVO();
                     FileRespDTO fileRespDTO = fileList.get(0);
                     contractCardVO.setContractDO(contractDO);
@@ -1096,7 +1097,9 @@ public class CarInfoServiceImpl implements CarInfoService {
     private ContractApprovalShowVO getContractApprovalShowInfo(Long carId, Integer contractType) {
         ContractApprovalShowVO contractApprovalShowVO = new ContractApprovalShowVO();
         contractApprovalShowVO.setContractType(contractType);
-        ContractDO contractDO = this.contractMapper.selectOne(ContractDO::getCarId, carId, ContractDO::getContractType, contractType);
+        ContractDO contractDO = this.contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                .eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, contractType).eq(ContractDO::getInvalided, 0));
+        //ContractDO contractDO = this.contractMapper.selectOne(ContractDO::getCarId, carId, ContractDO::getContractType, contractType);
         if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
             return contractApprovalShowVO;
         }

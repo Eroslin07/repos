@@ -592,6 +592,11 @@
 						this.registerForm.legal_representative = '';
 						this.registerForm.address = '';
 					}
+					if (this.fileList1.length == 0 && this.fileList2.length == 0) {
+						this.registerForm.idCard = '';
+						this.registerForm.name = '';
+						this.registerForm.idCardUrl = [];
+					}
 				})
 			},
 			// 选择框确定
