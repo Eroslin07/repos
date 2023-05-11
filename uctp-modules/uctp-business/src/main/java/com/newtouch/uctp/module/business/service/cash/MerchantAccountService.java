@@ -30,8 +30,7 @@ public interface MerchantAccountService {
     /**
      * 查询商户虚拟账户资产详情
      *
-     * @param loginUserId 登陆人ID
      * @return 商户虚拟账户资产详情
      */
-    MerchantAccountRespVO get(Long loginUserId);
+    MerchantAccountRespVO get(Long merchantId);
 }
