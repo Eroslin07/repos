@@ -1790,15 +1790,14 @@ public class QysConfigServiceImpl implements QysConfigService {
     @GlobalTransactional
     @Override
     public Map addAccount(AddAccountDTO reqVO) {
-        HashMap<Object, Object> maps = new HashMap<>();
         Map map = adminUserApi.addAccount(reqVO);
         String type =String.valueOf(map.get("type"));
         if("1".equals(type)){
             Long userId = Long.valueOf(String.valueOf(map.get("userId")));
             userAuth(userId);
+            map.put("success","0");
         }
-        maps.put("success","0");
-        return maps;
+        return map;
     }
 
 
