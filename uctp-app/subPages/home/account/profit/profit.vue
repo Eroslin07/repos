@@ -127,6 +127,8 @@
 				getProfitList(data).then((res) => {
 					this.indexList = res.data.list;
 					this.status = true;
+				}).catch((error) => {
+					this.status = true;
 				})
 			},
 			// 提现
