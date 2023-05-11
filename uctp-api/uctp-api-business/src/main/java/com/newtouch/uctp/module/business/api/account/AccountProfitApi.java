@@ -1,13 +1,14 @@
 package com.newtouch.uctp.module.business.api.account;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
 import com.newtouch.uctp.module.business.enums.ApiConstants;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = ApiConstants.NAME)
 @Tag(name =  "RPC 服务 - 账户利润")
@@ -22,4 +23,8 @@ public interface AccountProfitApi {
     @PostMapping("/uctp/account/profit/presentAudit")
     CommonResult<String> presentAudit(@RequestHeader("tenant-id") Long tenantId,
                                 @RequestBody ProfitPresentAuditDTO audit);
+
+    @PutMapping("/release/{businessKey}")
+    @Operation(summary = "提现利润释放")
+    public CommonResult<String> profitRelease(@PathVariable("businessKey") String businessKey);
 }

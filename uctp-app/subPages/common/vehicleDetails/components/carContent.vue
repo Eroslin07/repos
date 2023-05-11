@@ -2,7 +2,7 @@
 	<view class=" info-box">
 		<!-- 车辆信息 -->
 		<view v-if="tabCar==0" class="car-info-box">
-			<view  class="car-upload">
+			<view class="car-upload">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/inspect-annually.svg"></image>
 					<text class="car-upload-title__title">车辆检测报告</text>
@@ -14,17 +14,19 @@
 						<text>上传检测报告</text>
 						<u-icon name="arrow-upward" color="#333333" style="width: 30rpx;height: 30rpx;"></u-icon>
 					</view>
-					<view  v-else class="upload-text">
+					<view v-else class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
 						<text @click="handleImage(carInfoAll.fileF)">您已经上传检测报告!</text>
-						<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30"  @click="handleDelete" class="icon-right-box">
-							<u-icon  name="trash" color="#333333">
+						<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30" @click="handleDelete"
+							class="icon-right-box">
+							<u-icon name="trash" color="#333333">
 							</u-icon>
 						</view>
 					</view>
 				</view>
 				<view v-if="carInfoAll.carInfo.status==23" class="btn-box">
-					<u-button type="primary" size="mini" shape="circle" @click="sellCarBtn(carInfoAll.carInfo.id)" text="我要卖车"></u-button>
+					<u-button type="primary" size="mini" shape="circle" @click="sellCarBtn(carInfoAll.carInfo.id)"
+						text="我要卖车"></u-button>
 				</view>
 			</view>
 			<view class="driving-license car-registration">
@@ -35,7 +37,7 @@
 			</view>
 			<view v-if="carInfoAll.fileB && carInfoAll.fileB.length" class="driving-image">
 				<!-- <image :src="carInfoAll.fileB[0].url" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
-				<u-album :urls="carInfoAll.fileB" :singleSize="rpxToPx(232)" keyName="url" ></u-album>
+				<u-album :urls="carInfoAll.fileB" :singleSize="rpxToPx(232)" keyName="url"></u-album>
 			</view>
 			<view v-else class="driving-image">
 				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
@@ -70,7 +72,8 @@
 			</view>
 			<view id="carRegister" v-if="carInfoAll.fileC && carInfoAll.fileC.length" class="driving-image">
 				<!-- <image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
-				<u-album :urls="carInfoAll.fileC" :singleSize="rpxToPx(232)" keyName="url" singleModex="scaleToFill" ></u-album>
+				<u-album :urls="carInfoAll.fileC" :singleSize="rpxToPx(232)" keyName="url"
+					singleModex="scaleToFill"></u-album>
 			</view>
 			<view v-else class="driving-image">
 				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
@@ -167,13 +170,13 @@
 					class="flex contrart-info__row">
 					<view class="contart-info__">
 						<text class="contrart-info__text">作废文件</text>
-						<text>{{contract.contractDO.contractName}}（已作废）</text>
+						<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 				</view>
 				<view v-else class="flex">
 					<view class="">
 						<text class="contrart-info__text">作废文件</text>
-						<text>{{contract.contractDO.contractName}}（已作废）</text>
+						<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 					<view class="flex selInfo">
 						<text
@@ -228,7 +231,8 @@
 							实际利润
 						</text>
 						<view class="">
-							<text v-if="eyeIsShow">{{ carInfoAll.carInfo.status>31?carInfoAll.appCarInfoAmountRespVO.profit:'——' | transMoney }}</text>
+							<text
+								v-if="eyeIsShow">{{ type==1?(carInfoAll.carInfo.status>31?(carInfoAll.appCarInfoAmountRespVO.profit | transMoney):'--'):'--' }}</text>
 							<text v-else>{{'****'}}</text>
 							<text>元</text>
 						</view>
@@ -260,27 +264,28 @@
 					<view class="flex">
 						<view class="flex">
 							<text>税</text>
-							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vat | transMoney}}元</text>
+							<text
+								v-if="eyeIsShow">{{type==1?(carInfoAll.appCarInfoAmountRespVO.vat | transMoney):'--'}}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>服务费</text>
 							<text
-								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.operation | transMoney}}元</text>
+								v-if="eyeIsShow">{{type==1?(carInfoAll.appCarInfoAmountRespVO.operation| transMoney):'--' }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
 					<view class="flex">
 						<view class="flex">
 							<text>本次回填保证金</text>
-							<text v-if="eyeIsShow">{{0 | transMoney}}元</text>
+							<text v-if="eyeIsShow">{{type==1?(0| transMoney):'--' }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>本次待回填差额</text>
-							<text v-if="eyeIsShow">{{0 | transMoney}}元</text>
+							<text v-if="eyeIsShow">{{type==1?(0| transMoney):'--' }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
@@ -291,37 +296,32 @@
 			<view class="flex">
 				<text>二手车销售统一发票(反向)</text>
 				<view class="flex">
-					<text>待开票</text>
+					<text>{{colInvoiced?'已开票':'待开票'}}</text>
 					<text class="button">开票信息</text>
 				</view>
 			</view>
 			<view class="flex">
 				<text>二手车销售统一发票(正向)</text>
 				<view class="flex">
-					<text>待开票</text>
+					<text>{{sellInvoiced?'已开票':'待开票'}}</text>
 					<text class="button">开票信息</text>
 				</view>
 			</view>
 			<view class="flex">
 				<text>增值税发票</text>
 				<view class="flex">
-					<text>待开票</text>
+					<text>{{sellInvoiced?'已开票':'待开票'}}</text>
 					<text class="button">下载PDF文件</text>
 				</view>
 			</view>
 		</view>
 		<!-- 作废理由 -->
-		<u-modal :show="cancelModal" :closeOnClickOverlay="false" :showCancelButton="true" :negativeTop="100" width="700rpx" @cancel="cancelBtn" @confirm="confirmBtn">
+		<u-modal :show="cancelModal" :closeOnClickOverlay="false" :showCancelButton="true" :negativeTop="100"
+			width="700rpx" @cancel="cancelBtn" @confirm="confirmBtn">
 			<view slot-content style="width:100%">
-				<u--form
-					labelPosition="top"
-					:model="form"
-					:rules="rules"
-					ref="uForm"
-					errorType="toast"
-				>
+				<u--form labelPosition="top" :model="form" :rules="rules" ref="uForm" errorType="toast">
 					<u-form-item label="理由:" prop="reason" required>
-						<u--textarea  v-model="form.reason" placeholder="请输入理由" ></u--textarea>
+						<u--textarea v-model="form.reason" placeholder="请输入理由"></u--textarea>
 					</u-form-item>
 				</u--form>
 			</view>
@@ -341,7 +341,9 @@
 	import {
 		deleteTestImage
 	} from '@/api/register'
-	import { contractInvalid } from '@/api/cost/carInfo.js'
+	import {
+		contractInvalid
+	} from '@/api/cost/carInfo.js'
 	export default {
 		data() {
 			return {
@@ -358,20 +360,18 @@
 				// 信息类型
 				infoType: null,
 				//合同id
-				contractId:'',
-				cancelModal:false,
-				form:{
-					reason:'',
+				contractId: '',
+				cancelModal: false,
+				form: {
+					reason: '',
 				},
-				rules:{
-					reason:[
-						{
-							type: 'string',
-							required: true,
-							message: '请输入理由',
-							trigger: ['change','blur']
-						}
-					]
+				rules: {
+					reason: [{
+						type: 'string',
+						required: true,
+						message: '请输入理由',
+						trigger: ['change', 'blur']
+					}]
 				}
 			}
 		},
@@ -394,24 +394,53 @@
 		},
 		filters: {
 			transMoney(val) {
-				if(val=='——'){
+				if (val == '——') {
 					return '——'
-				}else if(parseFloat(val)){
-					 return that.$amount.getComdify(val)
-				}else{
+				} else if (parseFloat(val)) {
+					return that.$amount.getComdify(val)
+				} else {
 					return 0
 				}
 			}
 		},
-		computed:{
-			signInShow(){
-				let {statusThree}=this.carInfoAll.carInfo
-				if(statusThree==121 || statusThree==122 || statusThree==123 || statusThree==321 || statusThree==322 || statusThree==323){
+		computed: {
+			signInShow() {
+				let {
+					statusThree
+				} = this.carInfoAll.carInfo
+				if (statusThree == 121 || statusThree == 122 || statusThree == 123 || statusThree == 321 || statusThree ==
+					322 || statusThree == 323) {
 					return true
-				}else{
+				} else {
 					return false
 				}
-			}
+			},
+			colInvoiced() {
+				let {
+					status,
+					statusThree
+				} = this.carInfoAll.carInfo;
+				if (status > 21 || statusThree > 211) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			sellInvoiced() {
+				let {
+					status,
+					statusThree
+				} = this.carInfoAll.carInfo;
+				if (status > 41 || statusThree > 411) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			type() {
+				console.log(this.$store.state.user.staffType)
+				return this.$store.state.user.staffType
+			},
 		},
 		methods: {
 			// 上传检测报告
@@ -495,9 +524,9 @@
 													_this.carUpload = true;
 													_this.$emit('changeTest', _this
 														.carUpload)
-														
+
 													uni.$emit('listRefresh', {
-													      refresh: true
+														refresh: true
 													});
 												}
 											}
@@ -513,15 +542,15 @@
 				}
 			},
 			// 查看检测报告
-			handleImage(arr){
-				if(!arr[0]?.url) return this.$modal.msg('检测报告不存在!')
-				let urls=[arr[0].url]
+			handleImage(arr) {
+				if (!arr[0]?.url) return this.$modal.msg('检测报告不存在!')
+				let urls = [arr[0].url]
 				uni.previewImage({
-					current:0,
+					current: 0,
 					urls,
 				})
 			},
-			
+
 			// 删除检测报告
 			handleDelete() {
 				// let _this=this
@@ -529,13 +558,13 @@
 					if (res.confirm) {
 						deleteTestImage({
 							id: this.fileList1[0]?.id || this.carInfoAll.fileF[0].id,
-							carId:this.carInfoAll?.carInfo.id
+							carId: this.carInfoAll?.carInfo.id
 						}).then((res) => {
 							this.$modal.msg("删除成功");
 							this.carUpload = false
 							this.$emit('changeTest', this.carUpload)
 							uni.$emit('listRefresh', {
-							      refresh: true
+								refresh: true
 							});
 						}).catch(err => {
 							this.$modal.msgError('删除失败')
@@ -544,13 +573,13 @@
 				})
 			},
 			// 我要卖车
-			sellCarBtn(id){
-				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id='+id)
+			sellCarBtn(id) {
+				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + id)
 			},
 			// 预览合同
 			handleContact(url) {
 				// console.log(url)
-				let _this=this
+				let _this = this
 				_this.$modal.loading('正在打开...')
 				uni.downloadFile({
 					url: url,
@@ -573,31 +602,31 @@
 				this.infoType = type
 				this.$tab.navigateTo(
 					`/subPages/common/vehicleDetails/components/clientInfo?carInfoAll=${encodeURIComponent(JSON.stringify(this.carInfoAll))}&&infoType=${this.infoType}`
-					)
+				)
 			},
 			// 作废
 			handleCancle(id) {
-				this.contractId=id;
-				this.cancelModal=true;
+				this.contractId = id;
+				this.cancelModal = true;
 			},
-			confirmBtn(){
-				this.$refs.uForm.validate().then(res=>{
-					let data=`id=${this.contractId}&reason=${this.form.reason}`
-					contractInvalid(data).then(res=>{
+			confirmBtn() {
+				this.$refs.uForm.validate().then(res => {
+					let data = `id=${this.contractId}&reason=${this.form.reason}`
+					contractInvalid(data).then(res => {
 						this.$modal.msg('合同作废成功');
-						this.cancelModal=false;
-						this.form.reason='';
+						this.cancelModal = false;
+						this.form.reason = '';
 						this.$emit('inviladContract')
-					}).catch(err=>{
+					}).catch(err => {
 						this.$modal.msg(err.msg);
 					})
 				})
-				
+
 			},
 			// 弹框取消
-			cancelBtn(){
-				this.cancelModal=false;
-				this.form.reason='';
+			cancelBtn() {
+				this.cancelModal = false;
+				this.form.reason = '';
 			},
 			// 签章
 			// handleSignature() {
@@ -608,26 +637,26 @@
 			// 		this.$tab.navigateTo('/subPages/home/sellingCar/agreement?carId='+id)
 			// 	}			
 			// },
-			
+
 			// rpx转px
 			rpxToPx(rpx) {
-			  const screenWidth = uni.getSystemInfoSync().screenWidth
-			  return (screenWidth * Number.parseInt(rpx)) / 750
+				const screenWidth = uni.getSystemInfoSync().screenWidth
+				return (screenWidth * Number.parseInt(rpx)) / 750
 			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-	
 	.flex {
 		display: flex;
 	}
 
 	.info-box {
+
 		.car-info-box,
 		.car-fund {
-			padding: 24rpx 26rpx 160rpx;
+			padding: 24rpx 26rpx 0rpx;
 		}
 
 		.button {
@@ -647,12 +676,14 @@
 			background: rgba(249, 249, 249, 0.02);
 			border-radius: 8rpx;
 			border: 2rpx solid #EDF3F6;
-			position:relative;
-			.btn-box{
-				position:absolute;
-				right:16rpx;
-				top:19rpx;
+			position: relative;
+
+			.btn-box {
+				position: absolute;
+				right: 16rpx;
+				top: 19rpx;
 			}
+
 			.car-upload-title {
 				width: 698rpx;
 				height: 78rpx;
@@ -709,12 +740,13 @@
 					font-size: 28rpx;
 					margin: 0 3rpx;
 				}
-				.icon-right-box{
+
+				.icon-right-box {
 					display: inline-block;
-					padding:0 50rpx 0 10rpx;
+					padding: 0 50rpx 0 10rpx;
 				}
 			}
-			
+
 		}
 
 		.driving-license {
@@ -881,9 +913,9 @@
 
 		.car-fund {
 			.car-fund-info {
-				margin-top: 26rpx;
+				// margin-top: 26rpx;
 				width: 100%;
-				height: 810rpx;
+				height: 660rpx;
 				background: rgba(249, 249, 249, 0.02);
 				border-radius: 8rpx;
 				border: 2rpx solid rgba(250, 100, 0, 0.05);

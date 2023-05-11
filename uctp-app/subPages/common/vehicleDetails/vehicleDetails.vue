@@ -26,14 +26,14 @@
 				<view class="car-details car-money">
 					<view class="car-item car-payment">
 						<text>付款方式</text>
-						<text>{{ carInfoAll.carInfoDetails.payType==='0'?'全款':'暂无'}}</text>
+						<text>{{ carInfoAll.carInfoDetails.payType=='0'?'全款':'暂无'}}</text>
 					</view>
 					<view class="_br">
 
 					</view>
 					<view class="car-item car-collection">
 						<text>收款方式</text>
-						<text>{{carInfoAll.carInfo.sellType==='0'?'全款':carInfoAll.carInfo.sellType==='1'?'分期':'暂无'}}</text>
+						<text>{{carInfoAll.carInfo.sellType=='0'?'全款':carInfoAll.carInfo.sellType=='1'?'分期':'暂无'}}</text>
 					</view>
 				</view>
 				<view class="car-details">
@@ -58,7 +58,7 @@
 				</view>
 			</view>
 			<view class="car-status" id="carStatus">
-				<u-tabs :list="tabsData" :current="currentNum" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
+				<u-tabs :list="tabsData" :current="currentNumTab" @click="changeTab" :activeStyle="{ color: '#FA6400'}" lineColor="#FA6400"
 					lineWidth="40rpx" lineHeight="4rpx" :scrollable="false"></u-tabs>
 			</view>
 		 </view>
@@ -99,6 +99,7 @@
 					fileF: [],
 				},
 				currentNum: 0,
+				currentNumTab:0,
 				// carUpload: true,
 				carsList: [
 					'https://img2.baidu.com/it/u=1279827528,969264118&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
@@ -288,7 +289,7 @@
 			async inviladContract(){
 				await this.getCarDetails(this.carId)
 				this.$nextTick(()=>{
-					this.currentNum=1;
+					this.currentNumTab=1;
 					this.tabCar=1;
 				})
 				

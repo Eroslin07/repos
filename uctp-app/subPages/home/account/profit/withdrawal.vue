@@ -107,6 +107,7 @@
 					})
 				} else {
 					this.amountText = ''
+					this.amountVisible = false
 				}
 			},
 			// 删除图片

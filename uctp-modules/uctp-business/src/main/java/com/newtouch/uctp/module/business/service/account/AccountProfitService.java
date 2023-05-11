@@ -1,12 +1,12 @@
 package com.newtouch.uctp.module.business.service.account;
 
+import java.util.List;
+
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.profit.MerchantProfitDO;
 import com.newtouch.uctp.module.business.service.account.dto.CostDTO;
 import com.newtouch.uctp.module.business.service.account.dto.TaxDTO;
-
-import java.util.List;
 
 /**
  * 利润服务接口
@@ -84,4 +84,11 @@ public interface AccountProfitService {
      * @return
      */
     List<ProfitCostMonthRespVO> getMonthCostByQuarter(String accountNo, String quarter);
+
+    /**
+     * 提现利润释放
+     * @param businessKey  利润提现流程的业务ID
+     * @return  释放成功与失败
+     */
+    boolean profitRelease(String businessKey);
 }

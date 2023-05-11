@@ -68,7 +68,7 @@ public class ContractDO extends TenantBaseDO {
     private String signUpAmount;
 
     /**
-     * 合同状态
+     * 合同状态(0 草稿 1已发起 2已完成)
      */
     private Integer status;
     /**

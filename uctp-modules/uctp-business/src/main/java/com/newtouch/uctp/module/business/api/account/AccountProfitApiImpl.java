@@ -1,17 +1,19 @@
 package com.newtouch.uctp.module.business.api.account;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
-import com.newtouch.uctp.module.business.service.account.AccountProfitService;
-import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Resource;
+
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
+import com.newtouch.uctp.module.business.service.account.AccountProfitService;
+import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
@@ -45,5 +47,11 @@ public class AccountProfitApiImpl implements AccountProfitApi {
         accountProfitService.auditProfitPressent(businessKey, auditOpinion);
 
         return success("提交成功");
+    }
+
+    @Override
+    public CommonResult<String> profitRelease(String businessKey) {
+        accountProfitService.profitRelease(businessKey);
+        return success("释放成功");
     }
 }

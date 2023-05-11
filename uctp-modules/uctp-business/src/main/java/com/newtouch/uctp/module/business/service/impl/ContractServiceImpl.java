@@ -4,7 +4,6 @@ package com.newtouch.uctp.module.business.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -334,16 +333,18 @@ public class ContractServiceImpl implements ContractService {
             fileCreateReqDTO.setContent(reader.readBytes());
             fileCreateReqDTO.setName(fileName);
             fileCreateReqDTO.setPath(null);
-            FileDTO fileDTO = fileApi.createFile(fileCreateReqDTO).getCheckedData();
+            FileDTO fileDTO = fileApi.createFileNew(fileCreateReqDTO).getCheckedData();
             if (ObjectUtil.isNull(fileDTO)) {
                 throw exception(FILE_SAVE_ERROR);
             }
-
         }catch (Exception e){
             log.error("契约锁合同下载失败",e);
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
         }finally {
-            FileUtil.del(tempFile);
+//            FileUtil.del(tempFile);
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
             IOUtils.safeClose(fos);
         }
     }
@@ -366,7 +367,7 @@ public class ContractServiceImpl implements ContractService {
             fileCreateReqDTO.setContent(reader.readBytes());
             fileCreateReqDTO.setName(fileName);
             fileCreateReqDTO.setPath(null);
-            FileDTO fileDTO = fileApi.createFile(fileCreateReqDTO).getCheckedData();
+            FileDTO fileDTO = fileApi.createFileNew(fileCreateReqDTO).getCheckedData();
             if (ObjectUtil.isNull(fileDTO)) {
                 throw exception(FILE_SAVE_ERROR);
             }

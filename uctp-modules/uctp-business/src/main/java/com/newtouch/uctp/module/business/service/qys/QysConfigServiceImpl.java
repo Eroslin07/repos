@@ -385,6 +385,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.COLLECT_A_A.value(),
                                 Boolean.FALSE,
                                 Boolean.FALSE);
+                        //下载合同签章文件
+//                        this.updateContract(contractDO.getContractId());
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case SIGNING:
 
@@ -423,6 +426,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                         this.colCarContractInvalided(contractDO.getCarId());
                         //释放收车保证金预占
                         merchantMoneyService.releaseCash(contractDO.getContractId());
+                        //下载合同签章文件
+//                        this.updateContract(contractDO.getContractId());
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
@@ -465,6 +471,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.SELL_A_A.value(),
                                 Boolean.FALSE,
                                 Boolean.FALSE);
+                        //下载合同签章文件
+//                        this.updateContract(contractDO.getContractId());
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case SIGNING:
                         //签署中需要进行下一个企业静默签章
@@ -504,6 +513,9 @@ public class QysConfigServiceImpl implements QysConfigService {
                         this.sellCarContractInvalided(contractDO.getCarId());
                         //释放收车保证金预占
                         merchantMoneyService.releaseCash(contractDO.getContractId());
+                        //下载合同签章文件
+//                        this.updateContract(contractDO.getContractId());
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
@@ -1793,15 +1805,14 @@ public class QysConfigServiceImpl implements QysConfigService {
     @GlobalTransactional
     @Override
     public Map addAccount(AddAccountDTO reqVO) {
-        HashMap<Object, Object> maps = new HashMap<>();
         Map map = adminUserApi.addAccount(reqVO);
         String type =String.valueOf(map.get("type"));
         if("1".equals(type)){
             Long userId = Long.valueOf(String.valueOf(map.get("userId")));
             userAuth(userId);
+            map.put("success","0");
         }
-        maps.put("success","0");
-        return maps;
+        return map;
     }
 
 
