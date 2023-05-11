@@ -2138,8 +2138,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //收车委托合同
             if ("1".equals(type)) {
                 params.add(new TemplateParam("合同编号", code));
-                if (StringUtils.isEmpty(platformDept.getName()))
-                    params.add(new TemplateParam("受托人", platformDept.getName()));
+                params.add(new TemplateParam("受托人", platformDept.getName()));
                 params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
                 params.add(new TemplateParam("甲方法定代表人", platformDept.getLegalRepresentative()));
                 params.add(new TemplateParam("甲方联系电话", platformUserDO.getMobile()));
