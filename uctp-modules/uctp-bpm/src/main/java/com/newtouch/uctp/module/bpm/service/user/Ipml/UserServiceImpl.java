@@ -1,16 +1,16 @@
 package com.newtouch.uctp.module.bpm.service.user.Ipml;
 
 
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.newtouch.uctp.module.bpm.dal.dataobject.user.AdminUserDO;
 import com.newtouch.uctp.module.bpm.dal.mysql.dept.DeptMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
 
 
 
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         AdminUserDO adminUserDO = userMapper.selectById(id);
         adminUserDO.setStatus(0);
         userMapper.updateById(adminUserDO);
-        userMapper.updateUserExtStatus(String.valueOf(adminUserDO.getId()));
+        //userMapper.updateUserExtStatus(String.valueOf(adminUserDO.getId()));
         return "更新用户状态成功";
     }
 

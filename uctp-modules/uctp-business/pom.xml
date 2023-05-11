@@ -36,9 +36,14 @@
         </dependency>
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-modules-bpm</artifactId>
+            <artifactId>uctp-api-bpm</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!--<dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-modules-bpm</artifactId>
+            <version>${revision}</version>
+        </dependency>-->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-api-business</artifactId>
@@ -99,6 +104,12 @@
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-rpc</artifactId>
+        </dependency>
+
+        <!-- 消息队列相关 -->
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-spring-boot-starter-mq</artifactId>
         </dependency>
 
         <!-- Registry 注册中心相关 -->

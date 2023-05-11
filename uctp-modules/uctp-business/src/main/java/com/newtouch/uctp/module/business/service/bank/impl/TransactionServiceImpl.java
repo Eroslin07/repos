@@ -1,8 +1,20 @@
 package com.newtouch.uctp.module.business.service.bank.impl;
 
-import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.date.LocalDateTimeUtil;
-import cn.hutool.core.util.RandomUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.alibaba.fastjson.JSONObject;
 import com.newtouch.uctp.framework.common.exception.BankException;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -27,22 +39,6 @@ import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResp
 import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
 import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import static org.codehaus.groovy.runtime.IOGroovyMethods.newPrintWriter;
 
 @Service
 @Validated
@@ -479,7 +475,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private String printExceptionMessage(Exception e) {
         StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = newPrintWriter(stringWriter);
+        PrintWriter writer = new PrintWriter(stringWriter);
         e.printStackTrace(writer);
         StringBuffer buffer = stringWriter.getBuffer();
         return buffer.toString();
