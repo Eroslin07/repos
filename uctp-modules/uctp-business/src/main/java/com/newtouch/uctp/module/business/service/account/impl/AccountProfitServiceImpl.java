@@ -2,6 +2,8 @@ package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +65,7 @@ import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 @Service
 @Validated
 @Slf4j
-public class AccountProfitServiceImpl implements AccountProfitService {
+public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, MerchantProfitDO> implements AccountProfitService {
 
     // 利润划入的锁key
     public static final String LOCK_PREFIX = "UCTP:ACCOUNT:PROFIT:RECORDED:";
@@ -110,7 +112,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
                                            Long carSalesAmount,
                                            List<CostDTO> costs,
                                            List<TaxDTO> taxes) {
-        log.info("调用利润划入接口，accountNo:{},contractNo:{},vehicleReceiptAmount:{},carSalesAmount:{}",accountNo,contractNo,vehicleReceiptAmount,carSalesAmount);
+        log.info("调用利润划入接口，accountNo:{},contractNo:{},vehicleReceiptAmount:{},carSalesAmount:{}", accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
 
         // 参数校验
         this.recordedCheck(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
@@ -442,7 +444,24 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     @Override
     public boolean profitRelease(String businessKey) {
-        return true;
+        MerchantProfitDO profitDO = getOne(new LambdaQueryWrapperX<MerchantProfitDO>()
+                .eq(MerchantProfitDO::getBusinessKey, businessKey)
+                .eq(MerchantProfitDO::getDeleted, Boolean.FALSE)
+        );
+        if (profitDO != null) {
+            MerchantAccountDO account = merchantAccountService.queryByAccountNo(profitDO.getAccountNo());
+            Long amount = profitDO.getProfit(); // 保存时为负值
+            Long profit = account.getProfit() == null ? 0L : account.getProfit(); // 余额
+            Long freezeProfit = account.getFreezeProfit() == null ? 0L : account.getFreezeProfit(); // 冻结的余额
+            account.setProfit(profit - amount); // 提现额度释放
+            account.setFreezeProfit(freezeProfit + amount); // 减少冻结额度
+
+            merchantAccountService.updateById(account);
+            profitDO.setDeleted(Boolean.TRUE);
+            updateById(profitDO);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -452,7 +471,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         queryWrapper.eq(MerchantProfitDO::getAccountNo, accountNo)
                 .orderByDesc(MerchantProfitDO::getTradeTime);
         switch (query.getType()) {
-            case  FREEZE_PROFIT:
+            case FREEZE_PROFIT:
                 // 交易类型是利润提现，才会有冻结
                 queryWrapper.eq(MerchantProfitDO::getTradeType, AccountEnum.TRAN_PROFIT_PRESENT.getKey());
 
@@ -465,7 +484,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
                 queryWrapper.in(MerchantProfitDO::getPresentState, presentStateArr);
                 break;
-            case  INCOME:
+            case INCOME:
                 queryWrapper.eq(MerchantProfitDO::getProfitLossType, AccountEnum.PROFIT_LOSS_TYPE_INCOME.getKey());
                 break;
             case DISBURSEMENT:
@@ -571,7 +590,8 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 触发事件
-     * @param id 利润ID
+     *
+     * @param id    利润ID
      * @param event 事件
      */
     private void publishProfitPressentStatusChangeEvent(Long id, ProfitPressentStatusChangeEvent event) {
@@ -619,13 +639,14 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 计算利润
-     * @param accountNo 账户号
-     * @param vehicleReceiptAmount 收车款
-     * @param carSalesAmount 卖车款
+     *
+     * @param accountNo                          账户号
+     * @param vehicleReceiptAmount               收车款
+     * @param carSalesAmount                     卖车款
      * @param originalWaitForBackCashTotalAmount 原待回填保证金
-     * @param originalProfitTotalAmount 原利润余额
-     * @param costs 服务费用清单
-     * @param taxes 税费清单
+     * @param originalProfitTotalAmount          原利润余额
+     * @param costs                              服务费用清单
+     * @param taxes                              税费清单
      * @return 利润计算结果
      */
     private ProfitCalcResultDTO calcProfit(String accountNo,
@@ -732,8 +753,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 计算税费，并返回税费总和
+     *
      * @param carSalesAmount 卖车价
-     * @param taxes 税
+     * @param taxes          税
      * @return 剩总和
      */
     private Long calcTaxAmount(Long carSalesAmount, List<TaxDTO> taxes) {
@@ -764,6 +786,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 计算所有费用
+     *
      * @param costs 费用
      * @return 费用总和
      */
@@ -794,6 +817,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 利润划入参数校验
+     *
      * @param accountNo
      * @param contractNo
      * @param vehicleReceiptAmount
@@ -825,6 +849,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 组装利润明细
+     *
      * @param accountNo
      * @param contractNo
      * @param profitCalcResult
@@ -1095,8 +1120,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 组装待回填明细
-     * @param accountNo 账户
-     * @param contractNo 合同号
+     *
+     * @param accountNo        账户
+     * @param contractNo       合同号
      * @param profitCalcResult 计算结果
      * @return
      */
@@ -1169,9 +1195,10 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 回填保证金
-     * @param accountNo 账户
-     * @param contractNo 合同号
-     * @param accountRevision 账户表版本号
+     *
+     * @param accountNo        账户
+     * @param contractNo       合同号
+     * @param accountRevision  账户表版本号
      * @param profitCalcResult 计算结果
      */
     private void cashBack(String accountNo, String contractNo, Integer accountRevision, ProfitCalcResultDTO profitCalcResult) {
@@ -1195,7 +1222,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
         }
         if (profitCalcResult.getUseOriginalDeductionBackCashAmount().compareTo(0L) > 0 ||
                 profitCalcResult.getUseOriginalDeductionOriginalBackCashAmount().compareTo(0L) > 0 ||
-                profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount().compareTo(0L) > 0 ) {
+                profitCalcResult.getUseCurrentDeductionOriginalBackCashAmount().compareTo(0L) > 0) {
             // 回填保证金（使用利润抵扣）
             TransactionRecordReqVO backCashFromProfit = new TransactionRecordReqVO();
             backCashFromProfit.setAccountNo(accountNo);
@@ -1217,8 +1244,9 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 发起提现流程
+     *
      * @param accountNo 账户
-     * @param profitId 提现id
+     * @param profitId  提现id
      * @return
      */
     private String createProfitPresentProcess(String accountNo, Long profitId) {
@@ -1267,6 +1295,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 转账处理（含银行子账户互转及利润明细提现状态更新）
+     *
      * @param profitList
      */
     private void transfer(List<MerchantProfitDO> profitList) {
@@ -1307,6 +1336,7 @@ public class AccountProfitServiceImpl implements AccountProfitService {
 
     /**
      * 银行出金接口
+     *
      * @param mp
      */
     private void outGold(MerchantProfitDO mp) {
