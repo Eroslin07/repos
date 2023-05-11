@@ -715,7 +715,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     public String send(Long contractId, Boolean hasReserve) {
         ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         if (ObjectUtil.equals(1, contractDO.getContractType()) && hasReserve) {
-            ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+           // ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+            ContractDO contractDO1 = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, contractDO.getCarId()).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
             //保证金预占
             Boolean reserveCash = merchantMoneyService.reserveCash(contractDO1.getContractId());
             if (!reserveCash) {
@@ -1081,7 +1082,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         QYSContractVO qysContractVO1=new QYSContractVO();
         QYSContractVO qysContractVO=new QYSContractVO();
         //收车委托合同
-        ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
+       // ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
+        ContractDO buyWTContractDO = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, 1).eq(ContractDO::getInvalided, 0));
         BusinessFileDO byWTBusinessFile = businessFileMapper.selectOne("main_id", buyWTContractDO.getContractId());
         List<Long> contractIds = new ArrayList<>();
         contractIds.add(byWTBusinessFile.getId());
@@ -1094,7 +1096,8 @@ public class QysConfigServiceImpl implements QysConfigService {
 
         }
         //收车合同
-        ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
+       // ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
+        ContractDO buyContractDO = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
         BusinessFileDO buyBusinessFile = businessFileMapper.selectOne("main_id", buyContractDO.getContractId());
         List<Long> contractIdList = new ArrayList<>();
         contractIdList.add(buyBusinessFile.getId());
