@@ -260,6 +260,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                 WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, deptDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
+                if (CollUtil.isEmpty(adminUserRespDTOs)) {
+                    log.error("认证公司失败，因为第一位员工不存在，公司：{},公司Id",deptDO.getName(),deptDO.getId());
+                }
+                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), adminUserRespDTOs.get(0).getId());
                 QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
                 AdminUserRespDTO userRespDTO = null;
                 //如果回调数据为认证成功，保存公司id
@@ -721,7 +725,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else if (type.equals(5)) {
             userAuthProducer.sendUserAuthMessage(666L, "17396202169", UserAuthProducer.FIVE_MINUTES);
         } else if (type.equals(6)) {
-            contractService.contractDownload(3093892888740823617L,"二手车委托合同");
+            contractService.contractDownload(id,"二手车委托合同");
         }
     }
 
@@ -742,9 +746,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         contractDO.setStatus(1);
         contractService.update(contractDO);
         CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
-        carInfo.setSalesStatus(CarStatus.COLLECT.value());
-        carInfo.setStatus(CarStatus.COLLECT_B.value());
-        carInfo.setStatusThree(CarStatus.COLLECT_B_B.value());
+        //合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
+        if (ObjectUtil.equals(1, contractDO.getContractType())) {
+            carInfo.setSalesStatus(CarStatus.COLLECT.value());
+            carInfo.setStatus(CarStatus.COLLECT_B.value());
+            carInfo.setStatusThree(CarStatus.COLLECT_B_B.value());
+        }
+        else if (ObjectUtil.equals(3, contractDO.getContractType())) {
+            carInfo.setSalesStatus(CarStatus.SELL.value());
+            carInfo.setStatus(CarStatus.SELL_B.value());
+            carInfo.setStatusThree(CarStatus.SELL_B_B.value());
+        }
         carInfoService.update(carInfo);
         //这里必须要市场方发起
 //        QysConfigDO qysConfigDO = qysConfigMapper.selectOne("BUSINESS_ID", platformDept.getId());
@@ -1768,9 +1780,9 @@ public class QysConfigServiceImpl implements QysConfigService {
     public Map addAccount(AddAccountDTO reqVO) {
         HashMap<Object, Object> maps = new HashMap<>();
         Map map = adminUserApi.addAccount(reqVO);
-        String type =map.get("type").toString();
+        String type =String.valueOf(map.get("type"));
         if("1".equals(type)){
-            Long userId = Long.valueOf(map.get("userId").toString());
+            Long userId = Long.valueOf(String.valueOf(map.get("userId")));
             userAuth(userId);
         }
         maps.put("success","0");

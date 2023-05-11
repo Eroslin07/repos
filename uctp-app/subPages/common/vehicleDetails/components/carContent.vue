@@ -267,7 +267,7 @@
 						<view class="flex">
 							<text>服务费</text>
 							<text
-								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.transferSell | transMoney}}元</text>
+								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.operation | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>

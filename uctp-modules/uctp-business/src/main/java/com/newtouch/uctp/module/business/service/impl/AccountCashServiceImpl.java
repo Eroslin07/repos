@@ -4,11 +4,14 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.newtouch.uctp.framework.common.exception.BankException;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
+import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
+import com.newtouch.uctp.module.business.convert.app.AppTransferAddressConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -16,9 +19,13 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
+import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
+import com.newtouch.uctp.module.business.enums.bank.SPDBBankTrans;
 import com.newtouch.uctp.module.business.service.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
+import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
+import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import com.newtouch.uctp.module.business.service.cash.MerchantCashService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +35,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -63,8 +71,8 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         //查询提现中冻结金额
         Long withdrawFreezeCash = merchantCashService.list(new LambdaQueryWrapperX<MerchantCashDO>()
-                .eq(MerchantCashDO::getAccountNo, accountNo)
-                .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING))
+                        .eq(MerchantCashDO::getAccountNo, accountNo)
+                        .eq(MerchantCashDO::getTradeType, AccountConstants.TRADE_TYPE_WITHDRAWING))
                 .stream().filter(x -> x != null && x.getPayAmount() != null && x.getPayAmount() > 0).mapToLong(MerchantCashDO::getPayAmount).sum();
 
         MerchantBankDO merchantBankDO = merchantBankService.getOne(
@@ -122,9 +130,9 @@ public class AccountCashServiceImpl implements AccountCashService {
         Map<String, String> transactionRecordMap = new HashMap<>();
         if (CollectionUtil.isNotEmpty(withdrawIds)) {
             statusRecordMap = merchantPresentStatusRecordMapper.selectList(new LambdaQueryWrapper<PresentStatusRecordDO>()
-                    .in(PresentStatusRecordDO::getPresentNo, withdrawIds)
-                    .eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
-                    .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId))
+                            .in(PresentStatusRecordDO::getPresentNo, withdrawIds)
+                            .eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
+                            .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId))
                     .stream()
                     .map(PresentStatusRecordRespVO::build)
                     .collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
@@ -381,7 +389,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
     //商户银行信息查询
     @Override
-    public MerchantBankRespVO bankInfo(String accountNo) {
+    public MerchantBankRespVO bankInfo(String accountNo, String busType) {
         log.info("商户银行信息查询 accountNo:{}", accountNo);
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
         if (merchantAccountDO == null || StringUtils.isEmpty(merchantAccountDO.getAccountNo())) {
@@ -392,7 +400,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         MerchantBankDO merchantBankDO = merchantBankService.getOne(
                 new LambdaQueryWrapperX<MerchantBankDO>()
                         .eq(MerchantBankDO::getAccountNo, accountNo)
-                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_PROFIT.getKey())
+                        .eq(MerchantBankDO::getBusinessType, busType)
                         .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
 
         MerchantBankRespVO merchantBankRespVO = new MerchantBankRespVO();
@@ -406,6 +414,41 @@ public class AccountCashServiceImpl implements AccountCashService {
             merchantBankRespVO.setAccountNo(accountNo);
         }
         return merchantBankRespVO;
+    }
+
+    @Override
+    public AppTransferRespVO appTransfer(AppTransferReqVO appTransferReqVO) {
+
+        MerchantBankDO merchantBank = merchantBankService.getOne(new LambdaQueryWrapperX<MerchantBankDO>()
+                .eq(MerchantBankDO::getAccountNo, appTransferReqVO.getAccountNo())
+                .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_CASH.getKey())
+                .eq(MerchantBankDO::getDeleted, AccountEnum.BANK_CARD_ENABLE)
+        );
+
+        AppTransferRespVO appTransferRespVO = null;
+        if (Objects.isNull(merchantBank)) {
+            throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "商户银行信息不正确!");
+        }
+        TechAddressesRequest request = new TechAddressesRequest();
+        request.setMrchId("");//todo bank
+        request.setOrdrNo(SPDBBankTrans.TRAN_ORDER_NO.get(LocalDateTime.now()));
+        request.setPymtAcctNo(merchantBank.getBankNo());
+        request.setPayeeAcctNo(merchantBank.getChildAcctNo());
+        request.setTfrAmount(appTransferReqVO.getAmount());
+        try {
+            TechAddressesResponse response = transactionService.techAddressesGenerate(request);
+            if (response != null) {
+                if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+                    appTransferRespVO = AppTransferAddressConvert.INSTANCE.convert(response);
+                }
+            } else {
+                throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "交易信息异常请稍后重试!");
+            }
+            return appTransferRespVO;
+        } catch (Exception e) {
+            log.error("appTransfer 调用银行接口异常: " + e.getMessage());
+            throw new BankException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "银行接口异常，请联系管理员!");
+        }
     }
 
     private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {

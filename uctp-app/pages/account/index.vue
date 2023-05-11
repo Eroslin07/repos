@@ -102,7 +102,10 @@
 		},
 		methods: {
 			getList() {
-				getAccount().then((res) => {
+				let data = {
+					merchantId: this.$store.state.user.deptId
+				}
+				getAccount(data).then((res) => {
 					this.data = res.data;
 					uni.stopPullDownRefresh();
 					this.getServerData();

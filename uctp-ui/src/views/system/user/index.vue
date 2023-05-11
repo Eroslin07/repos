@@ -110,6 +110,15 @@
                   />
                 </el-dropdown-item>
                 <el-dropdown-item>
+                  <!-- 操作：认证按钮 -->
+                  <XTextButton
+                    preIcon="ep:user-filled"
+                    title="个人认证"
+                    v-hasPermi="['uctp:certification:individual']"
+                    @click="certification(row.id)"
+                  />
+                </el-dropdown-item>
+                <el-dropdown-item>
                   <!-- 操作：删除 -->
                   <XTextButton
                     preIcon="ep:delete"
@@ -407,6 +416,20 @@ const handleDetail = async (rowId: number) => {
   await setDialogTile('detail')
 }
 
+// 认证操作
+const certification = async (rowId: number) => {
+  message
+    .confirm('是否进行个人认证?', t('common.reminder'))
+    .then(async () => {
+      await UserApi.certificationUserApi(rowId)
+      message.success('个人认证已提交')
+      // 刷新列表
+      await reload()
+    })
+    .catch(() => {
+      message.warning('个人认证提交已取消')
+    })
+}
 // 提交按钮
 const submitForm = async () => {
   // 提交请求

@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.bpm.controller.admin.form.vo.BpmFormMainVO;
 import com.newtouch.uctp.module.bpm.dal.dataobject.car.CarInfoDO;
@@ -99,7 +100,8 @@ public class BpmGlobalHandleListener {
             // 收车公允价值流程发起，修改车辆状态
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"收车超公允价值已发起","");
             // 预占保证金（通过车辆ID查询车辆的收车草稿合同）     合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
-            ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
+            ContractDO contractDO = this.contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                    .eq(ContractDO::getCarId, bpmFormMainVO.getThirdId()).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
             if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
                 throw new RuntimeException("车辆ID[" + bpmFormMainVO.getThirdId() + "]预占保证金失败，原因：未获取到收车合同信息");
             }

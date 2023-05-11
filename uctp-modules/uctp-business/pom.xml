@@ -71,13 +71,13 @@
             <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
         </dependency>
         <!-- 契约锁相关依赖 -->
-<!--        <dependency>-->
-<!--            <groupId>com.qiyuesuo.sdk</groupId>-->
-<!--            <artifactId>sdk-java</artifactId>-->
-<!--            <version>3.5.2</version>-->
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${pom.basedir}/lib/sdk-java-3.5.2.jar</systemPath>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.qiyuesuo.sdk</groupId>-->
+        <!--            <artifactId>sdk-java</artifactId>-->
+        <!--            <version>3.5.2</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${pom.basedir}/lib/sdk-java-3.5.2.jar</systemPath>-->
+        <!--        </dependency>-->
         <!-- Web 相关 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
@@ -150,17 +150,17 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.vaadin.external.google</groupId>-->
-<!--            <artifactId>android-json</artifactId>-->
-<!--            <version>1.0.1</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
         <!--        <dependency>-->
-<!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
-<!--            <artifactId>uctp-api-infra</artifactId>-->
-<!--            <version>${revision}</version>-->
-<!--        </dependency>-->
+        <!--            <groupId>com.vaadin.external.google</groupId>-->
+        <!--            <artifactId>android-json</artifactId>-->
+        <!--            <version>1.0.1</version>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.newtouch.uctp.cloud</groupId>-->
+        <!--            <artifactId>uctp-api-infra</artifactId>-->
+        <!--            <version>${revision}</version>-->
+        <!--        </dependency>-->
         <!-- Seata 分布式事务组件 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -193,6 +193,14 @@
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${pom.basedir}/lib/spdb-api-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <!-- 新大陆POS机SDK       -->
+        <dependency>
+            <groupId>com.newland</groupId>
+            <artifactId>pospp-lib</artifactId>
+            <version>1.0.03</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/lib-1.0.03.jar</systemPath>
         </dependency>
     </dependencies>
 

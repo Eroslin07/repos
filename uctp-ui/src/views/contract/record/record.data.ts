@@ -2,17 +2,11 @@ import type { VxeCrudSchema } from '@/hooks/web/useVxeCrudSchemas'
 // 国际化
 const { t } = useI18n()
 
-// 表单校验
-export const rules = reactive({
-  title: [required],
-  type: [required]
-})
-
 // CrudSchema
 const crudSchemas = reactive<VxeCrudSchema>({
   primaryKey: 'id',
   primaryType: 'seq',
-  action: true,
+  action: false,
   columns: [
     {
       title: '合同编号',

@@ -35,6 +35,8 @@ public class BankConstants {
     public final static String ORDERS_PAY_API = "/api/acquiring/orders/pay";
     // 订单支付结果查询API
     public final static String ORDERS_PAY_STATUS = "/api/acquiring/orders/payStatus";
+    // 场景转账链接生成交易
+    public final static String TECH_ADDRESS_API = "/api/tech/addresses";
 
 
     public final static String REQUEST_METHOD_POST = "POST";

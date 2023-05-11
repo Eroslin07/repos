@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>浦发银行（***1167）</view>
+			<view>{{ bankName }}（{{ bankNo }}）</view>
 		</uni-card>
 		<uni-card>
 			<view>
@@ -36,11 +36,14 @@
 		deleteImage
 	} from '@/api/register'
 	import {
-		getPresent
+		getPresent,
+		getBankInfo
 	} from '@/api/account/profit.js'
 	export default {
 		data() {
 			return {
+				bankName: '',
+				bankNo: '',
 				// 商户账户号
 				accountNo: this.$store.state.user.accountNo,
 				fileList1: [],
@@ -56,9 +59,21 @@
 			return true;
 		},
 		onLoad(options) {
+			this.getBank();
 			this.allAmount = options.amount;
 		},
 		methods: {
+			// 获取利润提取银行账户
+			getBank() {
+				let data = {
+					accountNo: this.accountNo,
+					busType: '2'
+				}
+				getBankInfo(data).then((res) => {
+					this.bankName = res.data.bankName;
+					this.bankNo = res.data.bankNo;
+				})
+			},
 			// 输入金额回调
 			handleInput(val) {
 				const texts = ['百', '千', '万', '十万', '百万', '千万', '亿', '十亿', '百亿', '千亿']

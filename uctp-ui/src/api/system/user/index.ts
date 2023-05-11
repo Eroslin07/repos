@@ -89,3 +89,8 @@ export const updateUserStatusApi = (id: number, status: number) => {
 export const getListSimpleUsersApi = () => {
   return request.get({ url: '/system/user/list-all-simple' })
 }
+
+// 个人认证详情
+export const certificationUserApi = async (userId: number) => {
+  return request.post({ url: '/uctp/certification/individual?userId=' + userId })
+}

@@ -8,6 +8,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
@@ -369,6 +370,7 @@ public class ContractServiceImpl implements ContractService {
             if (ObjectUtil.isNull(fileDTO)) {
                 throw exception(FILE_SAVE_ERROR);
             }
+            System.out.println(JSONUtil.toJsonStr(fileDTO));
             List<BusinessFileDO> businessFileDOS = businessFileService.getByMainId(contractId);
             if (CollUtil.isEmpty(businessFileDOS)) {
                 //这里收/卖车时，已经存入了数据
@@ -383,7 +385,10 @@ public class ContractServiceImpl implements ContractService {
             log.error("契约锁合同下载失败",e);
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
         }finally {
-            FileUtil.del(tempFile);
+//            FileUtil.del(tempFile);
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
             IOUtils.safeClose(fos);
         }
     }

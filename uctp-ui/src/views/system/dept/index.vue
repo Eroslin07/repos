@@ -25,6 +25,13 @@
           v-hasPermi="['system:dept:update']"
           @click="handleUpdate(row.id)"
         />
+        <!-- 操作：认证按钮 -->
+        <XTextButton
+          preIcon="ep:stamp"
+          title="企业认证"
+          v-hasPermi="['uctp:certification:enterprise']"
+          @click="certification(row.leaderUserId)"
+        />
         <!-- 操作：删除 -->
         <XTextButton
           preIcon="ep:delete"
@@ -140,6 +147,21 @@ const handleUpdate = async (rowId: number) => {
   const res = await DeptApi.getDeptApi(rowId)
   await nextTick()
   unref(formRef)?.setValues(res)
+}
+
+// 认证操作
+const certification = async (rowLeaderUserId: number) => {
+  message
+    .confirm('是否进行企业认证?', t('common.reminder'))
+    .then(async () => {
+      await DeptApi.certificationDeptApi(rowLeaderUserId)
+      message.success('企业认证已提交')
+      // 刷新列表
+      await reload()
+    })
+    .catch(() => {
+      message.warning('企业认证提交已取消')
+    })
 }
 
 // 提交新增/修改的表单

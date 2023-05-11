@@ -53,3 +53,12 @@ export function getCashbackDetail(data) {
 		params: data
 	})
 }
+
+// 查询利润提现银行账户
+export function getBankInfo(data) {
+	return request({
+		url: '/uctp/account/cash/bankInfo',
+		'method': 'GET',
+		params: data
+	})
+}
