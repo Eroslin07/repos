@@ -167,13 +167,13 @@
 					class="flex contrart-info__row">
 					<view class="contart-info__">
 						<text class="contrart-info__text">作废文件</text>
-						<text>{{contract.contractDO.contractName}}（已作废）</text>
+						<text  @click="handleContact(contract.url)">{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 				</view>
 				<view v-else class="flex">
 					<view class="">
 						<text class="contrart-info__text">作废文件</text>
-						<text>{{contract.contractDO.contractName}}（已作废）</text>
+						<text  @click="handleContact(contract.url)">{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 					<view class="flex selInfo">
 						<text
@@ -291,21 +291,21 @@
 			<view class="flex">
 				<text>二手车销售统一发票(反向)</text>
 				<view class="flex">
-					<text>待开票</text>
+					<text>{{colInvoiced?'已开票':'待开票'}}</text>
 					<text class="button">开票信息</text>
 				</view>
 			</view>
 			<view class="flex">
 				<text>二手车销售统一发票(正向)</text>
 				<view class="flex">
-					<text>待开票</text>
+					<text>{{sellInvoiced?'已开票':'待开票'}}</text>
 					<text class="button">开票信息</text>
 				</view>
 			</view>
 			<view class="flex">
 				<text>增值税发票</text>
 				<view class="flex">
-					<text>待开票</text>
+					<text>{{sellInvoiced?'已开票':'待开票'}}</text>
 					<text class="button">下载PDF文件</text>
 				</view>
 			</view>
@@ -410,6 +410,22 @@
 					return true
 				}else{
 					return false
+				}
+			},
+			colInvoiced(){
+				let {status,statusThree}=this.carInfoAll.carInfo;
+				if(status>21 || statusThree>211){
+					return true;
+				}else{
+					return false;
+				}
+			},
+			sellInvoiced(){
+				let {status,statusThree}=this.carInfoAll.carInfo;
+				if(status>41||statusThree>411){
+					return true;
+				}else{
+					return false;
 				}
 			}
 		},
@@ -627,7 +643,7 @@
 	.info-box {
 		.car-info-box,
 		.car-fund {
-			padding: 24rpx 26rpx 160rpx;
+			padding: 24rpx 26rpx 0rpx;
 		}
 
 		.button {
@@ -881,9 +897,9 @@
 
 		.car-fund {
 			.car-fund-info {
-				margin-top: 26rpx;
+				// margin-top: 26rpx;
 				width: 100%;
-				height: 810rpx;
+				height: 660rpx;
 				background: rgba(249, 249, 249, 0.02);
 				border-radius: 8rpx;
 				border: 2rpx solid rgba(250, 100, 0, 0.05);
