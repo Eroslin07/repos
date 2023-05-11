@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
@@ -321,6 +322,38 @@ public class ContractServiceImpl implements ContractService {
             tempFile = File.createTempFile("temp","temp.pdf");
             fos = new FileOutputStream(tempFile);
             client.defaultDocumentDownload(fos, documentId).getCheckedData();
+            FileReader reader = new FileReader(tempFile);
+            //将委托合同写入远程服务器以及中间表
+            FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+            fileCreateReqDTO.setContent(reader.readBytes());
+            fileCreateReqDTO.setName(fileName);
+            fileCreateReqDTO.setPath(null);
+            FileDTO fileDTO = fileApi.createFile(fileCreateReqDTO).getCheckedData();
+            if (ObjectUtil.isNull(fileDTO)) {
+                throw exception(FILE_SAVE_ERROR);
+            }
+
+        }catch (Exception e){
+            log.error("契约锁合同下载失败",e);
+            throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
+        }finally {
+            FileUtil.del(tempFile);
+            IOUtils.safeClose(fos);
+        }
+    }
+
+    @Override
+    public void contractDownload(Long contractId,String fileName) {
+        if (ObjectUtil.isNull(contractId)) {
+            throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
+        }
+        File tempFile = null;
+        FileOutputStream fos = null;
+        try {
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
+            tempFile = File.createTempFile("contractTemp","temp.pdf");
+            fos = new FileOutputStream(tempFile);
+            client.defaultContractDownload(fos, contractId, ListUtil.of("CONTRACT"), Boolean.FALSE);
             FileReader reader = new FileReader(tempFile);
             //将委托合同写入远程服务器以及中间表
             FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();

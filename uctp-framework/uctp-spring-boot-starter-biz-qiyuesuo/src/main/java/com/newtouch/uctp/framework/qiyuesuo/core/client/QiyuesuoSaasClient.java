@@ -59,11 +59,13 @@ public interface QiyuesuoSaasClient {
      * 调用此接口来获取个人认证页面链接，链接只能打开一次，链接有效期5分钟，页面会话有效期15分钟。
      *
      * @param contact 操作人联系方式
-     * @param contactType 联系类型：MOBILE（手机号），EMAIL（邮箱）
+     * @param username 指定用户认证名称
+     * @param idCardNo 指定用户身份证号
      * @return
      */
     QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact,
-                                                              String contactType);
+                                                                  String username,
+                                                                  String idCardNo);
 
     /**
      * 调用此接口来获取个人认证页面链接，链接只能打开一次，链接有效期5分钟，页面会话有效期15分钟。
