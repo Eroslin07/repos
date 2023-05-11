@@ -368,7 +368,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.TRUE,
                                 Boolean.FALSE);
                         //下载合同签章文件
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        this.updateContract(contractDO.getContractId());
+//                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //B 收车委托作废->
@@ -402,7 +403,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                         log.info("[status]收车合同：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
                         this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name()).getCheckedData();
                         //下载签章合同
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        this.updateContract(contractDO.getContractId());
+//                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //D 收车合同作废->
@@ -446,7 +448,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.TRUE,
                                 Boolean.FALSE);
                         //下载签章合同
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        this.updateContract(contractDO.getContractId());
+//                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //F 卖车委托合同作废->
@@ -481,7 +484,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                         log.info("[status]卖车合同完成：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
                         this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name()).getCheckedData();
                         //下载签章合同
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        this.updateContract(contractDO.getContractId());
+//                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //H 卖车合同作废->
