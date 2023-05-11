@@ -17,7 +17,7 @@ public enum CarStatus {
     COLLECT_B_B(122,"委托合同已发起"),
     COLLECT_B_C(123,"合同已发起"),
     COLLECT_B_D(124,"待支付"),
-    COLLECT_B_E(125,"待开票"),
+
 
     COLLECT_C(13,"支付失败"),
     COLLECT_C_A(131,"支付失败"),
@@ -25,7 +25,8 @@ public enum CarStatus {
     //--------------待售中-----------------------
     SALE(2,"待售中"),
     SALE_A(21,"待过户"),
-    SALE_A_A(211,"待过户"),
+    SALE_A_A(125,"待开票"),
+    SALE_A_B(211,"待过户"),
 
     SALE_B(22,"未检测"),
     SALE_B_A(221,"未检测"),
