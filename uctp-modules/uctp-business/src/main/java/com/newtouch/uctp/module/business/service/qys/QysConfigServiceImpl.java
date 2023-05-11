@@ -260,6 +260,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                 WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, deptDO.getTenantId());
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
+                if (CollUtil.isEmpty(adminUserRespDTOs)) {
+                    log.error("认证公司失败，因为第一位员工不存在，公司：{},公司Id",deptDO.getName(),deptDO.getId());
+                }
+                WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), adminUserRespDTOs.get(0).getId());
                 QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
                 AdminUserRespDTO userRespDTO = null;
                 //如果回调数据为认证成功，保存公司id
@@ -721,7 +725,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else if (type.equals(5)) {
             userAuthProducer.sendUserAuthMessage(666L, "17396202169", UserAuthProducer.FIVE_MINUTES);
         } else if (type.equals(6)) {
-            contractService.contractDownload(3093892888740823617L,"二手车委托合同");
+            contractService.contractDownload(id,"二手车委托合同");
         }
     }
 
