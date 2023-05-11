@@ -97,7 +97,7 @@ public class BpmGlobalHandleListener {
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
             // 收车公允价值流程发起，修改车辆状态
-            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"已发起","");
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_B.value(),CarStatus.COLLECT_B_A.value(),"收车超公允价值已发起","");
             // 预占保证金（通过车辆ID查询车辆的收车草稿合同）     合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
             ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
             if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
@@ -107,7 +107,7 @@ public class BpmGlobalHandleListener {
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允价值流程发起，修改车辆状态
-            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"已发起","");
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_B.value(),CarStatus.SELL_B_A.value(),"卖车超公允价值已发起","");
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SKZH.name())) {
             // 收车款支付失败流程发起时，修改车辆状态
@@ -115,7 +115,19 @@ public class BpmGlobalHandleListener {
             if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getCarId())) {
                 throw new RuntimeException("根据（契约锁）收车合同ID【" + bpmFormMainVO.getThirdId() + "】获取合同的基本信息失败。");
             }
-            carInfoApi.updateCarStatus(contractDO.getCarId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_C.value(),CarStatus.COLLECT_C_A.value(),"支付失败","流程发起");
+            carInfoApi.updateCarStatus(contractDO.getCarId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_C.value(),CarStatus.COLLECT_C_A.value(),"收车款支付失败已发起","");
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCKP.name())) {
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_A.value(),CarStatus.SALE_A_A.value(),"收车开票已发起","");
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCKP.name())) {
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SOLD.value(),CarStatus.SOLD_A.value(),CarStatus.SOLD_A_A.value(),"卖车开票已发起","");
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SCGH.name())) {
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_A.value(),CarStatus.SALE_A_B.value(),"收车过户已发起","");
+        }
+        else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCGH.name())) {
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SOLD.value(),CarStatus.SOLD_A.value(),CarStatus.SOLD_A_B.value(),"卖车过户已发起","");
         }
         // TODO: 根据业务场景进行个性化处理
         System.out.println(bpmFormMainVO);
@@ -250,8 +262,10 @@ public class BpmGlobalHandleListener {
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SALE.value(),CarStatus.SALE_B.value(),CarStatus.SALE_B_A.value(),"收车过户成功",reason);
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MCGH.name())) {
-            // 1.卖车过户成功，修改车辆状态为卖车已过户
-
+            // 1.卖车过户成功，修改车辆状态为分账
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SOLD.value(),CarStatus.SOLD_B.value(),CarStatus.SOLD_B_A.value(),"卖车过户待分账",reason);
+            //TODO:调用分账接口
+            carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SOLD.value(),CarStatus.SOLD_C.value(),CarStatus.SOLD_C_A.value(),"卖车过户已分账",reason);
         }
 
         System.out.println(bpmFormMainVO);
