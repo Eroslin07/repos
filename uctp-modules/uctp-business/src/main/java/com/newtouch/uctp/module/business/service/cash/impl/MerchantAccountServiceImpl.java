@@ -112,10 +112,10 @@ public class MerchantAccountServiceImpl implements MerchantAccountService {
     }
 
     @Override
-    public MerchantAccountRespVO get(Long loginUserId) {
+    public MerchantAccountRespVO get(Long merchantId) {
 
         MerchantAccountDO accountDO = merchantAccountMapper.selectOne(new LambdaQueryWrapper<MerchantAccountDO>()
-                .eq(MerchantAccountDO::getMerchantId, loginUserId));
+                .eq(MerchantAccountDO::getMerchantId, merchantId));
 
         return MerchantAccountRespVO.build(accountDO);
     }

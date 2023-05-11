@@ -28,8 +28,8 @@ public class AccountController {
 
     @GetMapping("/get")
     @Operation(summary = "查询商户虚拟账户资产详情")
-    public CommonResult<MerchantAccountRespVO> get() {
-        return success(merchantAccountService.get(WebFrameworkUtils.getLoginUserId()));
+    public CommonResult<MerchantAccountRespVO> get(long merchantId) {
+        return success(merchantAccountService.get(merchantId));
     }
 
 }
