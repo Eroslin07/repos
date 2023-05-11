@@ -205,7 +205,7 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact, String contactType) {
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact, String username, String idCardNo) {
         throw new UnsupportedOperationException("default的client不支持调用此方法");
     }
 

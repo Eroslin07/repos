@@ -367,6 +367,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.COLLECT_B_C.value(),
                                 Boolean.TRUE,
                                 Boolean.FALSE);
+                        //下载合同签章文件
+
                         break;
                     case INVALIDED:
                         //B 收车委托作废->
@@ -687,7 +689,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public void test(Long id, Integer type) throws Exception {
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1650772257324167170L);
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
 //        qiyuesuoClient.defaultDraftSend(null);
 //        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
@@ -707,6 +709,8 @@ public class QysConfigServiceImpl implements QysConfigService {
             System.out.println(checkedData);
         } else if (type.equals(5)) {
             userAuthProducer.sendUserAuthMessage(666L, "17396202169", UserAuthProducer.FIVE_MINUTES);
+        } else if (type.equals(6)) {
+            contractService.contractDownload(3093892888740823617L,"二手车委托合同");
         }
     }
 
@@ -715,7 +719,8 @@ public class QysConfigServiceImpl implements QysConfigService {
     public String send(Long contractId, Boolean hasReserve) {
         ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         if (ObjectUtil.equals(1, contractDO.getContractType()) && hasReserve) {
-            ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+           // ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+            ContractDO contractDO1 = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, contractDO.getCarId()).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
             //保证金预占
             Boolean reserveCash = merchantMoneyService.reserveCash(contractDO1.getContractId());
             if (!reserveCash) {
@@ -1081,7 +1086,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         QYSContractVO qysContractVO1=new QYSContractVO();
         QYSContractVO qysContractVO=new QYSContractVO();
         //收车委托合同
-        ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
+       // ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
+        ContractDO buyWTContractDO = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, 1).eq(ContractDO::getInvalided, 0));
         BusinessFileDO byWTBusinessFile = businessFileMapper.selectOne("main_id", buyWTContractDO.getContractId());
         List<Long> contractIds = new ArrayList<>();
         contractIds.add(byWTBusinessFile.getId());
@@ -1094,7 +1100,8 @@ public class QysConfigServiceImpl implements QysConfigService {
 
         }
         //收车合同
-        ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
+       // ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
+        ContractDO buyContractDO = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
         BusinessFileDO buyBusinessFile = businessFileMapper.selectOne("main_id", buyContractDO.getContractId());
         List<Long> contractIdList = new ArrayList<>();
         contractIdList.add(buyBusinessFile.getId());
@@ -1395,15 +1402,15 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void userAuth(Long userId) {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
+        UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", userId);
         if (ObjectUtil.isNull(userRespDTO)) {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
         QysConfigDO configDO = qysConfigMapper.selectById(1);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
-        SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile()).getCheckedData();
+        SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile(),userRespDTO.getNickname(),userExtDO.getIdCard()).getCheckedData();
         String authId = checkedData.getAuthId();
-        UserExtDO userExtDO = userExtMapper.selectOne("USER_ID", userId);
         userExtDO.setAuthId(authId);
         userExtMapper.updateById(userExtDO);
         log.info("个人认证【{}】,认证地址【{}】", deptRespDTO.getName(), checkedData.getAuthUrl());
@@ -1731,10 +1738,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                 AdminUserRespDTO userRespDTO = adminUserApi.getUser(userExtDO.getUserId()).getCheckedData();
 //                AdminUserDO userDO = userMapper.selectById(userExtDO.getUserId());
 //                userDO.setStatus(0);
+
 //                userMapper.updateById(userDO);
                 QysConfigDO configDO = qysConfigMapper.selectOne(QysConfigDO::getBusinessId, userRespDTO.getDeptId());
-                //授权印章角色
                 QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+                //添加员工
+                client.defaultEmployeeCreate(userRespDTO.getNickname(), userRespDTO.getMobile()).getCheckedData();
+                //授权印章角色
                 client.defaultRoleManage(ListUtil.of(userRespDTO.getMobile())).getCheckedData();
             });
         } else {
