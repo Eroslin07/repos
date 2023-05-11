@@ -64,6 +64,7 @@ import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceDeleteReasonEnum;
 import com.newtouch.uctp.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import com.newtouch.uctp.module.bpm.service.message.BpmMessageService;
+import com.newtouch.uctp.module.business.api.account.AccountProfitApi;
 import com.newtouch.uctp.module.business.api.contract.ContractApi;
 import com.newtouch.uctp.module.system.api.dept.DeptApi;
 import com.newtouch.uctp.module.system.api.dept.dto.DeptRespDTO;
@@ -118,6 +119,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private ContractApi contractApi;
     @Resource
     private ContractMapper contractMapper;
+    @Resource
+    private AccountProfitApi accountProfitApi;
 
     @Override
     public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageVO) {
@@ -459,7 +462,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             }
         }
         else if (ObjectUtil.equals(bpmFormMainDO.getBusiType(), BpmDefTypeEnum.LRTX.name())) {
-
+            // 提现利润释放
+            accountProfitApi.profitRelease(bpmFormMainDO.getId().toString());
         }
     }
 
