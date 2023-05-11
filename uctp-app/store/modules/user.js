@@ -134,6 +134,7 @@ const user = {
           const nickname = (user == null || user.nickname === "" || user.nickname == null) ? "" : user.nickname
           const deptId = user.deptId
           const tenantId = user.tenantId
+          const accountNo = user.accountNo || '55555555'
           if (res.roles && res.roles.length > 0) {
             commit('SET_ROLES', res.roles)
             commit('SET_PERMISSIONS', res.permissions)
@@ -149,7 +150,7 @@ const user = {
           commit('SET_ID', user.id)
           commit('SET_STAFFTYPE', user.staffType)
           commit('SET_REGISTERTYPE', user.registerType)
-          commit('ACCOUNT_NO', user.accountNo)
+          commit('ACCOUNT_NO', accountNo)
           resolve(res)
         }).catch(error => {
           reject(error)
