@@ -882,6 +882,7 @@
 				}
 				return value
 			},
+			// 银行卡号回调
 			handleChange(data) {
 				let account = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
 				if (this.sellerForm.collection == 0) {
@@ -890,6 +891,7 @@
 					this.$set(this.sellerForm, 'thirdBankCard', account);
 				}
 			},
+			// 手机号回调
 			handleChange1(data) {
 				let phone = '';
 				if (data.length > 3 && data.length < 8) {
