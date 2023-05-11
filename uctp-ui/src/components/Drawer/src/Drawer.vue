@@ -161,7 +161,7 @@ const submitBtn = (text) => {
   if (
     props.status == 'MCKP' &&
     !baseInfoData.data.variables.formDataJson.formMain.formDataJson.carInvoiceDetailVO
-      .sellTransManageName
+      .transManageName
   ) {
     return message.error('请输入转入地车辆管理所名称！')
   }
