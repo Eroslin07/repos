@@ -368,7 +368,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.TRUE,
                                 Boolean.FALSE);
                         //下载合同签章文件
-
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //B 收车委托作废->
@@ -402,7 +402,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         log.info("[status]收车合同：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
                         this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name()).getCheckedData();
                         //下载签章合同
-                        this.updateContract(contractDO.getContractId());
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //D 收车合同作废->
@@ -445,6 +445,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.SELL_B_C.value(),
                                 Boolean.TRUE,
                                 Boolean.FALSE);
+                        //下载签章合同
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //F 卖车委托合同作废->
@@ -471,15 +473,15 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //G-2 车辆状态合同已发起
                         this.doService(contractDO, carInfo, 1
                                 , CarStatus.SELL.value(),
-                                CarStatus.SELL_B.value(),
-                                CarStatus.SELL_B_D.value(),
+                                CarStatus.SELL_C.value(),
+                                CarStatus.SELL_C_A.value(),
                                 Boolean.FALSE,
                                 Boolean.TRUE);
                         // TODO: 暂时模拟卖车合同签署完成，自动跳过支付进行开票（后续需删除）
                         log.info("[status]卖车合同完成：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
                         this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name()).getCheckedData();
                         //下载签章合同
-                        this.updateContract(contractDO.getContractId());
+                        contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //H 卖车合同作废->
@@ -498,8 +500,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("PERSONAL", contractStatusDTO.getTenantType())) {
+                            this.doService(contractDO, carInfo, 1
+                                    , CarStatus.SELL.value(),
+                                    CarStatus.SELL_B.value(),
+                                    CarStatus.SELL_B_C.value(),
+                                    Boolean.FALSE,
+                                    Boolean.FALSE);
                             this.companySign(contractDO.getContractId());
-
                         }
                         break;
                 }
@@ -1579,11 +1586,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
         //商户签章
-        log.info("商户签章：{}", configDO.getBusinessName());
         this.companySign(configDO, contractDO, ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.FALSE)));
         //平台方签章
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
-        log.info("平台方签章：{}", platformConfigDO.getBusinessName());
         this.companySign(platformConfigDO, contractDO, ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.TRUE)));
     }
 
@@ -1618,6 +1623,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 //        if (ObjectUtil.equals(2,contractDO.getContractType()) || ObjectUtil.equals(4,contractDO.getContractType())) {
 //            return;
 //        }
+        log.info("开始自动盖章-盖章公司：{},关键字:{}",configDO.getBusinessName(),keywords.get(0));
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         //获取签署方公章
         Long sealId = null;
@@ -1630,14 +1636,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             if (ObjectUtil.isNull(sealId)) {
                 throw exception(QYS_CONFIG_ENTERPRISE_NOT_EXISTS);
             }
+            configDO.setSealId(sealId);
+            qysConfigMapper.updateById(configDO);
         } else {
             sealId = configDO.getSealId();
         }
         client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
-        if (ObjectUtil.isNull(configDO.getSealId())) {
-            configDO.setSealId(sealId);
-            qysConfigMapper.updateById(configDO);
-        }
+
     }
 
     @Override
@@ -1738,7 +1743,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 AdminUserRespDTO userRespDTO = adminUserApi.getUser(userExtDO.getUserId()).getCheckedData();
 //                AdminUserDO userDO = userMapper.selectById(userExtDO.getUserId());
 //                userDO.setStatus(0);
-
 //                userMapper.updateById(userDO);
                 QysConfigDO configDO = qysConfigMapper.selectOne(QysConfigDO::getBusinessId, userRespDTO.getDeptId());
                 QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
