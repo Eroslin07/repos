@@ -2,7 +2,7 @@
 	<view class="withdrawal">
 		<uni-card>
 			<view style="margin-bottom: 10px;">到账银行卡</view>
-			<view>{{ bankName }}（{{ bankNo }}）</view>
+			<view>{{ bankName || '--' }}（{{ bankNo || '--' }}）</view>
 		</uni-card>
 		<uni-card>
 			<view>
