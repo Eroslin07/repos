@@ -134,17 +134,17 @@
 			<view class="contrart-info" v-for="(contract,index) in carInfoAll.contractCardVOS" :key="index">
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
-					<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}合同</text>
+					<text class="contract-link" @click="handleContact(contract.url)">{{contract.contractDO.contractName}}合同</text>
 					<text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==1) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==3)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
 				<view v-else class="flex contrart-info__row">
-					<view class="">
-						<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}</text>
-						<view class="flex selInfo">
+					<view >
+						<text class="contract-link" @click="handleContact(contract.url)">{{contract.contractDO.contractName}}</text>
+						<!-- <view class="flex selInfo">
 							<text
 								@click="handleOwnerInfo(contract.contractDO.contractType)">{{contract.contractDO.contractType==2?'卖家信息（第三方收款）':'买家信息'}}</text>
 							<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
-						</view>
+						</view> -->
 					</view>
 					<!-- <text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text> -->
 				</view>
@@ -613,7 +613,12 @@
 				this.$refs.uForm.validate().then(res => {
 					let data = `id=${this.contractId}&reason=${this.form.reason}`
 					contractInvalid(data).then(res => {
-						this.$modal.msg('合同作废成功');
+						if(res.code !=0){
+							this.$modal.msg(res.msg);
+						}else{
+							this.$modal.msg('合同作废成功');
+						}
+						
 						this.cancelModal = false;
 						this.form.reason = '';
 						this.$emit('inviladContract')
@@ -879,7 +884,10 @@
 					justify-content: space-between;
 					align-items: center;
 				}
-
+				.contract-link{
+					color:#2979FF;
+					text-decoration:underline;
+				}
 				.contrart-info__text {
 					width: 106rpx;
 					height: 32rpx;
