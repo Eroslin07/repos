@@ -231,7 +231,6 @@
 					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.insuranceEndData = parseTime(insuranceEndData, '{y}-{m}-{d}')
 					this.carsList = this.carInfoAll.fileA.map(v => v.url);
-					console.log(this.carsList.length,9999)
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
 						.createTime))

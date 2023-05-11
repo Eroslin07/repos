@@ -228,7 +228,7 @@
 							实际利润
 						</text>
 						<view class="">
-							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.profit | transMoney}}</text>
+							<text v-if="eyeIsShow">{{ carInfoAll.carInfo.status>31?carInfoAll.appCarInfoAmountRespVO.profit:'——' | transMoney }}</text>
 							<text v-else>{{'****'}}</text>
 							<text>元</text>
 						</view>
@@ -394,8 +394,10 @@
 		},
 		filters: {
 			transMoney(val) {
-				if(val){
-				    return that.$amount.getComdify(val)
+				if(val=='——'){
+					return '——'
+				}else if(parseFloat(val)){
+					 return that.$amount.getComdify(val)
 				}else{
 					return 0
 				}
