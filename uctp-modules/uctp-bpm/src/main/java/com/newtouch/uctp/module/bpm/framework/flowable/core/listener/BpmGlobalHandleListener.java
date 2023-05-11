@@ -169,7 +169,7 @@ public class BpmGlobalHandleListener {
                 accountVO.setBankName(jsonObject.getString("bankName"));
                 accountVO.setBankNo(jsonObject.getString("bankNumber"));
                 accountVO.setCashBankNo(jsonObject.getString("bondBankAccount"));
-                //accountApi.merchantAccountOpen(accountVO).getCheckedData();
+                accountApi.merchantAccountOpen(accountVO).getCheckedData();
                 // 注册成功
                 noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
             }else if ("disagree".equals(approvalType)){

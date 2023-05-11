@@ -40,7 +40,7 @@
 				list: []
 			}
 		},
-		onShow: function() {
+		onLoad() {
 			uni.$on('refresh', (data) => {
 				if (data.refresh) {
 					this.getList();
