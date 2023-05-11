@@ -8,10 +8,7 @@ import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -28,7 +25,7 @@ public class AccountController {
 
     @GetMapping("/get")
     @Operation(summary = "查询商户虚拟账户资产详情")
-    public CommonResult<MerchantAccountRespVO> get(long merchantId) {
+    public CommonResult<MerchantAccountRespVO> get(@RequestParam long merchantId) {
         return success(merchantAccountService.get(merchantId));
     }
 
