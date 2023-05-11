@@ -10,8 +10,8 @@
 					<view style="float: right;" @click="handleCircle"><u--text suffixIcon="error-circle" iconStyle="font-size: 18px"></u--text></view>
 				</view>
 				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit / 100) }}<text style="font-size: 12px;">元</text></view>
-				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 ' + $amount.getComdify(freezeProfit / 100) + ' 元'"></u--text></view>
-				<view style="margin-bottom: 16px;" @click="handleBackfilled"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'待回填保证金 ' + $amount.getComdify(cashBack / 100) + ' 元'"></u--text></view>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="`冻结余额 ${eyeShow == true ? '****' : $amount.getComdify(freezeProfit / 100)} 元`"></u--text></view>
+				<view style="margin-bottom: 16px;" @click="handleBackfilled"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="`待回填保证金 ${eyeShow == true ? '****' : $amount.getComdify(cashBack / 100)} 元`"></u--text></view>
 				<button class="button" @click="handleWithdrawal" style="background-color: #fa6401;color: #fff;">提现</button>
 			</view>
 		</view>

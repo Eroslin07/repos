@@ -7,7 +7,7 @@
 			<view class="statistics">
 				<view><u--text :suffixIcon="eyeShow == true ? 'eye-off' : 'eye'" iconStyle="font-size: 18px;margin-left: 5px" text="可用余额" @click="handleEye"></u--text></view>
 				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : available }}<text style="font-size: 12px;">元</text></view>
-				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="'冻结余额 '+blockedBalances+' 元'"></u--text></view>
+				<view style="margin-bottom: 16px;" @click="handleFreeze"><u--text suffixIcon="arrow-right" iconStyle="font-size: 18px" :text="`冻结余额 ${eyeShow == true ? '****' : blockedBalances} 元`"></u--text></view>
 				<u-grid col="2">
 					<u-grid-item>
 						<button class="button" @click="handleWithdrawal" style="background-color: #fff;">提现</button>
@@ -35,11 +35,11 @@
 					<u-list-item v-for="(item, index) in indexList" :key="index">
 						<view @click="handleClick(item.tradeTypeName, item)" style="line-height: 30px;">
 							<u-row justify="space-between" customStyle="margin-bottom: 10px;border-bottom: 1px solid #f5f5f5;">
-								<u-col span="7">
+								<u-col span="6">
 									<view class="title">{{ item.tradeTypeName }}</view>
 									<view class="note">{{ item.createTime }}</view>
 								</u-col>
-								<u-col span="5">
+								<u-col span="6">
 									<view class="title" style="text-align: right;">
 										<text v-if="item.profitLossTypeName == '收入'">+</text>
 										<text v-if="item.profitLossTypeName == '支出'">-</text>
