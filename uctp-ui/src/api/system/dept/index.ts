@@ -46,3 +46,8 @@ export const updateDeptApi = async (params: DeptVO) => {
 export const deleteDeptApi = async (id: number) => {
   return await request.delete({ url: '/system/dept/delete?id=' + id })
 }
+
+// 企业认证详情
+export const certificationDeptApi = async (userId: number) => {
+  return await request.post({ url: '/uctp/certification/enterprise?userId=' + userId })
+}

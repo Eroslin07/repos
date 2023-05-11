@@ -73,7 +73,7 @@
 <script lang="ts" name="Temp" setup>
 import type { FormExpose } from '@/components/Form'
 // 业务相关的 import
-import { rules, allSchemas } from './contracttemp.data'
+import { allSchemas } from './contracttemp.data'
 import * as ContractTempApi from '@/api/contract/temp'
 
 const { t } = useI18n() // 国际化

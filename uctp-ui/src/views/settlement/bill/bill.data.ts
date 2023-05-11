@@ -1,12 +1,7 @@
 import type { VxeCrudSchema } from '@/hooks/web/useVxeCrudSchemas'
 // 国际化
 const { t } = useI18n()
-// 表单校验
-export const rules = reactive({
-  name: [required],
-  code: [required],
-  sort: [required]
-})
+
 // CrudSchema
 const crudSchemas = reactive<VxeCrudSchema>({
   primaryKey: 'id',
