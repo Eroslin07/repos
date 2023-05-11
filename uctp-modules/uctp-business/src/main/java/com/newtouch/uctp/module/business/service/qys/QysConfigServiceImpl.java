@@ -920,6 +920,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             buyContrsctDo.setBusinessId(usersDO.getDeptId());
             buyContrsctDo.setDocumentId(documentId);
             buyContrsctDo.setCode(buyCode);
+            buyContrsctDo.setFirstParty(carInfoDetailsDO.getSellerName());//甲方
+            buyContrsctDo.setSecondParty(platformDept.getName());//乙方
+            buyContrsctDo.setSignUpAmount(NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount())));//签约金额
             //存合同草稿合同到表
             contractMapper.insert(buyContrsctDo);
 
@@ -1051,6 +1054,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             sellContrsctDo.setBusinessId(usersDO.getDeptId());
             sellContrsctDo.setDocumentId(documentId);
             sellContrsctDo.setCode(sellCode);
+            sellContrsctDo.setFirstParty(carInfoDetailsDO.getBuyerName());//甲方
+            sellContrsctDo.setSecondParty(platformDept.getName());//乙方
+            sellContrsctDo.setSignUpAmount(NullReplaceUtil.nullReplace(String.valueOf(carInfo.getSellAmount())));//签约金额
             contractMapper.insert(sellContrsctDo);
 
             FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
@@ -1199,6 +1205,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             buyContrsctDo.setBusinessId(usersDO.getDeptId());
             buyContrsctDo.setDocumentId(documentId);
             buyContrsctDo.setCode(buyWTCode);
+            buyContrsctDo.setFirstParty(platformDept.getName());//甲方
+            buyContrsctDo.setSecondParty(userDept.getName());//乙方
+            buyContrsctDo.setSignUpAmount(NullReplaceUtil.nullReplace(String.valueOf(carInfo.getVehicleReceiptAmount())));//签约金额
             //存合同草稿合同到表
             contractMapper.insert(buyContrsctDo);
             qysContractVO.setType("1");
@@ -1254,6 +1263,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             sellWTContrsctDo.setDocumentId(documentId);
             sellWTContrsctDo.setBusinessId(usersDO.getDeptId());
             sellWTContrsctDo.setCode(sellWTCode);
+            sellWTContrsctDo.setFirstParty(platformDept.getName());//甲方
+            sellWTContrsctDo.setSecondParty(userDept.getName());//乙方
+            sellWTContrsctDo.setSignUpAmount(NullReplaceUtil.nullReplace(String.valueOf(carInfo.getSellAmount())));//签约金额
             //存合同草稿合同到表
             contractMapper.insert(sellWTContrsctDo);
             qysContractVO.setType("2");
@@ -1305,6 +1317,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             sellWTContrsctDo.setDocumentId(documentId);
             sellWTContrsctDo.setBusinessId(usersDO.getDeptId());
             sellWTContrsctDo.setCode(sellWTCode);
+            sellWTContrsctDo.setFirstParty(platformDept.getName());//甲方
+            sellWTContrsctDo.setSecondParty(userDept.getName());//乙方
+            sellWTContrsctDo.setSignUpAmount(NullReplaceUtil.nullReplace(String.valueOf(carInfo.getSellAmount())));//签约金额
             //存合同草稿合同到表
             contractMapper.insert(sellWTContrsctDo);
             qysContractVO.setType("2");
