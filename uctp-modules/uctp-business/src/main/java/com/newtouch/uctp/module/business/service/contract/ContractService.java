@@ -89,6 +89,12 @@ public interface ContractService {
      * @param documentId 合同文档id
      */
     void documentDownload(Long documentId,String fileName);
+    /**
+     * 下载合同文件及附属文件
+     *
+     * @param contractId 合同id
+     */
+    void contractDownload(Long contractId,String fileName);
 
     /**
      * 保存合同

@@ -17,7 +17,7 @@ public enum CarStatus {
     COLLECT_B_B(122,"委托合同已发起"),
     COLLECT_B_C(123,"合同已发起"),
     COLLECT_B_D(124,"待支付"),
-    COLLECT_B_E(125,"待开票"),
+
 
     COLLECT_C(13,"支付失败"),
     COLLECT_C_A(131,"支付失败"),
@@ -25,7 +25,8 @@ public enum CarStatus {
     //--------------待售中-----------------------
     SALE(2,"待售中"),
     SALE_A(21,"待过户"),
-    SALE_A_A(211,"待过户"),
+    SALE_A_A(125,"待开票"),
+    SALE_A_B(211,"待过户"),
 
     SALE_B(22,"未检测"),
     SALE_B_A(221,"未检测"),
@@ -41,15 +42,14 @@ public enum CarStatus {
     SELL_B_A(321,"公允审核"),
     SELL_B_B(322,"委托合同已发起"),
     SELL_B_C(323,"合同已发起"),
-    SELL_B_D(324,"待支付"),
-    SELL_B_E(325,"待开票"),
 
     SELL_C(33,"待支付"),
     SELL_C_A(331,"待支付"),
     //--------------已售出-----------------------
     SOLD(4,"已售出"),
     SOLD_A(41,"待过户"),
-    SOLD_A_A(411,"待过户"),
+    SOLD_A_A(411,"待开票"),
+    SOLD_A_B(411,"待过户"),
 
     SOLD_B(42,"待分账"),
     SOLD_B_A(421,"待分账"),

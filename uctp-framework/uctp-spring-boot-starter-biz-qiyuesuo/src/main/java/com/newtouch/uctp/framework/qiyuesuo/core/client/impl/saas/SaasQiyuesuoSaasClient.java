@@ -180,19 +180,22 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
-    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact, String contactType) {
+    public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact,
+                                                                         String username,
+                                                                         String idCardNo) {
         Assert.notBlank(contact, "contact 不能为空");
-        Assert.notBlank(contactType, "contactType 不能为空");
         SaaSUserAuthPageRequest request = new SaaSUserAuthPageRequest();
-        User user = new User(contact, contactType);
+        User user = new User(contact, "MOBILE");
         request.setUser(user);
+        request.setIdCardNo(idCardNo);
+        request.setUsername(username);
         request.setCallbackUrl("https://fssc.cloud:28000/app-api/uctp/qys/callback/certification/person");
         return this.saasUserAuthPage(request);
     }
 
     @Override
     public QiyuesuoCommonResult<SaaSUserAuthPageResult> saasUserAuthPage(String contact) {
-        return this.saasUserAuthPage(contact, "MOBILE");
+        return this.saasUserAuthPage(contact,null,null);
     }
 
     @Override

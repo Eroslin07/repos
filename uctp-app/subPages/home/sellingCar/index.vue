@@ -18,7 +18,7 @@
 								不能卖出
 							</view>
 							<view class="car_text cell-car-draft">{{tab.status==22?'待售未检测':'待售已检测'}}</view>
-							<image :src="tab.url" class="car-image"></image>
+							<image :src="tab.url" class="car-image" mode="aspectFill"></image>
 						</view>
 					</uni-col>
 					<uni-col :span="15">
@@ -247,7 +247,7 @@
 	.car-image {
 		width: 100%;
 		height: 100%;
-		border-radius: 8px;
+		border-radius: 12rpx;
 	}
 
 	.car_left {

@@ -23,7 +23,7 @@
 									:class="{'car_text':true, 'cell-car-forSale':(tab.status==22||tab.status==23||tab.status==13), 'cell-car-draft':(tab.status==11 ||tab.status==31), 'cell-car-contact':(tab.status==12||tab.status==32), 'cell-car-saled':(tab.status==41||tab.status==42||tab.status==43)}">
 									{{tab.name}}
 								</view>
-								<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
+								<image :src="tab.url? tab.url:defaultUrl" class="car-image" mode="aspectFit"></image>
 							</view>
 						</uni-col>
 						<uni-col :span="15" class="right-box">
@@ -81,7 +81,7 @@
 											:class="{'car_text':true, 'cell-car-forSale':(tab.status==22||tab.status==23||tab.status==13), 'cell-car-draft':(tab.status==11 ||tab.status==31), 'cell-car-contact':(tab.status==12||tab.status==32), 'cell-car-saled':(tab.status==41||tab.status==42||tab.status==43)}">
 											{{tab.name}}
 										</view>
-										<image :src="tab.url? tab.url:defaultUrl" class="car-image"></image>
+										<image :src="tab.url? tab.url:defaultUrl" class="car-image" mode="aspectFit"></image>
 									</view>
 								</uni-col>
 								<uni-col :span="15" class="right-box">

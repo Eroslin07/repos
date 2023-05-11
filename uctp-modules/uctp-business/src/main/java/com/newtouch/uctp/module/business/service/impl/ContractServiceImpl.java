@@ -1,6 +1,8 @@
 package com.newtouch.uctp.module.business.service.impl;
 
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
@@ -22,6 +24,7 @@ import com.newtouch.uctp.module.business.dal.mysql.InvoiceTitleMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.QysContractStatus;
+import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.contract.ContractService;
@@ -98,6 +101,9 @@ public class ContractServiceImpl implements ContractService {
     private InvoiceTitleMapper invoiceTitleMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private BusinessFileService businessFileService;
+
     @Override
     public List<AppContractarVO> getContractInfo(String carID) {
         List<AppContractarVO> contractInfo = contractMapper.getContractInfo(carID);
@@ -332,6 +338,47 @@ public class ContractServiceImpl implements ContractService {
                 throw exception(FILE_SAVE_ERROR);
             }
 
+        }catch (Exception e){
+            log.error("契约锁合同下载失败",e);
+            throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
+        }finally {
+            FileUtil.del(tempFile);
+            IOUtils.safeClose(fos);
+        }
+    }
+
+    @Override
+    public void contractDownload(Long contractId,String fileName) {
+        if (ObjectUtil.isNull(contractId)) {
+            throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
+        }
+        File tempFile = null;
+        FileOutputStream fos = null;
+        try {
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
+            tempFile = File.createTempFile("contractTemp","temp.pdf");
+            fos = new FileOutputStream(tempFile);
+            client.defaultContractDownload(fos, contractId, ListUtil.of("CONTRACT"), Boolean.FALSE);
+            FileReader reader = new FileReader(tempFile);
+            //将委托合同写入远程服务器以及中间表
+            FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
+            fileCreateReqDTO.setContent(reader.readBytes());
+            fileCreateReqDTO.setName(fileName);
+            fileCreateReqDTO.setPath(null);
+            FileDTO fileDTO = fileApi.createFile(fileCreateReqDTO).getCheckedData();
+            if (ObjectUtil.isNull(fileDTO)) {
+                throw exception(FILE_SAVE_ERROR);
+            }
+            List<BusinessFileDO> businessFileDOS = businessFileService.getByMainId(contractId);
+            if (CollUtil.isEmpty(businessFileDOS)) {
+                //这里收/卖车时，已经存入了数据
+                log.warn("没找到关联的合同文件,contractId:{}",contractId);
+            }
+            BusinessFileDO businessFileDO = businessFileDOS.get(0);
+            businessFileDO.setId(fileDTO.getId());
+            //删除中间表business的数据
+            businessFileService.deleteByMainId(contractId);
+            businessFileService.insert(businessFileDO);
         }catch (Exception e){
             log.error("契约锁合同下载失败",e);
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);

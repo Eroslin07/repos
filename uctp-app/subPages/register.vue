@@ -510,6 +510,7 @@
 										_this.$modal.msg("请上传正确且清晰的营业执照照片");
 										_this[`fileList${index}`] = [];
 									} else {
+										_this.$refs.valiForm.clearValidate();
 										if (data.words_result['单位名称']) {
 											_this.registerForm.businessName = data.words_result['单位名称']
 												.words;
