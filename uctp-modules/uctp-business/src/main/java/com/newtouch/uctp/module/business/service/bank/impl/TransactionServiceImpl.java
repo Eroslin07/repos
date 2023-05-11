@@ -12,6 +12,7 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
+import com.newtouch.uctp.module.business.enums.bank.SPDBBankTrans;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.bank.BankAPIService;
 import com.newtouch.uctp.module.business.service.bank.TransactionLogService;
@@ -202,7 +203,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         String accountNo = merchantBankDO.getAccountNo();
         MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
-        String tranNo = generateTranNo();
+        String tranNo = "generateTranNo();";
 
         BalancesWithdrawalRequest param = new BalancesWithdrawalRequest();
         //TODO:交易地区代码-必填 约定的代发平台专用代码
@@ -301,7 +302,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        String tranNo = generateTranNo();
+        String tranNo = "generateTranNo();";
 
         String outSubAccountNo = null; // TODO: 根据交易类型查询对应子账户号
         String outSubAccountName = null; // TODO: 根据交易类型查询对应子账户号
@@ -457,50 +458,23 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TechAddressesResponse techAddressesGenerate(TechAddressesRequest techAddressesRequest) {
-//        techAddressesRequest.setMrchId(BankConstants.MERCHANT_ID);
-//        String requestMessage = JSONObject.toJSONString(techAddressesRequest);
-//        // log.info("交易：{}的银行请求报文是：{}", contractNo, requestMessage);
-//
-//        String responseMessage = null;
-//        // 调用银行接口
-//        try {
-//            responseMessage = SPDBSMSignature.call(HttpMethod.POST.name(), BankConstants.UNKNOWN_CLEARINGS_API, requestMessage);
-//            // log.info("交易：{}的银行响应报文是：{}", contractNo, responseMessage);
-//            if (responseMessage == null) {
-//                throw new RuntimeException("银行响应报文为空，交易失败");
-//            }
-//
-//            UnKnowClearingResponse response = JSONObject.parseObject(responseMessage, UnKnowClearingResponse.class);
-//
-//            if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
-//                // 交易成功
-//
-//            }
-//
-//        } catch (Exception e) {
-//            log.error("调用银行接口失败", e);
-//
-//        } finally {
-//            // TODO 记录交易日志
-//        }
-
-        return null;
-    }
-
-    /**
-     * 交易流水号生成
-     *
-     * @return
-     */
-    private String generateTranNo() {
-        StringBuffer tranNo = new StringBuffer();
-        // 三位固定值后续根据业务可以做区分
-        tranNo.append("101");
-        // 时间戳毫秒单位
-        tranNo.append(LocalDateTimeUtil.format(LocalDateTime.now(), DatePattern.PURE_DATETIME_MS_FORMATTER));
-        // 十位随机字符
-        tranNo.append(RandomUtil.randomNumbers(10));
-        return tranNo.toString();
+        techAddressesRequest.setMrchId(BankConstants.MERCHANT_ID);
+        String requestMessage = JSONObject.toJSONString(techAddressesRequest);
+        String responseMessage = null;
+        try {
+            responseMessage = bankAPIService.post(BankConstants.TECH_ADDRESS_API, requestMessage);
+            TechAddressesResponse response = null;
+            if (responseMessage != null) {
+                response = JSONObject.parseObject(responseMessage, TechAddressesResponse.class);
+                if (!ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
+                    throw new BankException(requestMessage, response.getStatusMsg());
+                }
+            }
+            return response;
+        } catch (Exception e) {
+            log.error("调用银行接口异常", e);
+            throw e;
+        }
     }
 
     private String printExceptionMessage(Exception e) {
@@ -512,7 +486,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public static void main(String[] args) {
-        System.out.println(LocalDate.now().format(DateTimeFormatter.ofPattern(BankConstants.tranDateFormat)));
-        System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern(BankConstants.tranTimeFormat)));
+        System.out.println(SPDBBankTrans.TRAN_SEQ_NO.get(LocalDateTime.now()));
+        System.out.println(SPDBBankTrans.TRAN_SEQ_NO.get(LocalDateTime.now()));
+        System.out.println(SPDBBankTrans.TRAN_SEQ_NO.get(LocalDateTime.now()));
+        System.out.println(SPDBBankTrans.TRAN_ORDER_NO.get(LocalDateTime.now()));
+        System.out.println(SPDBBankTrans.TRAN_ORDER_NO.get(LocalDateTime.now()));
+        System.out.println(SPDBBankTrans.TRAN_ORDER_NO.get(LocalDateTime.now()));
+        System.out.println(SPDBBankTrans.POS_ORDER_NO.get());
     }
 }

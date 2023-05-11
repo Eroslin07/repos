@@ -62,11 +62,10 @@ public interface TransactionService {
      * 银行出金
      * 支付收车款：商户保证金子账户
      *
-     * @param bankNo        银行卡号
-     * @param amount        金额（单位：分）
-     * @param tranType      交易类型 {@link com.newtouch.uctp.module.business.enums.AccountEnum#TRAN_TYPE_RECHARGE_CASH}
-     * @param contractNo    合同号
-     *
+     * @param bankNo     银行卡号
+     * @param amount     金额（单位：分）
+     * @param tranType   交易类型 {@link com.newtouch.uctp.module.business.enums.AccountEnum#TRAN_TYPE_RECHARGE_CASH}
+     * @param contractNo 合同号
      * @return 交易记录
      */
     TransactionRecordDO outGold(String bankNo, Long amount, String tranType, String contractNo);
@@ -74,11 +73,11 @@ public interface TransactionService {
     /**
      * 子账号互转
      *
-     * @param accountNo         平台账户号
-     * @param contractNo        合同号
-     * @param tranType          交易类型
-     * @param tranAmount        交易金额
-     * @param remark            备注
+     * @param accountNo  平台账户号
+     * @param contractNo 合同号
+     * @param tranType   交易类型
+     * @param tranAmount 交易金额
+     * @param remark     备注
      * @return 银行响应结果
      */
     InnerTransferResponse innerTransfer(String accountNo,
@@ -94,7 +93,7 @@ public interface TransactionService {
 
     /**
      * 商户充值时使用银行APP支付，通过链接唤起银行端APP
-     *
+     * <p>
      * 账链接生成交易
      */
     TechAddressesResponse techAddressesGenerate(TechAddressesRequest techAddressesRequest);

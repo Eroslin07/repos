@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.business.service;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public interface AccountCashService {
@@ -102,5 +103,12 @@ public interface AccountCashService {
      * @param accountNo 商户账户号
      * @return MerchantBankRespVO 商户银行信息
      */
-    MerchantBankRespVO bankInfo(String accountNo);
+    MerchantBankRespVO bankInfo(String accountNo, String busType);
+
+    /**
+     * 商户保证金银行APP充值
+     *
+     * @return
+     */
+    AppTransferRespVO appTransfer(AppTransferReqVO appTransferReqVO);
 }

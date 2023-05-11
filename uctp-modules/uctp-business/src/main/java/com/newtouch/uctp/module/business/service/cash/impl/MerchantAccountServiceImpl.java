@@ -4,6 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;
@@ -21,7 +22,7 @@ import javax.annotation.Resource;
 @Service
 @Validated
 @Slf4j
-public class MerchantAccountServiceImpl implements MerchantAccountService {
+public class MerchantAccountServiceImpl extends ServiceImpl<MerchantAccountMapper, MerchantAccountDO> implements MerchantAccountService {
 
     @Resource
     private MerchantAccountMapper merchantAccountMapper;
