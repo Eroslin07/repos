@@ -19,10 +19,10 @@ const user = {
     tenantId: uni.getStorageSync('TENANT_ID') || storage.get(constant.tenantId),
     deptName: uni.getStorageSync('SET_DEPTNAME') || storage.get(constant.deptName),
     tenantName: uni.getStorageSync('SET_TENANTNAME') || storage.get(constant.tenantName),
-    accountNo: '55555555',
-    staffType:uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
+    accountNo: uni.getStorageSync('ACCOUNT_NO') || storage.get(constant.accountNo),
+    staffType: uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
     loginStatus: true,
-	registerType:uni.getStorageSync('SET_REGISTERTYPE')||storage.get(constant.registerType)
+    registerType: uni.getStorageSync('SET_REGISTERTYPE') || storage.get(constant.registerType)
   },
 
   mutations: {
@@ -77,14 +77,19 @@ const user = {
       storage.set(constant.staffType, staffType)
       uni.setStorageSync('SET_STAFFTYPE', staffType)
     },
-	SET_REGISTERTYPE: (state, registerType) => {
-	  state.registerType = registerType
-	  storage.set(constant.registerType, registerType)
-	  uni.setStorageSync('SET_REGISTERTYPE', registerType)
-	},
+    SET_REGISTERTYPE: (state, registerType) => {
+      state.registerType = registerType
+      storage.set(constant.registerType, registerType)
+      uni.setStorageSync('SET_REGISTERTYPE', registerType)
+    },
     LOGIN_STATUS: (state, loginStatus) => {
       state.loginStatus = loginStatus
     },
+    ACCOUNT_NO: (state, accountNo) => {
+      state.accountNo = accountNo
+      storage.set(constant.accountNo, accountNo)
+      uni.setStorageSync('ACCOUNT_NO', accountNo)
+    }
   },
 
   actions: {
@@ -144,6 +149,7 @@ const user = {
           commit('SET_ID', user.id)
           commit('SET_STAFFTYPE', user.staffType)
           commit('SET_REGISTERTYPE', user.registerType)
+          commit('ACCOUNT_NO', user.accountNo)
           resolve(res)
         }).catch(error => {
           reject(error)
