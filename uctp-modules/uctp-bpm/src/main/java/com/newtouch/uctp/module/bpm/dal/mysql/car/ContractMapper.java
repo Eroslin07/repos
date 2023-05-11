@@ -1,8 +1,6 @@
 package com.newtouch.uctp.module.bpm.dal.mysql.car;
 
 
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultType;
@@ -17,10 +15,6 @@ import com.newtouch.uctp.module.bpm.dal.dataobject.car.ContractDO;
  */
 @Mapper
 public interface ContractMapper extends BaseMapperX<ContractDO> {
-    @InterceptorIgnore(tenantLine = "true")
-    @ResultType(Map.class)
-    @Select("select * from uctp_contract where contract_id = #{contractId} and deleted = 0")
-    Map<String, Object> findContractByContractIdToMap(@Param("contractId") Long contractId);
 
     /**
      * 根据契约锁合同ID和合同类型查找车辆合同信息
@@ -45,6 +39,6 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
 
     @InterceptorIgnore(tenantLine = "true")
     @ResultType(ContractDO.class)
-    @Select("select * from uctp_contract where car_id = #{carId} and contract_type = #{contractType} and deleted = 0")
+    @Select("select * from uctp_contract where car_id = #{carId} and contract_type = #{contractType} and invalided = 0 and deleted = 0")
     ContractDO selectByCarIdAndContractType(@Param("carId") Long carId, @Param("contractType") Integer contractType);
 }
