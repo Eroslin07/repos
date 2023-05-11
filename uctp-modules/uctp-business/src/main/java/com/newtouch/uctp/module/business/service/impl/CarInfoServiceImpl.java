@@ -520,7 +520,8 @@ public class CarInfoServiceImpl implements CarInfoService {
             if (dto.getValue().equalsIgnoreCase(CAR_TAX_VALUE_ADDED)) {
                 if(null!=carInfo.getSellAmount()){
                     //税费 = 卖车金额 * 税率
-                    BigDecimal vat = carInfo.getSellAmount().multiply(new BigDecimal(dto.getLabel()));
+                    BigDecimal rate = new BigDecimal("1").add(new BigDecimal(dto.getLabel()));
+                    BigDecimal vat = carInfo.getSellAmount().subtract(carInfo.getSellAmount().divide(rate,BigDecimal.ROUND_CEILING));
                     vo.setVat(vat);
                 }
             } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_OPERATION)) {
