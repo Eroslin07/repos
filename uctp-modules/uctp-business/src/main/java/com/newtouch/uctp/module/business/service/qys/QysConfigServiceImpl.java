@@ -1768,9 +1768,9 @@ public class QysConfigServiceImpl implements QysConfigService {
     public Map addAccount(AddAccountDTO reqVO) {
         HashMap<Object, Object> maps = new HashMap<>();
         Map map = adminUserApi.addAccount(reqVO);
-        String type =map.get("type").toString();
+        String type =String.valueOf(map.get("type"));
         if("1".equals(type)){
-            Long userId = Long.valueOf(map.get("userId").toString());
+            Long userId = Long.valueOf(String.valueOf(map.get("userId")));
             userAuth(userId);
         }
         maps.put("success","0");
