@@ -1013,10 +1013,10 @@ public class QysConfigServiceImpl implements QysConfigService {
 
             if (sellType == 0) {//全款方式
                 template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "4", sellCode);
-                documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853375219569187L, template, "二手车代销售协议").getData();
+                documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853375219569187L, template, "二手车销售协议").getData();
             } else {//按揭方式
                 template = buildTemplateParam(carInfo, carInfoDetailsDO, userDept, platformDept, "41", sellCode);
-                documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853343477006794L, template, "二手车代销售协议").getData();
+                documentAddResult = client.defaultDocumentAddByTemplate(contractId, 3089853343477006794L, template, "二手车销售协议").getData();
             }
 
             if (sellContract != null) {
