@@ -77,7 +77,7 @@ public interface FileApi {
     CommonResult<String>  deleteFileNew(@Valid @RequestParam(value = "id") Long id);
 
 
-    @GetMapping("/get/{fileId}")
+    @GetMapping(PREFIX + "/get/{fileId}")
     @Operation(summary = "根据文件ID获得文件信息")
     public CommonResult<FileRespDTO> getFileInfoById(@PathVariable("fileId") Long fileId);
 

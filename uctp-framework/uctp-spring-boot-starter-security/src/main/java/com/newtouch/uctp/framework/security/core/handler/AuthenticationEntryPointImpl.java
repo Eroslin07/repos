@@ -1,16 +1,18 @@
 package com.newtouch.uctp.framework.security.core.handler;
 
-import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+
+import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
 
 import static com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants.UNAUTHORIZED;
 
@@ -28,6 +30,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) {
         log.debug("[commence][访问 URL({}) 时，没有登录]", request.getRequestURI(), e);
+        System.out.println(request.getRequestURI());
         // 返回 401
         ServletUtils.writeJSON(response, CommonResult.error(UNAUTHORIZED));
     }

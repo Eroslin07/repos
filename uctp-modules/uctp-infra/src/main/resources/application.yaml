@@ -137,6 +137,8 @@ uctp:
       - /admin-api/infra/file/*/get/** # 获取图片，和租户无关
       - /app-api/infra/file/upload
       - /app-api/infra/file/delete
+      - /app-api/infra/file/get/**
+      - /rpc-api/infra/file/get/**
     ignore-tables:
       - infra_codegen_column
       - infra_codegen_table
@@ -153,6 +155,8 @@ uctp:
     permit-all-urls:
       - /app-api/infra/file/upload
       - /app-api/infra/file/delete
+      - /app-api/infra/file/get/**
+      - /rpc-api/infra/file/get/**
 minio:
   preview:
     endpoint-url: https://miniapp.wanguo.net:28001

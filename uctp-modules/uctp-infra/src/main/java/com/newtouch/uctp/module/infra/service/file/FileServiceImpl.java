@@ -17,6 +17,7 @@ import com.newtouch.uctp.framework.common.util.io.FileUtils;
 import com.newtouch.uctp.framework.file.core.client.FileClient;
 import com.newtouch.uctp.framework.file.core.client.s3.S3FileClient;
 import com.newtouch.uctp.framework.file.core.utils.FileTypeUtils;
+import com.newtouch.uctp.framework.tenant.core.aop.TenantIgnore;
 import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.BusinessFileDO;
@@ -236,6 +237,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @TenantIgnore
     public FileDO getFileInfoById(Long fileId) {
         return fileMapper.selectById(fileId);
     }
