@@ -31,14 +31,14 @@
             <el-col :span="2" class="bg-yell" style="height: 100px">发票照片： </el-col>
             <el-col :span="22" style="height: 100px">
               <el-image
-                v-for="item in mainValue.formDataJson.invoiceFiles"
+                v-for="(item, index) in mainValue.formDataJson.invoiceFiles"
                 :key="item.fileId"
                 style="width: 200px; height: 90px; margin-right: 10px"
                 :src="item.fileUrl"
                 :zoom-rate="1.2"
                 :preview-src-list="idcardUrlArr"
                 fit="cover"
-                :initial-index="0"
+                :initial-index="index"
               />
             </el-col>
           </el-row>

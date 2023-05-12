@@ -62,14 +62,14 @@
               :initial-index="index"
             />
             <el-image
-              v-for="item in mainValue.formDataJson.businessLicense"
+              v-for="(item, index) in mainValue.formDataJson.businessLicense"
               :key="item.id"
               style="width: 200px; height: 100px"
               :src="item.url"
               :zoom-rate="1.2"
               :preview-src-list="busUrlArr"
               fit="cover"
-              :initial-index="0"
+              :initial-index="index"
             />
           </div>
         </div>

@@ -51,12 +51,11 @@ public interface AccountProfitService extends IService<MerchantProfitDO> {
      * 利润提现
      *
      * @param accountNo      商户账号
-     * @param merchantBankId 商户银行卡ID
      * @param amount         提取金额
      * @param invoiceFiles   发票清单
      * @return 利润提现记录ID（后续市场审核通过后通过此ID通知银行转账）
      */
-    Long profitPresent(String accountNo, Long merchantBankId, Long amount, List<ProfitPresentInvoiceReqVO> invoiceFiles);
+    Long profitPresent(String accountNo,  Long amount, List<ProfitPresentInvoiceReqVO> invoiceFiles);
 
     /**
      * 利润分页查询
