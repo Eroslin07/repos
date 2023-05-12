@@ -88,7 +88,7 @@
 					</u-form-item>
 					<u-form-item label="车架号(VIN)" :required="true" prop="vin" borderBottom>
 						<view class="vin">
-							<u--input v-model="carForm.vin" border="none" placeholder="请输入17位车架号(VIN)"></u--input>
+							<u--input v-model="carForm.vin" border="none" @change="handleChange2" placeholder="请输入17位车架号(VIN)"></u--input>
 						</view>
 					</u-form-item>
 					<u-form-item label="首次登记日期" :required="true" prop="firstRegistDate" borderBottom
@@ -501,12 +501,39 @@
 						message: '请上传机动车登记证书',
 						trigger: ['blur', 'change']
 					},
-					vin: {
+					vin: [{
 						type: 'string',
 						required: true,
 						message: '请填写车架号',
 						trigger: ['blur', 'change']
-					},
+					}, {
+						validator: (rule, value, callback) => {
+							const str = value.replace(/\s*/g, "")
+							if (str.length == 17) {
+								return true
+							} else {
+								return false
+							}
+						},
+						type: 'string',
+						required: true,
+						message: '请填写正确的车架号(VIN)',
+						trigger: ['blur', 'change']
+					}, {
+						validator(rule, value, data, callback) {
+							let vinReg = (
+								/^[a-zA-Z0-9]+$/
+							);
+							const str = value.replace(/\s*/g, "")
+							if (!vinReg.test(str)) {
+								return false;
+							}
+						},
+						type: 'string',
+						required: true,
+						message: '只允许输入数字与字母',
+						trigger: ['blur', 'change']
+					}],
 					natureOfOperat: {
 						type: 'string',
 						required: true,
@@ -900,6 +927,11 @@
 					phone = data.replace(/\s/g, '').replace(/[^\d]/g, '').replace(/^(\d{3})(\d{4})/g, '$1 $2 ')
 				}
 				this.$set(this.sellerForm, 'sellerTel', phone);
+			},
+			// 车架号(VIN)回调
+			handleChange2(data) {
+				let vin = data.toUpperCase();
+				this.$set(this.carForm, 'vin', vin);
 			},
 			// 失去焦点
 			handleBlur(val) {
