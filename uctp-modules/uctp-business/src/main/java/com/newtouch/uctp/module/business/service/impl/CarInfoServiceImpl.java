@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -521,7 +522,8 @@ public class CarInfoServiceImpl implements CarInfoService {
                 if(null!=carInfo.getSellAmount()){
                     //税费 = 卖车金额 * 税率
                     BigDecimal rate = new BigDecimal("1").add(new BigDecimal(dto.getLabel()));
-                    BigDecimal vat = carInfo.getSellAmount().subtract(carInfo.getSellAmount().divide(rate,BigDecimal.ROUND_CEILING));
+                    BigDecimal sellAmount = carInfo.getSellAmount();
+                    BigDecimal vat = sellAmount.subtract(sellAmount.divide(rate,2,BigDecimal.ROUND_CEILING));
                     vo.setVat(vat);
                 }
             } else if (dto.getValue().equalsIgnoreCase(CAR_SERVICE_OPERATION)) {
