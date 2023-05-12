@@ -157,6 +157,7 @@ uctp:
       - /app-api/infra/file/delete
       - /app-api/infra/file/get/**
       - /rpc-api/infra/file/get/**
+      - /admin/instances
 minio:
   preview:
     endpoint-url: https://miniapp.wanguo.net:28001

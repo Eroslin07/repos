@@ -158,5 +158,6 @@ uctp:
       - /rpc-api/bpm/car/openinvoice/createOpenInvoiceBpm
       - /rpc-api/bpm/payfailed/create
       - /rpc-api/bpm/task/payWaitingSubmitTask
+      - /admin/instances
 
 debug: false

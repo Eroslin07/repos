@@ -182,6 +182,7 @@ uctp:
       - /app-api/uctp/qys/callback/certification
       - /app-api/uctp/qys/callback/privilege
       - /app-api/uctp/qys/callback/certification/person
+      - /admin/instances
 
 debug: false
 
