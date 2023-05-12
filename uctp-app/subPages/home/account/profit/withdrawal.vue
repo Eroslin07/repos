@@ -173,7 +173,7 @@
 				}
 				let data = {
 					accountNo: this.accountNo,
-					merchantBankId: 2,
+					// merchantBankId: 2,
 					amount: Number(this.amount * 100),
 					invoiceFiles: this.fileList1.map((item) => {
 						return {
