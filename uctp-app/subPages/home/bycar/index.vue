@@ -234,7 +234,7 @@
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
 						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none"
-							placeholder="0.00" @input="handleInput" @blur="handleBlur" @focus="handleFocus">
+							placeholder="0.00" @input="handleInput">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -1231,7 +1231,7 @@
 					this.amountText = ''
 				}
 				this.sellerForm = {
-					vehicleReceiptAmount: this.$amount.getComdify(data.carInfo.vehicleReceiptAmount) == '0.00' ? '' : this.$amount.getComdify(data.carInfo.vehicleReceiptAmount),
+					vehicleReceiptAmount: this.$amount.getComdify(data.carInfo.vehicleReceiptAmount) == '0.00' ? '' : data.carInfo.vehicleReceiptAmount,
 					payType: data.carInfoDetails.payType ? Number(data.carInfoDetails.payType) : 0,
 					transManageName: data.carInfoDetails.transManageName,
 					collection: data.carInfoDetails.collection ? Number(data.carInfoDetails.collection) : 0,

@@ -161,8 +161,7 @@
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
-							@blur="handleBlur" @input="amountInput" placeholder="0.00">
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @input="amountInput" placeholder="0.00">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -187,8 +186,7 @@
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{depositText}}</view>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit"
-							@focus="depositFocus" @blur="depositBlur" @input="depositInput">
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit" @input="depositInput">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -838,10 +836,8 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this
-					.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount
-					.getComdify(res.data.deposit);
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : res.data.sellAmount;
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : res.data.deposit;
 				this.fairStatus = res.data.bpmStatus;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
@@ -1215,12 +1211,12 @@
 					this.sellerForm.profit = res.data.profit;
 					this.amountDetails = res.data;
 				})
-				if (this.sellerForm.sellAmount == '') {
+				// if (this.sellerForm.sellAmount == '') {
 
-				} else {
-					let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
-					this.$set(this.sellerForm, 'sellAmount', amount);
-				}
+				// } else {
+				// 	let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
+				// 	this.$set(this.sellerForm, 'sellAmount', amount);
+				// }
 			},
 			//卖车金额获取焦点
 			handleFocus() {
