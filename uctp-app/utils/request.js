@@ -67,13 +67,7 @@ const request = config => {
           toast(msg)
           reject('500')
         } else if (code !== 200) {
-          // toast(msg)
-		  console.log('走没走')
-		  uni.showToast({
-			  title:msg,
-			  duration: 3000,
-			  icon: 'none',
-		  })
+          toast(msg)
           reject(code)
         }
         resolve(res.data)

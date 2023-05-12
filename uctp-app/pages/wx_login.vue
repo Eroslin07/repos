@@ -130,17 +130,18 @@
 			},
 			// 手机号登录
 			async phoneLogin(captchaParams) {
-			  // 执行登录 15328756760
+			  // 执行登录
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
-					// this.$modal.closeLoading()
+					this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
 					if (error == 1002000012) {
 						this.$modal.hideMsg()
 						this.showModel = true;
 					}
-				}).finally(()=>{
-					this.$modal.closeLoading()
+					setTimeout(()=>{
+						this.$modal.closeLoading()
+					},3000)
 				})
 			},
 			// 登录成功后，处理函数
