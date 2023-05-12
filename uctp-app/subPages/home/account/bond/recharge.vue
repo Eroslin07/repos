@@ -46,7 +46,8 @@
 
 <script>
 	import {
-		getRecharge
+		getRecharge,
+		getDetail
 	} from '@/api/account/bond.js'
 	export default {
 		data() {
@@ -59,7 +60,13 @@
 			}
 		},
 		onLoad(options) {
-			this.revision = options.revision;
+			if (options.revision) {
+				this.revision = options.revision;
+			} else {
+				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
+					this.revision = res.data.revision;
+				})
+			}
 		},
 		methods: {
 			// 页面返回
