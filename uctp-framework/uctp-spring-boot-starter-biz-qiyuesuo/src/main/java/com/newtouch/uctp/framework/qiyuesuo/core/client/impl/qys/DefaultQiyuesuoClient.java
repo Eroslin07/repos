@@ -270,7 +270,7 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
             stamper.setSealId(seaLId);
             stampers.add(stamper);
             //纵坐标 / 关键字偏移量
-            stamper.setOffsetY(0.5);
+            stamper.setOffsetY(-0.02);
         }
         param.setSealId(seaLId);
         param.setStampers(stampers);
