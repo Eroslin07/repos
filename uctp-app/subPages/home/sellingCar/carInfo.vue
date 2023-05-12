@@ -850,8 +850,8 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : res.data
-					.sellAmount;
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount.getDelcommafy(this.$amount.getComdify(res.data
+					.sellAmount));
 				if (this.sellerForm.sellAmount.indexOf('.')) {
 					this.maxlength = this.sellerForm.sellAmount.split('.')[0].length + 3
 				}
@@ -1371,8 +1371,8 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
-						.sellAmount),
+					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.$amount.getComdify(this.sellerForm
+						.sellAmount)),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: idcards.map((item) => {
@@ -1383,8 +1383,8 @@
 					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm
 						.buyerTel,
 					sellType: this.sellerForm.sellType,
-					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
-						.deposit),
+					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.$amount.getComdify(this.sellerForm
+						.deposit)),
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,

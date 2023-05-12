@@ -1356,8 +1356,7 @@
 					this.amountText = ''
 				}
 				this.sellerForm = {
-					vehicleReceiptAmount: this.$amount.getComdify(data.carInfo.vehicleReceiptAmount) == '0.00' ? '' :
-						data.carInfo.vehicleReceiptAmount,
+					vehicleReceiptAmount: this.$amount.getComdify(data.carInfo.vehicleReceiptAmount) == '0.00' ? '' : this.$amount.getDelcommafy(this.$amount.getComdify(data.carInfo.vehicleReceiptAmount)),
 					payType: data.carInfoDetails.payType ? Number(data.carInfoDetails.payType) : 0,
 					transManageName: data.carInfoDetails.transManageName,
 					collection: data.carInfoDetails.collection ? Number(data.carInfoDetails.collection) : 0,
@@ -1705,7 +1704,7 @@
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.detailId,
-					vehicleReceiptAmount: this.$amount.getDelcommafy(this.sellerForm.vehicleReceiptAmount),
+					vehicleReceiptAmount: this.$amount.getDelcommafy(this.$amount.getComdify(this.sellerForm.vehicleReceiptAmount)),
 					collection: this.sellerForm.collection,
 					payType: this.sellerForm.payType,
 					transManageName: this.sellerForm.transManageName,
