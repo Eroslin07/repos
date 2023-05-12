@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.bpm.service.notice.Ipml;
 
 
+import com.alibaba.fastjson.TypeReference;
 import com.newtouch.uctp.module.bpm.util.MsgSendUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 
@@ -42,7 +43,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
    // @GlobalTransactional
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)//noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormMainVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map
         Map<String ,String> map =getContentMaps(type,contentType,reason,bpmFormMainVO);
@@ -56,6 +57,7 @@ public class NoticeServiceImpl implements NoticeService {
             Map<String, String> contentMap = MsgContentUtil.getContent(map);
             infoDO.setTitle(contentMap.get("title"));
             infoDO.setContent(contentMap.get("content"));
+            map.put("content",contentMap.get("content"));
             //取上下文租户号
             Long tenantId = TenantContextHolder.getTenantId();
             infoDO.setTenantId(tenantId);
@@ -101,6 +103,7 @@ public class NoticeServiceImpl implements NoticeService {
         Map<String, String> contentMap = MsgContentUtil.getContent(map);
         infoDO.setTitle(contentMap.get("title"));
         infoDO.setContent(contentMap.get("content"));
+        map.put("content",contentMap.get("content"));
         //取上下文租户号
         Long tenantId = TenantContextHolder.getTenantId();
         infoDO.setTenantId(tenantId);
@@ -144,8 +147,10 @@ public class NoticeServiceImpl implements NoticeService {
             map.put("reason", reason);
             //公允审批通过判断 type=0，contentType=12 收车通过； type=0，contentType=22 卖车通过；
             if (type.equals("0")) {
-                CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON) jsonObject.get("carInfoDetails"), CarInfoDetailsDO.class);
-                CarInfoDO carInfo = JSON.toJavaObject((JSON) jsonObject.get("carInfo"), CarInfoDO.class);
+                CarInfoDetailsDO carInfoDetails= JSON.parseObject(JSON.toJSONString(jsonObject.get("carInfoDetails")), new TypeReference<CarInfoDetailsDO>() {});
+                CarInfoDO carInfo = JSON.parseObject(JSON.toJSONString(jsonObject.get("carInfo")), new TypeReference<CarInfoDO>() {});
+                //CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON) jsonObject.get("carInfoDetails"), CarInfoDetailsDO.class);
+                //CarInfoDO carInfo = JSON.toJavaObject((JSON) jsonObject.get("carInfo"), CarInfoDO.class);
 
                 //CarInfoDO carInfo = (CarInfoDO) jsonObject.get("carInfo");
 
@@ -168,8 +173,10 @@ public class NoticeServiceImpl implements NoticeService {
                 }
 
             } else if (type.equals("1")) {
-                CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON) jsonObject.get("carInfoDetails"), CarInfoDetailsDO.class);
-                CarInfoDO carInfo = JSON.toJavaObject((JSON) jsonObject.get("carInfo"), CarInfoDO.class);
+                CarInfoDetailsDO carInfoDetails= JSON.parseObject(JSON.toJSONString(jsonObject.get("carInfoDetails")), new TypeReference<CarInfoDetailsDO>() {});
+                CarInfoDO carInfo = JSON.parseObject(JSON.toJSONString(jsonObject.get("carInfo")), new TypeReference<CarInfoDO>() {});
+                //CarInfoDetailsDO carInfoDetails = JSON.toJavaObject((JSON) jsonObject.get("carInfoDetails"), CarInfoDetailsDO.class);
+                //CarInfoDO carInfo = JSON.toJavaObject((JSON) jsonObject.get("carInfo"), CarInfoDO.class);
 
                 //map.put("businessId",String.valueOf(bpmFormMainVO.getMerchantId()));
                 map.put("phone", jsonObject.getString("phone"));

@@ -15,7 +15,7 @@ public class MsgContentUtil {
         String result="";
         String title="";
         //buyType=1 为买 ，buyType=2 为卖
-        String buyType="买";
+        String buyType="收";
         String amount=map.get("vehicleReceiptAmount");
         if (map.get("buyType")!=null){
             if (map.get("buyType").equals("2")){
@@ -54,26 +54,25 @@ public class MsgContentUtil {
                 case "26"://2
                     result="【翼龙科技】您的"+buyType+"车合同"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家已超过10分钟未签署，请及时与"+buyType+"家沟通。";
                     break;
-//http://59.80.30.152:20084
-             //   https://code.newtouch.com/Fu7iRdwS/uctp-cloud.git
-              /*  case "31"://5
-                    result="【翼龙科技】您的卖车价格"+amount+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
+
+                case "31"://5
+                    result="【翼龙科技】您的"+buyType+"车价格"+amount+"元偏离了市场评估价值，审核不通过，请联系市场方沟通处理。";//流程调存一条站内，一条短信
                     break;
                 case "32":
-                    result="【翼龙科技】收车合同买家签章【契约锁触发】";
+                    result="【翼龙科技】"+buyType+"车合同卖家签章【契约锁触发】";
                     break;
                 case "33"://4
-                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，卖车款"+amount+"元已成功支付给卖家，请关注。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，"+buyType+"车款"+amount+"元已成功支付给卖家，请关注。";
                     break;
                 case "34":
-                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+amount+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+amount+"元，因"+map.get("reason")+"支付失败。请联系市场方处理。";
                     break;
                 case "35":
-                    result="【翼龙科技】因"+map.get("reason")+"错误导致您的卖车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
+                    result="【翼龙科技】因"+map.get("reason")+"错误导致您的"+buyType+"车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "36"://2
-                    result="【翼龙科技】您的卖车合同编号"+map.get("contractId")+"，金额"+amount+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
-                    break;*/
+                    result="【翼龙科技】您的"+buyType+"车合同"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家已超过10分钟未签署，请及时与"+buyType+"家沟通。";
+                    break;
 //-------
                 case "40":
                     result="【翼龙科技】"+map.get("name")+"恭喜您已经成为车友通平台的一员。在交易过程中会涉及到电子合同签署，需要您配合进行企业认证，请您在15分钟内访问链接完成认证。"+map.get("url");

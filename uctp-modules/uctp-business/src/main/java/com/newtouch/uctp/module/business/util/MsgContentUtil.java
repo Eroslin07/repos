@@ -25,8 +25,6 @@ public class MsgContentUtil {
         }
         Map<String,String> contentMap=new HashMap<>();
         //type  为1表示短信推送模版，0表示为站内消息模版
-
-
         if ("1".equals(map.get("type"))) {
             switch (map.get("contentType")) {
                 case "11"://1
@@ -36,7 +34,7 @@ public class MsgContentUtil {
                     result="【翼龙科技】恭喜您已经成为车友通的一员，请登录车友通小程序进行使用";
                     break;
                 case "21"://5
-                    result="【翼龙科技】您的"+buyType+"车价格"+amount+"元偏离了市场评估价值，审核不通过，请联系市场方沟通处理。";//流程调存一条站内，一条短信
+                    result="【翼龙科技】您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续"+buyType+"方合同签署！";//流程调存一条站内，一条短信
                     break;
                 case "22":
                     result="【翼龙科技】"+buyType+"车合同卖家签章【契约锁触发】";
@@ -56,24 +54,24 @@ public class MsgContentUtil {
                     result="【翼龙科技】您的"+buyType+"车合同"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家已超过10分钟未签署，请及时与"+buyType+"家沟通。";
                     break;
 
-              /*  case "31"://5
-                    result="【翼龙科技】您的卖车价格"+amount+"元偏离了市场公允价值，经由市场方审核不通过，请联系市场方沟通处理。";
+                case "31"://5
+                    result="【翼龙科技】您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续"+buyType+"方合同签署！";//流程调存一条站内，一条短信
                     break;
                 case "32":
-                    result="【翼龙科技】收车合同买家签章【契约锁触发】";
+                    result="【翼龙科技】"+buyType+"车合同卖家签章【契约锁触发】";
                     break;
                 case "33"://4
-                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，卖车款"+amount+"元已成功支付给卖家，请关注。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，"+buyType+"车款"+amount+"元已成功支付给卖家，请关注。";
                     break;
                 case "34":
-                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+amount+"元，因"+map.get("reason")+"错误导致支付失败。请及时通知市场方介入处理。";
+                    result="【翼龙科技】您的合同编号"+map.get("contractId")+"，金额"+amount+"元，因"+map.get("reason")+"支付失败。请联系市场方处理。";
                     break;
                 case "35":
-                    result="【翼龙科技】因"+map.get("reason")+"错误导致您的卖车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
+                    result="【翼龙科技】因"+map.get("reason")+"错误导致您的"+buyType+"车款收款失败。二手车交易平台给您发送了一份文件《XXX》，请您访问链接完成签署（链接地址）";
                     break;
                 case "36"://2
-                    result="【翼龙科技】您的卖车合同编号"+map.get("contractId")+"，金额"+amount+"元，卖家/买家签署已超过10分钟，仍未签字，请及时与卖/买家沟通处理。";
-                    break;*/
+                    result="【翼龙科技】您的"+buyType+"车合同"+map.get("contractId")+"，金额"+amount+"元，"+buyType+"家已超过10分钟未签署，请及时与"+buyType+"家沟通。";
+                    break;
 //-------
                 case "40":
                     result = String.format("【翼龙科技】您在车友通注册的主账号已审批通过，请在15分钟内访问%s 完成企业实名认证。", map.get("url").replaceAll("https://",""));
@@ -96,14 +94,16 @@ public class MsgContentUtil {
         }
         else if ("0".equals(map.get("type"))) {
             switch (map.get("contentType")) {
+
+
                 //收车
                 case "11":
-                    result = "您的收车价格"+amount+"元偏离了市场公允价值，经由市场方审核不通过，原因："+map.get("reason")+"。请及时关注。";
+                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核不通过，，原因："+map.get("reason")+"。请及时关注。";
                     //title="公允价值退回";
                     title= StationInfoEnum.RECEIVE_FAIR_FAIL.getDesc();
                     break;
                 case "12":
-                    result = "您的收车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续卖方合同签署！";
+                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续卖方合同签署！";
                     //title="公允价值通过";
                     title= StationInfoEnum.RECEIVE_FAIR_SUCCESS.getDesc();
                     break;
@@ -124,12 +124,12 @@ public class MsgContentUtil {
                     break;
                 //卖车
                 case "21":
-                    result = "您的卖车价格"+amount+"元偏离了市场公允价值，经由市场方审核不通过，原因："+map.get("reason")+"。请及时关注。";
+                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核不通过，，原因："+map.get("reason")+"。请及时关注。";
                     //title="公允价值退回";
                     title= StationInfoEnum.SELL_FAIR_FAIL1.getDesc();
                     break;
                 case "22":
-                    result = "您的合同编号"+map.get("contractId")+"，卖车价格"+amount+"元价格偏离了市场公允价值，经由市场方审核通过，请及时处理合同签章。";
+                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续卖方合同签署！";
                     //title="公允价值通过";
                     title= StationInfoEnum.SELL_FAIR_SUCCESS.getDesc();
                     break;
