@@ -103,7 +103,7 @@ public class MsgContentUtil {
                     title= StationInfoEnum.RECEIVE_FAIR_FAIL.getDesc();
                     break;
                 case "12":
-                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续卖方合同签署！";
+                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续"+buyType+"方合同签署！";
                     //title="公允价值通过";
                     title= StationInfoEnum.RECEIVE_FAIR_SUCCESS.getDesc();
                     break;
@@ -129,7 +129,7 @@ public class MsgContentUtil {
                     title= StationInfoEnum.SELL_FAIR_FAIL1.getDesc();
                     break;
                 case "22":
-                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续卖方合同签署！";
+                    result = "您的"+buyType+"车价格"+amount+"元不在市场评估价格之内，经市场方审核通过，请关注后续"+buyType+"方合同签署！";
                     //title="公允价值通过";
                     title= StationInfoEnum.SELL_FAIR_SUCCESS.getDesc();
                     break;
