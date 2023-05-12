@@ -7,25 +7,8 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
 import com.newtouch.uctp.framework.security.core.LoginUser;
@@ -60,6 +43,20 @@ import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import com.qiyuesuo.sdk.v2.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static cn.hutool.core.date.DatePattern.CHINESE_DATE_PATTERN;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -150,6 +147,11 @@ public class ContractServiceImpl implements ContractService {
         if (ObjectUtil.isNull(contractDO)) {
             throw exception(CONTRACT_NOT_EXISTS);
         }
+        this.contractInvalid(contractDO,reason);
+    }
+
+    @Override
+    public void contractInvalid(ContractDO contractDO, String reason) {
         //修改契约锁合同状态已作废
         QysConfigDO qysConfigDO = qysConfigService.getByDeptId(contractDO.getBusinessId());
         if (ObjectUtil.isNull(qysConfigDO) || StrUtil.isBlank(qysConfigDO.getAccessKey())) {
@@ -167,10 +169,9 @@ public class ContractServiceImpl implements ContractService {
             client.defaultContractInvalid(contractDO.getContractId(),null,reason);
         }
         //修改合同状态为作废
-        contractDO.setInvalided(2);
+        contractDO.setInvalided(1);
+        contractDO.setInvalidedReason(reason);
         contractMapper.updateById(contractDO);
-        //这里车辆状态要在回调里面判断委托已作废时，才能进行车辆状态修改
-//        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
     }
 
     @Override
@@ -382,8 +383,6 @@ public class ContractServiceImpl implements ContractService {
             if (ObjectUtil.isNull(fileDTO)) {
                 throw exception(FILE_SAVE_ERROR);
             }
-            System.out.println(JSONUtil.toJsonStr(fileDTO));
-
             businessFileDO.setId(fileDTO.getId());
             //删除中间表business的数据
             //businessFileService.deleteByMainId(contractId);
@@ -417,11 +416,21 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public void entrustContractInvalid(Long contractId, String reason) {
+    public void entrustContractInvalid(ContractDO contractDO, String reason) {
+        //获取到委托合同类型
+        Integer contractType = contractDO.getContractType() - 1;
         //查询到委托合同
-
-
-        this.contractInvalid(contractId,reason);
+        ContractDO entrustContractDO = contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                .eq(ContractDO::getCarId, contractDO.getCarId())
+                .eq(ContractDO::getContractType, contractType)
+                .eq(ContractDO::getInvalided,0));
+        if (ObjectUtil.isNull(entrustContractDO)) {
+            log.warn("作废委托合同失败，未找到作废合同，参数[carId:{},contractType:{},invalided:{}]"
+                    ,contractDO.getCarId(),contractType,0);
+            return;
+        }
+        log.info("开始作废委托合同，契约锁合同id：{}",contractDO.getContractId());
+        this.contractInvalid(entrustContractDO,reason);
     }
 
 

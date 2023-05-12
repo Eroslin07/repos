@@ -49,9 +49,19 @@ public interface ContractService {
 
     /**
      * 合同作废，包含契约锁合同作废
-     * @param id
+     *
+     * @param id     合同主键id
+     * @param reason 作废原因
      */
-    void contractInvalid(Long id,String reason);
+    void contractInvalid(Long id, String reason);
+
+    /**
+     * 合同作废，包含契约锁合同作废
+     *
+     * @param contractDO 作废合同
+     * @param reason     作废原因
+     */
+    void contractInvalid(ContractDO contractDO, String reason);
 
     /**
      * 获取收车草稿合同
@@ -110,8 +120,8 @@ public interface ContractService {
 
     /**
      * 委托合同作废
-     * @param contractId 合同Id
+     * @param contractDO 委托合同
      * @param reason  作废原因
      */
-    void entrustContractInvalid(Long contractId, String reason);
+    void entrustContractInvalid(ContractDO contractDO, String reason);
 }
