@@ -112,7 +112,7 @@ public class AccountProfitServiceTest {
         invoiceFiles.add(invoiceReqVO1);
         invoiceFiles.add(invoiceReqVO2);
 
-        Long id = accountProfitService.profitPresent(accountNo, 3L, 1L, invoiceFiles);
+        Long id = accountProfitService.profitPresent(accountNo, 3L, invoiceFiles);
         Assertions.assertNotNull(id);
     }
 

@@ -58,7 +58,7 @@ public class AccountProfitController {
         log.info("账户{}提出利润", accountNo);
 
         //this.checkAccount(accountNo);
-        Long profitId = accountProfitService.profitPresent(accountNo, Long.valueOf(profitPresentReqVO.getMerchantBankId()),
+        Long profitId = accountProfitService.profitPresent(accountNo,
                 profitPresentReqVO.getAmount(), profitPresentReqVO.getInvoiceFiles());
 
         String profitIdStr = "";

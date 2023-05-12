@@ -250,11 +250,14 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
     @GlobalTransactional
     @Transactional
     @TenantIgnore
-    public Long profitPresent(String accountNo, Long merchantBankId, Long amount, List<ProfitPresentInvoiceReqVO> invoiceFiles) {
-        log.info("调用利润提现接口，accountNo:{},merchantBankId:{},amount:{}", accountNo, merchantBankId, amount);
+    public Long profitPresent(String accountNo, Long amount, List<ProfitPresentInvoiceReqVO> invoiceFiles) {
+        log.info("调用利润提现接口，accountNo:{},amount:{}", accountNo, amount);
 
         // 根据银行卡ID查询账户
-        MerchantBankDO bank = merchantBankService.getById(merchantBankId);
+        MerchantBankDO bank = merchantBankService.getOne(new LambdaQueryWrapperX<MerchantBankDO>()
+                .eq(MerchantBankDO::getAccountNo, accountNo)
+                .eq(MerchantBankDO::getDeleted, Boolean.FALSE)
+                .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_PROFIT.getKey()));
         // 银行卡必须存在，且是当前账户的银行卡
         if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo()) || !accountNo.equals(bank.getAccountNo())) {
             log.error("账户{}和银行卡{}不匹配", accountNo);
