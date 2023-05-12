@@ -19,7 +19,7 @@
 		</view> -->
 		
 		<view class="action-btn">
-			<u-checkbox-group v-model="value">
+			<u-checkbox-group  @change="checkboxGroupChange"  v-model="value" >
 				<u-checkbox shape="circle" activeColor="#fe7345"></u-checkbox>
 				<view>同意
 					<text style="color: #fe7345;" @click="handleUserAgrement">《用户协议》</text>及
@@ -41,7 +41,7 @@
 				showToken: true,
 				showModel: false,
 				content: '您的手机号尚未在平台注册，是否要注册?',
-				value: [''],
+				value: [],
 				show: true,
 				wxcode: '',
 				phone: null
@@ -78,6 +78,9 @@
 			// #endif
 		},
 		methods: {
+			checkboxGroupChange(e){
+				this.value=e
+			},
 			// 隐私协议
 			handlePrivacy() {
 				this.$tab.navigateTo('/subPages/common/webview/privacyAgreement')
@@ -123,7 +126,7 @@
 			},
 			// 手机号登录
 			async phoneLogin(captchaParams) {
-			  // 执行登录
+			  // 执行登录 15328756760
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
 					// this.$modal.closeLoading()
 					this.loginSuccess()
