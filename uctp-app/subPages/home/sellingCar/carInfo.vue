@@ -172,7 +172,7 @@
 						<u--text style="font-size:12px;" prefixIcon="info-circle"
 							iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;" @click="showFair = true">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							预计费用{{$amount.getComdify(sellerForm.total) || '0.00'}}元，利润{{$amount.getComdify(sellerForm.profit) || '0.00'}}元。
 							<text @click="handleDetail">明细请查看 ></text>
@@ -431,6 +431,12 @@
 				<view>杂税费用：****元</view>
 				<view>合计费用：****元</view>
 				<view>利润：****元</view>
+			</view>
+		</u-modal>
+		<!-- 公允值不通过原因 -->
+		<u-modal :show="showFair" @confirm="showFair = false">
+			<view>
+				<view>{{ fairReason }}</view>
 			</view>
 		</u-modal>
 		<view class="footer">
@@ -793,6 +799,8 @@
 				// 是否是子账户
 				isChildAccount: false,
 				fairStatus: null,
+				fairReason: null,
+				showFair: false,
 				gxzStatus: 1,
 				amountText: '',
 				depositText: '',
@@ -854,6 +862,7 @@
 					this.depositMaxlength = this.sellerForm.deposit.split('.')[0].length + 3
 				}
 				this.fairStatus = res.data.bpmStatus;
+				this.fairReason = res.data.bpmReason;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
 						if (index == 0) {

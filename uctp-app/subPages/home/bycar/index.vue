@@ -247,7 +247,7 @@
 							:text="'保证金可用余额'+$amount.getComdify(available)+'元'" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
-						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'">公允价值审核-退回 ></view>
+						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'" @click="showFair = true">公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
 						<u-radio-group v-model="sellerForm.payType" placement="row" activeColor="#fd6404">
@@ -387,6 +387,12 @@
 				</u--form>
 			</view>
 		</uni-card>
+		<!-- 公允值不通过原因 -->
+		<u-modal :show="showFair" @confirm="showFair = false">
+			<view>
+				<view>{{ fairReason }}</view>
+			</view>
+		</u-modal>
 		<view class="footer">
 			<!-- 底部按钮 -->
 			<u-grid col="3">
@@ -839,6 +845,8 @@
 				modelName: null,
 				date: null,
 				fairStatus: null,
+				fairReason: null,
+				showFair: false,
 				fairVisible: 1,
 				amountText: '',
 				maxlength: 12
@@ -1376,6 +1384,7 @@
 					this.handleChange1(this.sellerForm.sellerTel);
 				}
 				this.fairStatus = data.carInfo.bpmStatus;
+				this.fairReason = data.carInfo.bpmReason;
 				data.fileD.forEach((item, index) => {
 					if (index == 0) {
 						this.fileList4 = [item];
