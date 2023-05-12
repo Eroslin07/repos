@@ -26,8 +26,8 @@
 					<text style="color: #fe7345;" @click="handlePrivacy">《隐私政策》</text>
 				</view>
 			</u-checkbox-group>
-			<button shape="circle" type="primary" link="true" wx:if="{{value.length == 0}}" @click="handleAgree" class="login-btn">微信用户一键登录</button>
-			<button shape="circle" type="primary" link="true" wx:else open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信用户一键登录</button>
+			<button shape="circle" type="primary" link="true" v-if="value.length == 0" @click="handleAgree" class="login-btn">微信用户一键登录</button>
+			<button shape="circle" type="primary" link="true" v-else open-type="getPhoneNumber" @getphonenumber="getphonenumber" class="login-btn">微信用户一键登录</button>
 		</view>
 		<u-modal :show="showModel" :content='content' :showConfirmButton="true" :showCancelButton="true" confirmText="是" cancelText="否" @cancel="handleCancel" @confirm="handleConfirm" confirmColor="#fe7345"></u-modal>
 	</view>
@@ -131,7 +131,7 @@
 			// 手机号登录
 			async phoneLogin(captchaParams) {
 			  // 执行登录 15328756760
-				this.$store.dispatch('phoneLogin', 1332563256).then(() => {
+				this.$store.dispatch('phoneLogin', this.phone).then(() => {
 					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
