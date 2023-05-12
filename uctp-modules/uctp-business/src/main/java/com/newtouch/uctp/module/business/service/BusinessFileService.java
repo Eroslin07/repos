@@ -1,10 +1,11 @@
 package com.newtouch.uctp.module.business.service;
 
-import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
-import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 
 /**
  * 车辆主表 Service 接口
@@ -18,6 +19,8 @@ public interface BusinessFileService {
      * @return
      */
     int insert(BusinessFileDO fileDO);
+
+    int update(BusinessFileDO fileDO);
 
     /**
      * 批量保存图片关联信息，适用于数据量不大的插入
