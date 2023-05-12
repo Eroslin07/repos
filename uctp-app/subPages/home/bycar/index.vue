@@ -1598,7 +1598,6 @@
 				this.saveSellerInfo(1);
 			},
 			saveSellerInfo(val) {
-				this.showOverlay = true;
 				let list = [...this.fileList4, ...this.fileList8];
 				let data = {
 					id: this.detailId,
@@ -1611,14 +1610,15 @@
 					sellerName: this.sellerForm.sellerName,
 					thirdSellerName: this.sellerForm.collection == 1 ? this.sellerForm.thirdSellerName : null,
 					sellerAdder: this.sellerForm.sellerAdder,
-					sellerTel: this.sellerForm.sellerTel.replace(/\s*/g, ""),
+					sellerTel: this.sellerForm.sellerTel ? this.sellerForm.sellerTel.replace(/\s*/g, "") : this.sellerForm.sellerTel,
 					remitType: this.sellerForm.remitType,
 					bankName: this.sellerForm.bankName,
-					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g, "") : null,
-					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g, "") : null,
+					bankCard: this.sellerForm.collection == 0 ? (this.sellerForm.bankCard ? this.sellerForm.bankCard.replace(/\s*/g, "") : this.sellerForm.bankCard) : null,
+					thirdBankCard: this.sellerForm.collection == 1 ? (this.sellerForm.thirdBankCard ? this.sellerForm.thirdBankCard.replace(/\s*/g, "") : this.sellerForm.thirdBankCard) : null,
 					buttonSaveOrSubmit: val == 'entrust' ? '1' : '2',
 					buyCarFair: `${this.fairValue.value1}万元-${this.fairValue.value2}万元`
 				}
+				this.showOverlay = true;
 				this.$modal.loading("提交中，请耐心等待...");
 				setSellerInfo(data).then((res) => {
 					if (val == 'entrust') {
