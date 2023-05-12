@@ -1,5 +1,6 @@
 package com.newtouch.uctp.module.business.controller.app.account;
 
+import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static com.newtouch.uctp.framework.common.pojo.CommonResult.error;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.ACC_MERCHANT_ACCOUNT_NOT_EXISTS;
 
@@ -106,8 +108,9 @@ public class AccountProfitController {
     @PutMapping("/release/{businessKey}")
     @Operation(summary = "提现利润释放")
     public CommonResult<String> profitRelease(@PathVariable("businessKey") String businessKey) {
-        accountProfitService.profitRelease(businessKey);
-        return success("释放成功");
+        return accountProfitService.profitRelease(businessKey) ? success("释放成功")
+                : error(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "释放失败");
+
     }
 
     /**
