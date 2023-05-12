@@ -6,7 +6,7 @@
 			<view class="cost_image"></view>
 			<view class="statistics">
 				<view style="overflow: hidden;">
-					<view style="float: left;"><u--text :suffixIcon="eyeShow == true ? 'eye-off' : 'eye'" iconStyle="font-size: 18px;margin-left: 5px;" text="可用余额" @click="handleEye"></u--text></view>
+					<view style="float: left;"><u--text :suffixIcon="eyeShow == true ? 'eye-off' : 'eye'" iconStyle="font-size: 18px;margin-left: 5px;padding-right:50rpx" text="可用余额" @click="handleEye"></u--text></view>
 					<view style="float: right;" @click="handleCircle"><u--text suffixIcon="error-circle" iconStyle="font-size: 18px"></u--text></view>
 				</view>
 				<view style="font-size: 20px;font-weight: bold;margin: 16px 0;">{{ eyeShow == true ? '****' : $amount.getComdify(profit / 100) }}<text style="font-size: 12px;">元</text></view>

@@ -5,8 +5,8 @@
 		<view class="content-box">
 			<view>
 				<text>{{detailObj.content}}</text>
-				<!-- <text v-if="detailObj.url" class="navigator-box"
-					@click="handleNavigate(detailObj.url)">{{ detailObj.url }}</text> -->
+				<text v-if="detailObj.title=='公允价值退回' && detailObj.url" class="navigator-box"
+					@click="handleNavigate(detailObj.url)">{{ detailObj.url }}</text>
 			</view>
 		</view>
 		<view class="footer">

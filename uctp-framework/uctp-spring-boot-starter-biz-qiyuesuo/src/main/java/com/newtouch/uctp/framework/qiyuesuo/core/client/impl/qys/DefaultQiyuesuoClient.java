@@ -261,14 +261,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
             Stamper stamper = new Stamper();
             stamper.setKeyword(keyword);
             stamper.setDocumentId(documentId);
-            if (i == 0) {
+//            if (i == 0) {
                 //Chinese（yyyy 年 mm 月 dd 日（阿拉伯数字））
                 stamper.setDatePattern("Chinese");
-            }
+//            }
             //目前默认公章
             stamper.setType("COMPANY");
             stamper.setSealId(seaLId);
             stampers.add(stamper);
+            //纵坐标 / 关键字偏移量
+            stamper.setOffsetY(0.5);
         }
         param.setSealId(seaLId);
         param.setStampers(stampers);
