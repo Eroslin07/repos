@@ -173,7 +173,7 @@
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
 						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							预计费用{{sellerForm.total || '0.00'}}元，利润{{sellerForm.profit || '0.00'}}元。
+							预计费用{{$amount.getComdify(sellerForm.total) || '0.00'}}元，利润{{$amount.getComdify(sellerForm.profit) || '0.00'}}元。
 							<text @click="handleDetail">明细请查看 ></text>
 						</view>
 					</view>
