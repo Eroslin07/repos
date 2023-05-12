@@ -220,8 +220,8 @@
 							<text class="car-upload-title__title">资金</text>
 						</view>
 						<view class="eye-show">
-							<text v-if="eyeIsShow" class="iconfont icon-open-eye" @click="eyeIsShow=!eyeIsShow"></text>
-							<text v-else class="iconfont icon-close-eye" @click="eyeIsShow=!eyeIsShow"></text>
+							<text v-if="eyeIsShow" class="iconfont icon-open-eye eye-icon-box" @click="eyeIsShow=!eyeIsShow"></text>
+							<text v-else class="iconfont icon-close-eye eye-icon-box" @click="eyeIsShow=!eyeIsShow"></text>
 						</view>
 					</view>
 					<image style="width: 206rpx;height: 212rpx;" src="../../../../static/images/home/car-money.svg"
@@ -955,8 +955,11 @@
 					.eye-show {
 						position: relative;
 						z-index: 10;
+						.eye-icon-box{
+							padding:0 10rpx 0 50rpx;
+						}
 					}
-
+					
 					>image {
 						position: absolute;
 						right: -26rpx;

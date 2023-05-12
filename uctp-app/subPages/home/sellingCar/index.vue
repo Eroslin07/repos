@@ -8,7 +8,7 @@
 				placeholder="请输入客户/车架号(VIN)/品牌"></u-search>
 		</view>
 		<!-- status==22 未检测 -->
-		<view v-if="!isSHowTip">
+		<view  v-if="!isSHowTip" >
 			<uni-card v-for="(tab, tabIndex) in tabList" :key="tabIndex" @click="handleCard(tab)"
 				style="margin-top: 10px;">
 				<uni-row :gutter="20">
@@ -303,6 +303,7 @@
 	}
 
 	.eyeIcon {
+		padding: 0 10rpx 0 70rpx;
 		position: absolute;
 		right: 6rpx;
 		top: 0;
