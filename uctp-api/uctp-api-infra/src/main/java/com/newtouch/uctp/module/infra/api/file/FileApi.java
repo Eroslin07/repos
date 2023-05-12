@@ -1,19 +1,20 @@
 package com.newtouch.uctp.module.infra.api.file;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.infra.enums.ApiConstants;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @FeignClient(name = ApiConstants.NAME) // TODO 芋艿：fallbackFactory =
 @Tag(name =  "RPC 服务 - 文件")
@@ -76,6 +77,8 @@ public interface FileApi {
     CommonResult<String>  deleteFileNew(@Valid @RequestParam(value = "id") Long id);
 
 
-
+    @GetMapping("/get/{fileId}")
+    @Operation(summary = "根据文件ID获得文件信息")
+    public CommonResult<FileRespDTO> getFileInfoById(@PathVariable("fileId") Long fileId);
 
 }

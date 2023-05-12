@@ -1,5 +1,14 @@
 package com.newtouch.uctp.module.infra.api.file;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.infra.api.file.dto.FileCreateReqDTO;
 import com.newtouch.uctp.module.infra.api.file.dto.FileDTO;
@@ -7,13 +16,6 @@ import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
 import com.newtouch.uctp.module.infra.convert.file.FileConvert;
 import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
 import com.newtouch.uctp.module.infra.service.file.FileService;
-import org.apache.dubbo.config.annotation.DubboService;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.List;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 import static com.newtouch.uctp.module.system.enums.ApiConstants.VERSION;
@@ -70,6 +72,11 @@ public class FileApiImpl implements FileApi {
         }
 
         return success(result);
+    }
+
+    @Override
+    public CommonResult<FileRespDTO> getFileInfoById(Long fileId) {
+        return success(FileConvert.INSTANCE.convertRespDTO(fileService.getFileInfoById(fileId)));
     }
 
 
