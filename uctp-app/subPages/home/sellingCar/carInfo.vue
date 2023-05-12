@@ -161,7 +161,8 @@
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @input="amountInput" placeholder="0.00">
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @input="amountInput"
+							placeholder="0.00" :maxlength="maxlength">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -186,7 +187,8 @@
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{depositText}}</view>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit" @input="depositInput">
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00"
+							:maxlength="depositMaxlength" type="digit" @input="depositInput">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -476,7 +478,9 @@
 		deleteSellDraft,
 		FindBuyAndWTContract
 	} from '@/api/home/sellingCar.js'
-	import {getFairValue} from '@/api/home/bycar.js'
+	import {
+		getFairValue
+	} from '@/api/home/bycar.js'
 	import {
 		setCreate
 	} from '@/api/home'
@@ -791,7 +795,9 @@
 				fairStatus: null,
 				gxzStatus: 1,
 				amountText: '',
-				depositText: ''
+				depositText: '',
+				maxlength: 12,
+				depositMaxlength: 12
 			}
 		},
 		onReady() {
@@ -836,8 +842,17 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : res.data.sellAmount;
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : res.data.deposit;
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : res.data
+					.sellAmount;
+				if (this.sellerForm.sellAmount.indexOf('.')) {
+					this.maxlength = this.sellerForm.sellAmount.split('.')[0].length + 3
+				}
+
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : res.data
+					.deposit;
+				if (this.sellerForm.deposit.indexOf('.')) {
+					this.depositMaxlength = this.sellerForm.deposit.split('.')[0].length + 3
+				}
 				this.fairStatus = res.data.bpmStatus;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
@@ -1478,12 +1493,14 @@
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = arr[0].length + 3
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = 12
 						}
 					})
 				} else {
@@ -1501,12 +1518,14 @@
 							} else {
 								this.depositText = ''
 							}
+							this.depositMaxlength = arr[0].length + 3
 						} else {
 							if (val.length > 2) {
 								this.depositText = texts[val.length - 3]
 							} else {
 								this.depositText = ''
 							}
+							this.depositMaxlength = 12
 						}
 					})
 				} else {

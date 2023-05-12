@@ -88,7 +88,8 @@
 					</u-form-item>
 					<u-form-item label="车架号(VIN)" :required="true" prop="vin" borderBottom>
 						<view class="vin">
-							<u--input v-model="carForm.vin" border="none" @change="handleChange2" placeholder="请输入17位车架号(VIN)"></u--input>
+							<u--input v-model="carForm.vin" border="none" @change="handleChange2"
+								placeholder="请输入17位车架号(VIN)"></u--input>
 						</view>
 					</u-form-item>
 					<u-form-item label="首次登记日期" :required="true" prop="firstRegistDate" borderBottom
@@ -233,8 +234,8 @@
 					</view>
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none"
-							placeholder="0.00" @input="handleInput">
+						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none" placeholder="0.00"
+							@input="handleInput" :maxlength="maxlength">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
@@ -305,8 +306,8 @@
 						<u--input v-model="sellerForm.sellerAdder" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="sellerTel" borderBottom>
-						<u--input v-model="sellerForm.sellerTel" type="number" border="none"
-							placeholder="请输入11位手机号" @change="handleChange1"></u--input>
+						<u--input v-model="sellerForm.sellerTel" type="number" border="none" placeholder="请输入11位手机号"
+							@change="handleChange1"></u--input>
 					</u-form-item>
 					<u-form-item label="第三方姓名" :required="true" prop="thirdSellerName" borderBottom
 						v-if="sellerForm.collection == 1">
@@ -363,7 +364,8 @@
 				<u--form labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="handelKey">
-						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom @click="handleCheckBox(item.name)">
+						<u-form-item v-for="(item, index) in checkboxList" :key="index" borderBottom
+							@click="handleCheckBox(item.name)">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;width: 100%" v-if="item.name == 'vehicleKey'">
 								<u-input v-model="carForm.key" type="number" :disabled="disabledKey"
@@ -379,8 +381,7 @@
 								:autoHeight="true"></u--textarea> -->
 							<input style="margin-left:20rpx" v-if="item.name == 'accidentVehicle'" type="text"
 								v-model="carForm.other" placeholder="最大输入长度为10" :disabled="disabledOther"
-								placeholder-style="color:#c0c4cc"
-								@input="otherInput" />
+								placeholder-style="color:#c0c4cc" @input="otherInput" />
 						</u-form-item>
 					</u-checkbox-group>
 				</u--form>
@@ -414,12 +415,23 @@
 <script>
 	const bankLenght = [8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 25, 26, 27]
 	import config from '@/config'
-	import { getAccessToken } from '@/utils/auth'
-	import { urlTobase64 } from '@/utils/ruoyi.js'
-	import { getDetail } from '@/api/account/bond.js'
+	import {
+		getAccessToken
+	} from '@/utils/auth'
+	import {
+		urlTobase64
+	} from '@/utils/ruoyi.js'
+	import {
+		getDetail
+	} from '@/api/account/bond.js'
 	import modelList from '@/subPages/home/bycar/modelList.vue'
-	import { getIdCard, deleteImage } from '@/api/register'
-	import { setCreate } from '@/api/home'
+	import {
+		getIdCard,
+		deleteImage
+	} from '@/api/register'
+	import {
+		setCreate
+	} from '@/api/home'
 	import {
 		getVehicleLicense,
 		setCarInfo,
@@ -609,19 +621,54 @@
 				brandShow: false,
 				brandStatus: true,
 				// 车辆手续
-				checkboxList: [
-					{ label: '行驶证正、副本', name: 'drivingLicense' },
-					{ label: '购车发票', name: 'carInvoice' },
-					{ label: '机动车登记证', name: 'registrationCertificate' },
-					{ label: '购置税完税凭证', name: 'purchaseTax' },
-					{ label: '备胎', name: 'spareTire' },
-					{ label: '车船使用税完税凭证', name: 'carShipTax' },
-					{ label: '交强险保单', name: 'heavyTrafficInsurance' },
-					{ label: '商业险保单', name: 'commercialInsurance' },
-					{ label: '千斤顶', name: 'jack' },
-					{ label: '说明书', name: 'specification' },
-					{ label: '钥匙', name: 'vehicleKey' },
-					{ label: '其他', name: 'accidentVehicle' },
+				checkboxList: [{
+						label: '行驶证正、副本',
+						name: 'drivingLicense'
+					},
+					{
+						label: '购车发票',
+						name: 'carInvoice'
+					},
+					{
+						label: '机动车登记证',
+						name: 'registrationCertificate'
+					},
+					{
+						label: '购置税完税凭证',
+						name: 'purchaseTax'
+					},
+					{
+						label: '备胎',
+						name: 'spareTire'
+					},
+					{
+						label: '车船使用税完税凭证',
+						name: 'carShipTax'
+					},
+					{
+						label: '交强险保单',
+						name: 'heavyTrafficInsurance'
+					},
+					{
+						label: '商业险保单',
+						name: 'commercialInsurance'
+					},
+					{
+						label: '千斤顶',
+						name: 'jack'
+					},
+					{
+						label: '说明书',
+						name: 'specification'
+					},
+					{
+						label: '钥匙',
+						name: 'vehicleKey'
+					},
+					{
+						label: '其他',
+						name: 'accidentVehicle'
+					},
 				],
 				// 卖家信息
 				sellerForm: {
@@ -794,6 +841,7 @@
 				fairStatus: null,
 				fairVisible: 1,
 				amountText: '',
+				maxlength: 12
 			}
 		},
 		onReady() {
@@ -816,7 +864,9 @@
 			if (options.id) {
 				this.showOverlay = true;
 				this.$modal.loading("数据加载中，请耐心等待...")
-				getCarInfoDetail({ ID: options.id }).then((res) => {
+				getCarInfoDetail({
+					ID: options.id
+				}).then((res) => {
 					this.$modal.closeLoading()
 					this.showOverlay = false;
 					// 数据回显
@@ -977,7 +1027,9 @@
 							_this.$modal.loading("行驶证识别中，请耐心等待...")
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
-								getVehicleLicense({ vehicleLicense: str }).then((ress) => {
+								getVehicleLicense({
+									vehicleLicense: str
+								}).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.error_msg) {
 										_this.$modal.msg("请上传正确且清晰的行驶证照片");
@@ -986,13 +1038,17 @@
 										_this.$refs.carForm.clearValidate();
 										if (data.words_result['发动机号码']) {
 											let vin = data.words_result['车辆识别代号'].words;
-											getCarInfo({ VIN: vin, deptId: _this.$store.state.user.deptId }).then((result) => {
+											getCarInfo({
+												VIN: vin,
+												deptId: _this.$store.state.user.deptId
+											}).then((result) => {
 												_this.$modal.closeLoading();
 												if (result.data['1']) {
 													// 数据回显
 													_this.getInfo(result.data['1']);
 													if (result.data['1'].fileB.length == 0) {
-														if (i == res.tempFilePaths.length - 1) {
+														if (i == res.tempFilePaths.length -
+															1) {
 															_this.upload(res, index);
 														}
 													}
@@ -1008,24 +1064,45 @@
 													})
 												} else if (result.data['3']) {
 													_this.carForm.vin = vin;
-													_this.carForm.carType = data.words_result['车辆类型'].words;
-													_this.carForm.engineNum = data.words_result['发动机号码'].words;
-													_this.carForm.licensePlateNum = data.words_result['号牌号码'].words;
-													_this.carForm.natureOfOperat = data.words_result['使用性质'].words;
-													_this.carForm.model = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-													if (_this.carForm.model.indexOf('汽车') > - 1) {
-														_this.carForm.model = _this.carForm.model.slice(0, _this.carForm.model.indexOf('汽车'));
+													_this.carForm.carType = data.words_result[
+														'车辆类型'].words;
+													_this.carForm.engineNum = data
+														.words_result['发动机号码'].words;
+													_this.carForm.licensePlateNum = data
+														.words_result['号牌号码'].words;
+													_this.carForm.natureOfOperat = data
+														.words_result['使用性质'].words;
+													_this.carForm.model = data.words_result[
+														'品牌型号'].words.slice(0, data
+														.words_result['品牌型号'].words
+														.indexOf('牌'));
+													if (_this.carForm.model.indexOf('汽车') > -
+														1) {
+														_this.carForm.model = _this.carForm
+															.model.slice(0, _this.carForm.model
+																.indexOf('汽车'));
 													}
-													_this.carForm.brand = data.words_result['品牌型号'].words.slice(0, data.words_result['品牌型号'].words.indexOf('牌'));
-													if (_this.carForm.brand.indexOf('汽车') > - 1) {
-														_this.carForm.brand = _this.carForm.brand.slice(0, _this.carForm.brand.indexOf('汽车'));
+													_this.carForm.brand = data.words_result[
+														'品牌型号'].words.slice(0, data
+														.words_result['品牌型号'].words
+														.indexOf('牌'));
+													if (_this.carForm.brand.indexOf('汽车') > -
+														1) {
+														_this.carForm.brand = _this.carForm
+															.brand.slice(0, _this.carForm.brand
+																.indexOf('汽车'));
 													}
-													_this.carForm.brandType = data.words_result['品牌型号'].words.slice(data.words_result['品牌型号'].words.indexOf('牌') + 1);
-													let rdate = data.words_result['注册日期'].words;
+													_this.carForm.brandType = data
+														.words_result['品牌型号'].words.slice(data
+															.words_result['品牌型号'].words
+															.indexOf('牌') + 1);
+													let rdate = data.words_result['注册日期']
+													.words;
 													let y = rdate.slice(0, 4);
 													let m = rdate.slice(4, 6);
 													let d = rdate.slice(6);
-													_this.carForm.firstRegistDate = y + '-' + m + '-' + d;
+													_this.carForm.firstRegistDate = y + '-' +
+														m + '-' + d;
 
 													if (i == res.tempFilePaths.length - 1) {
 														_this.upload(res, index);
@@ -1072,7 +1149,9 @@
 								`fileList${index}`]];
 							for (let i = 0; i < res.tempFilePaths.length; i++) {
 								let str = await urlTobase64(res.tempFilePaths[i]);
-								getIdCard({ IDCardUrl: str }).then((ress) => {
+								getIdCard({
+									IDCardUrl: str
+								}).then((ress) => {
 									let data = JSON.parse(ress.data);
 									if (data.idcard_number_type == -1) {
 										_this.$modal.msg("请上传正确且清晰的身份证照照片");
@@ -1080,9 +1159,12 @@
 									} else {
 										_this.$refs.sellerForm.clearValidate();
 										if (data.words_result['公民身份号码']) {
-											_this.sellerForm.sellerIdCard = data.words_result['公民身份号码'].words;
-											_this.sellerForm.sellerAdder = data.words_result['住址'].words;
-											_this.sellerForm.sellerName = data.words_result['姓名'].words;
+											_this.sellerForm.sellerIdCard = data.words_result['公民身份号码']
+												.words;
+											_this.sellerForm.sellerAdder = data.words_result['住址']
+												.words;
+											_this.sellerForm.sellerName = data.words_result['姓名']
+											.words;
 										}
 										if (data.words_result['失效日期']) {
 											if (_this.date > data.words_result['失效日期'].words) {
@@ -1126,7 +1208,8 @@
 								if (data) {
 									for (let i = 0; i < data.length; i++) {
 										let item = _this[`fileList${index}`][fileListLen]
-										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(item, {
+										_this[`fileList${index}`].splice(fileListLen, 1, Object.assign(
+											item, {
 												status: 'success',
 												message: '',
 												url: data[i].url,
@@ -1154,7 +1237,9 @@
 			},
 			// 删除图片
 			deletePic(event) {
-				deleteImage({ id: event.file.id }).then((res) => {
+				deleteImage({
+					id: event.file.id
+				}).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
 					if (event.name == 1) {
@@ -1263,7 +1348,8 @@
 					this.amountText = ''
 				}
 				this.sellerForm = {
-					vehicleReceiptAmount: this.$amount.getComdify(data.carInfo.vehicleReceiptAmount) == '0.00' ? '' : data.carInfo.vehicleReceiptAmount,
+					vehicleReceiptAmount: this.$amount.getComdify(data.carInfo.vehicleReceiptAmount) == '0.00' ? '' :
+						data.carInfo.vehicleReceiptAmount,
 					payType: data.carInfoDetails.payType ? Number(data.carInfoDetails.payType) : 0,
 					transManageName: data.carInfoDetails.transManageName,
 					collection: data.carInfoDetails.collection ? Number(data.carInfoDetails.collection) : 0,
@@ -1277,6 +1363,9 @@
 					bankName: data.carInfoDetails.bankName,
 					bankCard: data.carInfoDetails.bankCard,
 					thirdBankCard: data.carInfoDetails.thirdBankCard,
+				}
+				if (this.sellerForm.vehicleReceiptAmount.indexOf(".")) {
+					this.maxlength = this.sellerForm.vehicleReceiptAmount.split(".")[0].length + 3
 				}
 				if (this.sellerForm.collection == 0) {
 					this.handleChange(this.sellerForm.bankCard);
@@ -1499,14 +1588,20 @@
 					id: this.carId,
 					deptId: this.$store.state.user.deptId,
 					tenantId: this.$store.state.user.tenantId,
-					carUrl: list.map((item) => { return item.id }),
-					drivingLicenseUrl: this.fileList1.map((item) => { return item.id }),
+					carUrl: list.map((item) => {
+						return item.id
+					}),
+					drivingLicenseUrl: this.fileList1.map((item) => {
+						return item.id
+					}),
 					engineNum: this.carForm.engineNum,
 					vin: this.carForm.vin,
 					natureOfOperat: this.carForm.natureOfOperat,
 					firstRegistDate: this.carForm.firstRegistDate,
 					plateNum: this.carForm.licensePlateNum,
-					certificateUrl: this.fileList3.map((item) => { return item.id }),
+					certificateUrl: this.fileList3.map((item) => {
+						return item.id
+					}),
 					certificateNo: this.carForm.certificateNo,
 					mileage: this.carForm.mileage,
 					model: this.carForm.model,
@@ -1607,7 +1702,9 @@
 					payType: this.sellerForm.payType,
 					transManageName: this.sellerForm.transManageName,
 					sellerIdCard: this.sellerForm.sellerIdCard,
-					idCardUrl: list.map((item) => { return item.id }),
+					idCardUrl: list.map((item) => {
+						return item.id
+					}),
 					sellerName: this.sellerForm.sellerName,
 					thirdSellerName: this.sellerForm.collection == 1 ? this.sellerForm.thirdSellerName : null,
 					sellerAdder: this.sellerForm.sellerAdder,
@@ -1615,7 +1712,8 @@
 					remitType: this.sellerForm.remitType,
 					bankName: this.sellerForm.bankName,
 					bankCard: this.sellerForm.collection == 0 ? this.sellerForm.bankCard.replace(/\s*/g, "") : null,
-					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g, "") : null,
+					thirdBankCard: this.sellerForm.collection == 1 ? this.sellerForm.thirdBankCard.replace(/\s*/g,
+						"") : null,
 					buttonSaveOrSubmit: val == 'entrust' ? '1' : '2',
 					buyCarFair: `${this.fairValue.value1}万元-${this.fairValue.value2}万元`
 				}
@@ -1712,12 +1810,14 @@
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = arr[0].length + 3
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = 12
 						}
 					})
 				} else {
