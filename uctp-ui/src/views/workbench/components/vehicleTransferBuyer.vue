@@ -19,13 +19,14 @@
                   }}张</span
                 >
                 <el-image
-                  v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                    .fileB"
+                  v-for="(url, index) in baseInfoData.data.variables.formDataJson.formMain
+                    .formDataJson.fileB"
                   :key="url.id"
                   style="width: 34px; height: 34px; margin: 0 5px; vertical-align: top"
                   :src="url.url"
                   fit="fill"
                   :zoom-rate="1.2"
+                  :initial-index="index"
                   :preview-src-list="fileB"
                 />
               </div>
@@ -39,13 +40,14 @@
                   }}张</span
                 >
                 <el-image
-                  v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                    .fileC"
+                  v-for="(url, index) in baseInfoData.data.variables.formDataJson.formMain
+                    .formDataJson.fileC"
                   :key="url.id"
                   style="width: 34px; height: 34px; margin: 0 5px; vertical-align: top"
                   :src="url.url"
                   fit="fill"
                   :zoom-rate="1.2"
+                  :initial-index="index"
                   :preview-src-list="fileC"
                 />
               </div>
@@ -59,13 +61,14 @@
                   }}张</span
                 >
                 <el-image
-                  v-for="url in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                    .fileA"
+                  v-for="(url, index) in baseInfoData.data.variables.formDataJson.formMain
+                    .formDataJson.fileA"
                   :key="url.id"
                   style="width: 34px; height: 34px; margin: 0 5px; vertical-align: top"
                   :src="url.url"
                   fit="fill"
                   :zoom-rate="1.2"
+                  :initial-index="index"
                   :preview-src-list="fileA"
                 />
               </div>
@@ -311,13 +314,14 @@
                 />
               </div>
               <el-image
-                v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson.fileD"
+                v-for="(item, index) in baseInfoData.data.variables.formDataJson.formMain
+                  .formDataJson.fileD"
                 :key="item.id"
                 style="width: 34px; height: 34px; margin-right: 5px"
                 :src="item.url"
                 fit="cover"
                 :zoom-rate="1.2"
-                :initial-index="0"
+                :initial-index="index"
                 :preview-src-list="fileD"
               />
             </el-col>
