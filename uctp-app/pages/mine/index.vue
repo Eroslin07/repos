@@ -32,13 +32,13 @@
 							:src="registerType=='0'?'../../static/images/mine/slices-active.png':'../../static/images/mine/slices.png'"
 							mode="" style="width: 32rpx;height: 32rpx;">
 						</image>
-						<text>企业 ></text>
+						<text>企业</text>
 					</view>
 					<view class=" flex authentication" v-if="type=='2'" :class="registerType=='0'?'active':''">
 						<image
 							:src="registerType=='0'?'../../static/images/mine/slices-active.png':'../../static/images/mine/slices.png'"
 							mode="" style="width: 32rpx;height: 32rpx;"></image>
-						<text>个人 ></text>
+						<text>个人</text>
 					</view>
 				</view>
 			</view>
