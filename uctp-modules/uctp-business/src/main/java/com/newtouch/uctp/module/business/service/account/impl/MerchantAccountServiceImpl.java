@@ -97,21 +97,6 @@ public class MerchantAccountServiceImpl extends ServiceImpl<MerchantAccountMappe
     }
 
     @Override
-    public boolean accountOpen(MerchantAccountDO account) {
-        // 确认用户标识是否存在
-        LambdaUpdateWrapper<MerchantAccountDO> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(MerchantAccountDO::getMerchantId, account.getMerchantId());
-        MerchantAccountDO accountDO = merchantAccountMapper.selectOne(wrapper);
-        if (accountDO == null) {
-            String accountNo = generaAccountNo(accountDO.getMobile());
-            account.setAccountNo(accountNo);
-            merchantAccountMapper.insert(account);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public MerchantAccountRespVO get(Long merchantId) {
 
         MerchantAccountDO accountDO = merchantAccountMapper.selectOne(new LambdaQueryWrapper<MerchantAccountDO>()

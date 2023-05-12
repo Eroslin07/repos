@@ -1,23 +1,45 @@
 package com.newtouch.uctp.module.business.service.bank.impl;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
+import com.newland.pospp.iot.lib.bean.GetAuthCodeResponse;
 import com.newland.pospp.iot.lib.bean.MessageStatusResponseBean;
 import com.newland.pospp.iot.lib.bean.PushMessageRequest;
 import com.newland.pospp.iot.lib.constant.MessageStatus;
 import com.newland.pospp.iot.lib.exceptions.BusinessException;
+import com.newland.pospp.iot.lib.exceptions.InitException;
 import com.newland.pospp.iot.lib.exceptions.NetworkException;
 import com.newland.pospp.iot.lib.push.IotPushClient;
+import com.newland.pospp.iot.lib.push.IotPushProfile;
 import com.newtouch.uctp.module.business.enums.bank.SPDBBankTrans;
 import com.newtouch.uctp.module.business.service.bank.PosAPIService;
 import com.newtouch.uctp.module.business.service.bank.request.PosPaymentRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 @Service
 @Slf4j
 public class PosAPIServiceImpl implements PosAPIService {
 
     private String pushHost = "payment://com.newland.pospp/payment?";
+
+    IotPushProfile.Builder profileBuilder = new IotPushProfile
+            // .Builder("oper1",
+            .Builder("*******申请后填入******",
+            "*******申请后填入*****");
+
+    @PostConstruct
+    public void init() {
+        try {
+            IotPushClient.INSTANCE.initialize(profileBuilder);
+            log.error("POS-IotPushClient initialize success!");
+        } catch (InitException e) {
+            log.error("POS-IotPushClient initialize failed!");
+        }
+    }
 
 
     @Override
@@ -65,5 +87,18 @@ public class PosAPIServiceImpl implements PosAPIService {
         }
 
         return null;
+    }
+
+    @Override
+    public String getAuthCode(String posName) throws BusinessException, NetworkException {
+        try {
+            Assert.isTrue(StrUtil.isNotBlank(posName), "posName不能为空!");
+            GetAuthCodeResponse getAuthCodeResponse = IotPushClient.INSTANCE.getAuthCode("posName");
+            log.info("[{}]授权码：{}", getAuthCodeResponse.getPosName(), getAuthCodeResponse.getAuthCode());
+            return getAuthCodeResponse.getAuthCode();
+        } catch (Exception e) {
+            log.error("POS机获取授权码异常：" + e.getMessage());
+            throw e;
+        }
     }
 }

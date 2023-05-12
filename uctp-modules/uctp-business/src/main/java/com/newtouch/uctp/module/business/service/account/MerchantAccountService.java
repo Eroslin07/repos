@@ -21,14 +21,6 @@ public interface MerchantAccountService extends IService<MerchantAccountDO> {
     int updateByLock(MerchantAccountDO account);
 
     /**
-     * 商户账户开户
-     *
-     * @param account
-     * @return
-     */
-    boolean accountOpen(MerchantAccountDO account);
-
-    /**
      * 查询商户虚拟账户资产详情
      *
      * @return 商户虚拟账户资产详情
