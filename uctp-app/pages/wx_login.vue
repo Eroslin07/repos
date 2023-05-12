@@ -131,7 +131,7 @@
 			// 手机号登录
 			async phoneLogin(captchaParams) {
 			  // 执行登录 15328756760
-				this.$store.dispatch('phoneLogin', 1332563256).then(() => {
+				this.$store.dispatch('phoneLogin', this.phone).then(() => {
 					// this.$modal.closeLoading()
 					this.loginSuccess()
 				}).catch((error) => {
