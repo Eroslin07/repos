@@ -273,8 +273,8 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         dateSstamper.setKeyword("签订时间：");
         dateSstamper.setDocumentId(documentId);
         //Chinese（yyyy 年 mm 月 dd 日（阿拉伯数字））
-        dateSstamper.setDatePattern("Chinese");
-        //目前默认公章
+//        dateSstamper.setDatePattern("Chinese");
+        //时间戳
         dateSstamper.setType("TIMESTAMP");
         stampers.add(dateSstamper);
         param.setSealId(seaLId);
