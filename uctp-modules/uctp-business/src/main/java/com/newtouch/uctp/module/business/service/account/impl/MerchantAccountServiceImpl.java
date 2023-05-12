@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service.cash.impl;
+package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
@@ -6,12 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
-import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantAccountMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
-import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
+import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -33,7 +33,6 @@ import com.newtouch.uctp.module.bpm.api.task.dto.BpmProcessInstanceByKeyReqDTO;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
-import com.newtouch.uctp.module.business.dal.dataobject.TransactionRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -46,7 +45,7 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitInvoiceMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
-import com.newtouch.uctp.module.business.service.AccountCashService;
+import com.newtouch.uctp.module.business.service.account.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpinion;
@@ -54,7 +53,7 @@ import com.newtouch.uctp.module.business.service.account.dto.*;
 import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
-import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
+import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
 
 import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 import static cn.hutool.core.date.DatePattern.NORM_DATE_PATTERN;
@@ -1343,11 +1342,11 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param mp
      */
     private void outGold(MerchantProfitDO mp) {
-        TransactionRecordDO transactionRecord = this.transactionService.outGold(mp.getBankNo(), Math.abs(mp.getProfit()), AccountEnum.TRAN_PROFIT_PRESENT.getKey(), mp.getContractNo());
-        if (transactionRecord == null || !ResponseStatusCode.TRAN_SUCCESS.getCode().equals(transactionRecord.getBankResultCode())) {
-            // 调用银行出金接口失败，TODO 后续改为银行接口调用失败
-            log.error("调用银行出金接口失败，合同号：{}", mp.getContractNo());
-            throw exception(ACC_PRESENT_ERROR);
-        }
+       // TransactionRecordDO transactionRecord = this.transactionService.outGold(mp.getBankNo(), Math.abs(mp.getProfit()), AccountEnum.TRAN_PROFIT_PRESENT.getKey(), mp.getContractNo());
+//        if (transactionRecord == null || !ResponseStatusCode.TRAN_SUCCESS.getCode().equals(transactionRecord.getBankResultCode())) {
+//            // 调用银行出金接口失败，TODO 后续改为银行接口调用失败
+//            log.error("调用银行出金接口失败，合同号：{}", mp.getContractNo());
+//            throw exception(ACC_PRESENT_ERROR);
+//        }
     }
 }

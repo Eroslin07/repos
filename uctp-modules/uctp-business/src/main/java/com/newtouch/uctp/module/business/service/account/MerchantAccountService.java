@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service.cash;
+package com.newtouch.uctp.module.business.service.account;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;

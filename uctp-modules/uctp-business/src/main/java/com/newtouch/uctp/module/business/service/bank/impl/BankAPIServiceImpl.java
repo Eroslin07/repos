@@ -34,17 +34,20 @@ public class BankAPIServiceImpl implements BankAPIService {
     private TransactionLogService transactionLogService;
 
     @Override
-    public String post(String apiPath, String requestBody) {
+    public String post(String apiPath, String requestBody) throws BankException {
         LocalDateTime now = LocalDateTime.now();
         ApiResponse apiResponse = null;
         try {
-
-            apiResponse = SPDBSMEncryptor.requestApi(clientId, secret, privateKey, spdbPublicKey, BankConstants.REQUEST_METHOD_POST, host.concat(apiPath), requestBody, true, true);
+            apiResponse = SPDBSMEncryptor.requestApi(clientId, secret, privateKey, spdbPublicKey,
+                    BankConstants.REQUEST_METHOD_POST, host.concat(apiPath),
+                    requestBody, true, true);
             if (apiResponse.getCode() == BankConstants.BANK_STATUS_CODE_SUCCESS
                     && apiResponse.getVerify()) {
                 return apiResponse.getDecryptBody();
             } else {
-                throw new BankException(requestBody, apiResponse.getBody());
+                throw new BankException(requestBody, StringUtils.isBlank(apiResponse.getDecryptBody())
+                        ? apiResponse.getBody()
+                        : apiResponse.getDecryptBody());
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -54,7 +57,9 @@ public class BankAPIServiceImpl implements BankAPIService {
                     .tranBeginTime(now)
                     .tranEndTime(LocalDateTime.now())
                     .tranRequest(requestBody)
-                    .tranResponse(StringUtils.isBlank(apiResponse.getDecryptBody()) ? apiResponse.getBody() : apiResponse.getDecryptBody()).build()
+                    .tranResponse(StringUtils.isBlank(apiResponse.getDecryptBody())
+                            ? apiResponse.getBody()
+                            : apiResponse.getDecryptBody()).build()
             );
         }
     }

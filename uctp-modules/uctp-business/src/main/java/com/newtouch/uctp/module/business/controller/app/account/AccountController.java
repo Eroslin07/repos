@@ -1,10 +1,8 @@
 package com.newtouch.uctp.module.business.controller.app.account;
 
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantAccountRespVO;
-import com.newtouch.uctp.module.business.service.account.AccountService;
-import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
+import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;

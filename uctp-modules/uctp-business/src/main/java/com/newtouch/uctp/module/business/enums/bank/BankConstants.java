@@ -22,6 +22,11 @@ public class BankConstants {
     // 充值保证金默认开户行
     public final static String CASH_OPEN_BANK_NAME = "浦发银行";
 
+    // 开户行号
+    public final static String OPEN_BANK_NO = "310221000129";
+    // 开户行名称
+    public final static String OPEN_BRANCH_NAME = "上海浦东发展银行沈阳兴工支行";
+
 
     // 子账号互转API
     public final static String INNER_TRANSFER_API = "/api/fundDeposits/eDeposits/innerTransfer";

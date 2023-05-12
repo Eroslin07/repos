@@ -6,7 +6,8 @@ package com.newtouch.uctp.module.business.enums.bank;
 public enum NotificationResultCode {
 
     RESULT_RETURN_CODE("000000000000", "接受正常-响应体"),
-    RESULT_STATUS_CODE("00", "接受正常-响应头");
+    RESULT_STATUS_CODE("00", "接受正常-响应头"),
+    RESULT_STATUS_CODE_ERROR("03", "接收错误-响应头");
 
     private String code;
 
