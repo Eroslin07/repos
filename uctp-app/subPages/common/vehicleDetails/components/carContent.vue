@@ -232,7 +232,7 @@
 						</text>
 						<view class="">
 							<text
-								v-if="eyeIsShow">{{ type==1?(carInfoAll.carInfo.status>31?(carInfoAll.appCarInfoAmountRespVO.profit | transMoney):'--'):'--' }}</text>
+								v-if="eyeIsShow">{{ type==1?(carInfoAll.carInfo.status>31?carInfoAll.appCarInfoAmountRespVO.profit:'--'):'--'| transMoney }}</text>
 							<text v-else>{{'****'}}</text>
 							<text>元</text>
 						</view>
@@ -265,27 +265,27 @@
 						<view class="flex">
 							<text>税</text>
 							<text
-								v-if="eyeIsShow">{{type==1?(carInfoAll.appCarInfoAmountRespVO.vat | transMoney):'--'}}元</text>
+								v-if="eyeIsShow">{{type==1?carInfoAll.appCarInfoAmountRespVO.vat:'--' | transMoney }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>服务费</text>
 							<text
-								v-if="eyeIsShow">{{type==1?(carInfoAll.appCarInfoAmountRespVO.operation| transMoney):'--' }}元</text>
+								v-if="eyeIsShow">{{type==1?carInfoAll.appCarInfoAmountRespVO.operation:'--' | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
 					<view class="flex">
 						<view class="flex">
 							<text>本次回填保证金</text>
-							<text v-if="eyeIsShow">{{type==1?(0| transMoney):'--' }}元</text>
+							<text v-if="eyeIsShow">{{type==1?0:'--' | transMoney }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>本次待回填差额</text>
-							<text v-if="eyeIsShow">{{type==1?(0| transMoney):'--' }}元</text>
+							<text v-if="eyeIsShow">{{type==1?0:'--' | transMoney }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
@@ -394,8 +394,8 @@
 		},
 		filters: {
 			transMoney(val) {
-				if (val == '——') {
-					return '——'
+				if (val == '--') {
+					return '--'
 				} else if (parseFloat(val)) {
 					return that.$amount.getComdify(val)
 				} else {
@@ -438,7 +438,7 @@
 				}
 			},
 			type() {
-				console.log(this.$store.state.user.staffType)
+				// console.log(this.$store.state.user.staffType)
 				return this.$store.state.user.staffType
 			},
 		},
