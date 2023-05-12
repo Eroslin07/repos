@@ -19,8 +19,6 @@ public enum QysContractStatus {
     END("END","强制结束"),
     INVALIDED("INVALIDED","已作废");
 
-
-
     private String value;
     private String text;
 

@@ -163,11 +163,11 @@ public class ContractServiceImpl implements ContractService {
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.COMPLETE.value())) {
             client.defaultContractInvalid(contractDO.getContractId(),null,reason);
         }
-        //修改合同状态为已作废
-        contractDO.setStatus(3);
+        //修改合同状态为作废
+        contractDO.setInvalided(2);
         contractMapper.updateById(contractDO);
-        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
-//        carInfo.setStatusThree();
+        //这里车辆状态要在回调里面判断委托已作废时，才能进行车辆状态修改
+//        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
     }
 
     @Override
@@ -408,6 +408,14 @@ public class ContractServiceImpl implements ContractService {
         contractDO.setBusinessId(deptId);
         contractDO.setCode(code);
         return contractMapper.insert(contractDO);
+    }
+
+    @Override
+    public void entrustContractInvalid(Long contractId, String reason) {
+        //查询到委托合同
+
+
+        this.contractInvalid(contractId,reason);
     }
 
 

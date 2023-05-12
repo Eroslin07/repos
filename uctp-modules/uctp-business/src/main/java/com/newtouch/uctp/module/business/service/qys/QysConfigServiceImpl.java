@@ -392,6 +392,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                     case SIGNING:
 
                         break;
+                    case REJECTED:
+                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态；
+
+                        break;
                 }
             } else if (contractDO.getContractType().equals(2)) {
                 //2收车合同
@@ -429,6 +433,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //下载合同签章文件
 //                        this.updateContract(contractDO.getContractId());
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        //发起委托合同作废
+                        contractService.entrustContractInvalid(contractDO.getContractId(),"合同作废");
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
@@ -441,6 +447,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                                     Boolean.FALSE);
                             this.companySign(contractDO.getContractId());
                         }
+                        break;
+                    case REJECTED:
+                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态；
+
                         break;
                 }
             } else if (contractDO.getContractType().equals(3)) {
@@ -1685,7 +1695,6 @@ public class QysConfigServiceImpl implements QysConfigService {
             sealId = configDO.getSealId();
         }
         client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
-
     }
 
     @Override

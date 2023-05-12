@@ -107,4 +107,11 @@ public interface ContractService {
      */
     Integer qysSave(Long contractId,Long carId,String contractName,
                     Long deptId,String code,Integer contractType);
+
+    /**
+     * 委托合同作废
+     * @param contractId 合同Id
+     * @param reason  作废原因
+     */
+    void entrustContractInvalid(Long contractId, String reason);
 }
