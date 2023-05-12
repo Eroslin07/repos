@@ -8,6 +8,23 @@ import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
@@ -43,20 +60,6 @@ import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import com.qiyuesuo.sdk.v2.utils.IOUtils;
 import com.qiyuesuo.sdk.v2.utils.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import static cn.hutool.core.date.DatePattern.CHINESE_DATE_PATTERN;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -357,6 +360,14 @@ public class ContractServiceImpl implements ContractService {
         File tempFile = null;
         FileOutputStream fos = null;
         try {
+            List<BusinessFileDO> businessFileDOS = businessFileService.getByMainId(contractId);
+            if (CollUtil.isEmpty(businessFileDOS)) {
+                //这里收/卖车时，已经存入了数据
+                log.error("没找到关联的合同文件,contractId:{}",contractId);
+            }
+            BusinessFileDO businessFileDO = businessFileDOS.get(0);
+            FileRespDTO fileRespDTO = fileApi.getFileInfoById(businessFileDO.getId()).getCheckedData();
+
             QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
             tempFile = File.createTempFile("contractTemp","temp.pdf");
             fos = new FileOutputStream(tempFile);
@@ -366,22 +377,17 @@ public class ContractServiceImpl implements ContractService {
             FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
             fileCreateReqDTO.setContent(reader.readBytes());
             fileCreateReqDTO.setName(fileName);
-            fileCreateReqDTO.setPath(null);
+            fileCreateReqDTO.setPath(fileRespDTO.getPath());
             FileDTO fileDTO = fileApi.createFileNew(fileCreateReqDTO).getCheckedData();
             if (ObjectUtil.isNull(fileDTO)) {
                 throw exception(FILE_SAVE_ERROR);
             }
             System.out.println(JSONUtil.toJsonStr(fileDTO));
-            List<BusinessFileDO> businessFileDOS = businessFileService.getByMainId(contractId);
-            if (CollUtil.isEmpty(businessFileDOS)) {
-                //这里收/卖车时，已经存入了数据
-                log.warn("没找到关联的合同文件,contractId:{}",contractId);
-            }
-            BusinessFileDO businessFileDO = businessFileDOS.get(0);
+
             businessFileDO.setId(fileDTO.getId());
             //删除中间表business的数据
-            businessFileService.deleteByMainId(contractId);
-            businessFileService.insert(businessFileDO);
+            //businessFileService.deleteByMainId(contractId);
+            businessFileService.update(businessFileDO);
         }catch (Exception e){
             log.error("契约锁合同下载失败",e);
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
