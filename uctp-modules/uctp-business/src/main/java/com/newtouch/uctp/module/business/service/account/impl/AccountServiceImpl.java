@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service.impl;
+package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -66,7 +66,6 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             NominalAccountResponse bankAccountNoProfit = transactionService.nominalAccountGenerate(requestProfit);
 
 
-
             save(merchantAccount);
             saveMerchantBank(bankAccountNoCash, AccountEnum.BANK_NO_CASH.getKey(), accountDTO, accountNo);
             saveMerchantBank(bankAccountNoProfit, AccountEnum.BANK_NO_PROFIT.getKey(), accountDTO, accountNo);
@@ -97,18 +96,15 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         request.setAreaCode(BankConstants.AREA_CODE);
         request.setAcctNo(BankConstants.ACCT_NO);
         request.setBidsSnglFlgCd(UUID.randomUUID().toString(true));
-
+        request.setOpenBrNo(BankConstants.OPEN_BANK_NO);
+        request.setOpenBranchName(BankConstants.OPEN_BRANCH_NAME);
         if (AccountEnum.BANK_NO_PROFIT.getKey().equals(busType)) {
-            request.setOpenBrNo(accountDTO.getBankNo());
-            request.setOpenBranchName(accountDTO.getBankName());
             request.setBscAcctNo(accountDTO.getBankNo());
             request.setAcctName(accountDTO.getBusinessName());
             request.setCtfType(CertificationType.BUSINESS_LICENSE.getCode());
             request.setCtfId(accountDTO.getTaxNum());
             request.setClientName(accountDTO.getBusinessName());
         } else if (AccountEnum.BANK_NO_CASH.getKey().equals(busType)) {
-            request.setOpenBrNo(accountDTO.getCashBankNo());
-            request.setOpenBranchName(BankConstants.CASH_OPEN_BANK_NAME);
             request.setBscAcctNo(accountDTO.getCashBankNo());
             request.setAcctName(accountDTO.getLegalRepresentative());
             request.setCtfType(CertificationType.ID_CARD.getCode());
@@ -123,6 +119,9 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         merchantBankDO.setAccountNo(accountNo);
         merchantBankDO.setBusinessType(busType);
         merchantBankDO.setChildAcctNo(response.getChildAcctNo());
+        merchantBankDO.setAuthCode(response.getAuthrCd());
+        merchantBankDO.setChildAcctName(response.getChildAcctNm());
+        merchantBankDO.setPcpCustNo(response.getPcpClntNo());
         if (AccountEnum.BANK_NO_PROFIT.getKey().equals(busType)) {
             merchantBankDO.setBankNo(accountDTO.getBankNo());
             merchantBankDO.setBankName(accountDTO.getBankName());

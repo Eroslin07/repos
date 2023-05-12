@@ -20,7 +20,7 @@ import com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.app.account.vo.*;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
-import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
+import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.error;

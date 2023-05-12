@@ -34,6 +34,8 @@ public class BankException extends RuntimeException {
      * @param message
      */
     public BankException(String message) {
+        super(message);
+        this.message = message;
     }
 
     public BankException(ErrorCode errorCode) {

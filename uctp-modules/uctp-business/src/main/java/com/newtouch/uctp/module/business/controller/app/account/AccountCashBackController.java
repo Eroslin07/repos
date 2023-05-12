@@ -7,7 +7,7 @@ import com.newtouch.uctp.module.business.controller.app.account.vo.CashBackReqVO
 import com.newtouch.uctp.module.business.controller.app.account.vo.CashBackRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.service.account.MerchantCashBackService;
-import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
+import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;

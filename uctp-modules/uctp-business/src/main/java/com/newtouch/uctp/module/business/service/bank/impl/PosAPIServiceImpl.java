@@ -7,17 +7,11 @@ import com.newland.pospp.iot.lib.constant.MessageStatus;
 import com.newland.pospp.iot.lib.exceptions.BusinessException;
 import com.newland.pospp.iot.lib.exceptions.NetworkException;
 import com.newland.pospp.iot.lib.push.IotPushClient;
-import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
-import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.enums.bank.SPDBBankTrans;
 import com.newtouch.uctp.module.business.service.bank.PosAPIService;
 import com.newtouch.uctp.module.business.service.bank.request.PosPaymentRequest;
-import com.newtouch.uctp.module.business.service.cash.MerchantAccountService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 @Service
 @Slf4j
