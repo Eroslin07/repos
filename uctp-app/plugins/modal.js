@@ -3,21 +3,24 @@ export default {
   msg(content) {
     uni.showToast({
       title: content,
-      icon: 'none'
+      icon: 'none',
+	  duration:2000
     })
   },
   // 错误消息
   msgError(content) {
     uni.showToast({
       title: content,
-      icon: 'error'
+      icon: 'error',
+	  duration: 2000
     })
   },
   // 成功消息
   msgSuccess(content) {
     uni.showToast({
       title: content,
-      icon: 'success'
+      icon: 'success',
+	  duration: 2000
     })
   },
   // 隐藏消息
