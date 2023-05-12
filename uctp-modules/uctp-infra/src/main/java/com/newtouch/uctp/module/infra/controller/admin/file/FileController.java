@@ -2,31 +2,34 @@ package com.newtouch.uctp.module.infra.controller.admin.file;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.framework.common.pojo.PageResult;
-import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
-import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
-import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
-import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FileRespVO;
-import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FileUploadReqVO;
-import com.newtouch.uctp.module.infra.convert.file.FileConvert;
-import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
-import com.newtouch.uctp.module.infra.service.file.FileService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.common.util.servlet.ServletUtils;
+import com.newtouch.uctp.framework.operatelog.core.annotations.OperateLog;
+import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
+import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FilePageReqVO;
+import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FileRespVO;
+import com.newtouch.uctp.module.infra.controller.admin.file.vo.file.FileUploadReqVO;
+import com.newtouch.uctp.module.infra.convert.file.FileConvert;
+import com.newtouch.uctp.module.infra.dal.dataobject.file.FileDO;
+import com.newtouch.uctp.module.infra.service.file.FileService;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
@@ -87,6 +90,12 @@ public class FileController {
     public CommonResult<PageResult<FileRespVO>> getFilePage(@Valid FilePageReqVO pageVO) {
         PageResult<FileDO> pageResult = fileService.getFilePage(pageVO);
         return success(FileConvert.INSTANCE.convertPage(pageResult));
+    }
+
+    @GetMapping("/get/{fileId}")
+    @Operation(summary = "根据文件ID获得文件信息")
+    public CommonResult<FileRespDTO> getFileInfoById(@PathVariable("fileId") Long fileId) {
+        return success(FileConvert.INSTANCE.convertRespDTO(fileService.getFileInfoById(fileId)));
     }
 
 }

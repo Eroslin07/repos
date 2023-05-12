@@ -583,7 +583,7 @@
 		}
 
 		.show-money {
-			padding: 0 30rpx 5rpx;
+			padding: 0 10rpx 5rpx 70rpx;
 			position: absolute;
 			right: 5rpx;
 			top: 0;

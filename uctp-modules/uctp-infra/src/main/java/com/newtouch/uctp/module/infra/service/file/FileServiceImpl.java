@@ -235,4 +235,9 @@ public class FileServiceImpl implements FileService {
         return fileMapper.selectList("id", ids);
     }
 
+    @Override
+    public FileDO getFileInfoById(Long fileId) {
+        return fileMapper.selectById(fileId);
+    }
+
 }

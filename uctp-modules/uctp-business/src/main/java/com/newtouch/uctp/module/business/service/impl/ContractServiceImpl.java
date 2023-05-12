@@ -7,8 +7,8 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
 import com.newtouch.uctp.framework.security.core.LoginUser;
@@ -147,6 +147,11 @@ public class ContractServiceImpl implements ContractService {
         if (ObjectUtil.isNull(contractDO)) {
             throw exception(CONTRACT_NOT_EXISTS);
         }
+        this.contractInvalid(contractDO,reason);
+    }
+
+    @Override
+    public void contractInvalid(ContractDO contractDO, String reason) {
         //修改契约锁合同状态已作废
         QysConfigDO qysConfigDO = qysConfigService.getByDeptId(contractDO.getBusinessId());
         if (ObjectUtil.isNull(qysConfigDO) || StrUtil.isBlank(qysConfigDO.getAccessKey())) {
@@ -163,11 +168,10 @@ public class ContractServiceImpl implements ContractService {
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.COMPLETE.value())) {
             client.defaultContractInvalid(contractDO.getContractId(),null,reason);
         }
-        //修改合同状态为已作废
-        contractDO.setStatus(3);
+        //修改合同状态为作废
+        contractDO.setInvalided(1);
+        contractDO.setInvalidedReason(reason);
         contractMapper.updateById(contractDO);
-        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
-//        carInfo.setStatusThree();
     }
 
     @Override
@@ -357,6 +361,14 @@ public class ContractServiceImpl implements ContractService {
         File tempFile = null;
         FileOutputStream fos = null;
         try {
+            List<BusinessFileDO> businessFileDOS = businessFileService.getByMainId(contractId);
+            if (CollUtil.isEmpty(businessFileDOS)) {
+                //这里收/卖车时，已经存入了数据
+                log.error("没找到关联的合同文件,contractId:{}",contractId);
+            }
+            BusinessFileDO businessFileDO = businessFileDOS.get(0);
+            FileRespDTO fileRespDTO = fileApi.getFileInfoById(businessFileDO.getId()).getCheckedData();
+
             QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
             tempFile = File.createTempFile("contractTemp","temp.pdf");
             fos = new FileOutputStream(tempFile);
@@ -366,22 +378,15 @@ public class ContractServiceImpl implements ContractService {
             FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();
             fileCreateReqDTO.setContent(reader.readBytes());
             fileCreateReqDTO.setName(fileName);
-            fileCreateReqDTO.setPath(null);
+            fileCreateReqDTO.setPath(fileRespDTO.getPath());
             FileDTO fileDTO = fileApi.createFileNew(fileCreateReqDTO).getCheckedData();
             if (ObjectUtil.isNull(fileDTO)) {
                 throw exception(FILE_SAVE_ERROR);
             }
-            System.out.println(JSONUtil.toJsonStr(fileDTO));
-            List<BusinessFileDO> businessFileDOS = businessFileService.getByMainId(contractId);
-            if (CollUtil.isEmpty(businessFileDOS)) {
-                //这里收/卖车时，已经存入了数据
-                log.warn("没找到关联的合同文件,contractId:{}",contractId);
-            }
-            BusinessFileDO businessFileDO = businessFileDOS.get(0);
             businessFileDO.setId(fileDTO.getId());
             //删除中间表business的数据
-            businessFileService.deleteByMainId(contractId);
-            businessFileService.insert(businessFileDO);
+            //businessFileService.deleteByMainId(contractId);
+            businessFileService.update(businessFileDO);
         }catch (Exception e){
             log.error("契约锁合同下载失败",e);
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
@@ -408,6 +413,24 @@ public class ContractServiceImpl implements ContractService {
         contractDO.setBusinessId(deptId);
         contractDO.setCode(code);
         return contractMapper.insert(contractDO);
+    }
+
+    @Override
+    public void entrustContractInvalid(ContractDO contractDO, String reason) {
+        //获取到委托合同类型
+        Integer contractType = contractDO.getContractType() - 1;
+        //查询到委托合同
+        ContractDO entrustContractDO = contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                .eq(ContractDO::getCarId, contractDO.getCarId())
+                .eq(ContractDO::getContractType, contractType)
+                .eq(ContractDO::getInvalided,0));
+        if (ObjectUtil.isNull(entrustContractDO)) {
+            log.warn("作废委托合同失败，未找到作废合同，参数[carId:{},contractType:{},invalided:{}]"
+                    ,contractDO.getCarId(),contractType,0);
+            return;
+        }
+        log.info("开始作废委托合同，契约锁合同id：{}",contractDO.getContractId());
+        this.contractInvalid(entrustContractDO,reason);
     }
 
 

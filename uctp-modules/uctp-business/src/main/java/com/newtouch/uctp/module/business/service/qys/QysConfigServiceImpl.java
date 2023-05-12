@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
+import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoClientFactory;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoSaasClient;
@@ -365,7 +366,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //A-1 合同已完成
                         //A-2 车辆状态合同发起
                         //A-3 发起收车合同，
-                        this.doService(contractDO, carInfo, 1
+                        this.doService(contractDO, carInfo, 2,null
                                 , CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_B.value(),
                                 CarStatus.COLLECT_B_C.value(),
@@ -376,10 +377,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
-                        //B 收车委托作废->
+                        //B 收车委托已作废->
                         //B-1 合同作废
                         //B-2 车辆状态
-                        this.doService(contractDO, carInfo, 2
+                        this.doService(contractDO, carInfo, null,1
                                 , CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_A.value(),
                                 CarStatus.COLLECT_A_A.value(),
@@ -392,6 +393,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                     case SIGNING:
 
                         break;
+                    case REJECTED:
+                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态,此时作废收车委托合同
+                        //这是作废原因为：卖家已主动作废
+                        contractService.entrustContractInvalid(contractDO,"卖家已主动作废");
+                        break;
                 }
             } else if (contractDO.getContractType().equals(2)) {
                 //2收车合同
@@ -400,7 +406,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //C 收车合同已完成->
                         //C-1 合同已完成，
                         //C-2 车辆状态待支付
-                        this.doService(contractDO, carInfo, 2
+                        this.doService(contractDO, carInfo, 2,null
                                 , CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_B.value(),
                                 CarStatus.COLLECT_B_D.value(),
@@ -414,10 +420,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
-                        //D 收车合同作废->
+                        //D 收车合同已作废->
                         //D-1 合同作废
                         //D-2 车辆状态
-                        this.doService(contractDO, carInfo, 1
+                        this.doService(contractDO, carInfo, null,1
                                 , CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_A.value(),
                                 CarStatus.COLLECT_A_A.value(),
@@ -429,11 +435,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //下载合同签章文件
 //                        this.updateContract(contractDO.getContractId());
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        //发起委托收车合同作废
+                        contractService.entrustContractInvalid(contractDO,contractDO.getInvalidedReason());
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("PERSONAL", contractStatusDTO.getTenantType())) {
-                            this.doService(contractDO, carInfo, 1
+                            this.doService(contractDO, carInfo, 1,null
                                     , CarStatus.COLLECT.value(),
                                     CarStatus.COLLECT_B.value(),
                                     CarStatus.COLLECT_B_C.value(),
@@ -441,6 +449,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                                     Boolean.FALSE);
                             this.companySign(contractDO.getContractId());
                         }
+                        break;
+                    case REJECTED:
+                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态,此时作废收车委托合同
+                        //这是作废原因为：买家已主动作废
+                        contractService.entrustContractInvalid(contractDO,"买家已主动作废");
                         break;
                 }
             } else if (contractDO.getContractType().equals(3)) {
@@ -451,7 +464,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //E-1 合同已完成
                         //E-2 车辆状态合同已发起
                         //E-3 发起卖车合同
-                        this.doService(contractDO, carInfo, 1
+                        this.doService(contractDO, carInfo, 2,null
                                 , CarStatus.SELL.value(),
                                 CarStatus.SELL_B.value(),
                                 CarStatus.SELL_B_C.value(),
@@ -462,10 +475,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
-                        //F 卖车委托合同作废->
+                        //F 卖车委托合同已作废->
                         //F-1 合同作废
                         //F-2 车辆状态
-                        this.doService(contractDO, carInfo, 2
+                        this.doService(contractDO, carInfo, null,1
                                 , CarStatus.SELL.value(),
                                 CarStatus.SELL_A.value(),
                                 CarStatus.SELL_A_A.value(),
@@ -487,7 +500,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //G 卖车合同已完成->
                         //G-1 合同已完成
                         //G-2 车辆状态合同已发起
-                        this.doService(contractDO, carInfo, 1
+                        this.doService(contractDO, carInfo, 2,null
                                 , CarStatus.SELL.value(),
                                 CarStatus.SELL_C.value(),
                                 CarStatus.SELL_C_A.value(),
@@ -501,10 +514,10 @@ public class QysConfigServiceImpl implements QysConfigService {
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
                         break;
                     case INVALIDED:
-                        //H 卖车合同作废->
+                        //H 卖车合同已作废->
                         //H-1 合同作废
                         //H-2 车辆状态
-                        this.doService(contractDO, carInfo, 2
+                        this.doService(contractDO, carInfo, null,1
                                 , CarStatus.SELL.value(),
                                 CarStatus.SELL_A.value(),
                                 CarStatus.SELL_A_A.value(),
@@ -516,11 +529,13 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //下载合同签章文件
 //                        this.updateContract(contractDO.getContractId());
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getContractName());
+                        //作废卖车委托合同
+                        contractService.entrustContractInvalid(contractDO,contractDO.getInvalidedReason());
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("PERSONAL", contractStatusDTO.getTenantType())) {
-                            this.doService(contractDO, carInfo, 1
+                            this.doService(contractDO, carInfo, 1,null
                                     , CarStatus.SELL.value(),
                                     CarStatus.SELL_B.value(),
                                     CarStatus.SELL_B_C.value(),
@@ -611,6 +626,7 @@ public class QysConfigServiceImpl implements QysConfigService {
      * @param contractDO    合同
      * @param carInfo       车辆
      * @param contratStatus 合同状态
+     * @param invalided     作废状态
      * @param salesStatus   车辆一级状态
      * @param status        车辆二级状态
      * @param statusThree   车辆三级状态
@@ -619,6 +635,7 @@ public class QysConfigServiceImpl implements QysConfigService {
      */
     private void doService(ContractDO contractDO, CarInfoDO carInfo,
                            Integer contratStatus,
+                           Integer invalided,
                            Integer salesStatus,
                            Integer status,
                            Integer statusThree,
@@ -626,7 +643,12 @@ public class QysConfigServiceImpl implements QysConfigService {
                            Boolean pay
     ) {
         //合同已完成
-        contractDO.setStatus(contratStatus);
+        if (ObjectUtil.isNotNull(contratStatus)) {
+            contractDO.setStatus(contratStatus);
+        }
+        if (ObjectUtil.isNotNull(invalided)) {
+            contractDO.setInvalided(invalided);
+        }
         if (ObjectUtil.equals(contratStatus, 1)) {
             //表示合同完成，签署时间
             contractDO.setSigningDate(LocalDateTime.now());
@@ -1531,10 +1553,6 @@ public class QysConfigServiceImpl implements QysConfigService {
         String accessSecret = jsonObject.getString("accessSecret");
         //判断是否存在token标志
         Boolean existSeal = StrUtil.isBlank(configDO.getAccessKey()) ? Boolean.FALSE : Boolean.TRUE;
-        if (existSeal) {
-            //如果存在表示授权完成，不用走下面的业务，会导致重复制作印章，发送短息
-            return "success";
-        }
         TenantUtils.execute(configDO.getTenantId(), () -> {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, configDO.getTenantId());
             //设置当前登录人信息，免得保存报错
@@ -1543,8 +1561,23 @@ public class QysConfigServiceImpl implements QysConfigService {
             //保存回调信息
             qysCallbackService.saveDO(json,
                     QysCallBackType.COMPANY_AUTH.value(), configDO.getBusinessId());
+            if (existSeal) {
+                //如果存在表示授权完成，不用走下面的业务，会导致重复制作印章，发送短息
+                //这里需要把企业认证的第一个用户认证状态通过
+                DeptRespDTO deptRespDTO = deptApi.getDept(configDO.getBusinessId()).getCheckedData();
+                List<AdminUserRespDTO> adminUserRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptRespDTO.getId())).getCheckedData();
+                if (CollUtil.isEmpty(adminUserRespDTOS)) {
+                    log.error("修改用户认证状态失败，未找到唯一的用户数据");
+                    return;
+                }
+                UserExtDO userExtDO = userExtMapper.selectOne(
+                        new LambdaQueryWrapperX<UserExtDO>().eq(UserExtDO::getUserId,
+                        adminUserRespDTOS.get(0).getId()));
+                userExtDO.setStatus(0);
+                userExtMapper.updateById(userExtDO);
+                return;
+            }
             configDO.setCode("default");
-//            configDO.setServerUrl("https://openapi.qiyuesuo.cn");
             configDO.setAccessKey(accessToken);
             configDO.setAccessSecret(accessSecret);
             //初始化client必须先存一次
@@ -1685,7 +1718,6 @@ public class QysConfigServiceImpl implements QysConfigService {
             sealId = configDO.getSealId();
         }
         client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
-
     }
 
     @Override

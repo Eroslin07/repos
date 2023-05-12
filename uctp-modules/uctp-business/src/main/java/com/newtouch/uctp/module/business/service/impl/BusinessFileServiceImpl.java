@@ -3,19 +3,22 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.module.business.dal.dataobject.BusinessFileDO;
 import com.newtouch.uctp.module.business.dal.mysql.BusinessFileMapper;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.infra.api.file.FileApi;
 import com.newtouch.uctp.module.infra.api.file.dto.FileRespDTO;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.infra.enums.ErrorCodeConstants.FILE_API_IS_FAIL;
@@ -38,6 +41,11 @@ public class BusinessFileServiceImpl implements BusinessFileService {
     @Override
     public int insert(BusinessFileDO fileDO) {
         return businessFileMapper.insert(fileDO);
+    }
+
+    @Override
+    public int update(BusinessFileDO fileDO) {
+        return businessFileMapper.updateById(fileDO);
     }
 
     @Override

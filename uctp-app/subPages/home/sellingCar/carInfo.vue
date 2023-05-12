@@ -70,8 +70,7 @@
 						<u--input v-model="carForm.vin" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="首次登记日期" prop="firstRegistDate" borderBottom>
-						<u--input v-model="carForm.firstRegistDate" readonly disabledColor="#ffffff"
-							border="none"></u--input>
+						<u--input v-model="carForm.firstRegistDate" readonly disabledColor="#ffffff" border="none"></u--input>
 						<!-- <u-icon
 							slot="right"
 							name="arrow-right"
@@ -116,16 +115,14 @@
 						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="年检签证有效期" prop="annualInspectionDate" borderBottom>
-						<u--input v-model="carForm.annualInspectionDate" readonly disabledColor="#ffffff"
-							border="none"></u--input>
+						<u--input v-model="carForm.annualInspectionDate" readonly disabledColor="#ffffff" border="none"></u--input>
 						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="保险险种" prop="insurance" borderBottom>
 						<u--input v-model="carForm.insurance" readonly border="none"></u--input>
 					</u-form-item>
 					<u-form-item label="保险期至" prop="insuranceEndData" borderBottom>
-						<u--input v-model="carForm.insuranceEndData" readonly disabledColor="#ffffff"
-							border="none"></u--input>
+						<u--input v-model="carForm.insuranceEndData" readonly disabledColor="#ffffff" border="none"></u--input>
 						<!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
 					</u-form-item>
 					<u-form-item label="特殊约定" prop="remarks" borderBottom>
@@ -144,11 +141,9 @@
 			</view>
 			<!-- 买家信息 -->
 			<view v-show="sellerInfor">
-				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm"
-					labelWidth="120px">
+				<u--form labelPosition="left" :model="sellerForm" :rules="sellerRules" ref="sellerForm" labelWidth="120px">
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-						<view
-							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 						</view>
 						<view class="text">车辆价款及交易方式</view>
 					</view>
@@ -161,20 +156,20 @@
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
 					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @focus="handleFocus"
-							@blur="handleBlur" @input="amountInput" placeholder="0.00">
+						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @input="amountInput" placeholder="0.00"
+							:maxlength="maxlength">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
 						</u-input>
 					</u-form-item>
 					<view>
-						<u--text style="font-size:12px;" prefixIcon="info-circle"
-							iconStyle="font-size: 16px; color: #e26e1f"
+						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;">公允价值审核-退回 ></view>
+						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;" @click="showFair = true">
+							公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							预计费用{{sellerForm.total || '0.00'}}元，利润{{sellerForm.profit || '0.00'}}元。
+							预计费用{{$amount.getComdify(sellerForm.total) || '0.00'}}元，利润{{$amount.getComdify(sellerForm.profit) || '0.00'}}元。
 							<text @click="handleDetail">明细请查看 ></text>
 						</view>
 					</view>
@@ -187,22 +182,20 @@
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{depositText}}</view>
 					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" type="digit"
-							@focus="depositFocus" @blur="depositBlur" @input="depositInput">
+						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" :maxlength="depositMaxlength"
+							type="digit" @input="depositInput">
 							<template slot="suffix">
 								<view>元</view>
 							</template>
 						</u-input>
 					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-						<view
-							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 						</view>
 						<view class="text">买家信息</view>
 					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
-						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none"
-							placeholder="请输入身份证号"></u--input>
+						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
 					</u-form-item>
 					<u-form-item borderBottom prop="buyerIdCardUrl">
 						<view class="image">
@@ -210,18 +203,18 @@
 								<u-grid-item>
 									<u-upload v-if="fileList4.length" :fileList="fileList4" @delete="deletePic" name="4"
 										width="150"></u-upload>
-									<image v-else src="/static/images/home/ghm.png" mode="widthFix"
-										style="width: 150px;" @click="handleOcr(4)"></image>
-									<image v-if="fileList4.length == 0" src="../../../static/images/take.png"
-										class="icon-image" @click="handleOcr(4)"></image>
+									<image v-else src="/static/images/home/ghm.png" mode="widthFix" style="width: 150px;"
+										@click="handleOcr(4)"></image>
+									<image v-if="fileList4.length == 0" src="../../../static/images/take.png" class="icon-image"
+										@click="handleOcr(4)"></image>
 								</u-grid-item>
 								<u-grid-item>
 									<u-upload v-if="fileList5.length" :fileList="fileList5" @delete="deletePic" name="5"
 										width="150"></u-upload>
-									<image v-else src="/static/images/home/rxm.png" mode="widthFix"
-										style="width: 150px;" @click="handleOcr(5)"></image>
-									<image v-if="fileList5.length == 0" src="../../../static/images/take.png"
-										class="icon-image" @click="handleOcr(5)"></image>
+									<image v-else src="/static/images/home/rxm.png" mode="widthFix" style="width: 150px;"
+										@click="handleOcr(5)"></image>
+									<image v-if="fileList5.length == 0" src="../../../static/images/take.png" class="icon-image"
+										@click="handleOcr(5)"></image>
 								</u-grid-item>
 							</u-grid>
 						</view>
@@ -239,8 +232,7 @@
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
-					<u--text style="font-size:12px;" prefixIcon="info-circle"
-						iconStyle="font-size: 16px; color: #e26e1f"
+					<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 						text="注意:在发起委托合同前，请检查您的相关信息,发起委托合同时会将信息自动带到后方合同作为重要信息使用。" color="#e26e1f"></u--text>
 				</view>
 			</view>
@@ -261,9 +253,8 @@
 							@click="handleCheckBox(item.name)">
 							<u-checkbox :label="item.label" :name="item.name"></u-checkbox>
 							<view style="margin-left: 10px;width: 100%">
-								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey"
-									v-if="item.name == 'vehicleKey'" disabledColor="#ffffff" placeholder="请输入"
-									border="none">
+								<u-input v-model="carForm.key" type="number" :disabled="isDisabledKey" v-if="item.name == 'vehicleKey'"
+									disabledColor="#ffffff" placeholder="请输入" border="none">
 									<template slot="suffix">
 										<view>组</view>
 									</template>
@@ -285,8 +276,7 @@
 		</uni-card>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<view v-if="vehicleInfor">
-				<u--form :model="feesForm" :rules="feesFormRules" ref="feesForm" labelPosition="left"
-					labelWidth="120px">
+				<u--form :model="feesForm" :rules="feesFormRules" ref="feesForm" labelPosition="left" labelWidth="120px">
 					<u-form-item label="车况" :required="true"></u-form-item>
 					<u-form-item borderBottom prop="conditionA">
 						<u-radio-group v-model="feesForm.conditionA" activeColor="#fd6404" shape="square">
@@ -326,8 +316,7 @@
 					</u-form-item>
 
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
-						<view
-							style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
+						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 						</view>
 						<view class="text">其他费用及约定</view>
 					</view>
@@ -433,6 +422,12 @@
 				<view>利润：****元</view>
 			</view>
 		</u-modal>
+		<!-- 公允值不通过原因 -->
+		<u-modal :show="showFair" @confirm="showFair = false">
+			<view>
+				<view>{{ fairReason }}</view>
+			</view>
+		</u-modal>
 		<view class="footer">
 			<!-- 底部按钮 -->
 			<u-grid col="3">
@@ -478,7 +473,9 @@
 		deleteSellDraft,
 		FindBuyAndWTContract
 	} from '@/api/home/sellingCar.js'
-	import {getFairValue} from '@/api/home/bycar.js'
+	import {
+		getFairValue
+	} from '@/api/home/bycar.js'
 	import {
 		setCreate
 	} from '@/api/home'
@@ -791,9 +788,13 @@
 				// 是否是子账户
 				isChildAccount: false,
 				fairStatus: null,
+				fairReason: null,
+				showFair: false,
 				gxzStatus: 1,
 				amountText: '',
-				depositText: ''
+				depositText: '',
+				maxlength: 12,
+				depositMaxlength: 12
 			}
 		},
 		onReady() {
@@ -838,11 +839,18 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
-				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this
-					.$amount.getComdify(res.data.sellAmount);
-				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : this.$amount
-					.getComdify(res.data.deposit);
+				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount
+					.getDelcommafy(this.$amount.getComdify(res.data.sellAmount));
+				if (this.sellerForm.sellAmount.indexOf('.')) {
+					this.maxlength = this.sellerForm.sellAmount.split('.')[0].length + 3
+				}
+
+				this.sellerForm.deposit = this.$amount.getComdify(res.data.deposit) == '0.00' ? '' : res.data.deposit;
+				if (this.sellerForm.deposit.indexOf('.')) {
+					this.depositMaxlength = this.sellerForm.deposit.split('.')[0].length + 3
+				}
 				this.fairStatus = res.data.bpmStatus;
+				this.fairReason = res.data.bpmReason;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
 						if (index == 0) {
@@ -1101,8 +1109,7 @@
 							})
 						})
 						// 识别身份证
-						_this.sellerForm.buyerIdCardUrl = [..._this.sellerForm.buyerIdCardUrl, _this[
-							`fileList${index}`]];
+						_this.sellerForm.buyerIdCardUrl = [..._this.sellerForm.buyerIdCardUrl, _this[`fileList${index}`]];
 						for (let i = 0; i < res.tempFilePaths.length; i++) {
 							let str = await urlTobase64(res.tempFilePaths[i]);
 							getIdCard({
@@ -1116,8 +1123,7 @@
 									_this.$refs.sellerForm.clearValidate();
 									if (data.words_result['公民身份号码']) {
 										_this.sellerForm.buyerAdder = data.words_result['住址'].words;
-										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码']
-											.words;
+										_this.sellerForm.buyerIdCard = data.words_result['公民身份号码'].words;
 										_this.sellerForm.buyerName = data.words_result['姓名'].words;
 									}
 									if (data.words_result['失效日期']) {
@@ -1215,12 +1221,12 @@
 					this.sellerForm.profit = res.data.profit;
 					this.amountDetails = res.data;
 				})
-				if (this.sellerForm.sellAmount == '') {
+				// if (this.sellerForm.sellAmount == '') {
 
-				} else {
-					let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
-					this.$set(this.sellerForm, 'sellAmount', amount);
-				}
+				// } else {
+				// 	let amount = this.$amount.getComdify(this.sellerForm.sellAmount);
+				// 	this.$set(this.sellerForm, 'sellAmount', amount);
+				// }
 			},
 			//卖车金额获取焦点
 			handleFocus() {
@@ -1351,8 +1357,8 @@
 				let data = {
 					id: this.carId,
 					remarks: this.carForm.remarks,
-					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
-						.sellAmount),
+					sellAmount: this.sellerForm.sellAmount == '' ? '0.00' : this.$amount.getDelcommafy(this.$amount.getComdify(
+						this.sellerForm.sellAmount)),
 					transManageName: this.sellerForm.transManageName,
 					buyerIdCard: this.sellerForm.buyerIdCard,
 					idCardIds: idcards.map((item) => {
@@ -1360,11 +1366,10 @@
 					}),
 					buyerName: this.sellerForm.buyerName,
 					buyerAdder: this.sellerForm.buyerAdder,
-					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm
-						.buyerTel,
+					buyerTel: this.sellerForm.buyerTel ? this.sellerForm.buyerTel.replace(/\s*/g, "") : this.sellerForm.buyerTel,
 					sellType: this.sellerForm.sellType,
-					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.sellerForm
-						.deposit),
+					deposit: this.sellerForm.deposit == '' ? '0.00' : this.$amount.getDelcommafy(this.$amount.getComdify(this
+						.sellerForm.deposit)),
 					vehicleProblem, //车况
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
@@ -1482,12 +1487,14 @@
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = arr[0].length + 3
 						} else {
 							if (val.length > 2) {
 								this.amountText = texts[val.length - 3]
 							} else {
 								this.amountText = ''
 							}
+							this.maxlength = 12
 						}
 					})
 				} else {
@@ -1505,12 +1512,14 @@
 							} else {
 								this.depositText = ''
 							}
+							this.depositMaxlength = arr[0].length + 3
 						} else {
 							if (val.length > 2) {
 								this.depositText = texts[val.length - 3]
 							} else {
 								this.depositText = ''
 							}
+							this.depositMaxlength = 12
 						}
 					})
 				} else {

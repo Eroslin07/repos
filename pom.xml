@@ -137,12 +137,12 @@
                 <redis.password>j47qendm4bA7f7k</redis.password>
                 <!--<redis.password>123456</redis.password>-->
                 <!-- Nacos 命名空间 -->
-                <nacos.namespace>uctp_dev</nacos.namespace>
+                <nacos.namespace>uctp_account</nacos.namespace>
                 <!-- 契约锁请求地址  -->
                 <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
                 <!-- 银行测试API平台配置信息 begin -->
                 <spdb.clientId>0010d65a-1a3e-4a82-8b32-47a7cd2783dc</spdb.clientId>
-                <spdb.secret>YTA4My00ODY3LWJpOGZtNmJyZjPxZDkmMGZ4MC4wNTc2NjY4NDczNzPyNjAzNTUw</spdb.secret>
+                <spdb.secret>MmV0Zp00MDQ5LWJyN2JtNTY0NWRhNWJ3ZWJlMC43MTQ1OTU1Mzk1MTE0NDY5MC4x</spdb.secret>
                 <spdb.privateKey>4f7f06cb6b95120f604d9b7fedb2e51aa84a1965c37c8f6b762da56006849c36</spdb.privateKey>
                 <spdb.spdbPublicKey>04b3623718d2b206f3819e813687deba9362ed6a47dc514a9d103113706137a10cfcb7ded82e0b8e1de7b797d49c19e2f00f85b3b0144f69ac0d3e76206517cdd5</spdb.spdbPublicKey>
                 <spdb.host>https://etest4.spdb.com.cn/spdb/uat</spdb.host><!-- 银行测试API平台配置信息 end -->
