@@ -14,45 +14,48 @@
           <icon icon="svg-icon:notice" class="notice"></icon>
           <div class="title-box">
             您向卖车方
-            <span style="color: #63b0ff">{{ mainValue.formDataJson.bankName }}</span>
+            <span style="color: #63b0ff">{{ mainValue.formDataJson.sellerName }}</span>
             的收款账号
-            <span style="color: #63b0ff">{{ mainValue.formDataJson.bankNo }}</span>
+            <span style="color: #63b0ff">{{ mainValue.formDataJson.bankCard }}</span>
             支付收车款
-            <span style="color: #63b0ff">{{ mainValue.formDataJson.balanceAmount }}</span>
-            元，因 {{}} 原因支付失败，请处理！
+            <span style="color: #63b0ff">{{
+              moneyFormat(mainValue.formDataJson.vehicleReceiptAmount)
+            }}</span>
+            元，因
+            <span style="color: #63b0ff">{{ mainValue.formDataJson.failReason }}</span>
+            原因支付失败，请处理！
           </div>
         </div>
         <div class="content-box">
           <el-row>
             <el-col :span="2" class="bg-yell">姓名：</el-col>
-            <el-col :span="4"> {{ mainValue.formDataJson.bankName || '暂无数据' }}</el-col>
+            <el-col :span="4"> {{ mainValue.formDataJson.sellerName || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">开户行：</el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.bankOfDeposit || '暂无数据' }}</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.bankName || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">银行账号： </el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.bankNo || '暂无数据' }}</el-col>
+            <el-col :span="4">{{ mainValue.formDataJson.bankCard || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">收车款： </el-col>
             <el-col :span="4">{{
-              mainValue.formDataJson.balanceAmount + '元' || '暂无数据'
+              moneyFormat(mainValue.formDataJson.vehicleReceiptAmount) + '元' || '暂无数据'
             }}</el-col>
           </el-row>
         </div>
         <div class="xinxi" style="margin-top: 16px">合同信息</div>
-        <!-- <div class="content">
+        <div class="content">
           <el-row>
             <template
-              v-for="item in baseInfoData.data.variables.formDataJson.formMain.formDataJson
-                .carInvoiceInfoVO.contractList"
+              v-for="item in mainValue.formDataJson.contractInfo"
               :key="item.contractFileId"
             >
               <el-col :span="4" class="bg-yell">
-                <span>{{ item.contractName }}</span>
+                <span>{{ item.contractName ? item.contractName + ':' : '' }}</span>
               </el-col>
               <el-col :span="4">
                 <span><button class="colr159" @click="viewContract(item)">查看</button></span>
               </el-col>
             </template>
           </el-row>
-        </div> -->
+        </div>
       </el-main>
     </el-container>
     <AgreementFrame
@@ -81,6 +84,11 @@ const props = defineProps({
 })
 console.log(props)
 // 详情
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 let mainValue = reactive({
   formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
 })
@@ -94,10 +102,10 @@ const contractVisible = ref(false)
 const contractFileUrl = ref('')
 
 // 查看合同
-// const viewContract = (item: any) => {
-//   contractFileUrl.value = item.contractFileUrl
-//   contractVisible.value = true
-// }
+const viewContract = (item: any) => {
+  contractFileUrl.value = item.contractFileUrl
+  contractVisible.value = true
+}
 
 // 关闭合同弹框
 const handleCancel = () => {
@@ -112,6 +120,9 @@ const handleCancel = () => {
     color: #333333;
   }
   margin-bottom: 16px;
+}
+.colr159 {
+  color: #1592c9;
 }
 .xinxi {
   margin-bottom: 10px;
@@ -147,6 +158,9 @@ const handleCancel = () => {
   display: flex;
   height: 40px;
   align-items: center;
+  span {
+    padding-left: 15px;
+  }
 }
 .content-box .el-row:first-child {
   border-top: 1px solid #eaeaea;
@@ -158,11 +172,17 @@ const handleCancel = () => {
   padding-left: 15px;
 }
 .content {
+  .el-row {
+    border-left: 1px solid #eaeaea;
+  }
   .el-row:first-child {
     border-top: none;
     .el-col {
       border-top: 1px solid #eaeaea;
     }
+  }
+  .bg-yell {
+    background: #f5f5f5;
   }
 }
 .title-bg-box {

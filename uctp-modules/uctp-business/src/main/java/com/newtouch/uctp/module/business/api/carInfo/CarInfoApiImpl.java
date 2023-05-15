@@ -1,5 +1,7 @@
 package com.newtouch.uctp.module.business.api.carInfo;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.apache.dubbo.config.annotation.DubboService;
@@ -34,5 +36,10 @@ public class CarInfoApiImpl implements CarInfoApi {
     public CommonResult<Boolean> updateCarStatus(Long carId, Integer salesStatus, Integer status, Integer statusThree, String bpmStatus, String bpmReason) {
         carInfoService.updateCarStatus(carId, salesStatus, status, statusThree, bpmStatus, bpmReason);
         return success(true);
+    }
+
+    @Override
+    public CommonResult<Map<String, Object>> getPayFailedCreateBpmInfo(Long contractId) {
+        return success(carInfoService.getPayFailedCreateBpmInfo(contractId));
     }
 }

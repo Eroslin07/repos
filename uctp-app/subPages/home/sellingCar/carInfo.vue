@@ -166,7 +166,7 @@
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
-						<view v-if="fairStatus == '不通过'" style="margin-left: 15px;color: #e26e1f;" @click="showFair = true">
+						<view v-if="fairStatus == '不通过' || fairStatus == '退回'" style="margin-left: 15px;color: #e26e1f;" @click="showFair = true">
 							公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							预计费用{{$amount.getComdify(sellerForm.total) || '0.00'}}元，利润{{$amount.getComdify(sellerForm.profit) || '0.00'}}元。
@@ -400,7 +400,7 @@
 			</view>
 		</uni-card>
 		<!-- 费用明细 -->
-		<u-modal :show="showDetail" @confirm="showDetail = false">
+		<u-modal :show="showDetail" confirmText="知道了" confirmColor="#fa6401" @confirm="showDetail = false">
 			<view v-if="!isChildAccount">
 				<view>收车金额：{{ amountDetails.vehicleReceiptAmount | filterMoney }}元</view>
 				<view>卖车金额：{{ amountDetails.sellAmount | filterMoney }}元</view>
@@ -423,7 +423,7 @@
 			</view>
 		</u-modal>
 		<!-- 公允值不通过原因 -->
-		<u-modal :show="showFair" @confirm="showFair = false">
+		<u-modal :show="showFair" confirmText="知道了" confirmColor="#fa6401" @confirm="showFair = false">
 			<view>
 				<view>{{ fairReason }}</view>
 			</view>
@@ -839,6 +839,7 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
+				this.sellerForm.buyerIdCardUrl = res.data.idCardsPicList
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount
 					.getDelcommafy(this.$amount.getComdify(res.data.sellAmount));
 				if (this.sellerForm.sellAmount.indexOf('.')) {
@@ -849,8 +850,6 @@
 				if (this.sellerForm.deposit.indexOf('.')) {
 					this.depositMaxlength = this.sellerForm.deposit.split('.')[0].length + 3
 				}
-				this.fairStatus = res.data.bpmStatus;
-				this.fairReason = res.data.bpmReason;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
 						if (index == 0) {
@@ -1193,6 +1192,12 @@
 				}).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
+					if (this.fileList4.length == 0 && this.fileList5.length == 0) {
+						this.sellerForm.buyerIdCard = '';
+						this.sellerForm.buyerAdder = '';
+						this.sellerForm.buyerName = '';
+						this.sellerForm.buyerIdCardUrl = [];
+					}
 				})
 			},
 			// 确认登记日期
@@ -1212,6 +1217,12 @@
 			},
 			// 卖车金额失焦计算利润
 			handleBlur(val) {
+				if (!val) {
+					this.sellerForm.total = '';
+					this.sellerForm.profit = '';
+					this.amountDetails = {};
+					return
+				}
 				let data = {
 					id: this.carId,
 					sellAmount: val
@@ -1382,6 +1393,8 @@
 				setSellCarInfo(data).then((res) => {
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
+						this.fairStatus = res.data.carInfo.bpmStatus;
+						this.fairReason = res.data.carInfo.bpmReason;
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;

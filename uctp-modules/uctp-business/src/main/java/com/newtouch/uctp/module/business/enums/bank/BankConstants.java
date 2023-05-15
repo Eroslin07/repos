@@ -22,6 +22,10 @@ public class BankConstants {
     // 充值保证金默认开户行
     public final static String CASH_OPEN_BANK_NAME = "浦发银行";
 
+    public final static String OTHER_BANK_NAME = "其他银行";
+
+    public final static String OTHER_BANK_NO = "9999";
+
     // 开户行号
     public final static String OPEN_BANK_NO = "310221000129";
     // 开户行名称

@@ -232,6 +232,13 @@ public interface CarInfoService {
 
     CarInvoiceInfoVO getReverseInvoiceInfo(Long contractId);
 
+    /**
+     * 根据收车合同ID获取发起支付失败流程的信息
+     * @param contractId   收车合同ID
+     * @return
+     */
+    Map<String, Object> getPayFailedCreateBpmInfo(Long contractId);
+
     void update(CarInfoDO carInfo);
 
     void updateBpmApproveInfo(Long carId, String bpmStatus, String bpmReason);

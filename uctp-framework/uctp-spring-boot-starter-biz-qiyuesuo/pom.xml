@@ -49,6 +49,11 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
         <!-- 契约锁相关依赖 -->
         <dependency>
             <groupId>com.qiyuesuo.sdk</groupId>

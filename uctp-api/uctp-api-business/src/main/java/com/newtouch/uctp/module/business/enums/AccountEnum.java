@@ -93,8 +93,8 @@ public enum AccountEnum {
     TRAN_TYPE_SELL_CAR("10131004", "商户卖车款"),
     TRAN_TYPE_BY_CAR("10131005", "商户收车款"),
 
-    BUSINESS_TYPE_CASH("10141001", "个人-保证金"),
-    BUSINESS_TYPE_PROFIT("10141002", "对公-利润"),
+    BUSINESS_TYPE_CASH("1", "个人-保证金"),
+    BUSINESS_TYPE_PROFIT("2", "对公-利润"),
 
     //银行返回码
     BANK_RESULT_CODE_SUCCESS("0000", "交易成功"),
@@ -102,10 +102,6 @@ public enum AccountEnum {
     BANK_RESULT_CODE_UNKNOWN("0001", "未知错误"),
     BANK_RESULT_CODE_PARAM_CHECK_FAIL("0002", "参数校验失败"),
     BANK_RESULT_CODE_FAIL("0003", "异步交易失败"),
-
-    // 银行卡业务类型
-    BANK_NO_CASH("1", "保证金充值银行卡"),
-    BANK_NO_PROFIT("2", "利润提现对公银行卡"),
 
     // 商户银卡信息状态标记
     BANK_CARD_ENABLE("0", "银行卡信息启用"),

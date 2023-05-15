@@ -239,7 +239,7 @@
 							:text="'保证金可用余额'+$amount.getComdify(available)+'元'" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
 							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
-						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过'" @click="showFair = true">
+						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过' || fairStatus == '退回'" @click="showFair = true">
 							公允价值审核-退回 ></view>
 					</view>
 					<u-form-item label="付款方式" :required="true" prop="payType" borderBottom>
@@ -377,7 +377,7 @@
 			</view>
 		</uni-card>
 		<!-- 公允值不通过原因 -->
-		<u-modal :show="showFair" @confirm="showFair = false">
+		<u-modal :show="showFair" confirmText="知道了" confirmColor="#fa6401" @confirm="showFair = false">
 			<view>
 				<view>{{ fairReason }}</view>
 			</view>

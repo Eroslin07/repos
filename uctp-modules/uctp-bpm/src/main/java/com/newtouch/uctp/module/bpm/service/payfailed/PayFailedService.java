@@ -15,4 +15,6 @@ public interface PayFailedService {
      * @return
      */
     String createBpm(Long contractId, String procDefKey, Map<String, Object> variables);
+
+    String createBpm(Long contractId, String failReason);
 }

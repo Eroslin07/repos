@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.Map;
+
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -43,4 +46,12 @@ public interface CarInfoApi {
                                                  @RequestParam("statusThree") Integer statusThree,
                                                  @RequestParam("bpmStatus") String bpmStatus,
                                                  @RequestParam("bpmReason") String bpmReason);
+
+    /**
+     * 根据收车合同ID获取发起支付失败流程的信息
+     * @param contractId   收车合同ID
+     * @return
+     */
+    @GetMapping(PREFIX + "getPayFailedCreateBpmInfo")
+    CommonResult<Map<String, Object>> getPayFailedCreateBpmInfo(@RequestParam("contractId") Long contractId);
 }

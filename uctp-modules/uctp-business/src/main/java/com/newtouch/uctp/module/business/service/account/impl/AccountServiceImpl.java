@@ -58,17 +58,17 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantAccount.setTenantId(accountDTO.getTenantId());
 
             // 创建银行保证经充值子账号
-            NominalAccountRequest requestCash = buildNominalAccountRequest(accountDTO, AccountEnum.BANK_NO_CASH.getKey());
+            NominalAccountRequest requestCash = buildNominalAccountRequest(accountDTO, AccountEnum.BUSINESS_TYPE_CASH.getKey());
             NominalAccountResponse bankAccountNoCash = transactionService.nominalAccountGenerate(requestCash);
 
             // 创建银行对公利润提现子账号
-            NominalAccountRequest requestProfit = buildNominalAccountRequest(accountDTO, AccountEnum.BANK_NO_PROFIT.getKey());
+            NominalAccountRequest requestProfit = buildNominalAccountRequest(accountDTO, AccountEnum.BUSINESS_TYPE_PROFIT.getKey());
             NominalAccountResponse bankAccountNoProfit = transactionService.nominalAccountGenerate(requestProfit);
 
 
             save(merchantAccount);
-            saveMerchantBank(bankAccountNoCash, AccountEnum.BANK_NO_CASH.getKey(), accountDTO, accountNo);
-            saveMerchantBank(bankAccountNoProfit, AccountEnum.BANK_NO_PROFIT.getKey(), accountDTO, accountNo);
+            saveMerchantBank(bankAccountNoCash, AccountEnum.BUSINESS_TYPE_CASH.getKey(), accountDTO, accountNo);
+            saveMerchantBank(bankAccountNoProfit, AccountEnum.BUSINESS_TYPE_PROFIT.getKey(), accountDTO, accountNo);
             return true;
         } catch (BankException e) {
             log.error(e.getMessage());
@@ -98,13 +98,13 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         request.setBidsSnglFlgCd(UUID.randomUUID().toString(true));
         request.setOpenBrNo(BankConstants.OPEN_BANK_NO);
         request.setOpenBranchName(BankConstants.OPEN_BRANCH_NAME);
-        if (AccountEnum.BANK_NO_PROFIT.getKey().equals(busType)) {
+        if (AccountEnum.BUSINESS_TYPE_PROFIT.getKey().equals(busType)) {
             request.setBscAcctNo(accountDTO.getBankNo());
             request.setAcctName(accountDTO.getBusinessName());
             request.setCtfType(CertificationType.BUSINESS_LICENSE.getCode());
             request.setCtfId(accountDTO.getTaxNum());
             request.setClientName(accountDTO.getBusinessName());
-        } else if (AccountEnum.BANK_NO_CASH.getKey().equals(busType)) {
+        } else if (AccountEnum.BUSINESS_TYPE_CASH.getKey().equals(busType)) {
             request.setBscAcctNo(accountDTO.getCashBankNo());
             request.setAcctName(accountDTO.getLegalRepresentative());
             request.setCtfType(CertificationType.ID_CARD.getCode());
@@ -122,10 +122,10 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         merchantBankDO.setAuthCode(response.getAuthrCd());
         merchantBankDO.setChildAcctName(response.getChildAcctNm());
         merchantBankDO.setPcpCustNo(response.getPcpClntNo());
-        if (AccountEnum.BANK_NO_PROFIT.getKey().equals(busType)) {
+        if (AccountEnum.BUSINESS_TYPE_PROFIT.getKey().equals(busType)) {
             merchantBankDO.setBankNo(accountDTO.getBankNo());
             merchantBankDO.setBankName(accountDTO.getBankName());
-        } else if (AccountEnum.BANK_NO_CASH.getKey().equals(busType)) {
+        } else if (AccountEnum.BUSINESS_TYPE_CASH.getKey().equals(busType)) {
             merchantBankDO.setBankNo(accountDTO.getCashBankNo());
             merchantBankDO.setBankName(BankConstants.CASH_OPEN_BANK_NAME);
         }

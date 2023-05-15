@@ -55,6 +55,8 @@ import com.newtouch.uctp.module.business.enums.QysCallBackType;
 import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 import com.newtouch.uctp.module.business.mq.producer.UserAuthProducer;
+import com.newtouch.uctp.module.business.service.*;
+import com.newtouch.uctp.module.business.service.account.AccountCashService;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
@@ -742,7 +744,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public void test(Long id, Integer type) throws Exception {
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1656959683577090050L);
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
 //        qiyuesuoClient.defaultDraftSend(null);
 //        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
@@ -755,7 +757,8 @@ public class QysConfigServiceImpl implements QysConfigService {
             SaaSSealSignAuthUrlResult checkedData = saasClient.saasSealSignAuthUrl("17380123816", 3088322841008022468L, DateUtil.formatDate(authDeadline), "授权静默签章").getCheckedData();
             System.out.println(checkedData.getPageUrl());
         } else if (type.equals(3)) {
-            this.companySign(id);
+            Object checkedData = client.defaultCompanysign(3088393275632066703L).getCheckedData();
+            System.out.println(checkedData);
         } else if (type.equals(4)) {
             SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816", ListUtil.of("CONTRACT")).getCheckedData();
             System.out.println(checkedData);
@@ -1664,11 +1667,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.isNull(configDO)) {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
+        String dateKeyword = ObjectUtil.equals(contractDO.getContractType(), 1) ||
+                ObjectUtil.equals(contractDO.getContractType(), 3) ? "签订时间：" : null;
         //商户签章
-        this.companySign(configDO, contractDO, ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.FALSE)));
+        this.companySign(configDO, contractDO,
+                ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.FALSE)),
+                dateKeyword);
         //平台方签章
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
-        this.companySign(platformConfigDO, contractDO, ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.TRUE)));
+        this.companySign(platformConfigDO, contractDO,
+                ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.TRUE)),
+                null);
     }
 
     /**
@@ -1697,7 +1706,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         return keyword;
     }
 
-    private void companySign(QysConfigDO configDO, ContractDO contractDO, List<String> keywords) {
+    private void companySign(QysConfigDO configDO, ContractDO contractDO, List<String> keywords,String dateKeyword) {
 //      //如果是收/卖车合同，需要等待个人签署完成后，自动签署
 //        if (ObjectUtil.equals(2,contractDO.getContractType()) || ObjectUtil.equals(4,contractDO.getContractType())) {
 //            return;
@@ -1720,7 +1729,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else {
             sealId = configDO.getSealId();
         }
-        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
+        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords,dateKeyword).getCheckedData();
     }
 
     @Override

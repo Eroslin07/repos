@@ -94,12 +94,12 @@ public interface TransactionService {
      * 1、主要用于收车款支付 商户保证金子账户支付C端卖车人失败场景动作
      * 2、方法内创建支付失败流程
      */
-    void collectPaymentFailed();
+    void collectPaymentFailed(OutGoldDTO outGoldDTO);
 
     /**
      * 支付成功
      * 1、主要用于收车款支付 商户保证金子账户支付C端卖车人成功场景动作
      * 2、方法内创建开票流程
      */
-    void collectPaymentSuccess();
+    void collectPaymentSuccess(Long contractNo);
 }
