@@ -111,6 +111,8 @@ public class PayFailedServiceImpl implements PayFailedService {
             AdminUserRespDTO adminUserRespDTO = adminUserApi.getUser(Long.valueOf(creator)).getCheckedData();
             DeptRespDTO deptRespDTO = deptApi.getDept(adminUserRespDTO.getDeptId()).getCheckedData();
             Map<String, Object> formInfo = carInfoApi.getPayFailedCreateBpmInfo(contractId).getCheckedData();
+            formInfo.put("failReason", failReason);
+            
             Map<String, Object> variables = new HashMap<String, Object>();
             variables.put("startUserId", adminUserRespDTO.getId());
             variables.put("marketName", tenantRespDTO.getName());
