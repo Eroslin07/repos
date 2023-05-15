@@ -38,7 +38,7 @@ import com.newtouch.uctp.module.business.util.UctpCarInfoSearchUtils;
 
 import static com.newtouch.uctp.framework.common.pojo.CommonResult.success;
 
-@Tag(name =  "App管理 - 车辆管理")
+@Tag(name = "App管理 - 车辆管理")
 @RestController
 @RequestMapping("/uctp/car-info")
 @Validated
@@ -47,7 +47,6 @@ public class AppCarInfoController {
     private CarInfoService carInfoService;
     @Resource
     private ContractService contractService;
-
 
 
     @PostMapping("/create")
@@ -93,6 +92,7 @@ public class AppCarInfoController {
         PageResult<CarInfoDO> pageResult = carInfoService.getCarInfoPage(pageVO);
         return success(CarInfoConvert.INSTANCE.convertPage(pageResult));
     }
+
     @GetMapping("/home/page")
     @Operation(summary = "获得APP首页分页")
     public CommonResult<PageResult<AppHomeCarInfoRespVO>> getHomeCarInfoPage(@Valid AppHomeCarInfoPageReqVO pageVO) {
@@ -129,7 +129,7 @@ public class AppCarInfoController {
     @Parameter(name = "sellAmount", description = "卖车金额", required = true, example = "666")
     public CommonResult<AppCarInfoAmountRespVO> getCarInfoAmount(@RequestParam("id") Long id,
                                                                  @RequestParam("sellAmount") BigDecimal sellAmount) {
-        AppCarInfoAmountRespVO vo = carInfoService.getCarInfoAmount(id,sellAmount);
+        AppCarInfoAmountRespVO vo = carInfoService.getCarInfoAmount(id, sellAmount);
         return success(vo);
     }
 
@@ -163,8 +163,8 @@ public class AppCarInfoController {
     @GetMapping("/getCarInfoByVIN")
     @Operation(summary = "根据VIN获取回显车辆信息")
     @Parameter(name = "VIN", description = "编号", required = true, example = "1024")
-    public CommonResult<Map> getCarInfoByVIN(@RequestParam("VIN") String VIN,@RequestParam("deptId") Long deptId) {
-        return success(carInfoService.getCarInfoByVIN(VIN,deptId));
+    public CommonResult<Map> getCarInfoByVIN(@RequestParam("VIN") String VIN, @RequestParam("deptId") Long deptId) {
+        return success(carInfoService.getCarInfoByVIN(VIN, deptId));
     }
 
     @GetMapping("/getCarInfoByID")
@@ -184,12 +184,11 @@ public class AppCarInfoController {
     }
 
 
-
     @GetMapping("/getDetailds")
     @Operation(summary = "获得车辆明细信息")
     public CommonResult<CarDetailRespVO> getCarInfoAndDetails(@Valid CarDCVo carDCVo) {
-            CarDetailRespVO pageResult = carInfoService.getCarInfoAndDetails(carDCVo);
-            return success(pageResult);
+        CarDetailRespVO pageResult = carInfoService.getCarInfoAndDetails(carDCVo);
+        return success(pageResult);
     }
 
 
@@ -201,10 +200,9 @@ public class AppCarInfoController {
     }
 
 
-
     @PostMapping("/updateContractStatas")
     @Operation(summary = "作废合同状态")
-    public CommonResult<String> updateContractStatas(@RequestBody  CarDCVo carDCVo) {
+    public CommonResult<String> updateContractStatas(@RequestBody CarDCVo carDCVo) {
         return success(contractService.updateContractStatas(carDCVo));
     }
 
@@ -213,7 +211,7 @@ public class AppCarInfoController {
     @Operation(summary = "通过路径下载单个文件/多文件下载需前端轮询")
     public void downLoadone(@RequestBody DownloadExample example, HttpServletRequest request, HttpServletResponse response) throws IOException {
         File file = DownLoadUtils.getResourceFile(example.getUrl());
-        DownLoadUtils.outFileByFile(example.getName()+"."+example.getType(),file,false,request,response);
+        DownLoadUtils.outFileByFile(example.getName() + "." + example.getType(), file, false, request, response);
     }
 /*
     @PostMapping ("/download-more")
@@ -353,10 +351,11 @@ public class AppCarInfoController {
     public JSONArray getAllCarBrandList() {
         JSONArray jsonArray = new JSONArray();
         try {
-            String url = "http://testapi.che300.com/service/getCarBrandList";
-            String token = "61f499b086392005f92009b91f8f966a";
-            jsonArray = UctpCarInfoSearchUtils.getCarBrandList(token,  url);
+            String url = "http://third-test.yhcs.com/getCarBrandList";
+            jsonArray = UctpCarInfoSearchUtils.getCarBrandList(url);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return jsonArray;
@@ -368,12 +367,13 @@ public class AppCarInfoController {
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public Map getCarBrandList(@RequestBody Map map) {
         String brand_name = String.valueOf(map.get("brand_name"));//品牌
-        Map SeriesMap=new HashMap<>();
+        Map SeriesMap = new HashMap<>();
         try {
-            String url = "http://testapi.che300.com/service/getCarBrandList";
-            String token = "61f499b086392005f92009b91f8f966a";
-            SeriesMap = UctpCarInfoSearchUtils.getCarBrandList(token, brand_name, url);
+            String url = "http://third-test.yhcs.com/getCarBrandList";
+            SeriesMap = UctpCarInfoSearchUtils.getCarBrandList( brand_name, url);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return SeriesMap;
@@ -386,12 +386,13 @@ public class AppCarInfoController {
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public Map getCarSeriesList(@RequestBody Map map) {
         String brand_id = String.valueOf(map.get("brand_id"));//品牌id
-        Map SeriesMap=new HashMap<>();
+        Map SeriesMap = new HashMap<>();
         try {
-            String url = "http://testapi.che300.com/service/getCarSeriesList";
-            String token = "61f499b086392005f92009b91f8f966a";
-            SeriesMap = UctpCarInfoSearchUtils.getCarSeriesList(token, brand_id, url);
+            String url = "http://third-test.yhcs.com/getCarSeriesList";
+            SeriesMap = UctpCarInfoSearchUtils.getCarSeriesList(brand_id, url);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return SeriesMap;
@@ -404,12 +405,13 @@ public class AppCarInfoController {
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public Map getCarModelList(@RequestBody Map map) {
         String seriesId = String.valueOf(map.get("seriesId"));//车系
-        Map SeriesMap=new HashMap<>();
+        Map SeriesMap = new HashMap<>();
         try {
-            String url = "http://testapi.che300.com/service/getCarModelList";
-            String token = "61f499b086392005f92009b91f8f966a";
-            SeriesMap = UctpCarInfoSearchUtils.getCarModelList(token, seriesId, url);
+            String url = "http://third-test.yhcs.com/getCarSeriesList";
+            SeriesMap = UctpCarInfoSearchUtils.getCarModelList(  seriesId, url);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return SeriesMap;
@@ -428,28 +430,28 @@ public class AppCarInfoController {
 //        CarInfoDetailsDO carInfoDetailsDO = carInfoService.seleCarInfoDetail(carId);
         HashMap fairValue = null;
         try {
-            String token = "61f499b086392005f92009b91f8f966a";
             String modelId = String.valueOf(map.get("modelId"));//车型id
 //            String zone =carInfoDO.getPlateNum();//车牌
             String zone = String.valueOf(map.get("plateNum"));//车牌
 
 //            String mile= String.valueOf(carInfoDetailsDO.getMileage());//里程
-            String mile= String.valueOf(map.get("mileage"));//里程
+            String mile = String.valueOf(map.get("mileage"));//里程
 //            String regDate= String.valueOf(carInfoDetailsDO.getFirstRegistDate());//首次登记时间
-            String regDate= String.valueOf(map.get("firstRegistDate"));//首次登记时间
-            String allLevel="1";//(是否返回多⻋况,1是，0:否) 默认1
+            String regDate = String.valueOf(map.get("firstRegistDate"));//首次登记时间
+            String allLevel = "1";//(是否返回多⻋况,1是，0:否) 默认1
 
-            String url1 = "http://testapi.che300.com/service/getUsedCarPrice";
-            String coefficients="0.2";
+            String url1 = "http://third-test.yhcs.com/getUsedCarPrice";
+            String coefficients = "0.2";
 
 
-            fairValue = UctpCarInfoSearchUtils.CarFairValue(modelId, zone, mile, regDate, allLevel, token, url1, coefficients);
+            fairValue = UctpCarInfoSearchUtils.CarFairValue(modelId, zone, mile, regDate,  url1, coefficients);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return fairValue;
     }
-
 
 
 //    static Map<String,Long> map=new HashMap<>();
@@ -503,7 +505,7 @@ public class AppCarInfoController {
     @GetMapping("/getTransferInfo")
     @Operation(summary = "根据车辆ID获取流程所需的过户信息")
     @Parameter(name = "carId", description = "车辆ID", required = true, example = "1024")
-    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey){
+    public CommonResult<JSONObject> getTransferInfo(@RequestParam("carId") Long carId, @RequestParam("procDefKey") String procDefKey) {
         return success((JSONObject) JSONObject.toJSON(carInfoService.getTransferInfo(carId, procDefKey)));
     }
 

@@ -92,6 +92,9 @@ public class MsgContentUtil {
                 case "44":
                     result = String.format("【翼龙科技】电子签章平台需要您进行印章及功能模块授权，请访问%s 完成授权操作。", map.get("url").replaceAll("https://",""));
                     break;
+                case "45":
+                    result = String.format("【翼龙科技】您在%s的子账号已注册完成，请在15分钟内访问%s 完成个人实名认证。",map.get("name"), map.get("url").replaceAll("https://",""));
+                    break;
                 default:
                     result="无匹配模版";
             }

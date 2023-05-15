@@ -42,22 +42,29 @@ public class UctpCarInfoSearchUtils {
      * @param carNo        carNo(⻋牌号)  必传
      * @param mile         mile(⻋辆⾏驶⾥程，单位是万公⾥) 必传
      * @param regDate      regDate(⻋辆上牌年-⽉或年-⽉-⽇) 必传
-     * @param allLevel     allLevel(是否返回多⻋况,1是，0:否) 默认1
      * @param url          url （接口地址） 必传
-     * @param token        token(⻋300提供给客户的调⽤帐号,最长32位) 必传
      * @param coefficients coefficients车价浮动系数 默认0.2
      */
-    public static HashMap CarFairValue(String modelId, String carNo, String mile, String regDate, String allLevel, String token, String url, String coefficients) throws UnsupportedEncodingException {
+    public static HashMap CarFairValue(String modelId, String carNo, String mile, String regDate, String url, String coefficients) throws Exception {
 //        url = "http://testapi.che300.com/service/getUsedCarPrice";
 //        token = "61f499b086392005f92009b91f8f966a";
+         Map signMap = getSign();
+        String sign = "";
+        String channel = "";
+        if (!signMap.isEmpty()) {
+            sign = signMap.get("sign").toString();
+            channel = signMap.get("channel").toString();
+        }
+
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
-        urlParam.append("?token=" + token);
+        urlParam.append("?sign=" + sign);
         urlParam.append("&modelId=" + modelId);
         urlParam.append("&carNo=" + carNo);
         urlParam.append("&mile=" + mile);
         urlParam.append("&regDate=" + regDate);
-        urlParam.append("&allLevel=" + allLevel);
+        urlParam.append("&channel=" + channel);
+//        urlParam.append("&allLevel=" + allLevel);
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
         String getUrl = null;
@@ -95,9 +102,9 @@ public class UctpCarInfoSearchUtils {
             String Recommended_high_sold_price = null;
             //转换系数类型  默认为0.2,
             Double coefficient = new Double(StringUtil.isEmpty(coefficients) ? "0.2" : coefficients);
-            if(maps.get("status").equals("0")){
-                mapinfo.put("msg","上牌年份不合理");
-            }else{
+            if (maps.get("status").equals("0")) {
+                mapinfo.put("msg", "上牌年份不合理");
+            } else {
                 for (Object map : maps.entrySet()) {
                     if (((Map.Entry) map).getKey().equals("model_price")) {
                         //指导价
@@ -176,11 +183,18 @@ public class UctpCarInfoSearchUtils {
         }
     }
 
-    public static JSONArray getCarBrandList(String token,  String url) throws UnsupportedEncodingException {
-
+    public static JSONArray getCarBrandList(String url) throws Exception {
+        Map signMap = getSign();
+        String sign = "";
+        String channel = "";
+        if (!signMap.isEmpty()) {
+            sign = signMap.get("sign").toString();
+            channel = signMap.get("channel").toString();
+        }
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
-        urlParam.append("?token=" + token);
+        urlParam.append("?sign=" + sign);
+        urlParam.append("&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -225,7 +239,7 @@ public class UctpCarInfoSearchUtils {
      * GET请求
      * 品牌查询
      *
-     * @param token     token(⻋300提供给客户的调⽤帐号,最长32位)
+     * @param
      * @param brandName brandName(品牌名)
      * @param url       url （接口地址）
      *                  返回 json对象 {"update_time":"2016-01-27 14:28:31","initial":"B","brand_name":"宝马","brand_id":"7"}
@@ -235,12 +249,19 @@ public class UctpCarInfoSearchUtils {
      *                  update_time 更新时间
      */
 
-    public static JSONObject getCarBrandList(String token, String brandName, String url) throws UnsupportedEncodingException {
-
+    public static JSONObject getCarBrandList(String brandName, String url) throws Exception {
+        Map signMap = getSign();
+        String sign = "";
+        String channel = "";
+        if (!signMap.isEmpty()) {
+            sign = signMap.get("sign").toString();
+            channel = signMap.get("channel").toString();
+        }
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
-        urlParam.append("?token=" + token);
+        urlParam.append("?sign=" + sign);
         urlParam.append("&brandName=" + brandName);
+        urlParam.append("&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -276,8 +297,6 @@ public class UctpCarInfoSearchUtils {
                     }
                 }
             }
-
-
             getMethod.releaseConnection();
         } catch (IOException e) {
             log.error("GET请求发出失败，请求的地址为{}，参数为{}，错误信息为{}", url, getUrl, e.getMessage(), e);
@@ -289,7 +308,7 @@ public class UctpCarInfoSearchUtils {
      * GET请求
      * 车系查询
      *
-     * @param token   token(⻋300提供给客户的调⽤帐号,最长32位)
+     * @param
      * @param brandId brandId(品牌id)
      * @param url     url （接口地址）
      *                series_id 车系 id
@@ -299,13 +318,20 @@ public class UctpCarInfoSearchUtils {
      *                status           状态码 1:表示成功 0:表示失败
      */
 
-    public static Map getCarSeriesList(String token, String brandId, String url) throws UnsupportedEncodingException {
+    public static Map getCarSeriesList(String brandId, String url) throws Exception {
+        Map signMap = getSign();
 
+        String sign = "";
+        String channel = "";
+        if (!signMap.isEmpty()) {
+            sign = signMap.get("sign").toString();
+            channel = signMap.get("channel").toString();
+        }
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
-        urlParam.append("?token=" + token);
+        urlParam.append("?sign=" + sign);
         urlParam.append("&brandId=" + brandId);
-
+        urlParam.append("&channel=" + channel);
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
         String getUrl = null;
@@ -340,7 +366,7 @@ public class UctpCarInfoSearchUtils {
      * GET请求
      * 车型查询
      *
-     * @param token    token(⻋300提供给客户的调⽤帐号,最长32位)
+     * @param
      * @param seriesId seriesId(车系标识)
      * @param url      url （接口地址）
      *                 status 是 string 状态码 1:表示成功 0:表示失败
@@ -359,12 +385,20 @@ public class UctpCarInfoSearchUtils {
      *                 url 是 string，最长 255
      */
 
-    public static Map getCarModelList(String token, String seriesId, String url) throws UnsupportedEncodingException {
-
+    public static Map getCarModelList(String seriesId, String url) throws Exception {
         StringBuffer urlParam = new StringBuffer();
+        Map signMap = getSign();
+
+        String sign = "";
+        String channel = "";
+        if (!signMap.isEmpty()) {
+            sign = signMap.get("sign").toString();
+            channel = signMap.get("channel").toString();
+        }
         urlParam.append(url);
-        urlParam.append("?token=" + token);
+        urlParam.append("?sign=" + sign);
         urlParam.append("&seriesId=" + seriesId);
+        urlParam.append("&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -396,14 +430,35 @@ public class UctpCarInfoSearchUtils {
         return maps;
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        String url1 = "http://testapi.che300.com/service/getUsedCarPrice";
-        String url2 = "http://testapi.che300.com/service/pv/exportModel";
-        String url3 = "http://testapi.che300.com/service/getCarBrandList";
-        String url4 = "http://testapi.che300.com/service/getCarSeriesList";
-        String url5 = "http://testapi.che300.com/service/getCarModelList";
+    /*
+     * 获取接口token
+     *
+     * */
+    private static Map getSign() throws Exception {
+        Map<String, Object> param = new HashMap<>();
+        String channel = "tywg";
+        param.put("channel", channel); //太原万国 渠道
+//        param.put("brandId", 1);
+        String sign = SignatureUtils.generateSignature(param, "B82pho2ts3HPTHvfg8JaU7cB322kTxDE");
 
-        String token = "61f499b086392005f92009b91f8f966a";
+        HashMap<String, String> signMap = new HashMap<>();
+        signMap.put("channel", channel);
+        signMap.put("sign", sign);
+        return signMap;
+    }
+
+    public static void main(String[] args) throws Exception {
+        String url1 = "http://third-test.yhcs.com/getUsedCarPrice";
+//        String url2 = "http://testapi.che300.com/service/pv/exportModel";
+        String url3 = "http://third-test.yhcs.com/getCarBrandList";
+        String url4 = "http://third-test.yhcs.com/getCarSeriesList";
+        String url5 = "http://third-test.yhcs.com/getCarModelList";
+        Map<String, Object> param = new HashMap<>();
+        String channel = "tywg";
+        param.put("channel", channel); //太原万国 渠道
+//        param.put("brandId", 1);
+        String sign = SignatureUtils.generateSignature(param, "B82pho2ts3HPTHvfg8JaU7cB322kTxDE");
+
         String modelId = "1128206";
         String carNo = "川G2GG63";
         String mile = "4.0";
@@ -415,12 +470,12 @@ public class UctpCarInfoSearchUtils {
         String simple = "0";
         UctpCarInfoSearchUtils uctpCarInfoSearchUtils = new UctpCarInfoSearchUtils();
 //        uctpCarInfoSearchUtils.CarMotorcycleType("3.4.561", "0");
-        HashMap map = uctpCarInfoSearchUtils.CarFairValue(modelId, carNo, mile, regDate, allLevel, token, url1, coefficients);
+//        HashMap map = uctpCarInfoSearchUtils.CarFairValue(channel, modelId, carNo, mile, regDate, allLevel, sign, url1, coefficients);
 //        uctpCarInfoSearchUtils.CarMotorcycleType(url2, token, apiVersion, fromVersion, simple);
-        JSONObject obj = uctpCarInfoSearchUtils.getCarBrandList(token, "宝马", url3);
-        Map carSeriesList = uctpCarInfoSearchUtils.getCarSeriesList(token, "5", url4);
-        Map carSeriesList1 = uctpCarInfoSearchUtils.getCarModelList(token, "51618", url5);
-        System.out.println(carSeriesList1.toString());
+//        JSONObject obj = uctpCarInfoSearchUtils.getCarBrandList(sign, channel, "宝马", url3);
+//        Map carSeriesList = uctpCarInfoSearchUtils.getCarSeriesList(token, "5", url4);
+//        Map carSeriesList1 = uctpCarInfoSearchUtils.getCarModelList(token, "51618", url5);
+//        System.out.println(obj.toString());
 //        System.out.println(map.toString());
     }
 }

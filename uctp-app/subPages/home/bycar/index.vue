@@ -238,7 +238,7 @@
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'保证金可用余额'+$amount.getComdify(available)+'元'" color="#e26e1f"></u--text>
 						<view style="margin-left: 15px;color: #e26e1f;">
-							公允值范围：{{fairValue.value1}}万元-{{fairValue.value2}}万元</view>
+							公允值范围：{{$amount.getComdify(fairValue.value1)}}万元-{{$amount.getComdify(fairValue.value2)}}万元</view>
 						<view style="margin-left: 15px;color: #e26e1f;" v-if="fairStatus == '不通过' || fairStatus == '退回'" @click="showFair = true">
 							公允价值审核-退回 ></view>
 					</view>
