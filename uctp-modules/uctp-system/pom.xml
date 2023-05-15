@@ -82,7 +82,10 @@
             <groupId>com.newtouch.uctp.cloud</groupId>
             <artifactId>uctp-spring-boot-starter-biz-ip</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.newtouch.uctp.cloud</groupId>
+            <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
+        </dependency>
         <!-- Web 相关 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
@@ -175,10 +178,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.newtouch.uctp.cloud</groupId>
-            <artifactId>uctp-spring-boot-starter-biz-qiyuesuo</artifactId>
         </dependency>
     </dependencies>
 

@@ -72,12 +72,14 @@ public interface QiyuesuoClient {
      * @param documentId 合同文件Id
      * @param seaLId 印章Id
      * @param keywords 签章关键字
+     * @param dateKeyword 签章日期关键字
      * @return
      */
     QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId,
                                                     Long documentId,
                                                     Long seaLId,
-                                                    List<String> keywords);
+                                                    List<String> keywords,
+                                                    String dateKeyword);
 
     /**
      * 静默签章

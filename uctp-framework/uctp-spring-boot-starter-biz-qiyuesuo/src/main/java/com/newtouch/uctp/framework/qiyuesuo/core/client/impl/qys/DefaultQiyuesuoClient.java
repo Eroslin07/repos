@@ -248,7 +248,8 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId,
                                                            Long documentId,
                                                            Long seaLId,
-                                                           List<String> keywords) {
+                                                           List<String> keywords,
+                                                           String dateKeyword) {
         Assert.notNull(contractId, "contractId不能为空");
         Assert.notNull(documentId, "documentId不能为空");
         Assert.notNull(seaLId, "seaLId不能为空");
@@ -268,15 +269,18 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
             stamper.setOffsetY(-0.02 );
             stampers.add(stamper);
         }
-        //这里签署日期直接写死，业务是这样
-        Stamper dateSstamper = new Stamper();
-        dateSstamper.setKeyword("签订时间：");
-        dateSstamper.setDocumentId(documentId);
-        //Chinese（yyyy 年 mm 月 dd 日（阿拉伯数字））
-//        dateSstamper.setDatePattern("Chinese");
-        //时间戳
-        dateSstamper.setType("TIMESTAMP");
-        stampers.add(dateSstamper);
+        if (StrUtil.isNotBlank(dateKeyword)) {
+            //这里签署日期直接写死，业务是这样
+            Stamper dateSstamper = new Stamper();
+//            dateSstamper.setKeyword("签订时间：");
+            dateSstamper.setKeyword(dateKeyword);
+            dateSstamper.setDocumentId(documentId);
+            //所有关键字
+            dateSstamper.setKeywordIndex(0);
+            //时间戳
+            dateSstamper.setType("TIMESTAMP");
+            stampers.add(dateSstamper);
+        }
         param.setSealId(seaLId);
         param.setStampers(stampers);
         ContractSignCompanyRequest request = new ContractSignCompanyRequest(param);

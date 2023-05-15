@@ -1664,11 +1664,17 @@ public class QysConfigServiceImpl implements QysConfigService {
         if (ObjectUtil.isNull(configDO)) {
             throw exception(QYS_CONFIG_NOT_EXISTS);
         }
+        String dateKeyword = ObjectUtil.equals(contractDO.getContractType(), 1) ||
+                ObjectUtil.equals(contractDO.getContractType(), 3) ? "签订时间：" : null;
         //商户签章
-        this.companySign(configDO, contractDO, ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.FALSE)));
+        this.companySign(configDO, contractDO,
+                ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.FALSE)),
+                dateKeyword);
         //平台方签章
         QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
-        this.companySign(platformConfigDO, contractDO, ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.TRUE)));
+        this.companySign(platformConfigDO, contractDO,
+                ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.TRUE)),
+                null);
     }
 
     /**
@@ -1697,7 +1703,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         return keyword;
     }
 
-    private void companySign(QysConfigDO configDO, ContractDO contractDO, List<String> keywords) {
+    private void companySign(QysConfigDO configDO, ContractDO contractDO, List<String> keywords,String dateKeyword) {
 //      //如果是收/卖车合同，需要等待个人签署完成后，自动签署
 //        if (ObjectUtil.equals(2,contractDO.getContractType()) || ObjectUtil.equals(4,contractDO.getContractType())) {
 //            return;
@@ -1720,7 +1726,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else {
             sealId = configDO.getSealId();
         }
-        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords).getCheckedData();
+        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords,dateKeyword).getCheckedData();
     }
 
     @Override

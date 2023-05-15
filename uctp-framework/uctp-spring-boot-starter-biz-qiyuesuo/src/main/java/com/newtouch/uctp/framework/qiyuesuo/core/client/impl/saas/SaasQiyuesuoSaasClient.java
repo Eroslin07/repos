@@ -258,7 +258,8 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     public QiyuesuoCommonResult<Object> defaultCompanysign(Long contractId,
                                                            Long documentId,
                                                            Long seaLId,
-                                                           List<String> keywords) {
+                                                           List<String> keywords,
+                                                           String dateKeyword) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
