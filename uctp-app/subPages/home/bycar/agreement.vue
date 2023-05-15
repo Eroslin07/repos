@@ -32,6 +32,9 @@
 	import {
 		setCreate
 	} from '@/api/home'
+	import {
+		getDetail
+	} from '@/api/account/bond.js'
 	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
@@ -57,6 +60,16 @@
 		components: {
 			AbnormalPage
 		},
+		onShow() {
+			let pages = getCurrentPages();
+			let currPage = pages[pages.length - 1];
+			if(currPage.__data__.isRefresh){
+				// 重新获取数据
+				this.getAvailableCash()
+				// 每一次需要清除，否则会参数会缓存
+				currPage.__data__.isRefresh=false
+			}
+		},
 		onLoad(options) {
 			// console.log((options))
 			this.carId = options.carId
@@ -68,6 +81,15 @@
 			this.getContractUrl()
 		},
 		methods: {
+			// 查询可用保证金余额
+			getAvailableCash() {
+				console.log(1)
+				getDetail({
+					accountNo: this.$store.state.user.accountNo
+				}).then((res) => {
+					this.available = res.data.availableCash / 100;
+				})
+			},
 			// 查看合同
 			handleViewContract(text) {
 				this.$modal.msg('正在加载，请稍等...')
@@ -110,7 +132,6 @@
 					success(res){
 						_this.$tab.navigateTo('/subPages/home/account/bond/recharge');
 					}
-
 				})
 				if (this.fairVisible == 0) return uni.showModal({
 					title: '提示',
