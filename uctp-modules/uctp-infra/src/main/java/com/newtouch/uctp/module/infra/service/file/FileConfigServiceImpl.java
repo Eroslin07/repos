@@ -67,7 +67,6 @@ public class FileConfigServiceImpl implements FileConfigService {
         // 第一步：查询数据
         List<FileConfigDO> configs = fileConfigMapper.selectList();
         log.info("[initLocalCache][缓存文件配置，数量为:{}]", configs.size());
-
         // 第二步：构建缓存：创建或更新文件 Client
         configs.forEach(config -> {
             fileClientFactory.createOrUpdateFileClient(config.getId(), config.getStorage(), config.getConfig());
