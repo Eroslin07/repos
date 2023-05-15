@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import org.flowable.bpmn.model.ExtensionAttribute;
 import org.flowable.bpmn.model.ExtensionElement;
 import org.flowable.bpmn.model.FlowElement;
@@ -33,7 +35,6 @@ import com.newtouch.uctp.module.bpm.dal.mysql.car.ContractMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.form.BpmFormMainMapper;
 import com.newtouch.uctp.module.bpm.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.bpm.enums.definition.BpmDefTypeEnum;
-import com.newtouch.uctp.module.bpm.service.notice.NoticeService;
 import com.newtouch.uctp.module.bpm.service.openinvoice.BpmOpenInvoiceService;
 import com.newtouch.uctp.module.bpm.service.transfer.BpmCarTransferService;
 import com.newtouch.uctp.module.bpm.service.user.UserService;
@@ -56,8 +57,6 @@ import com.newtouch.uctp.module.business.enums.CarStatus;
 public class BpmGlobalHandleListener {
     @Resource
     private BpmFormMainMapper bpmFormMainMapper;
-    @Resource
-    private NoticeService noticeService;
     @Resource
     private UserService userService;
     @Resource
@@ -84,6 +83,8 @@ public class BpmGlobalHandleListener {
     private CarInfoDetailsApi carInfoDetailsApi;
     @Resource
     private CarInfoApi carInfoApi;
+    @Resource 
+    private NoticeApi noticeApi;
 
     /**
      * 流程创建时处理
@@ -147,7 +148,7 @@ public class BpmGlobalHandleListener {
         String reason = StrUtil.toStringOrNull(processInstance.getProcessVariables().get("reason"));
         String businessKey = processInstance.getBusinessKey();
         BpmFormMainVO bpmFormMainVO = this.getBpmFormMainData(businessKey);
-
+        BpmFormResVO bpmFormResVO = getBpmFormResVOData(bpmFormMainVO);
 
         // TODO: 根据业务场景进行个性化处理
         if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.ZHSQ.name())) {
@@ -172,7 +173,7 @@ public class BpmGlobalHandleListener {
                 String openAccountResult = accountApi.merchantAccountOpen(accountVO).getCheckedData();
                 if (StringUtils.hasText(openAccountResult) && openAccountResult.contains("开户成功")) {
                     // 注册成功
-                    noticeService.saveTaskNotice("1", "12", reason, bpmFormMainVO);
+                    noticeApi.saveTaskNotice("1", "12", reason, bpmFormResVO);
                 }
             }else if ("disagree".equals(approvalType)){
                 // 删除用户
@@ -180,7 +181,7 @@ public class BpmGlobalHandleListener {
                 AdminUserDO adminUserDO = userMapper.selectOne("mobile", jsonObject.get("phone"));
                 userService.deleteUser(adminUserDO.getId());
                 // 注册失败
-                noticeService.saveTaskNotice("1", "11", reason, bpmFormMainVO);
+                noticeApi.saveTaskNotice("1", "11", reason, bpmFormResVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SGYZ.name())) {
            //收车公允审批不通过
@@ -194,7 +195,7 @@ public class BpmGlobalHandleListener {
                 }
                 merchantMoneyApi.releaseCash(contractDO.getContractId());
                 // 保存消息
-                noticeService.saveTaskNotice("1", "21", reason, bpmFormMainVO);
+                noticeApi.saveTaskNotice("1", "21", reason, bpmFormResVO);
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
@@ -205,14 +206,14 @@ public class BpmGlobalHandleListener {
                 if (!isSend) {
                     throw new RuntimeException("自动发起并签署委托合同异常");
                 }
-                noticeService.saveTaskNotice("0", "12", reason, bpmFormMainVO);
+                noticeApi.saveTaskNotice("0", "12", reason, bpmFormResVO);
             }
         } else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.MGYZ.name())) {
             //卖车公允审批不通过
             if ("disagree".equals(approvalType)) {
                 //修改车辆状态
                 carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SELL.value(),CarStatus.SELL_A.value(),CarStatus.SELL_A_A.value(),"退回",reason);
-                noticeService.saveTaskNotice("1", "31", reason, bpmFormMainVO);
+                noticeApi.saveTaskNotice("1", "31", reason, bpmFormResVO);
             } else if ("pass".equals(approvalType)) {
                 //carinfo记录流程状态
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
@@ -223,7 +224,7 @@ public class BpmGlobalHandleListener {
                 if (!isSend) {
                     throw new RuntimeException("自动发起并签署委托合同异常");
                 }
-                noticeService.saveTaskNotice("0", "22", reason, bpmFormMainVO);
+                noticeApi.saveTaskNotice("0", "22", reason, bpmFormResVO);
             }
         }
         else if (ObjectUtil.equals(bpmFormMainVO.getBusiType(), BpmDefTypeEnum.SKZH.name())) {
@@ -358,6 +359,27 @@ public class BpmGlobalHandleListener {
 
         return bpmFormMainVO;
     }
+
+    private BpmFormResVO getBpmFormResVOData(BpmFormMainVO bpmFormMainDO) {
+        BpmFormResVO bpmFormResVO = new BpmFormResVO();
+        bpmFormResVO.setId(bpmFormMainDO.getId());
+        bpmFormResVO.setStatus(bpmFormMainDO.getStatus());
+        bpmFormResVO.setProcDefId(bpmFormMainDO.getProcDefId());
+        bpmFormResVO.setProcInstId(bpmFormMainDO.getProcInstId());
+        bpmFormResVO.setSerialNo(bpmFormMainDO.getSerialNo());
+        bpmFormResVO.setTitle(bpmFormMainDO.getTitle());
+        bpmFormResVO.setStartUserId(bpmFormMainDO.getStartUserId());
+        bpmFormResVO.setMerchantId(bpmFormMainDO.getMerchantId());
+        bpmFormResVO.setBusiType(bpmFormMainDO.getBusiType());
+        bpmFormResVO.setRemark(bpmFormMainDO.getRemark());
+        bpmFormResVO.setThirdId(bpmFormMainDO.getThirdId());
+        bpmFormResVO.setSubmitTime(bpmFormMainDO.getSubmitTime());
+        bpmFormResVO.setDoneTime(bpmFormMainDO.getDoneTime());
+        bpmFormResVO.setFormDataJson(bpmFormMainDO.getFormDataJson());
+
+        return bpmFormResVO;
+    }
+
 
     /**
      * 根据节点的扩展属性Key获取值
