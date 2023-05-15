@@ -1219,6 +1219,12 @@
 			},
 			// 卖车金额失焦计算利润
 			handleBlur(val) {
+				if (!val) {
+					this.sellerForm.total = '';
+					this.sellerForm.profit = '';
+					this.amountDetails = {};
+					return
+				}
 				let data = {
 					id: this.carId,
 					sellAmount: val
