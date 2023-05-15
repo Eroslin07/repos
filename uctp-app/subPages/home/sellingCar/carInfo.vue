@@ -850,8 +850,6 @@
 				if (this.sellerForm.deposit.indexOf('.')) {
 					this.depositMaxlength = this.sellerForm.deposit.split('.')[0].length + 3
 				}
-				this.fairStatus = res.data.bpmStatus;
-				this.fairReason = res.data.bpmReason;
 				if (res.data.idCardsPicList) {
 					res.data.idCardsPicList.forEach((i, index) => {
 						if (index == 0) {
@@ -1395,6 +1393,8 @@
 				setSellCarInfo(data).then((res) => {
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
+						this.fairStatus = res.data.carInfo.bpmStatus;
+						this.fairReason = res.data.carInfo.bpmReason;
 						this.vehicleInfor = false;
 						this.sellerInfor = true;
 						this.active = 1;
