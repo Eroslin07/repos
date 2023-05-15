@@ -839,6 +839,7 @@
 				this.sellerForm.buyerAdder = res.data.buyerAdder
 				this.sellerForm.buyerTel = res.data.buyerTel
 				this.sellerForm.buyerIdCard = res.data.buyerIdCard
+				this.sellerForm.buyerIdCardUrl = res.data.idCardsPicList
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount
 					.getDelcommafy(this.$amount.getComdify(res.data.sellAmount));
 				if (this.sellerForm.sellAmount.indexOf('.')) {
@@ -1193,6 +1194,12 @@
 				}).then((res) => {
 					this.$modal.msg("删除成功");
 					this[`fileList${event.name}`].splice(event.index, 1);
+					if (this.fileList4.length == 0 && this.fileList5.length == 0) {
+						this.sellerForm.buyerIdCard = '';
+						this.sellerForm.buyerAdder = '';
+						this.sellerForm.buyerName = '';
+						this.sellerForm.buyerIdCardUrl = [];
+					}
 				})
 			},
 			// 确认登记日期
