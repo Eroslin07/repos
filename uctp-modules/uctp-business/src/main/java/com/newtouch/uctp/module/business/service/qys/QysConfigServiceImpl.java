@@ -106,7 +106,7 @@ import java.util.*;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
-import static com.newtouch.uctp.module.business.enums.QysConstants.SECRET;
+import static com.newtouch.uctp.module.business.enums.QysConstants.*;
 import static com.newtouch.uctp.module.business.enums.QysContractStatus.INVALIDED;
 
 /**
@@ -1435,7 +1435,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public void companyAuth(Long userId) throws FileNotFoundException {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectById(1L);
+        QysConfigDO configDO = qysConfigMapper.selectById(PLATFORM_ID);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
         //获取营业执照图片
@@ -1485,7 +1485,8 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectById(1);
+        QysConfigDO configDO = qysConfigMapper.selectById(PLATFORM_ID);
+        QysConfigDO marketConfigDO = qysConfigMapper.selectById(MARKET_ID);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile(),userRespDTO.getNickname(),userExtDO.getIdCard()).getCheckedData();
         String authId = checkedData.getAuthId();
@@ -1495,8 +1496,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         List<String> urls = ShortUrlsUtil.shortUrls(ListUtil.of(checkedData.getAuthUrl()));
         Map<String, String> map = MapUtil
                 .builder("title", "个人认证")
-                .put("contentType", "42")
-                .put("name", deptRespDTO.getName())
+                .put("contentType", "45")
+                .put("name", marketConfigDO.getBusinessName())
                 .put("userName", userRespDTO.getNickname())
                 .put("url", urls.get(0))
                 .put("phone", userRespDTO.getMobile())
@@ -1674,7 +1675,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.FALSE)),
                 dateKeyword);
         //平台方签章
-        QysConfigDO platformConfigDO = qysConfigMapper.selectById(8L);
+        QysConfigDO platformConfigDO = qysConfigMapper.selectById(MARKET_ID);
         this.companySign(platformConfigDO, contractDO,
                 ListUtil.of(this.getKeyword(contractDO.getContractType(), Boolean.TRUE)),
                 null);
