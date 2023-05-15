@@ -203,7 +203,7 @@ public class AccountCashServiceImpl implements AccountCashService {
         MerchantBankDO merchantBankDO = merchantBankService.getOne(
                 new LambdaQueryWrapperX<MerchantBankDO>()
                         .eq(MerchantBankDO::getAccountNo, accountNo)
-                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_CASH.getKey())
+                        .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH.getKey())
                         .eq(MerchantBankDO::getDeleted, Boolean.FALSE));
 
         if (merchantBankDO == null || StringUtils.isEmpty(merchantBankDO.getBankNo())) {
@@ -420,7 +420,7 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         MerchantBankDO merchantBank = merchantBankService.getOne(new LambdaQueryWrapperX<MerchantBankDO>()
                 .eq(MerchantBankDO::getAccountNo, appTransferReqVO.getAccountNo())
-                .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_CASH.getKey())
+                .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH.getKey())
                 .eq(MerchantBankDO::getDeleted, AccountEnum.BANK_CARD_ENABLE)
         );
 

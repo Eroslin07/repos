@@ -256,7 +256,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
         MerchantBankDO bank = merchantBankService.getOne(new LambdaQueryWrapperX<MerchantBankDO>()
                 .eq(MerchantBankDO::getAccountNo, accountNo)
                 .eq(MerchantBankDO::getDeleted, Boolean.FALSE)
-                .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_PROFIT.getKey()));
+                .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_PROFIT.getKey()));
         // 银行卡必须存在，且是当前账户的银行卡
         if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo()) || !accountNo.equals(bank.getAccountNo())) {
             log.error("账户{}和银行卡{}不匹配", accountNo);
