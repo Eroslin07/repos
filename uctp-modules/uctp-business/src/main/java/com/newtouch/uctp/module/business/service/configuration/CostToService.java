@@ -6,25 +6,25 @@ import com.newtouch.uctp.module.business.controller.admin.configuration.vo.*;
 import java.util.List;
 
 /**
- * @ClassName TaxConfigService
+ * @ClassName CostToService
  * @Author: zhang
- * @Date 2023/5/6.
+ * @Date 2023/5/13
  */
-public interface TaxConfigService {
+public interface CostToService {
     /** 创建配置信息 */
-    public void createTax(TaxRespVO reqVO);
+    public void createCost(CostRespVO reqVO);
 
     /** 获取税率配置分页 */
-    PageResult<TaxRespVO> getTaxPage(TaxReqVO pageVO);
+    PageResult<CostRespVO> getCostPage(CostReqVO pageVO);
 
-    List<TaxRespVO> getAcquire(String type);
+    List<CostRespVO> getCostAcquire(Integer type);
 
     /** 修改税率配置 */
-    public void updateTax(TaxUpdateReqVO reqVO);
+    public void updateCost(CostUpdateReqVO reqVO);
 
     /** 获取税率配置 */
-    public TaxRespVO getTax(Long id);
+    public CostRespVO getCost(Long id);
 
     /** 导出税率配置 */
-    List<TaxExcelVO> exportTax(TaxExportReqVO reqVO);
+    List<CostExcelVO> exportCost(CostExportReqVO reqVO);
 }

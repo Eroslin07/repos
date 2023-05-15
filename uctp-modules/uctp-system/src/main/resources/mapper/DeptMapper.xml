@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.system.dal.mysql.dept.DeptMapper">
+    <resultMap id="deptRespVO" type="com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUserUpdateReqVO">
+        <id property="id" column="dept_id"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <!-- 修改税率配置 -->
+    <select id="updateState" resultMap="deptRespVO"
+            parameterType="com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUserUpdateReqVO">
+        update system_users
+        <set>
+            <if test="reqVO.status != null">status = #{reqVO.status},</if>
+        </set>
+        where dept_id = #{reqVO.id}
+    </select>
+
+</mapper>

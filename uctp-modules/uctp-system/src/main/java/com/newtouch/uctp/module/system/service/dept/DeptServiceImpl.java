@@ -11,6 +11,7 @@ import com.newtouch.uctp.framework.tenant.core.util.TenantUtils;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
+import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUserUpdateReqVO;
 import com.newtouch.uctp.module.system.convert.dept.DeptConvert;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 import com.newtouch.uctp.module.system.dal.dataobject.user.AdminUserDO;
@@ -310,6 +311,12 @@ public class DeptServiceImpl implements DeptService {
 
     public DeptDO selectDept(String tenantId,String type) {
         return deptMapper.selectByTenantId(tenantId,type);
+    }
+
+    /** 根据部门状态修改用户状态 */
+    @Override
+    public void updateState(DeptUserUpdateReqVO reqVO) {
+        deptMapper.updateState(reqVO);
     }
 
 

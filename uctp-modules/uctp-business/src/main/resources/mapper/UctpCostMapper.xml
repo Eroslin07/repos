@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.newtouch.uctp.module.business.dal.mysql.configurationMapper.CostToMapper">
+    <resultMap id="costRespVO" type="com.newtouch.uctp.module.business.controller.admin.configuration.vo.CostRespVO">
+        <id property="id" column="ID"/>
+        <result property="costType" column="COST_TYPE"/>
+        <result property="cost" column="COST"/>
+        <result property="vehicleType" column="VEHICLE_TYPE"/>
+        <result property="effectiveData" column="EFFECTIVE_DATA"/>
+        <result property="expirationData" column="EXPIRATION_DATA"/>
+        <result property="createdBy" column="CREATED_BY"/>
+        <result property="createdTime" column="CREATED_TIME"/>
+        <result property="updateTime" column="UPDATED_TIME"/>
+        <result property="tenantId" column="TENANT_ID"/>
+    </resultMap>
+
+    <sql id="TaxVo">
+        select ID,
+               COST_TYPE,
+               COST,
+               VEHICLE_TYPE,
+               EFFECTIVE_DATA,
+               EXPIRATION_DATA,
+               CREATED_BY,
+               CREATED_TIME,
+               UPDATED_TIME,
+               TENANT_ID
+        from uctp_expense_details
+    </sql>
+
+    <!-- 新增税率信息 -->
+    <select id="createCost"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.CostRespVO"
+            resultMap="costRespVO">
+        insert into uctp_expense_details
+        <set>
+            <if test="reqVO.costType != null and reqVO.costType != ''">COST_TYPE = #{reqVO.costType},</if>
+            <if test="reqVO.cost != null">COST = #{reqVO.cost},</if>
+            <if test="reqVO.vehicleType != null and reqVO.vehicleType != ''">VEHICLE_TYPE = #{reqVO.vehicleType},</if>
+            <if test="reqVO.createdBy != null and reqVO.createdBy != ''">CREATED_BY = (select nickname from system_users where id = #{reqVO.createdBy}),</if>
+            <if test="reqVO.effectiveData != null">EFFECTIVE_DATA = #{reqVO.effectiveData},</if>
+            <if test="reqVO.expirationData != null">EXPIRATION_DATA = #{reqVO.expirationData},</if>
+            <if test="reqVO.tenantId != null">TENANT_ID = #{reqVO.tenantId},</if>
+            CREATED_TIME = sysdate()
+        </set>
+    </select>
+
+    <!-- 查询税率配置 -->
+    <select id="getCostPage" resultMap="costRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.CostReqVO">
+        <include refid="TaxVo"/>
+        <where>
+            <if test="reqVO.costType != null and reqVO.costType != ''">
+                AND COST_TYPE =#{reqVO.costType}
+            </if>
+            <if test="reqVO.createdBy != null and reqVO.createdBy != ''">
+                AND CREATED_BY =#{reqVO.createdBy}
+            </if>
+        </where>
+    </select>
+
+    <!-- 导出税率配置 -->
+    <select id="listCost" resultMap="costRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.CostExportReqVO">
+        <include refid="TaxVo"/>
+    </select>
+
+    <select id="getCostAcquire" resultMap="costRespVO" parameterType="Integer">
+        <include refid="TaxVo"/>
+        where COST_TYPE = #{costType}
+    </select>
+
+    <!-- 获取税率配置详细 -->
+    <select id="getCost" parameterType="Long" resultMap="costRespVO">
+        <include refid="TaxVo"/>
+        where ID = #{id}
+    </select>
+
+    <!-- 修改税率配置 -->
+    <select id="updateCost" resultMap="costRespVO"
+            parameterType="com.newtouch.uctp.module.business.controller.admin.configuration.vo.CostUpdateReqVO">
+        update uctp_expense_details
+        <set>
+            <if test="reqVO.costType != null and reqVO.costType != ''">COST_TYPE = #{reqVO.costType},</if>
+            <if test="reqVO.effectiveData != null">EFFECTIVE_DATA = #{reqVO.effectiveData},</if>
+            <if test="reqVO.expirationData != null">EXPIRATION_DATA = #{reqVO.expirationData},</if>
+            CREATED_TIME = sysdate(),
+            UPDATED_TIME = sysdate()
+        </set>
+        where ID = #{reqVO.id}
+    </select>
+</mapper>
