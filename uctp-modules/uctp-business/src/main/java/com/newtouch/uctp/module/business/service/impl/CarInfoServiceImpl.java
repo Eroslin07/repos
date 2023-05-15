@@ -5,7 +5,6 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -979,6 +978,33 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInvoiceInfoVO.setContractCode(contractCode);
         carInvoiceInfoVO.setContractList(contractList);
         return carInvoiceInfoVO;
+    }
+
+    @Override
+    public Map<String, Object> getPayFailedCreateBpmInfo(Long contractId) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        // 查询有效的收车合同信息            合同类型：1-收车委托合同   2-收车合同  3-卖车委托合同  4-卖车合同
+        ContractDO contractDO = this.contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                .eq(ContractDO::getContractId, contractId).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
+        if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getCarId())) {
+            throw new RuntimeException("获取（契约锁）收车合同【" + contractId + "】的基本信息失败。");
+        }
+        // 根据车辆ID获取车辆主信息
+        CarInfoDO carInfoDO = carInfoMapper.selectById(contractDO.getCarId());
+        // 根据车辆ID获取车辆扩展子表明细信息
+        CarInfoDetailsDO infoDetails = carInfoDetailsMapper.selectOne(CarInfoDetailsDO::getCarId, contractDO.getCarId());
+
+        List<ContractApprovalShowVO> contractList = com.google.common.collect.Lists.newArrayList();
+        contractList.add(this.getContractApprovalShowInfo(contractDO.getCarId(), 1));
+        contractList.add(this.getContractApprovalShowInfo(contractDO.getCarId(), 2));
+
+        result.put("contractInfo", contractList);
+        result.put("sellerName", infoDetails.getSellerName());
+        result.put("bankName", infoDetails.getBankName());
+        result.put("bankCard", infoDetails.getBankCard());
+        result.put("vehicleReceiptAmount", carInfoDO.getVehicleReceiptAmount());
+
+        return result;
     }
 
     @Override

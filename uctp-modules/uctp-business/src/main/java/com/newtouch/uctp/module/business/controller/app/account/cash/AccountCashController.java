@@ -91,7 +91,7 @@ public class AccountCashController {
 
     @PostMapping("/app/transfer")
     @Operation(summary = "商户保证金充值获取银行APP唤醒链接")
-    public CommonResult<AppTransferRespVO> appTransfer(AppTransferReqVO appTransferReqVO) {
+    public CommonResult<AppTransferRespVO> appTransfer(@RequestBody AppTransferReqVO appTransferReqVO) {
         try {
             return CommonResult.success(accountCashService.appTransfer(appTransferReqVO));
         } catch (Exception e) {

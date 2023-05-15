@@ -10,7 +10,7 @@ import com.qiyuesuo.sdk.v2.bean.Employee;
 import com.qiyuesuo.sdk.v2.bean.Seal;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.*;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileOutputStream;
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.List;
  * @author lc
  * @since 2021/2/1 9:28
  */
-//@Slf4j
- @Component
+// @Component
+@Slf4j
 public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, QiyuesuoSaasClient {
     /**
      * 契约锁渠道配置
@@ -44,7 +44,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
      */
     public final void init() {
         doInit();
-//        log.info("[init][配置({}) 初始化完成]", properties);
+        log.info("[init][配置({}) 初始化完成]", properties);
     }
     /**
      * 自定义初始化
@@ -56,7 +56,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         if (properties.equals(this.properties)) {
             return;
         }
-//        log.info("[refresh][配置({})发生变化，重新初始化]", properties);
+        log.info("[refresh][配置({})发生变化，重新初始化]", properties);
         this.properties = prepareProperties(properties);
         // 初始化
         this.init();
@@ -82,10 +82,8 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         try {
             result = doDefaultSend(contract);
         } catch (Throwable ex) {
-            // 打印异常日志
-//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//            log.error("[defaultDraftSend][发起合同草稿异常，contract({}) ]",
 //                    contract, ex);
-            // 封装返回
             return QiyuesuoCommonResult.error(ex);
         }
         return result;
@@ -98,8 +96,8 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
             result = doDefaultDocumentAddByTemplate(request);
         } catch (Throwable ex) {
             // 打印异常日志
-//            log.error("[draft][发起合同草稿异常，contract({}) ]",
-//                    contract, ex);
+//            log.error("[draft][添加合同模板异常，DocumentAddByTemplateRequest({}) ]",
+//                    request, ex);
             // 封装返回
             return QiyuesuoCommonResult.error(ex);
         }

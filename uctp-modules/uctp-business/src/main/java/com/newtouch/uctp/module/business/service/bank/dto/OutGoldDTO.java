@@ -16,7 +16,7 @@ public class OutGoldDTO {
     /**
      * 交易合同号
      */
-    private String contractNo;
+    private Long contractNo;
 
     /**
      * 平台商户虚拟账户号

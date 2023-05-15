@@ -256,7 +256,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
         MerchantBankDO bank = merchantBankService.getOne(new LambdaQueryWrapperX<MerchantBankDO>()
                 .eq(MerchantBankDO::getAccountNo, accountNo)
                 .eq(MerchantBankDO::getDeleted, Boolean.FALSE)
-                .eq(MerchantBankDO::getBusinessType, AccountEnum.BANK_NO_PROFIT.getKey()));
+                .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_PROFIT.getKey()));
         // 银行卡必须存在，且是当前账户的银行卡
         if (bank == null || StringUtils.isBlank(bank.getBankName()) || StringUtils.isBlank(bank.getBankNo()) || !accountNo.equals(bank.getAccountNo())) {
             log.error("账户{}和银行卡{}不匹配", accountNo);
@@ -330,7 +330,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
         this.publishProfitPressentStatusChangeEvent(mp.getId(), ProfitPressentStatusChangeEvent.PRESENT_MARKET_AUDIT_PROCESSING);
 
         // 发起流程
-        String businessKey = this.createProfitPresentProcess(accountNo, mp.getId());
+        String businessKey = this.createProfitPresentProcess(accountNo, mp.getId(), account.getMerchantId());
 
         // 把流程业务ID记录到利润提现中
         mp.setBusinessKey(businessKey);
@@ -1251,7 +1251,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param profitId  提现id
      * @return
      */
-    private String createProfitPresentProcess(String accountNo, Long profitId) {
+    private String createProfitPresentProcess(String accountNo, Long profitId, Long merchantId) {
         Map<String, Object> variables = new HashMap<>();
         Map<String, Object> formDataJson = new HashMap<>();
         Map<String, Object> formMain = new HashMap<>();
@@ -1272,7 +1272,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
             }
         }
 
-        formMain.put("merchantId", SecurityFrameworkUtils.getLoginUser().getTenantId());
+        formMain.put("merchantId", merchantId);
         formMain.put("formDataJson", profitPresentFormDTO);
 
         formDataJson.put("formMain", formMain);
@@ -1342,7 +1342,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param mp
      */
     private void outGold(MerchantProfitDO mp) {
-       // TransactionRecordDO transactionRecord = this.transactionService.outGold(mp.getBankNo(), Math.abs(mp.getProfit()), AccountEnum.TRAN_PROFIT_PRESENT.getKey(), mp.getContractNo());
+        // TransactionRecordDO transactionRecord = this.transactionService.outGold(mp.getBankNo(), Math.abs(mp.getProfit()), AccountEnum.TRAN_PROFIT_PRESENT.getKey(), mp.getContractNo());
 //        if (transactionRecord == null || !ResponseStatusCode.TRAN_SUCCESS.getCode().equals(transactionRecord.getBankResultCode())) {
 //            // 调用银行出金接口失败，TODO 后续改为银行接口调用失败
 //            log.error("调用银行出金接口失败，合同号：{}", mp.getContractNo());

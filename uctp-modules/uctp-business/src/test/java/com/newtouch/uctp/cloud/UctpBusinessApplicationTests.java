@@ -14,6 +14,7 @@ import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.ContractPageRequest;
 import com.qiyuesuo.sdk.v2.response.ContractPageResult;
+import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
 import com.qiyuesuo.sdk.v2.response.SdkResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,8 @@ class UctpBusinessApplicationTests {
         properties.setId(2L);
         properties.setCode(QiyuesuoChannelEnum.DEFAULT.getCode());
 //        ("https://openapi.qiyuesuo.cn","q4xKsNcFI8","qKPK101VGyLsnSqFoLzSCu3JGiMAVO")
-        properties.setAccessKey("4GkEXxwqsb");
-        properties.setAccessSecret("K0ghEZGvmz2sALrE2Zs5WieCDR3jtx");
+        properties.setAccessKey("9oFYG0lOfG");
+        properties.setAccessSecret("PcUsF4Xkmq9JBFjqVlKsnnXWYmRBHr");
         properties.setServerUrl("https://openapi.qiyuesuo.cn");
         client = new DefaultQiyuesuoClient(properties);
         client.init();
@@ -101,7 +102,7 @@ class UctpBusinessApplicationTests {
 //        draftContract.addTemplateParam(new TemplateParam("选择4","□"));
         draftContract.setCategory(new Category(3078145859615985671L));//业务分类配置
         draftContract.setSend(false); // 发起合同
-        draftContract.setCreator(new User("17380123816","MOBILE"));
+//        draftContract.setCreator(new User("17380123816","MOBILE"));
         Contract contract = client.defaultDraftSend(draftContract).getCheckedData();
         System.out.println(contract.getId());
         //2,签字时是丙方是否会自动签章
@@ -111,7 +112,8 @@ class UctpBusinessApplicationTests {
         ArrayList<TemplateParam> params = ListUtil.toList(new TemplateParam("甲方", "罗聪"),
                 new TemplateParam("乙方", "新致"),
                 new TemplateParam("丙方", "平头哥二手车"));
-        client.defaultDocumentAddByTemplate(contract.getId(), 3089851249420403111L, params, "二手车收购协议").getCheckedData();
+        DocumentAddResult result = client.defaultDocumentAddByTemplate(contract.getId(), 3089853271330792185L, params, "二手车收购协议").getCheckedData();
+        System.out.println(result.getDocumentId());
 //        System.out.println(JSONUtil.toJsonStr(docRes.getData()));
         client.defaultContractSend(contract.getId()).getCheckedData();
 //        System.out.println(result1.getData());
@@ -152,6 +154,12 @@ class UctpBusinessApplicationTests {
     void sealAutocreate(){
         Seal seal = client.defaultSealAutoCreate("公章", "12345678902547").getCheckedData();
         System.out.println(JSONUtil.toJsonStr(seal));
+    }
+
+    @Test
+    void contractPage(){
+        ContractPageResult pageResult = client.defaultdeContractPage(3095618200419771208L, "17380123816").getCheckedData();
+        System.out.println(pageResult.getPageUrl());
     }
 
 }

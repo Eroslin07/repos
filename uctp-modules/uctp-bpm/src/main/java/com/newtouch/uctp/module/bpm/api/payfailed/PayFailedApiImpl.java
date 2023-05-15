@@ -29,4 +29,9 @@ public class PayFailedApiImpl implements PayFailedApi {
     public CommonResult<String> createBpm(PayFailedCreateBpmDTO createReqVO) {
         return success(payFailedService.createBpm(createReqVO.getContractId(), BpmDefTypeEnum.SKZH.name(), createReqVO.getVariables()));
     }
+
+    @Override
+    public CommonResult<String> createPayFailedBpm(Long contractId, String failReason) {
+        return success(payFailedService.createBpm(contractId, failReason));
+    }
 }
