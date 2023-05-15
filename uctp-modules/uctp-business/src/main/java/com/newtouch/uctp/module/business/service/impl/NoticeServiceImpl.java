@@ -14,6 +14,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.util.MsgSendUtil;
+import io.seata.spring.annotation.GlobalTransactional;
+import io.seata.tm.api.transaction.Propagation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -175,7 +177,9 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
+   // @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GlobalTransactional(propagation = Propagation.REQUIRES_NEW)
     public String saveTaskNotice(String type, String contentType, String reason, BpmFormResVO bpmFormMainVO) {
         //保存消息时根据类型处理为对应map
         Map<String ,String> map =getContentMaps(type,contentType,reason,bpmFormMainVO);
@@ -223,6 +227,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
+    @GlobalTransactional(propagation = Propagation.REQUIRES_NEW)
     public String saveNotice(Map<String,String> map) {
 
         NoticeInfoDO infoDO=new NoticeInfoDO();
