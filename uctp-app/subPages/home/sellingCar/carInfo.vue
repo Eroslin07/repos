@@ -165,7 +165,7 @@
 					</u-form-item>
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
-							:text="'公允值范围：'+fairValue.value1+'万元-'+fairValue.value2+'万元'" color="#e26e1f"></u--text>
+							:text="'公允值范围：'+$amount.getComdify(fairValue.value1)+'万元-'+$amount.getComdify(fairValue.value2)+'万元'" color="#e26e1f"></u--text>
 						<view v-if="fairStatus == '不通过' || fairStatus == '退回'" style="margin-left: 15px;color: #e26e1f;" @click="showFair = true">
 							公允价值审核-退回 ></view>
 						<view style="margin-left: 15px;color: #e26e1f;">
