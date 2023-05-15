@@ -887,6 +887,7 @@
 				.contract-link{
 					color:#2979FF;
 					text-decoration:underline;
+					font-size:28rpx;
 				}
 				.contrart-info__text {
 					width: 106rpx;
