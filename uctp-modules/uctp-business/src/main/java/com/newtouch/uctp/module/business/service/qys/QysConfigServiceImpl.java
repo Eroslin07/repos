@@ -55,6 +55,8 @@ import com.newtouch.uctp.module.business.enums.QysCallBackType;
 import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.mq.message.UserAuthMessage;
 import com.newtouch.uctp.module.business.mq.producer.UserAuthProducer;
+import com.newtouch.uctp.module.business.service.*;
+import com.newtouch.uctp.module.business.service.account.AccountCashService;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
 import com.newtouch.uctp.module.business.service.CarInfoService;
@@ -742,7 +744,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public void test(Long id, Integer type) throws Exception {
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(1656959683577090050L);
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
         QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
 //        qiyuesuoClient.defaultDraftSend(null);
 //        qiyuesuoSaasClient.saasCompanyAuthPageUrl(null);
@@ -755,7 +757,8 @@ public class QysConfigServiceImpl implements QysConfigService {
             SaaSSealSignAuthUrlResult checkedData = saasClient.saasSealSignAuthUrl("17380123816", 3088322841008022468L, DateUtil.formatDate(authDeadline), "授权静默签章").getCheckedData();
             System.out.println(checkedData.getPageUrl());
         } else if (type.equals(3)) {
-            this.companySign(id);
+            Object checkedData = client.defaultCompanysign(3088393275632066703L).getCheckedData();
+            System.out.println(checkedData);
         } else if (type.equals(4)) {
             SaaSPrivilegeUrlResult checkedData = saasClient.saasPrivilegeUrl(3088322841008022468L, "17380123816", ListUtil.of("CONTRACT")).getCheckedData();
             System.out.println(checkedData);

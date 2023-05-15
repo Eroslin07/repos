@@ -2,10 +2,16 @@ package com.newtouch.uctp.module.business.service.bank.impl;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
+import com.newtouch.uctp.framework.common.exception.ServiceException;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.bpm.api.openinvoice.BpmOpenInvoiceApi;
 import com.newtouch.uctp.module.bpm.api.task.BpmProcessInstanceApi;
 import com.newtouch.uctp.module.business.controller.app.account.vo.DepositsNotificationReqVO;
 import com.newtouch.uctp.module.business.controller.app.account.vo.DepositsNotificationRespVO;
 import com.newtouch.uctp.module.business.enums.bank.*;
+import com.newtouch.uctp.module.business.service.DeptService;
+import com.newtouch.uctp.module.business.service.account.dto.CollectPaymentFailedFormDTO;
+import com.newtouch.uctp.module.business.service.account.dto.ProfitPresentFormDTO;
 import com.newtouch.uctp.module.business.service.bank.dto.OutGoldDTO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +19,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Resource;
@@ -56,12 +64,14 @@ public class TransactionServiceImpl implements TransactionService {
     @Resource
     private BpmProcessInstanceApi bpmProcessInstanceApi;
 
+    @Resource
+    private BpmOpenInvoiceApi bpmOpenInvoiceApi;
+
 
     @Override
     public DepositsNotificationRespVO noticePaymentResult(DepositsNotificationReqVO request) throws BankException {
         DepositsNotificationRespVO respVO = new DepositsNotificationRespVO();
         LocalDateTime now = LocalDateTime.now();
-
 
 
         respVO.setResultHead(DepositsNotificationRespVO.ResultHead.builder()
@@ -215,9 +225,9 @@ public class TransactionServiceImpl implements TransactionService {
             param.setGldYldTypeCd(BankOutGoldType.CHILD_ACCT_OUT_GOLD.getCode());
             param.setAuthrCd(bank.getAuthCode());
             //收款方开户行名称-必填
-            param.setOpnBnkNm(bank.getBankName());
+            param.setOpnBnkNm(BankConstants.OTHER_BANK_NAME);
             //TODO:收款方开户行行号-必填 支付收车款场景问题
-            param.setOpenBrNo(outGoldDTO.getOpenBranchNo());
+            param.setOpenBrNo(BankConstants.OTHER_BANK_NO);
             //TODO:收款方户名-必填
             param.setPyAcctNm(outGoldDTO.getPayeeAcctName());
             //收款方账号-必填
@@ -235,34 +245,42 @@ public class TransactionServiceImpl implements TransactionService {
                 if (!ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
                     if (OutGoldDTO.PayTo.OUT.getCode().equals(outGoldDTO.getTo())) {
                         // 收车款出金业务失败 调用支付流程
-                        // collectPaymentSuccess();
+                        collectPaymentFailed(outGoldDTO);
                     }
                     throw new BankException(requestMessage, response.getStatusMsg());
                 }
-                // 支付成功调起开票流程
-                // collectPaymentSuccess();
+                //支付成功调起开票流程
+                collectPaymentSuccess(outGoldDTO.getContractNo());
             }
             TransactionRecordDO transactionRecordDO = new TransactionRecordDO();
             transactionRecordDO.setTranNo(response.getTransNo());
             transactionRecordDO.setTranType(outGoldDTO.getTranType());
-            transactionRecordDO.setContractNo(outGoldDTO.getContractNo());
+            transactionRecordDO.setContractNo(outGoldDTO.getContractNo().toString());
             transactionRecordDO.setPayerName(bank.getChildAcctNo());
             transactionRecordDO.setPayerBankName(BankConstants.OPEN_BRANCH_NAME);
             transactionRecordDO.setPayerBankAccount(bank.getChildAcctNo());
             transactionRecordDO.setPayeeName(outGoldDTO.getPayeeAcctName());
             transactionRecordDO.setPayeeBankName(outGoldDTO.getOpenBankName());
             transactionRecordDO.setPayeeBankAccount(outGoldDTO.getAccountNo());
-            transactionRecordDO.setApproveAccount("");
+            transactionRecordDO.setApproveAccount(TranApprove.UNRECONCILED.getCode());
             transactionRecordDO.setTranAmount(NumberUtil.binaryToLong(outGoldDTO.getTranAmt()));
             transactionRecordDO.setBankResultCode(response.getStatusCode());
             transactionRecordDO.setTranState(AccountEnum.bankResultCodeMap.get(response.getStatusCode()));
             transactionRecordDO.setBankResultReason(StringUtils.isNotEmpty(response.getStatusMsg()) ? response.getStatusMsg() : AccountEnum.getName(response.getStatusCode()));
             transactionRecordService.save(transactionRecordDO);
-            return Boolean.TRUE;
-        } catch (Exception e) {
+
+        } catch (BankException e) {
             log.error("调用银行接口异常", e);
             throw e;
+        } catch (IllegalArgumentException e) {
+            log.error("调用流程异常: ", e);
+        } catch (ServiceException e) {
+            log.error("创建流程实例异常: ", e);
+        } catch (Exception e) {
+            log.error("服务异常异常: ", e);
+            throw e;
         }
+        return Boolean.TRUE;
     }
 
     @Override
@@ -466,29 +484,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void collectPaymentFailed() {
+    public void collectPaymentFailed(OutGoldDTO outGoldDTO) {
         // 发起流程
         //String businessKey = this.createPaymentFailedProcess(accountNo, mp.getId());
-    }
-
-    @Override
-    public void collectPaymentSuccess() {
-
-    }
-
-    /**
-     * 发起提现流程
-     *
-     * @param accountNo 账户
-     * @param profitId  提现id
-     * @return
-     */
-    private String createPaymentFailedProcess(String accountNo, Long profitId) {
 //        Map<String, Object> variables = new HashMap<>();
 //        Map<String, Object> formDataJson = new HashMap<>();
 //        Map<String, Object> formMain = new HashMap<>();
 //
-//        ProfitPresentFormDTO profitPresentFormDTO = this.merchantProfitMapper.selectProfitById(profitId);
+//        CollectPaymentFailedFormDTO profitPresentFormDTO = this.merchantProfitMapper.selectProfitById(profitId);
 //        // 处理数据
 //        if (profitPresentFormDTO != null) {
 //            profitPresentFormDTO.setTelNo("122222");
@@ -525,8 +528,20 @@ public class TransactionServiceImpl implements TransactionService {
 //            throw exception(ACC_PRESENT_ERROR);
 //        }
 //        return r.getData();
-        return null;
     }
+
+    @Override
+    public void collectPaymentSuccess(Long contractNo) {
+        CommonResult<String> result = null;
+        try {
+            result = bpmOpenInvoiceApi.createOpenInvoiceBpm(contractNo, "SCKP");
+
+            //return result;
+        } catch (Exception e) {
+            log.error("收车款支付成功->开发票异常: ", e.getMessage());
+        }
+    }
+
 
     private String printExceptionMessage(Exception e) {
         StringWriter stringWriter = new StringWriter();
