@@ -25,6 +25,11 @@ export const getTaxPageApi = async (params) => {
   return await request.get({ url: '/uctp/configuration/tax-config/page', params })
 }
 
+// 获取所有税率
+export const getAcquireApi = async (type: String) => {
+  return await request.get({ url: '/uctp/configuration/tax-config/acquire?type=' + type })
+}
+
 // 查询税费详情
 export const getTaxApi = async (id: number) => {
   return await request.get({ url: '/uctp/configuration/tax-config/get?id=' + id })

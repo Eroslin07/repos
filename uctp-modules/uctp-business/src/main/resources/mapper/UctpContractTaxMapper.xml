@@ -65,6 +65,11 @@
         <include refid="TaxVo"/>
     </select>
 
+    <select id="getAcquire" resultMap="taxRespVO" parameterType="String">
+        <include refid="TaxVo"/>
+        where TAX_RATE_TYPE = #{taxType}
+    </select>
+
     <!-- 获取税率配置详细 -->
     <select id="getTax" parameterType="Long" resultMap="taxRespVO">
         select ID,

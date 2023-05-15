@@ -17,6 +17,11 @@ export interface DeptPageReqVO {
   status?: number
 }
 
+export interface DeptUserUpdateReqVO {
+  id?: number
+  status?: number
+}
+
 // 查询部门（精简)列表
 export const listSimpleDeptApi = async () => {
   return await request.get({ url: '/system/dept/list-all-simple' })
@@ -45,6 +50,11 @@ export const updateDeptApi = async (params: DeptVO) => {
 // 删除部门
 export const deleteDeptApi = async (id: number) => {
   return await request.delete({ url: '/system/dept/delete?id=' + id })
+}
+
+// 根据部门状态修改用户状态
+export const updateDeptUsersApi = async (params: DeptUserUpdateReqVO) => {
+  return await request.put({ url: '/system/dept/update_state', data: params })
 }
 
 // 企业认证详情

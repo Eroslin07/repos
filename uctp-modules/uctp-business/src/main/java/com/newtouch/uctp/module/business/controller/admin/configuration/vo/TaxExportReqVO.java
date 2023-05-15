@@ -1,7 +1,5 @@
 package com.newtouch.uctp.module.business.controller.admin.configuration.vo;
 
-import com.newtouch.uctp.framework.excel.core.annotations.DictFormat;
-import com.newtouch.uctp.module.system.enums.DictTypeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,7 +20,6 @@ public class TaxExportReqVO {
     private Long id;
 
     @Schema(description = "税费类型")
-    @DictFormat(DictTypeConstants.TAX_TYPE)
     private String taxType;
 
     @Schema(description = "税率（%）")

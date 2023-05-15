@@ -42,6 +42,14 @@ public class TaxConfigController {
         return success(true);
     }
 
+    @GetMapping("/acquire")
+    @Operation(summary = "获取税率配置信息")
+    @Parameter(name = "type")
+    public CommonResult<List<TaxRespVO>> getAcquire(@RequestParam("type") String type) {
+        List<TaxRespVO> acquire = taxConfigService.getAcquire(type);
+        return success(acquire);
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获取税率配置分页")
     public CommonResult<PageResult<TaxRespVO>> getTax(TaxReqVO pageVO) {

@@ -2,12 +2,14 @@ package com.newtouch.uctp.module.system.dal.mysql.dept;
 
 import java.util.List;
 
+import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUserUpdateReqVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DeptMapper extends BaseMapperX<DeptDO> {
@@ -57,4 +59,7 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
         return selectList(new LambdaQueryWrapperX<DeptDO>()
                 .eqIfPresent(DeptDO::getName,name));
     }
+
+    /** 修改税率配置信息 */
+    void updateState(@Param("reqVO") DeptUserUpdateReqVO reqVO);
 }

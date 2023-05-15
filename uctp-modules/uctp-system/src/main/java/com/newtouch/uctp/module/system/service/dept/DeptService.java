@@ -5,6 +5,7 @@ import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
+import com.newtouch.uctp.module.system.controller.admin.dept.vo.dept.DeptUserUpdateReqVO;
 import com.newtouch.uctp.module.system.dal.dataobject.dept.DeptDO;
 
 import java.util.Collection;
@@ -136,6 +137,8 @@ public interface DeptService {
      */
     DeptDO selectDept(String tenantId,String type);
 
+    /** 根据部门状态修改用户状态 */
+    public void updateState(DeptUserUpdateReqVO reqVO);
 
     DeptDO selectByParent(String tenantId,Long type);
 

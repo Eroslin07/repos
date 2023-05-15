@@ -93,4 +93,10 @@ public class DeptController {
         return success(DeptConvert.INSTANCE.convert(deptService.getDeptByName(name)));
     }
 
+    @PutMapping("/update_state")
+    @Operation(summary = "根据部门状态修改用户状态")
+    public CommonResult<Boolean> updatePost(@Valid @RequestBody DeptUserUpdateReqVO reqVO) {
+        deptService.updateState(reqVO);
+        return success(true);
+    }
 }

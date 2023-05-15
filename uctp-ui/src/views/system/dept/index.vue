@@ -174,6 +174,7 @@ const submitForm = async () => {
       // 提交请求
       try {
         const data = unref(formRef)?.formModel as DeptApi.DeptVO
+        console.log(data)
         if (actionType.value === 'create') {
           await DeptApi.createDeptApi(data)
           message.success(t('common.createSuccess'))
@@ -181,7 +182,15 @@ const submitForm = async () => {
           await DeptApi.updateDeptApi(data)
           message.success(t('common.updateSuccess'))
         }
-        dialogVisible.value = false
+        // 将部门ID与状态传给后端
+        if (data.status === 1) {
+          var state = []
+          state.push(data.id, data.status)
+          const dataTo = unref(formRef)?.formModel as DeptApi.DeptUserUpdateReqVO
+          console.log(dataTo)
+          await DeptApi.updateDeptUsersApi(dataTo)
+          dialogVisible.value = false
+        }
       } finally {
         actionLoading.value = false
         await getTree()

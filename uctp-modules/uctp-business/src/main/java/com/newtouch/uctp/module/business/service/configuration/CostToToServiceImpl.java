@@ -6,65 +6,67 @@ import com.newtouch.uctp.framework.mybatis.core.util.MyBatisUtils;
 import com.newtouch.uctp.framework.security.core.LoginUser;
 import com.newtouch.uctp.framework.security.core.util.SecurityFrameworkUtils;
 import com.newtouch.uctp.module.business.controller.admin.configuration.vo.*;
-import com.newtouch.uctp.module.business.dal.mysql.configurationMapper.TaxMapper;
+import com.newtouch.uctp.module.business.dal.mysql.configurationMapper.CostToMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
 /**
- * @ClassName TaxConfigService
+ * @ClassName CostToToServiceImpl
  * @Author: zhang
- * @Date 2023/5/6.
+ * @Date 2023/5/14
  */
 @Slf4j
 @Transactional(readOnly = false)
 @Service
-public class TaxConfigServiceImpl implements TaxConfigService{
+public class CostToToServiceImpl implements CostToService {
     @Resource
-    private TaxMapper taxMapper;
+    private CostToMapper costToMapper;
 
     /** 创建配置信息 */
     @Override
-    public void createTax(TaxRespVO reqVO) {
+    public void createCost(CostRespVO reqVO) {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         Long tenantId = loginUser.getTenantId();
         reqVO.setTenantId(tenantId);
-        reqVO.setBusinessId(loginUser.getId());
-        taxMapper.createTax(reqVO);
+        String createdBy = String.valueOf(loginUser.getId());
+        reqVO.setCreatedBy(createdBy);
+        costToMapper.createCost(reqVO);
     }
 
     /** 获取税率配置分页 */
     @Override
-    public PageResult<TaxRespVO> getTaxPage(TaxReqVO pageVO) {
-        Page<TaxRespVO> page = MyBatisUtils.buildPage(pageVO);
-        taxMapper.getTaxPage(page, pageVO);
+    public PageResult<CostRespVO> getCostPage(CostReqVO pageVO) {
+        Page<CostRespVO> page = MyBatisUtils.buildPage(pageVO);
+        costToMapper.getCostPage(page, pageVO);
         return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
     @Override
-    public List<TaxRespVO> getAcquire(String type) {
-        return taxMapper.getAcquire(type);
+    public List<CostRespVO> getCostAcquire(Integer type) {
+        return costToMapper.getCostAcquire(type);
     }
 
     /** 修改税率配置 */
     @Override
-    public void updateTax(TaxUpdateReqVO reqVO) {
-        taxMapper.updateTax(reqVO);
+    public void updateCost(CostUpdateReqVO reqVO) {
+        costToMapper.updateCost(reqVO);
     }
 
     /** 获取税率配置 */
     @Override
-    public TaxRespVO getTax(Long id) {
-        return taxMapper.getTax(id);
+    public CostRespVO getCost(Long id) {
+        return costToMapper.getCost(id);
     }
 
     /** 导出税率配置 */
     @Override
-    public List<TaxExcelVO> exportTax(TaxExportReqVO reqVO) {
-        return taxMapper.listTax(reqVO);
+    public List<CostExcelVO> exportCost(CostExportReqVO reqVO) {
+        return costToMapper.listCost(reqVO);
     }
 }

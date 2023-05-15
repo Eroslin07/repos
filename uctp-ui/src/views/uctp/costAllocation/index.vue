@@ -11,20 +11,20 @@
           type="warning"
           title="下载"
           preIcon="ep:download"
-          @click="exportList('税率配置.xls')"
+          @click="exportList('费用明细配置.xls')"
         />
       </template>
       <template #actionbtns_default="{ row }">
         <!-- 操作：修改 -->
         <XTextButton
-          v-hasPermi="['uctp:tax:update']"
+          v-hasPermi="['uctp:cost:update']"
           :title="t('action.edit')"
           preIcon="ep:edit"
           @click="handleUpdate(row.id)"
         />
         <!-- 操作：详情 -->
         <XTextButton
-          v-hasPermi="['uctp:tax:query']"
+          v-hasPermi="['uctp:cost:query']"
           :title="t('action.detail')"
           preIcon="ep:view"
           @click="handleDetail(row.id)"
@@ -33,7 +33,7 @@
     </XTable>
   </ContentWrap>
   <!-- 弹窗 -->
-  <XModal id="taxModel" v-model="dialogVisible" :title="dialogTitle">
+  <XModal id="costModel" v-model="dialogVisible" :title="dialogTitle">
     <!-- 对话框(添加 / 修改) -->
     <Form
       v-if="['create', 'update'].includes(actionType)"
@@ -65,19 +65,19 @@
     </template>
   </XModal>
 </template>
-<script lang="ts" name="Tax" setup>
+<script lang="ts" name="Cost" setup>
 import type { FormExpose } from '@/components/Form'
 // 业务相关的 import
-import { allSchemas } from './Tax.data'
-import * as TaxApi from '@/api/uctp/taxConfig'
+import { allSchemas } from './cost.data'
+import * as CostApi from '@/api/uctp/costAllocation'
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 // 列表相关的变量
 const [registerTable, { reload, exportList }] = useXTable({
   allSchemas: allSchemas,
-  getListApi: TaxApi.getTaxPageApi, // 查詢数据的 API
-  exportListApi: TaxApi.exportTaxApi // 导出数据的 API
+  getListApi: CostApi.getCostPageApi, // 查詢数据的 API
+  exportListApi: CostApi.exportCostApi // 导出数据的 API
 })
 // 弹窗相关的变量
 const dialogVisible = ref(false) // 是否显示弹出层
@@ -103,7 +103,7 @@ const handleCreate = () => {
 const handleUpdate = async (rowId: number) => {
   setDialogTile('update')
   // 设置数据
-  const res = await TaxApi.getTaxApi(rowId)
+  const res = await CostApi.getCostApi(rowId)
   unref(formRef)?.setValues(res)
 }
 
@@ -111,7 +111,7 @@ const handleUpdate = async (rowId: number) => {
 const handleDetail = async (rowId: number) => {
   setDialogTile('detail')
   // 设置数据
-  const res = await TaxApi.getTaxApi(rowId)
+  const res = await CostApi.getCostApi(rowId)
   detailData.value = res
 }
 
@@ -124,15 +124,10 @@ const submitForm = async () => {
       actionLoading.value = true
       // 提交请求
       try {
-        const data = unref(formRef)?.formModel as TaxApi.TaxVO
-        // 将税率转换为百分比
-        let taxRate = ''
-        taxRate = (data.taxRate * 1).toFixed(2) + '%'
-        data.taxRate = taxRate
-
-        // 判断日期是否重复
-        console.log(data.taxType)
-        const res = await TaxApi.getAcquireApi(data.taxType)
+        const data = unref(formRef)?.formModel as CostApi.CostVO
+        // 判断当前状态日期是否重复
+        console.log(data.costType)
+        const res = await CostApi.getAcquireApi(data.costType)
         console.log(res)
         let startTimeArr = res.map((element) => element.effectiveData)
         let endTimeArr = res.map((element) => element.expirationData)
@@ -152,14 +147,14 @@ const submitForm = async () => {
           }
         }
         if (result > 0) {
-          message.error('税率设置日期在有效期内，请重新设置或修改日期')
+          message.error('费用设置日期在有效期内，请重新设置或修改日期')
           return
         }
         if (actionType.value === 'create') {
-          await TaxApi.createTaxApi(data)
+          await CostApi.createCostApi(data)
           message.success(t('common.createSuccess'))
         } else {
-          await TaxApi.updateTaxApi(data)
+          await CostApi.updateCostApi(data)
           message.success(t('common.updateSuccess'))
         }
         dialogVisible.value = false
