@@ -1486,16 +1486,16 @@
 					this.chebi = false;
 				}
 				this.$refs.carForm.validate().then(res => {
-					if (this.chebi == false) {
-						this.handleDraft('step');
-					}
-					// if (this.modelId) {
-					// 	if (this.chebi == false) {
-					// 		this.getFairValue();
-					// 	}
-					// } else {
-					// 	this.$modal.msg("请选择车型");
+					// if (this.chebi == false) {
+					// 	this.handleDraft('step');
 					// }
+					if (this.modelId) {
+						if (this.chebi == false) {
+							this.getFairValue();
+						}
+					} else {
+						this.$modal.msg("请选择车型");
+					}
 				}).catch((error) => {
 					let key = '.' + error[0].field;
 					const query = uni.createSelectorQuery()

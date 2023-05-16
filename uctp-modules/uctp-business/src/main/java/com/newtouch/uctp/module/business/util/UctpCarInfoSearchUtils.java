@@ -62,11 +62,11 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("\\&modelId=" + modelId);
-        urlParam.append("\\&carNo=" + carNo);
-        urlParam.append("\\&mile=" + mile);
-        urlParam.append("\\&regDate=" + regDate);
-        urlParam.append("\\&channel=" + channel);
+        urlParam.append("&modelId=" + modelId);
+        urlParam.append("&carNo=" + carNo);
+        urlParam.append("&mile=" + mile);
+        urlParam.append("&regDate=" + regDate);
+        urlParam.append("&channel=" + channel);
 //        urlParam.append("&allLevel=" + allLevel);
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -163,9 +163,9 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?token=" + token);
-        urlParam.append("\\&fromVersion=" + fromVersion);
-        urlParam.append("\\&simple=" + simple);
-        urlParam.append("\\&apiVersion=" + apiVersion);
+        urlParam.append("&fromVersion=" + fromVersion);
+        urlParam.append("&simple=" + simple);
+        urlParam.append("&apiVersion=" + apiVersion);
         String getUrl = urlParam.toString();
         // 创建httpClient实例对象
         HttpClient httpClient = new HttpClient();
@@ -198,7 +198,7 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("\\&channel=" + channel);
+        urlParam.append("&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -266,7 +266,7 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("\\&channel=" + channel);
+        urlParam.append("&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -337,8 +337,8 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("\\&brandId=" + brandId);
-        urlParam.append("\\&channel=" + channel);
+        urlParam.append("&brandId=" + brandId);
+        urlParam.append("&channel=" + channel);
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
         String getUrl = null;
@@ -406,8 +406,8 @@ public class UctpCarInfoSearchUtils {
         }
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("\\&seriesId=" + seriesId);
-        urlParam.append("\\&channel=" + channel);
+        urlParam.append("&seriesId=" + seriesId);
+        urlParam.append("&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -483,6 +483,6 @@ public class UctpCarInfoSearchUtils {
 //        System.out.println(map.toString());
 
 
-        System.out.println("\\&modelId");
+        System.out.println("&modelId");
     }
 }
