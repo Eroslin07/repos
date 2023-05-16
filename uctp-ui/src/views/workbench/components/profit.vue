@@ -17,9 +17,17 @@
             <el-col :span="2" class="bg-yell">手机号：</el-col>
             <el-col :span="4">{{ mainValue.formDataJson.telNo || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">提取金额： </el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.amount || '暂无数据' }}</el-col>
+            <el-col :span="4">{{
+              mainValue.formDataJson.amount
+                ? moneyFormat(mainValue.formDataJson.amount) + '元'
+                : '0.00元'
+            }}</el-col>
             <el-col :span="2" class="bg-yell">剩余金额： </el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.balanceAmount || '暂无数据' }}</el-col>
+            <el-col :span="4">{{
+              mainValue.formDataJson.balanceAmount
+                ? moneyFormat(mainValue.formDataJson.balanceAmount) + '元'
+                : '0.00元'
+            }}</el-col>
           </el-row>
           <el-row>
             <el-col :span="2" class="bg-yell">收款账号： </el-col>
@@ -94,9 +102,14 @@ const props = defineProps({
   type: propTypes.bool.def(undefined)
 })
 console.log(props)
+const moneyFormat = (num) => {
+  return Number(num)
+    .toFixed(2)
+    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+}
 // 详情
 let mainValue = reactive({
-  formDataJson: { idCardUrl: [{ url: '' }], businessLicense: [{ url: '' }] }
+  formDataJson: { invoiceFiles: [{ fileUrl: '' }] }
 })
 
 nextTick(() => {

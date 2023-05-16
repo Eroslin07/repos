@@ -187,9 +187,9 @@ const form = ref<any>({})
 const dialogSubmit = () => {
   if (!form.value.reason) return message.error('请输入审批意见')
   subLoading.value = true
-  if (props.status == 'SKZH' || props.status == 'LRTX') {
+  if ((props.status == 'SKZH' || props.status == 'LRTX') && dialogText.value == '不同意') {
     let params = {
-      id: baseInfoData.data.taskId,
+      taskId: baseInfoData.data.taskId,
       reason: form.value.reason
     }
     detailAPI
