@@ -325,21 +325,21 @@
 						<u-form-item label="租金相关" :required="true" prop="vehicle">
 							<view class="vehicle"></view>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.vehicle = 'vehicleA'">
 							<u-radio name="vehicleA"></u-radio>
-							<text @click="feesForm.vehicle = 'vehicleA'">“轿车200元/天”</text>
+							<text>“轿车200元/天”</text>
 						</u-form-item>
-						<u-form-item borderBottom style="display:flex">
+						<u-form-item borderBottom style="display:flex" @click="feesForm.vehicle = 'vehicleB'">
 							<u-radio name="vehicleB"></u-radio>
-							<text @click="feesForm.vehicle = 'vehicleB'">“商务车400元/天”</text>
+							<text>“商务车400元/天”</text>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.vehicle = 'vehicleC'">
 							<u-radio name="vehicleC"></u-radio>
-							<text @click="feesForm.vehicle = 'vehicleC'">“豪车1000元/天”(本协议第二条车辆价款在50万(含)以上)</text>
+							<text>“豪车1000元/天”(本协议第二条车辆价款在50万(含)以上)</text>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.vehicle = 'vehicleD'">
 							<u-radio name="vehicleD"></u-radio>
-							<text @click="feesForm.vehicle = 'vehicleD'">平台无需承担</text>
+							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 
@@ -347,17 +347,17 @@
 						<u-form-item label="交易过户费" :required="true" prop="transfer">
 							<view class="transfer"></view>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.transfer = 'transferA'">
 							<u-radio name="transferA"></u-radio>
-							<text @click="feesForm.transfer = 'transferA'">销售车辆首次交易过户费(平台过户买方指定过户人)</text>
+							<text>销售车辆首次交易过户费(平台过户买方指定过户人)</text>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.transfer = 'transferB'">
 							<u-radio name="transferB"></u-radio>
-							<text @click="feesForm.transfer = 'transferB'">销售车辆二次交易过户费(该车辆现户主过户车商指定过户人)</text>
+							<text>销售车辆二次交易过户费(该车辆现户主过户车商指定过户人)</text>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.transfer = 'transferC'">
 							<u-radio name="transferC"></u-radio>
-							<text @click="feesForm.transfer = 'transferC'">平台无需承担</text>
+							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 
@@ -365,13 +365,13 @@
 						<u-form-item label="车辆折损费用" :required="true" prop="loss">
 							<view class="loss"></view>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.loss = 'lossA'">
 							<u-radio name="lossA"></u-radio>
-							<text @click="feesForm.loss = 'lossA'">依据本协议第二条车辆价款的5%支付车辆折损费用</text>
+							<text>依据本协议第二条车辆价款的5%支付车辆折损费用</text>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.loss = 'lossB'">
 							<u-radio name="lossB"></u-radio>
-							<text @click="feesForm.loss = 'lossB'">平台无需承担</text>
+							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 
@@ -379,13 +379,13 @@
 						<u-form-item label="第三方检测费用" :required="true" prop="testing">
 							<view class="testing"></view>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.testing = 'testingA'">
 							<u-radio name="testingA"></u-radio>
-							<text @click="feesForm.testing = 'testingA'">全车检测费用</text>
+							<text>全车检测费用</text>
 						</u-form-item>
-						<u-form-item borderBottom>
+						<u-form-item borderBottom @click="feesForm.testing = 'testingB'">
 							<u-radio name="testingB"></u-radio>
-							<text @click="feesForm.testing = 'testingB'">平台无需承担</text>
+							<text>平台无需承担</text>
 						</u-form-item>
 					</u-radio-group>
 					<!-- <u-form-item label="其他"></u-form-item> -->
