@@ -134,8 +134,8 @@
 			<view class="contrart-info" v-for="(contract,index) in carInfoAll.contractCardVOS" :key="index">
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
-					<text class="contract-link" @click="handleContact(contract.url)">{{contract.contractDO.contractName}}合同</text>
-					<text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==1) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==3)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
+					<text class="contract-link" @click="handleContact(contract.url)">{{contract.contractDO.contractName}}</text>
+					<!-- <text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==1) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==3)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text> -->
 				</view>
 				<view v-else class="flex contrart-info__row">
 					<view >
@@ -146,8 +146,9 @@
 							<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
 						</view> -->
 					</view>
-					<!-- <text class="button" @click="handleCancle(contract.contractDO.contractId)">作废</text> -->
+					<text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==2) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==4)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
+				
 			</view>
 			<view v-if="!carInfoAll.contractCardVOS.length" class="empty-info">
 				<text>暂无合同</text>
@@ -168,20 +169,20 @@
 				class="contrart-info contrart-bottom">
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
-					<view class="contart-info__">
+					<view class=" contart-info__" style="font-size:26rpx;">
 						<text class="contrart-info__text">作废文件</text>
 						<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 				</view>
 				<view v-else class="flex">
-					<view class="">
+					<view class="" style="font-size:26rpx;">
 						<text class="contrart-info__text">作废文件</text>
 						<text @click="handleContact(contract.url)">{{contract.contractDO.contractName}}（已作废）</text>
 					</view>
 					<view class="flex selInfo">
-						<text
+						<!-- <text
 							@click="handleOwnerInfo(contract.contractDO.contractType)">{{contract.contractDO.contractType==2?'卖家信息（第三方收款）':'买家信息'}}</text>
-						<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
+						<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon> -->
 					</view>
 				</view>
 			</view>
@@ -897,7 +898,7 @@
 					line-height: 32rpx;
 					text-align: center;
 					color: #FFFFFF;
-					font-size: 20rpx;
+					font-size: 24rpx;
 					margin-right: 16rpx;
 				}
 			}
