@@ -38,4 +38,9 @@ public class MerchantMoneyApiImpl implements MerchantMoneyApi {
     public CommonResult<Boolean> deductionCash(Long contractId) {
         return success(merchantMoneyService.deductionCash(contractId));
     }
+
+    @Override
+    public CommonResult<Boolean> recorded(Long carId) {
+        return success(merchantMoneyService.recorded(carId));
+    }
 }
