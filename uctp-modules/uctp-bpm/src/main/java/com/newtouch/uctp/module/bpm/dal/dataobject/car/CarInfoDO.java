@@ -1,10 +1,12 @@
 package com.newtouch.uctp.module.bpm.dal.dataobject.car;
 
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.newtouch.uctp.framework.tenant.core.db.TenantBaseDO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -27,6 +29,7 @@ public class CarInfoDO extends TenantBaseDO {
     /**
      * 车辆主表id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     /**
@@ -52,6 +55,11 @@ public class CarInfoDO extends TenantBaseDO {
      * 品牌/车型
      */
     private String model;
+
+    /**
+     * 车型id
+     */
+    private String modelId;
 
     /**
      * 车牌号
@@ -114,6 +122,15 @@ public class CarInfoDO extends TenantBaseDO {
      * 卖车方式
      */
     private Integer sellType;
+
+    /**
+     * 定金
+     */
+    private BigDecimal deposit;
+    /**
+     * 尾款
+     */
+    private BigDecimal balancePayment;
     /**
      * 使用年限至
      */
@@ -153,4 +170,9 @@ public class CarInfoDO extends TenantBaseDO {
      * 卖车公允价值
      */
     private String sellCarFair;
+
+    /**
+     * pos机主表id
+     */
+    private String posId;
 }
