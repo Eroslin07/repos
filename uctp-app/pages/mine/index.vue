@@ -139,8 +139,6 @@
 			},
 			// pos机设备
 			handleToPos() {
-				this.$modal.msg("pos机设备管理开发中");
-				return
 				this.$tab.navigateTo('/subPages/mine/pos/index')
 			},
 			// 门店管理

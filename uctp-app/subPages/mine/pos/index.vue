@@ -11,9 +11,8 @@
 				<u-swipe-action-item v-for="item in list" :key="item.id" :options="options1" @click="removeItem(item)">
 					<view class="user flex" @click="handleClick(item)">
 						<view>
-							<text :class="item.registStatus == 0 ? 'ren' : 'wei'">认</text>
-							<text>{{ item.name }}</text>
-							<text>{{ item.phone }}</text>
+							<text>{{ item.posName }}</text>
+							<text>{{ item.posId }}</text>
 						</view>
 						<view>
 							<text v-if="item.status == 0" class="zhengchang">正常</text>
@@ -27,7 +26,7 @@
 </template>
 
 <script>
-	import { getAccountList, deleteAccount } from "@/api/system/mine"
+	import { getPosList, deletePos } from "@/api/system/mine"
 	export default {
 		data() {
 			return {
@@ -62,7 +61,7 @@
 			},
 			// 获取pos机列表列表
 			getList() {
-				getAccountList({ deptId: this.$store.state.user.deptId }).then((res) => {
+				getPosList({ deptId: this.$store.state.user.deptId }).then((res) => {
 					this.list = res.data
 					uni.stopPullDownRefresh()
 				})
@@ -72,13 +71,13 @@
 				this.$tab.navigateTo(`/subPages/mine/pos/addPos?type=add`)
 			},
 			handleClick(item) {
-				// 修改新增pos机设备
+				// 修改pos机设备
 				this.$tab.navigateTo(`/subPages/mine/pos/addPos?type=edit&data=`+encodeURIComponent(JSON.stringify(item)))
 			},
 			// 删除
 			removeItem(item) {
 				this.$modal.confirm('确定删除该POS机设备吗？').then(() => {
-					deleteAccount({ userId: item.id }).then((res) => {
+					deletePos({ userId: item.id }).then((res) => {
 						this.$modal.msg("删除成功")
 						this.getList();
 					})
