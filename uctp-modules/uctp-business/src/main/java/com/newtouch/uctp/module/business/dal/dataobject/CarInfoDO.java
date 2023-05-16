@@ -171,5 +171,8 @@ public class CarInfoDO extends TenantBaseDO {
      */
     private String sellCarFair;
 
-
+    /**
+     * pos机主表id
+     */
+    private String posId;
 }
