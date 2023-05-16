@@ -233,8 +233,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public AdminUserDO selectByMobileAndStatus(String mobile,int status) {
-        return userMapper.selectByMobileAndStatus(mobile,status);
+    public AdminUserDO selectByMobileAndStatus(String mobile) {
+        return userMapper.selectByMobileAndStatus(mobile);
     }
 
     @Override

@@ -120,7 +120,7 @@ public interface AdminUserService {
      * @param mobile
      * @return
      */
-    AdminUserDO selectByMobileAndStatus(String mobile,int status);
+    AdminUserDO selectByMobileAndStatus(String mobile);
 
 
     List<AdminUserDO> selectIsExist(String mobile,Integer status);

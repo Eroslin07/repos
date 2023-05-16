@@ -33,8 +33,8 @@ public interface AdminUserMapper extends BaseMapperX<AdminUserDO> {
                 .eqIfPresent(AdminUserDO::getMobile, mobile));
     }
 
-    default AdminUserDO selectByMobileAndStatus(String mobile,int status) {
-        return selectOne(AdminUserDO::getMobile, mobile,AdminUserDO::getStatus,status);
+    default AdminUserDO selectByMobileAndStatus(String mobile) {
+        return selectOne(AdminUserDO::getMobile, mobile);
     }
 
     default List<AdminUserDO> selectIsExist(String mobile, Integer status){

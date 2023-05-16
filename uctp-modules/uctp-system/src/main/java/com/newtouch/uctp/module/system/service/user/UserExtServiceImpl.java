@@ -37,8 +37,8 @@ public class UserExtServiceImpl implements UserExtService {
     }
 
     @Override
-    public List<UserExtDO> selectByUserId(Long IDCard) {
-        return userExtMapper.selectByUserId(IDCard);
+    public List<UserExtDO> selectByUserId(Long userId) {
+        return userExtMapper.selectByUserId(userId);
     }
 
     @Override
