@@ -26,4 +26,12 @@ public interface MerchantMoneyService {
      * @return 成功、失败标志
      */
     Boolean deductionCash(Long contractId);
+
+    /**
+     * 利润划入(分账)
+     *
+     * @param carId            车辆ID
+     * @return 利润明细结果
+     */
+    Boolean recorded(Long carId);
 }

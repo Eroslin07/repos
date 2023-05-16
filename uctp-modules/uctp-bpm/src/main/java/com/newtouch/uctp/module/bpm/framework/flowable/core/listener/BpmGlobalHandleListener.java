@@ -8,8 +8,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
-import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import org.flowable.bpmn.model.ExtensionAttribute;
 import org.flowable.bpmn.model.ExtensionElement;
 import org.flowable.bpmn.model.FlowElement;
@@ -45,6 +43,8 @@ import com.newtouch.uctp.module.business.api.account.dto.ProfitPresentAuditDTO;
 import com.newtouch.uctp.module.business.api.carInfo.CarInfoApi;
 import com.newtouch.uctp.module.business.api.carinfodetails.CarInfoDetailsApi;
 import com.newtouch.uctp.module.business.api.contract.MerchantMoneyApi;
+import com.newtouch.uctp.module.business.api.file.notice.NoticeApi;
+import com.newtouch.uctp.module.business.api.file.notice.vo.BpmFormResVO;
 import com.newtouch.uctp.module.business.api.qys.QysConfigApi;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 
@@ -270,6 +270,7 @@ public class BpmGlobalHandleListener {
             // 1.卖车过户成功，修改车辆状态为分账
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SOLD.value(),CarStatus.SOLD_B.value(),CarStatus.SOLD_B_A.value(),"卖车过户待分账",reason);
             //TODO:调用分账接口
+            merchantMoneyApi.recorded(bpmFormMainVO.getThirdId());
             carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.SOLD.value(),CarStatus.SOLD_C.value(),CarStatus.SOLD_C_A.value(),"卖车过户已分账",reason);
         }
 
