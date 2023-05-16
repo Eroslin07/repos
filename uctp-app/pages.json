@@ -274,6 +274,18 @@
 				"navigationBarTitleText": "新增员工"
 			}
 		}, {
+			"path": "mine/pos/index",
+			"style": {
+				"navigationBarTitleText": "POS机设备",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		}, {
+			"path": "mine/pos/addPos",
+			"style": {
+				"navigationBarTitleText": "新增POS机"
+			}
+		}, {
 			"path": "mine/store/index",
 			"style": {
 				"navigationBarTitleText": "门店管理"

@@ -59,6 +59,13 @@
 						<view>员工管理</view>
 					</view>
 				</view>
+				<view class="list-cell list-cell-arrow" @click="handleToPos" v-if="type=='1'">
+					<view class="menu-item-box">
+						<image src="../../static/images/mine/staff.png"
+							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
+						<view>POS机设备</view>
+					</view>
+				</view>
 				<!-- <view class="list-cell list-cell-arrow" @click="handleToStore">
 					<view class="menu-item-box">
 						<view class="iconfont icon-user menu-icon"></view>
@@ -129,6 +136,12 @@
 			// 员工管理
 			handleToStaff() {
 				this.$tab.navigateTo('/subPages/mine/staff/index')
+			},
+			// pos机设备
+			handleToPos() {
+				this.$modal.msg("pos机设备管理开发中");
+				return
+				this.$tab.navigateTo('/subPages/mine/pos/index')
 			},
 			// 门店管理
 			handleToStore() {
