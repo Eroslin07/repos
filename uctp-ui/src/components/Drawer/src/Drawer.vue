@@ -78,8 +78,9 @@
             :rows="4"
             type="textarea"
             placeholder="请输入审批意见"
-            maxlength="520"
+            maxlength="50"
             show-word-limit
+            resize="none"
           />
         </el-form-item>
       </el-form>
