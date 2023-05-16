@@ -1,6 +1,7 @@
 package com.newtouch.uctp.cloud;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.http.Header;
@@ -20,6 +21,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -158,8 +162,17 @@ class UctpBusinessApplicationTests {
 
     @Test
     void contractPage(){
-        ContractPageResult pageResult = client.defaultdeContractPage(3095618200419771208L, "17380123816").getCheckedData();
+        ContractPageResult pageResult = client.defaultdeContractPage(3095639322544574724L, "15328756760").getCheckedData();
         System.out.println(pageResult.getPageUrl());
+    }
+
+    @Test
+    void contractDownload() throws FileNotFoundException {
+        File file = FileUtil.file("D:/usr/contract3.pdf");
+        FileOutputStream fos = new FileOutputStream(file);
+        client.defaultDocumentDownload(fos, 3095639330459231123L);
+//        client.defaultContractDownload(fos, 3095639328445965188L, ListUtil.of("CONTRACT"), Boolean.FALSE).getCheckedData();
+
     }
 
 }

@@ -41,6 +41,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Contract> doDefaultContractInvalidSign(ContractSignInvalidRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response,Contract.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Boolean> doDefaultContractDownload(ContractDownloadRequest request, FileOutputStream fos) throws Throwable {
         this.client.download(request,fos);
         return QiyuesuoCommonResult.build("0".toString()
@@ -362,6 +372,13 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         request.setName(name);
         request.setSealImageInfo(sealInfo);
         return this.defaultSealAutoCreate(request);
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractInvalidSign(Long contractId) {
+        ContractSignInvalidRequest request = new ContractSignInvalidRequest();
+        request.setContractId(contractId);
+        return this.defaultContractInvalidSign(request);
     }
 
 

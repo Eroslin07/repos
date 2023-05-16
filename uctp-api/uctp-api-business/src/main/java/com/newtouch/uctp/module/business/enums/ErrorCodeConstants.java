@@ -58,6 +58,8 @@ public interface ErrorCodeConstants {
     // ========== business 合同错误 1005000300 ==========
     ErrorCode CONTRACT_NOT_EXISTS = new ErrorCode(1005000300, "合同不存在");
     ErrorCode CONTRACT_TYPE_UNKNOWN = new ErrorCode(1005000301, "未知合同类型");
+    ErrorCode CONTRACT_INVALIDING_SUCCESS = new ErrorCode(1005000302, "已发起合同作废，请勿重复操作");
+    ErrorCode CONTRACT_INVALIDING_FAILED_ONE = new ErrorCode(1005000302, "合同作废失败，车辆已售出");
     // ========== business 发票错误 1005000400 ==========
     ErrorCode INVOICE_TITLE_NOT_EXISTS = new ErrorCode(1005000401, "发票抬头不存在");
 }

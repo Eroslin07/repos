@@ -104,7 +104,7 @@ public interface ContractService {
      *
      * @param contractId 合同id
      */
-    void contractDownload(Long contractId,String fileName);
+    void contractDownload(Long contractId,Long documentId,String fileName);
 
     /**
      * 保存合同

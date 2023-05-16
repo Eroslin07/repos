@@ -39,6 +39,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<Contract> doDefaultContractInvalidSign(ContractSignInvalidRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Boolean> doDefaultContractDownload(ContractDownloadRequest request, FileOutputStream fos) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
@@ -310,6 +315,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 
     @Override
     public QiyuesuoCommonResult<Seal> defaultSealAutoCreate(String name, String enterpriseCode) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractInvalidSign(Long contractId) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 

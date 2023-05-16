@@ -2,7 +2,6 @@ package com.newtouch.uctp.module.business.service.impl;
 
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.ObjectUtil;
@@ -23,6 +22,7 @@ import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
 import com.newtouch.uctp.module.business.dal.mysql.InvoiceTitleMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserExtMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
+import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.enums.QysContractStatus;
 import com.newtouch.uctp.module.business.service.BusinessFileService;
 import com.newtouch.uctp.module.business.service.CarInfoDetailsService;
@@ -61,6 +61,7 @@ import java.util.List;
 import static cn.hutool.core.date.DatePattern.CHINESE_DATE_PATTERN;
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
+import static com.newtouch.uctp.module.business.enums.QysConstants.PLATFORM_ID;
 import static com.newtouch.uctp.module.infra.enums.ErrorCodeConstants.FILE_SAVE_ERROR;
 import static com.newtouch.uctp.module.system.enums.ErrorCodeConstants.*;
 
@@ -157,19 +158,27 @@ public class ContractServiceImpl implements ContractService {
         if (ObjectUtil.isNull(qysConfigDO) || StrUtil.isBlank(qysConfigDO.getAccessKey())) {
             throw exception(QYS_CONFIG_AUTH_ERROR);
         }
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(qysConfigDO.getId());
+        CarInfoDO carInfo = carInfoService.getCarInfo(contractDO.getCarId());
+        if (ObjectUtil.equals(carInfo.getStatus(), CarStatus.SOLD.value())) {
+            throw exception(CONTRACT_INVALIDING_FAILED_ONE);
+        }
+        //直接获取发起方client
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(PLATFORM_ID);
         Contract contract = client.defaultContractDetail(contractDO.getContractId()).getCheckedData();
+        if (StrUtil.equals(contract.getStatus(), QysContractStatus.INVALIDING.value())) {
+            throw exception(CONTRACT_INVALIDING_SUCCESS);
+        }
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.DRAFT.value())) {
-            client.defaultContractInvalid(contractDO.getContractId());
+            client.defaultContractInvalid(contractDO.getContractId()).getCheckedData();
         }
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.SIGNING.value())) {
-            client.defaultContractInvalid(contractDO.getContractId(),reason);
+            client.defaultContractInvalid(contractDO.getContractId(),reason).getCheckedData();
         }
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.COMPLETE.value())) {
-            client.defaultContractInvalid(contractDO.getContractId(),null,reason);
+            client.defaultContractInvalid(contractDO.getContractId(),qysConfigDO.getSealId(),reason).getCheckedData();
         }
-        //修改合同状态为作废
-        contractDO.setInvalided(1);
+        //修改合同状态为作废中
+        contractDO.setInvalided(2);
         contractDO.setInvalidedReason(reason);
         contractMapper.updateById(contractDO);
     }
@@ -242,7 +251,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public void draft(Long carId) {
         //目前发起方已确认为翼龙一家企业
-        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(PLATFORM_ID);
         CarInfoDO carInfo = carInfoService.getCarInfo(carId);
         CarInfoDetailsDO carInfoDetailDO = carInfoDetailsService.getCarInfoDetailsByCarId(carId);
         if (ObjectUtil.isNull(carInfo) || ObjectUtil.isNull(carInfoDetailDO)) {
@@ -327,7 +336,7 @@ public class ContractServiceImpl implements ContractService {
         File tempFile = null;
         FileOutputStream fos = null;
         try {
-            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(PLATFORM_ID);
             tempFile = File.createTempFile("temp","temp.pdf");
             fos = new FileOutputStream(tempFile);
             client.defaultDocumentDownload(fos, documentId).getCheckedData();
@@ -354,7 +363,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public void contractDownload(Long contractId,String fileName) {
+    public void contractDownload(Long contractId,Long documentId,String fileName) {
         if (ObjectUtil.isNull(contractId)) {
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
         }
@@ -369,10 +378,11 @@ public class ContractServiceImpl implements ContractService {
             BusinessFileDO businessFileDO = businessFileDOS.get(0);
             FileRespDTO fileRespDTO = fileApi.getFileInfoById(businessFileDO.getId()).getCheckedData();
 
-            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(2L);
+            QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(PLATFORM_ID);
             tempFile = File.createTempFile("contractTemp","temp.pdf");
             fos = new FileOutputStream(tempFile);
-            client.defaultContractDownload(fos, contractId, ListUtil.of("CONTRACT"), Boolean.FALSE);
+//            client.defaultContractDownload(fos, contractId, ListUtil.of("CONTRACT"), Boolean.FALSE);
+            client.defaultDocumentDownload(fos, documentId).getCheckedData();
             FileReader reader = new FileReader(tempFile);
             //将委托合同写入远程服务器以及中间表
             FileCreateReqDTO fileCreateReqDTO = new FileCreateReqDTO();

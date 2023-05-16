@@ -204,4 +204,12 @@ public interface QysConfigService {
     String callbackCertificationPerson(String signature, String timestamp, String content) throws Exception;
 
     Map addAccount(@Valid AddAccountDTO reqVO);
+
+    /**
+     * 公司签署作废合同
+     *
+     * @param contractId 契约锁合同id
+     */
+    void companyContractInvalidSign(Long contractId);
+
 }

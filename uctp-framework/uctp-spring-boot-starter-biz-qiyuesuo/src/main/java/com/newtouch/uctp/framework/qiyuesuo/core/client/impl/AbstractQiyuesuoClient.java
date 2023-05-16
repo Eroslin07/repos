@@ -44,7 +44,7 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
      */
     public final void init() {
         doInit();
-        log.info("[init][配置({}) 初始化完成]", properties);
+//        log.info("[init][配置({}) 初始化完成]", properties);
     }
     /**
      * 自定义初始化
@@ -287,6 +287,24 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         }
         return result;
     }
+
+    @Override
+    public QiyuesuoCommonResult<Contract> defaultContractInvalidSign(ContractSignInvalidRequest request) {
+        QiyuesuoCommonResult<Contract> result;
+        try {
+            result = doDefaultContractInvalidSign(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<Contract> doDefaultContractInvalidSign(ContractSignInvalidRequest request)
+            throws Throwable;
 
     protected abstract QiyuesuoCommonResult<Boolean> doDefaultContractDownload(ContractDownloadRequest request, FileOutputStream fos)
         throws Throwable;

@@ -251,5 +251,18 @@ public interface QiyuesuoClient {
                                                           List<String> downloadItems,
                                                           Boolean needCompressForOneFile);
 
+    /**
+     * 签署作废合同
+     *
+     * @param request 契约锁需要参数
+     * @return
+     */
+    QiyuesuoCommonResult<Contract> defaultContractInvalidSign(ContractSignInvalidRequest request);
+    /**
+     * 签署作废合同
+     * @param contractId
+     * @return
+     */
+    QiyuesuoCommonResult<Contract> defaultContractInvalidSign(Long contractId);
 
 }
