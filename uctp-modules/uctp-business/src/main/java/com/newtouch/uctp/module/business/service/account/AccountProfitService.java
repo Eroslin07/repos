@@ -35,9 +35,7 @@ public interface AccountProfitService extends IService<MerchantProfitDO> {
     List<MerchantProfitDO> recorded(String accountNo,
                                     String contractNo,
                                     Long vehicleReceiptAmount,
-                                    Long carSalesAmount,
-                                    List<CostDTO> costs,
-                                    List<TaxDTO> taxes);
+                                    Long carSalesAmount);
 
     /**
      * 获取账户信息
