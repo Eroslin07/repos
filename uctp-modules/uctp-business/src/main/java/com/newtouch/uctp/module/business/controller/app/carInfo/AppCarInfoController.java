@@ -407,7 +407,7 @@ public class AppCarInfoController {
         String seriesId = String.valueOf(map.get("seriesId"));//车系
         Map SeriesMap = new HashMap<>();
         try {
-            String url = "http://third-test.yhcs.com/getCarSeriesList";
+            String url = "http://third-test.yhcs.com/getCarModelList";
             SeriesMap = UctpCarInfoSearchUtils.getCarModelList(  seriesId, url);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

@@ -52,7 +52,7 @@ public class AccountProfitServiceTest {
         t.setRate(BigDecimal.valueOf(0.1));
         taxes.add(t);
 
-        List<MerchantProfitDO> list = accountProfitService.recorded(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount, costs, taxes);
+        List<MerchantProfitDO> list = accountProfitService.recorded(accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
         Assertions.assertNotEquals(0, list.size());
     }
 

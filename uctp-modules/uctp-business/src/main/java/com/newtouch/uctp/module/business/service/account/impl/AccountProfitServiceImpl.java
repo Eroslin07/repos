@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springdoc.core.converters.models.MonetaryAmount;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -108,9 +110,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
     public List<MerchantProfitDO> recorded(String accountNo,
                                            String contractNo,
                                            Long vehicleReceiptAmount,
-                                           Long carSalesAmount,
-                                           List<CostDTO> costs,
-                                           List<TaxDTO> taxes) {
+                                           Long carSalesAmount) {
         log.info("调用利润划入接口，accountNo:{},contractNo:{},vehicleReceiptAmount:{},carSalesAmount:{}", accountNo, contractNo, vehicleReceiptAmount, carSalesAmount);
 
         // 参数校验
@@ -158,9 +158,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                     vehicleReceiptAmount,
                     carSalesAmount,
                     originalWaitForBackCashTotalAmount,
-                    originalProfitTotalAmount,
-                    costs,
-                    taxes);
+                    originalProfitTotalAmount);
 
             log.info("合同：{}利润计算结果：{}", contractNo, profitCalcResult);
             if (profitCalcResult.getCurrentProfitAmount().compareTo(0L) <= 0) {
@@ -655,14 +653,12 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                                            Long vehicleReceiptAmount,
                                            Long carSalesAmount,
                                            Long originalWaitForBackCashTotalAmount,
-                                           Long originalProfitTotalAmount,
-                                           List<CostDTO> costs,
-                                           List<TaxDTO> taxes) {
+                                           Long originalProfitTotalAmount) {
         // 服务费总额=各项费用之和
-        Long currentCostTotalAmount = this.calcCostAmount(costs);
+        Long currentCostTotalAmount = this.calcCostAmount();
 
         // 税费总额=各项税费之和
-        Long currentTaxTotalAmount = this.calcTaxAmount(carSalesAmount, taxes);
+        Long currentTaxTotalAmount = this.calcTaxAmount(carSalesAmount);
 
         // 总费用=服务费总额+税费总额
         Long currentFeeTotalAmount = currentCostTotalAmount + currentTaxTotalAmount;
@@ -743,9 +739,11 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                 // 本次总费用
                 .currentFeeTotalAmount(currentFeeTotalAmount)
                 // 本次费用明细
-                .currentCosts(costs)
+                .currentCosts(Arrays.asList(new CostDTO().setAmount(20000L)))
                 // 本次税收明细
-                .currentTaxes(taxes)
+                .currentTaxes(Arrays.asList(
+                        new TaxDTO().setAmount(carSalesAmount).setRate(new BigDecimal(0.005))
+                ))
                 // 计算时间
                 .calcTime(LocalDateTime.now())
                 .build();
@@ -760,30 +758,31 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param taxes          税
      * @return 剩总和
      */
-    private Long calcTaxAmount(Long carSalesAmount, List<TaxDTO> taxes) {
-        Long taxTotalAmouont = 0L;
-        if (taxes != null && !taxes.isEmpty()) {
-            Set<String> taxTypeSet = new HashSet<>();
-            for (TaxDTO tax : taxes) {
-                log.info("税费：{}", tax);
-
-                String taxType = tax.getType();
-                if (taxTypeSet.contains(taxType)) {
-                    throw exception(ACC_TAX_TYPE_REPEAT);
-                }
-                BigDecimal rate = tax.getRate();
-                if (rate != null) {
-                    // 金额为分，计算后取整数
-                    Long taxAmount = rate.multiply(BigDecimal.valueOf(carSalesAmount)).longValue();
-                    // 回写税收对象
-                    tax.setAmount(taxAmount);
-                    taxTotalAmouont = taxTotalAmouont + taxAmount;
-                } else {
-                    tax.setAmount(0L); // 税率为空时，税费为0
-                }
-            }
-        }
-        return taxTotalAmouont;
+    private Long calcTaxAmount(Long carSalesAmount) {
+        Double taxes = 0.005D;
+        Long taxTotalAmount = NumberUtil.mul(carSalesAmount, taxes).longValue();
+//        if (taxes != null && !taxes.isEmpty()) {
+//            Set<String> taxTypeSet = new HashSet<>();
+//            for (TaxDTO tax : taxes) {
+//                log.info("税费：{}", tax);
+//
+//                String taxType = tax.getType();
+//                if (taxTypeSet.contains(taxType)) {
+//                    throw exception(ACC_TAX_TYPE_REPEAT);
+//                }
+//                BigDecimal rate = tax.getRate();
+//                if (rate != null) {
+//                    // 金额为分，计算后取整数
+//                    Long taxAmount = rate.multiply(BigDecimal.valueOf(carSalesAmount)).longValue();
+//                    // 回写税收对象
+//                    tax.setAmount(taxAmount);
+//                    taxTotalAmouont = taxTotalAmouont + taxAmount;
+//                } else {
+//                    tax.setAmount(0L); // 税率为空时，税费为0
+//                }
+//            }
+//        }
+        return taxTotalAmount;
     }
 
     /**
@@ -792,27 +791,27 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param costs 费用
      * @return 费用总和
      */
-    private Long calcCostAmount(List<CostDTO> costs) {
-        Long r = 0L;
-        if (costs != null && !costs.isEmpty()) {
-            Set<String> costTypeSet = new HashSet<>();
-            for (CostDTO cost : costs) {
-                log.info("费用：{}", cost);
-
-                String costType = cost.getType();
-                Long costAmount = cost.getAmount();
-
-                if (costTypeSet.contains(costType)) {
-                    throw exception(ACC_COST_TYPE_REPEAT);
-                }
-
-                costTypeSet.add(costType);
-                if (costAmount != null) {
-                    // 费用金额不为空时添加进总费用
-                    r = r + costAmount;
-                }
-            }
-        }
+    private Long calcCostAmount() {
+        Long r = 20000L;
+//        if (costs != null && !costs.isEmpty()) {
+//            Set<String> costTypeSet = new HashSet<>();
+//            for (CostDTO cost : costs) {
+//                log.info("费用：{}", cost);
+//
+//                String costType = cost.getType();
+//                Long costAmount = cost.getAmount();
+//
+//                if (costTypeSet.contains(costType)) {
+//                    throw exception(ACC_COST_TYPE_REPEAT);
+//                }
+//
+//                costTypeSet.add(costType);
+//                if (costAmount != null) {
+//                    // 费用金额不为空时添加进总费用
+//                    r = r + costAmount;
+//                }
+//            }
+//        }
 
         return r;
     }

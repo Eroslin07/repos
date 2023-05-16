@@ -35,4 +35,9 @@ public interface MerchantMoneyApi {
     @Operation(summary = "收车时，实占保证金")
     @Parameter(name = "contractId", description = "（契约锁）收车合同ID", example = "3089090553137136296", required = true)
     public CommonResult<Boolean> deductionCash(@RequestParam("contractId") Long contractId);
+
+    @PostMapping(PREFIX + "/recorded")
+    @Operation(summary = "卖车过户完成时，分账")
+    @Parameter(name = "carId", description = "车辆ID", example = "3089090553137136296", required = true)
+    public CommonResult<Boolean> recorded(@RequestParam("carId") Long carId);
 }
