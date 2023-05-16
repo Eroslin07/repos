@@ -2199,22 +2199,22 @@ public class QysConfigServiceImpl implements QysConfigService {
             //第三方检测
             testing = getFeesAndCommitments(feesAndCommitments.getTesting(), "4");
         }
-        String conditionA = "确认";
+        String conditionA = "不确保";
         String conditionB = "非事故车";
         String conditionC = "非泡水车";
         String conditionD = "非火烧车";
         if (vehicleProblem != null) {
             if (vehicleProblem.getConditionA() != null && vehicleProblem.getConditionA()) {
-                conditionA = "不确认";
+                conditionA = "确保";
             }
             if (vehicleProblem.getConditionB() != null && vehicleProblem.getConditionB()) {
-                conditionA = "是事故车";
+                conditionB = "是事故车";
             }
             if (vehicleProblem.getConditionC() != null && vehicleProblem.getConditionC()) {
-                conditionA = "是泡水车";
+                conditionC = "是泡水车";
             }
             if (vehicleProblem.getConditionD() != null && vehicleProblem.getConditionD()) {
-                conditionA = "是火烧车";
+                conditionD = "是火烧车";
             }
         }
         if (carInfo != null && carInfoDetailsDO != null && userDept != null && platformDept != null & invoiceTitleDO != null & platformUserDO != null & pUserDO != null) {
