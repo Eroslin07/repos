@@ -46,9 +46,12 @@ public class UctpCarInfoSearchUtils {
      * @param coefficients coefficients车价浮动系数 默认0.2
      */
     public static HashMap CarFairValue(String modelId, String carNo, String mile, String regDate, String url, String coefficients) throws Exception {
-//        url = "http://testapi.che300.com/service/getUsedCarPrice";
-//        token = "61f499b086392005f92009b91f8f966a";
-         Map signMap = getSign();
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("modelId", modelId);
+        paramMap.put("carNo", carNo);
+        paramMap.put("mile", mile);
+        paramMap.put("regDate", regDate);
+        Map signMap = getSign(paramMap);
         String sign = "";
         String channel = "";
         if (!signMap.isEmpty()) {
@@ -59,11 +62,11 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("&modelId=" + modelId);
-        urlParam.append("&carNo=" + carNo);
-        urlParam.append("&mile=" + mile);
-        urlParam.append("&regDate=" + regDate);
-        urlParam.append("&channel=" + channel);
+        urlParam.append("\\&modelId=" + modelId);
+        urlParam.append("\\&carNo=" + carNo);
+        urlParam.append("\\&mile=" + mile);
+        urlParam.append("\\&regDate=" + regDate);
+        urlParam.append("\\&channel=" + channel);
 //        urlParam.append("&allLevel=" + allLevel);
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -83,7 +86,7 @@ public class UctpCarInfoSearchUtils {
         GetMethod getMethod = new GetMethod(getUrl);
         // 设置post请求超时时间
         getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 60000);
-        getMethod.addRequestHeader("Content-Type", "application/json");
+        getMethod.addRequestHeader("Content-Type", "application/json;charset=utf-8");
         HashMap mapinfo = new HashMap<>();
 
         try {
@@ -160,9 +163,9 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?token=" + token);
-        urlParam.append("&fromVersion=" + fromVersion);
-        urlParam.append("&simple=" + simple);
-        urlParam.append("&apiVersion=" + apiVersion);
+        urlParam.append("\\&fromVersion=" + fromVersion);
+        urlParam.append("\\&simple=" + simple);
+        urlParam.append("\\&apiVersion=" + apiVersion);
         String getUrl = urlParam.toString();
         // 创建httpClient实例对象
         HttpClient httpClient = new HttpClient();
@@ -184,7 +187,8 @@ public class UctpCarInfoSearchUtils {
     }
 
     public static JSONArray getCarBrandList(String url) throws Exception {
-        Map signMap = getSign();
+        Map<String, Object> paramMap = new HashMap();
+        Map signMap = getSign(paramMap);
         String sign = "";
         String channel = "";
         if (!signMap.isEmpty()) {
@@ -194,7 +198,7 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("&channel=" + channel);
+        urlParam.append("\\&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -250,7 +254,9 @@ public class UctpCarInfoSearchUtils {
      */
 
     public static JSONObject getCarBrandList(String brandName, String url) throws Exception {
-        Map signMap = getSign();
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("brandName", brandName);
+        Map signMap = getSign(paramMap);
         String sign = "";
         String channel = "";
         if (!signMap.isEmpty()) {
@@ -260,8 +266,7 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("&brandName=" + brandName);
-        urlParam.append("&channel=" + channel);
+        urlParam.append("\\&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -319,7 +324,9 @@ public class UctpCarInfoSearchUtils {
      */
 
     public static Map getCarSeriesList(String brandId, String url) throws Exception {
-        Map signMap = getSign();
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("brandId", brandId);
+        Map signMap = getSign(paramMap);
 
         String sign = "";
         String channel = "";
@@ -330,8 +337,8 @@ public class UctpCarInfoSearchUtils {
         StringBuffer urlParam = new StringBuffer();
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("&brandId=" + brandId);
-        urlParam.append("&channel=" + channel);
+        urlParam.append("\\&brandId=" + brandId);
+        urlParam.append("\\&channel=" + channel);
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
         String getUrl = null;
@@ -386,8 +393,10 @@ public class UctpCarInfoSearchUtils {
      */
 
     public static Map getCarModelList(String seriesId, String url) throws Exception {
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("seriesId", seriesId);
         StringBuffer urlParam = new StringBuffer();
-        Map signMap = getSign();
+        Map signMap = getSign(paramMap);
 
         String sign = "";
         String channel = "";
@@ -397,8 +406,8 @@ public class UctpCarInfoSearchUtils {
         }
         urlParam.append(url);
         urlParam.append("?sign=" + sign);
-        urlParam.append("&seriesId=" + seriesId);
-        urlParam.append("&channel=" + channel);
+        urlParam.append("\\&seriesId=" + seriesId);
+        urlParam.append("\\&channel=" + channel);
 
         //处理url中中文编码
         Matcher matcher = Pattern.compile("[\u4e00-\u9fa5]").matcher(urlParam);
@@ -434,17 +443,12 @@ public class UctpCarInfoSearchUtils {
      * 获取接口token
      *
      * */
-    private static Map getSign() throws Exception {
-        Map<String, Object> param = new HashMap<>();
+    private static Map getSign(Map<String, Object> param) throws Exception {
         String channel = "tywg";
         param.put("channel", channel); //太原万国 渠道
-//        param.put("brandId", 1);
         String sign = SignatureUtils.generateSignature(param, "B82pho2ts3HPTHvfg8JaU7cB322kTxDE");
-
-        HashMap<String, String> signMap = new HashMap<>();
-        signMap.put("channel", channel);
-        signMap.put("sign", sign);
-        return signMap;
+        param.put("sign", sign);
+        return param;
     }
 
     public static void main(String[] args) throws Exception {
@@ -477,5 +481,8 @@ public class UctpCarInfoSearchUtils {
 //        Map carSeriesList1 = uctpCarInfoSearchUtils.getCarModelList(token, "51618", url5);
 //        System.out.println(obj.toString());
 //        System.out.println(map.toString());
+
+
+        System.out.println("\\&modelId");
     }
 }
