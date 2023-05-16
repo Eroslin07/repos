@@ -19,13 +19,13 @@
             <el-col :span="2" class="bg-yell">提取金额： </el-col>
             <el-col :span="4">{{
               mainValue.formDataJson.amount
-                ? moneyFormat(mainValue.formDataJson.amount) + '元'
+                ? moneyFormat(mainValue.formDataJson.amount / 100) + '元'
                 : '0.00元'
             }}</el-col>
             <el-col :span="2" class="bg-yell">剩余金额： </el-col>
             <el-col :span="4">{{
               mainValue.formDataJson.balanceAmount
-                ? moneyFormat(mainValue.formDataJson.balanceAmount) + '元'
+                ? moneyFormat(mainValue.formDataJson.balanceAmount / 100) + '元'
                 : '0.00元'
             }}</el-col>
           </el-row>
@@ -72,6 +72,13 @@
           <el-table-column
             prop="feeTotalAmount"
             label="各项费用合计（元）"
+            align="center"
+            min-width="180"
+          />
+          <el-table-column prop="tradeTime" label="发生时间" align="center" min-width="180" />
+          <el-table-column
+            prop="balanceAmount"
+            label="商户可用余额（元）"
             align="center"
             min-width="180"
           />
