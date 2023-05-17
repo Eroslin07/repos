@@ -1,14 +1,17 @@
 package com.newtouch.uctp.module.bpm.framework.flowable.config;
 
 import cn.hutool.core.collection.ListUtil;
-import com.newtouch.uctp.module.bpm.framework.flowable.core.behavior.BpmActivityBehaviorFactory;
-import com.newtouch.uctp.module.bpm.service.definition.BpmTaskAssignRuleService;
+
 import org.flowable.common.engine.api.delegate.event.FlowableEventListener;
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.newtouch.uctp.module.bpm.framework.flowable.core.behavior.BpmActivityBehaviorFactory;
+import com.newtouch.uctp.module.bpm.framework.flowable.core.validation.ProcessValidatorFactory;
+import com.newtouch.uctp.module.bpm.service.definition.BpmTaskAssignRuleService;
 
 /**
  * BPM 模块的 Flowable 配置类
@@ -33,6 +36,7 @@ public class BpmFlowableConfiguration {
             configuration.setEventListeners(ListUtil.toList(listeners.iterator()));
             // 设置 ActivityBehaviorFactory 实现类，用于流程任务的审核人的自定义
             configuration.setActivityBehaviorFactory(bpmActivityBehaviorFactory);
+            configuration.setProcessValidator(new ProcessValidatorFactory().createDefaultProcessValidator());
         };
     }
 
