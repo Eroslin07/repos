@@ -189,6 +189,11 @@
 							</template>
 						</u-input>
 					</u-form-item>
+					<u-form-item label="收款POS设备" :required="true" prop="posNewName" borderBottom @click="showPos = true">
+						<u--input v-model="sellerForm.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
+							border="none"></u--input>
+						<u-icon slot="right" name="arrow-right"></u-icon>
+					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 						</view>
@@ -273,6 +278,9 @@
 			</view>
 			<u-picker :show="showKey" :columns="rangeKey" keyName="label" @confirm="confirmKey"
 				@cancel="showKey = false"></u-picker>
+			<!-- POS机设备选项 -->
+			<u-picker :show="showPos" :columns="rangePos" keyName="posNewName" @confirm="posConfirm"
+				@cancel="posCancel" :defaultIndex="findIndex(sellerForm.posId, rangePos[0])"></u-picker>
 		</uni-card>
 		<uni-card :is-shadow="false" is-full style="border: none;">
 			<view v-if="vehicleInfor">
@@ -471,7 +479,8 @@
 		setSellCarInfo,
 		getAmount,
 		deleteSellDraft,
-		FindBuyAndWTContract
+		FindBuyAndWTContract,
+		getPosList
 	} from '@/api/home/sellingCar.js'
 	import {
 		getFairValue
@@ -680,6 +689,9 @@
 					label: '分期',
 					value: 1
 				}],
+				// POS机设备列表
+				rangePos: [],
+				showPos: false,
 				// 是否弹出登记日期
 				showDate: false,
 				// 费用明细
@@ -697,7 +709,10 @@
 					buyerName: '',
 					buyerAdder: '',
 					buyerTel: '',
-					deposit: ''
+					deposit: '',
+					posId: '',
+					posName: '',
+					posNewName: '',
 				},
 				// 卖家信息校验规则
 				sellerRules: {
@@ -725,6 +740,12 @@
 					// 	message: '请填写转入地车辆管理所名称',
 					// 	trigger: ['blur', 'change']
 					// },
+					posNewName: {
+						type: 'string',
+						required: true,
+						message: '请选择POS机设备',
+						trigger: ['blur', 'change']
+					},
 					buyerIdCard: [{
 						required: true,
 						message: '请填写身份证号',
@@ -818,6 +839,15 @@
 			return true;
 		},
 		onLoad(options) {
+			// 查询POS机设备列表
+			this.rangePos = [];
+			getPosList({ deptId: this.$store.state.user.deptId }).then((res) => {
+				res.data.forEach((item) => {
+					item.posNewName = item.posName + ' ' + item.posId.substr(-4);
+				})
+				this.rangePos.push(res.data);
+			})
+			
 			this.draftStatus = options.status - 0;
 			this.carId = options.id;
 			this.showOverlay = true;
@@ -842,6 +872,13 @@
 				this.sellerForm.buyerIdCardUrl = res.data.idCardsPicList
 				this.sellerForm.sellAmount = this.$amount.getComdify(res.data.sellAmount) == '0.00' ? '' : this.$amount
 					.getDelcommafy(this.$amount.getComdify(res.data.sellAmount));
+				if (res.data.posDO) {
+					if (res.data.posDO.posId) {
+						this.sellerForm.posId = res.data.posDO.posId;
+						this.sellerForm.posName = res.data.posDO.posName;
+						this.sellerForm.posNewName = res.data.posDO.posName + ' ' + res.data.posDO.posId.substr(-4);
+					}
+				}
 				if (this.sellerForm.sellAmount.indexOf('.')) {
 					this.maxlength = this.sellerForm.sellAmount.split('.')[0].length + 3
 				}
@@ -1200,6 +1237,24 @@
 					}
 				})
 			},
+			// pos机选择
+			findIndex(code, list) {
+				if (!code || !list) {
+					return [0]
+				}
+				return [list.findIndex((item) => (item.posId == code))]
+			},
+			// pos机选择框确定
+			posConfirm(val) {
+				this.sellerForm.posId = val.value[0].posId;
+				this.sellerForm.posName = val.value[0].posName;
+				this.sellerForm.posNewName = val.value[0].posName + ' ' + val.value[0].posId.substr(-4);
+				this.showPos = false;
+			},
+			// pos机选择框取消
+			posCancel() {
+				this.showPos = false;
+			},
 			// 确认登记日期
 			handleDate(e) {
 				this.$nextTick(() => {
@@ -1385,7 +1440,9 @@
 					feesAndCommitments,
 					proceduresAndSpareSell: proceduresAndSpareParts,
 					other: this.carForm.other, //其他,
-					sellCarFair: `${this.fairValue.value1}万元-${this.fairValue.value2}万元`
+					sellCarFair: `${this.fairValue.value1}万元-${this.fairValue.value2}万元`,
+					posId: this.sellerForm.posId,
+					posName: this.sellerForm.posName
 				}
 
 				this.showOverlay = true;
@@ -1454,7 +1511,18 @@
 						_this.gxzStatus = 0;
 					}
 					// _this.gxzStatus = 0;
-					_this.handleDraft('entrust');
+					let posStatus = _this.rangePos[0].some((f) => { return f.posId == _this.sellerForm.posId });
+					if (posStatus) {
+						_this.handleDraft('entrust');
+					} else {
+						uni.showModal({
+							title: '提示',
+							showCancel: false,
+							content: `POS机设备${_this.sellerForm.posName} ${_this.sellerForm.posId.substr(-4)}已被停用，请重新选择。`,
+							confirmText: '知道了',
+							confirmColor: '#fa6401'
+						})
+					}
 				})
 			},
 			// 点击卖家信息保存

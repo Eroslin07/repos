@@ -212,6 +212,19 @@
 					</view>
 				</view>
 			</view> -->
+			<view class="car-upload" style="margin-bottom: 44rpx;">
+				<view class="car-upload-title">
+					<image src="../../../../static/images/home/bank-card.svg"></image>
+					<text class="car-upload-title__title">收款POS机设备</text>
+				</view>
+				<view class="upload-content" style="margin: 0 34rpx 0 22rpx;" @click="showPos = true">
+					<u--input v-model="carInfoAll.carInfo.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
+						border="none"></u--input>
+					<u-icon slot="right" name="arrow-right"></u-icon>
+				</view>
+				<u-picker :show="showPos" :columns="rangePos" keyName="posNewName" @confirm="posConfirm"
+					@cancel="posCancel" :defaultIndex="findIndex(carInfoAll.carInfo.posId, rangePos[0])"></u-picker>
+			</view>
 			<view class="car-fund-info">
 				<view class="car-fund-info-title">
 					<view class="">
@@ -343,8 +356,12 @@
 		deleteTestImage
 	} from '@/api/register'
 	import {
-		contractInvalid
+		contractInvalid,
+		setSavePos
 	} from '@/api/cost/carInfo.js'
+	import {
+		getPosList
+	} from '@/api/home/sellingCar.js'
 	export default {
 		data() {
 			return {
@@ -373,7 +390,10 @@
 						message: '请输入理由',
 						trigger: ['change', 'blur']
 					}]
-				}
+				},
+				// POS机设备列表
+				rangePos: [],
+				showPos: false,
 			}
 		},
 		props: {
@@ -443,7 +463,47 @@
 				return this.$store.state.user.staffType
 			},
 		},
+		mounted() {
+			this.getPosList();
+		},
 		methods: {
+			// 获取pos列表
+			getPosList() {
+				this.rangePos = [];
+				getPosList({ deptId: this.$store.state.user.deptId }).then((res) => {
+					res.data.forEach((item) => {
+						item.posNewName = item.posName + ' ' + item.posId.substr(-4);
+					})
+					this.rangePos.push(res.data);
+				})
+			},
+			// pos机选择
+			findIndex(code, list) {
+				if (!code || !list) {
+					return [0]
+				}
+				return [list.findIndex((item) => (item.posId == code))]
+			},
+			// pos机选择框确定
+			posConfirm(val) {
+				if (this.carInfoAll.carInfo.posId == val.value[0].posId) {
+					this.showPos = false;
+				} else {
+					let data = {
+						posId: val.value[0].posId,
+						posName: val.value[0].posName,
+						id: this.carInfoAll.carInfo.id
+					}
+					setSavePos(data).then((res) => {
+						uni.$emit('refresh', { refresh: true, data: val })
+						this.showPos = false;
+					})
+				}
+			},
+			// pos机选择框取消
+			posCancel() {
+				this.showPos = false;
+			},
 			// 上传检测报告
 			photograph(index) {
 				let _this = this;

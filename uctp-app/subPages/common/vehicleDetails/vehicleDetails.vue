@@ -170,6 +170,16 @@
 		onLoad(props) {
 			this.carId = props.id || '1650085024672796674'
 			this.getCarDetails(this.carId)
+			uni.$on('refresh', (data) => {
+				if (data.refresh) {
+					this.carInfoAll.carInfo.posId = data.data.value[0].posId;
+					this.carInfoAll.carInfo.posName = data.data.value[0].posName;
+					this.carInfoAll.carInfo.posNewName = data.data.value[0].posName + ' ' + data.data.value[0].posId.substr(-4);
+				}
+			});
+		},
+		onUnload: function() {
+			uni.$off('refresh'); // 需要手动解绑自定义事件
 		},
 		computed: {
 			firstStatus() {
@@ -231,6 +241,9 @@
 					this.carInfoAll.carInfo.scrapDate = parseTime(scrapDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.annualInspectionDate = parseTime(annualInspectionDate, '{y}-{m}-{d}')
 					this.carInfoAll.carInfo.insuranceEndData = parseTime(insuranceEndData, '{y}-{m}-{d}')
+					if (this.carInfoAll.carInfo.posName) {
+						this.carInfoAll.carInfo.posNewName = this.carInfoAll.carInfo.posName + ' ' + this.carInfoAll.carInfo.posId.substr(-4)
+					}
 					this.carsList = this.carInfoAll.fileA.map(v => v.url);
 					// 库存天数
 					this.$set(this.carInfoAll.carInfoDetails, 'days', this.getDays(res.data.carInfoDetails
