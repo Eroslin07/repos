@@ -189,7 +189,8 @@ public class BpmGlobalHandleListener {
                 //修改车辆状态
                 carInfoApi.updateCarStatus(bpmFormMainVO.getThirdId(),CarStatus.COLLECT.value(),CarStatus.COLLECT_A.value(),CarStatus.COLLECT_A_A.value(),"退回",reason);
                 // 释放保证金
-                ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, bpmFormMainVO.getThirdId(), ContractDO::getContractType, 2);
+                ContractDO contractDO = this.contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                        .eq(ContractDO::getCarId, bpmFormMainVO.getThirdId()).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
                 if (ObjectUtil.isNull(contractDO) || ObjectUtil.isNull(contractDO.getContractId())) {
                     throw new RuntimeException("车辆ID[" + bpmFormMainVO.getThirdId() + "]释放保证金失败，原因：未获取到收车合同信息");
                 }
@@ -201,7 +202,8 @@ public class BpmGlobalHandleListener {
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
                 carInfoApi.updateBpmApproveInfo(bpmFormMainVO.getThirdId(), "通过", reason);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
-                ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 1);
+                ContractDO contractDO = contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>().eq(ContractDO::getCarId, carInfoDO.getId())
+                        .eq(ContractDO::getContractType, 1).eq(ContractDO::getInvalided, 0));
                 boolean isSend = qysConfigApi.send(contractDO.getContractId(), false).getCheckedData();
                 if (!isSend) {
                     throw new RuntimeException("自动发起并签署委托合同异常");
@@ -219,7 +221,8 @@ public class BpmGlobalHandleListener {
                 CarInfoDO carInfoDO = carInfoMapper.selectById(bpmFormMainVO.getThirdId());
                 carInfoApi.updateBpmApproveInfo(bpmFormMainVO.getThirdId(), "通过", reason);
                 // 委托合同自动签署   合同类型（1收车委托合同   2收车合同  3卖车委托合同  4卖车合同）
-                ContractDO contractDO = contractMapper.selectOne(ContractDO::getCarId, carInfoDO.getId(), ContractDO::getContractType, 3);
+                ContractDO contractDO = this.contractMapper.selectOne(new LambdaQueryWrapperX<ContractDO>()
+                        .eq(ContractDO::getCarId, carInfoDO.getId()).eq(ContractDO::getContractType, 3).eq(ContractDO::getInvalided, 0));
                 boolean isSend = qysConfigApi.send(contractDO.getContractId(), false).getCheckedData();
                 if (!isSend) {
                     throw new RuntimeException("自动发起并签署委托合同异常");

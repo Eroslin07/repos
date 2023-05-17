@@ -212,7 +212,7 @@
 					</view>
 				</view>
 			</view> -->
-			<view class="car-upload" style="margin-bottom: 44rpx;">
+			<view class="car-upload" style="margin-bottom: 44rpx;" v-show="posShow">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/bank-card.svg"></image>
 					<text class="car-upload-title__title">收款POS机设备</text>
@@ -431,6 +431,17 @@
 				} = this.carInfoAll.carInfo
 				if (statusThree == 121 || statusThree == 122 || statusThree == 123 || statusThree == 321 || statusThree ==
 					322 || statusThree == 323) {
+					return true
+				} else {
+					return false
+				}
+			},
+			posShow() {
+				let {
+					statusThree
+				} = this.carInfoAll.carInfo
+				if (statusThree == 321 || statusThree == 322 || statusThree == 323 || statusThree == 324 || statusThree == 331
+					|| statusThree == 411 || statusThree == 421 || statusThree == 431 || statusThree == 412) {
 					return true
 				} else {
 					return false
