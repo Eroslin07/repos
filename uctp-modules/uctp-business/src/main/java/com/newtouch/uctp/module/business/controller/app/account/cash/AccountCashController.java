@@ -1,7 +1,5 @@
 package com.newtouch.uctp.module.business.controller.app.account.cash;
 
-import com.newtouch.uctp.framework.common.exception.ServiceException;
-import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
@@ -87,18 +85,5 @@ public class AccountCashController {
     @Operation(summary = "商户银行信息查询")
     public CommonResult<MerchantBankRespVO> bankInfo(@RequestParam(name = "accountNo") String accountNo, @RequestParam String busType) {
         return CommonResult.success(accountCashService.bankInfo(accountNo, busType));
-    }
-
-    @PostMapping("/app/transfer")
-    @Operation(summary = "商户保证金充值获取银行APP唤醒链接")
-    public CommonResult<AppTransferRespVO> appTransfer(@RequestBody AppTransferReqVO appTransferReqVO) {
-        try {
-            return CommonResult.success(accountCashService.appTransfer(appTransferReqVO));
-        } catch (Exception e) {
-            if (e instanceof ServiceException) {
-                return CommonResult.error((ServiceException) e);
-            }
-            return CommonResult.error(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), e.getMessage());
-        }
     }
 }

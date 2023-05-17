@@ -1,9 +1,6 @@
 package com.newtouch.uctp.module.business.service.account.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.graph.Network;
-import com.newland.pospp.iot.lib.exceptions.BusinessException;
-import com.newland.pospp.iot.lib.exceptions.NetworkException;
 import com.newtouch.uctp.framework.common.exception.ServiceException;
 import com.newtouch.uctp.framework.common.exception.enums.GlobalErrorCodeConstants;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -23,7 +20,6 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -46,38 +42,7 @@ public class MerchantPOSDeviceServiceImpl extends ServiceImpl<MerchantPOSDeviceD
         String posName = reqVO.getPosName();
         String authCode = StringUtils.EMPTY;
         String accountNo = StringUtils.EMPTY;
-        try {
-            MerchantAccountDO account = merchantAccountService.getOne(
-                    new LambdaQueryWrapperX<MerchantAccountDO>()
-                            .eq(MerchantAccountDO::getMerchantId, reqVO.getMerchantId())
-                            .eq(MerchantAccountDO::getDeleted, Boolean.FALSE)
-            );
-
-            Assert.notNull(account, "商户信息不存在或已删除!");
-
-            authCode = posAPIService.getAuthCode(posName);
-
-            Assert.isTrue(StringUtils.isNotBlank(authCode), "POS授权码获取失败!");
-
-            save(MerchantPOSDeviceDO.builder()
-                    .accountNo(accountNo)
-                    .merchantId(reqVO.getMerchantId())
-                    .posName(posName)
-                    .authCode(authCode)
-                    .deviceSn(StringUtils.EMPTY)
-                    .state(MerchantPOSDeviceDO.DeviceState.UNBOUND.getCode()).build());
-
-            return authCode;
-        } catch (BusinessException e) {
-            log.error("获取POS机授权码异常: [{}],{}", e.getCode(), e.getMessage());
-            throw new ServiceException(errorCode, "获取POS机授权码业务异常!");
-        } catch (NetworkException e) {
-            log.error("获取POS机授权码网络异常!");
-            throw new ServiceException(errorCode, "获取POS机授权码网络异常!");
-        } catch (Exception e) {
-            log.error("获取POS机授权码服务异常", e.getMessage());
-            throw new ServiceException(errorCode, "获取POS机授权码服务异常!");
-        }
+        return authCode;
     }
 
     @Override

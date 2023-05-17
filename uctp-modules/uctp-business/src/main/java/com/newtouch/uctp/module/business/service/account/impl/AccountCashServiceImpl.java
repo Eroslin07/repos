@@ -11,7 +11,6 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
-import com.newtouch.uctp.module.business.convert.app.AppTransferAddressConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -19,15 +18,11 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
-import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
-import com.newtouch.uctp.module.business.enums.bank.SPDBBankTrans;
 import com.newtouch.uctp.module.business.service.account.AccountCashService;
-import com.newtouch.uctp.module.business.service.account.MerchantBankService;
-import com.newtouch.uctp.module.business.service.bank.TransactionService;
-import com.newtouch.uctp.module.business.service.bank.request.TechAddressesRequest;
-import com.newtouch.uctp.module.business.service.bank.response.TechAddressesResponse;
 import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
+import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.account.MerchantCashService;
+import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -413,41 +408,6 @@ public class AccountCashServiceImpl implements AccountCashService {
             merchantBankRespVO.setAccountNo(accountNo);
         }
         return merchantBankRespVO;
-    }
-
-    @Override
-    public AppTransferRespVO appTransfer(AppTransferReqVO appTransferReqVO) {
-
-        MerchantBankDO merchantBank = merchantBankService.getOne(new LambdaQueryWrapperX<MerchantBankDO>()
-                .eq(MerchantBankDO::getAccountNo, appTransferReqVO.getAccountNo())
-                .eq(MerchantBankDO::getBusinessType, AccountEnum.BUSINESS_TYPE_CASH.getKey())
-                .eq(MerchantBankDO::getDeleted, AccountEnum.BANK_CARD_ENABLE)
-        );
-
-        AppTransferRespVO appTransferRespVO = null;
-        if (Objects.isNull(merchantBank)) {
-            throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "商户银行信息不正确!");
-        }
-        TechAddressesRequest request = new TechAddressesRequest();
-        request.setMrchId("");//todo bank
-        request.setOrdrNo(SPDBBankTrans.TRAN_ORDER_NO.get(LocalDateTime.now()));
-        request.setPymtAcctNo(merchantBank.getBankNo());
-        request.setPayeeAcctNo(merchantBank.getChildAcctNo());
-        request.setTfrAmount(appTransferReqVO.getAmount());
-        try {
-            TechAddressesResponse response = transactionService.techAddressesGenerate(request);
-            if (response != null) {
-                if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(response.getStatusCode())) {
-                    appTransferRespVO = AppTransferAddressConvert.INSTANCE.convert(response);
-                }
-            } else {
-                throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "交易信息异常请稍后重试!");
-            }
-            return appTransferRespVO;
-        } catch (Exception e) {
-            log.error("appTransfer 调用银行接口异常: " + e.getMessage());
-            throw new BankException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "银行接口异常，请联系管理员!");
-        }
     }
 
     private PresentStatusRecordDO buildPresentStatusRecordDO(Long cashId, String presentStatus) {

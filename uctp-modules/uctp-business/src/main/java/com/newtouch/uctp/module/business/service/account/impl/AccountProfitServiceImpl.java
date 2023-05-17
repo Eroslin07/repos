@@ -18,7 +18,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springdoc.core.converters.models.MonetaryAmount;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +45,6 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMa
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitInvoiceMapper;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantProfitMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
-import com.newtouch.uctp.module.business.enums.bank.ResponseStatusCode;
 import com.newtouch.uctp.module.business.service.account.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
@@ -54,7 +52,6 @@ import com.newtouch.uctp.module.business.service.account.ProfitPressentAuditOpin
 import com.newtouch.uctp.module.business.service.account.dto.*;
 import com.newtouch.uctp.module.business.service.account.event.ProfitPressentStatusChangeEvent;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
-import com.newtouch.uctp.module.business.service.bank.response.InnerTransferResponse;
 import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
 
 import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
@@ -1300,52 +1297,40 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param profitList
      */
     private void transfer(List<MerchantProfitDO> profitList) {
-        if (profitList != null && !profitList.isEmpty()) {
-            // 过滤金额为空或为0的数据
-            profitList.parallelStream().filter(e -> e.getProfit() != null && e.getProfit().compareTo(0L) != 0).forEach(e -> {
-                // 金额处理成正数
-                Long amount = Math.abs(e.getProfit());
-                InnerTransferResponse innerTransferResponse = transactionService.innerTransfer(e.getAccountNo(), e.getContractNo(), e.getTradeType(), amount, e.getTradeTypeText());
-                if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(innerTransferResponse.getStatusCode())) {
-                    if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(e.getTradeType())) {
-                        // 更新提现状态
-                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
-                    } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(e.getTradeType())) {
-                        // 更新提现状态
-                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.COST_TRANSFER_SUCCESS);
-                    } else if (AccountEnum.TRAN_PROFIT_TAX_COST.getKey().equals(e.getTradeType())) {
-                        // 更新提现状态
-                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.TAX_TRANSFER_SUCCESS);
-                    } else if (AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey().equals(e.getTradeType())) {
-                        // 更新提现状态
-                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.PROFIT_TRANSFER_SUCCESS);
-                    } else if (AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(e.getTradeType())) {
-                        // 更新提现状态
-                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
-                    } else if (AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey().equals(e.getTradeType())) {
-                        // 更新提现状态
-                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
-                    }
-                } else {
-                    // 接口返回“不成功”，则报异常，TODO 后续改为银行接口调用失败
-                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
-                }
-
-            });
-        }
-    }
-
-    /**
-     * 银行出金接口
-     *
-     * @param mp
-     */
-    private void outGold(MerchantProfitDO mp) {
-        // TransactionRecordDO transactionRecord = this.transactionService.outGold(mp.getBankNo(), Math.abs(mp.getProfit()), AccountEnum.TRAN_PROFIT_PRESENT.getKey(), mp.getContractNo());
-//        if (transactionRecord == null || !ResponseStatusCode.TRAN_SUCCESS.getCode().equals(transactionRecord.getBankResultCode())) {
-//            // 调用银行出金接口失败，TODO 后续改为银行接口调用失败
-//            log.error("调用银行出金接口失败，合同号：{}", mp.getContractNo());
-//            throw exception(ACC_PRESENT_ERROR);
+//        if (profitList != null && !profitList.isEmpty()) {
+//            // 过滤金额为空或为0的数据
+//            profitList.parallelStream().filter(e -> e.getProfit() != null && e.getProfit().compareTo(0L) != 0).forEach(e -> {
+//                // 金额处理成正数
+//                Long amount = Math.abs(e.getProfit());
+//                InnerTransferResponse innerTransferResponse = transactionService.innerTransfer(e.getAccountNo(), e.getContractNo(), e.getTradeType(), amount, e.getTradeTypeText());
+//                if (ResponseStatusCode.TRAN_SUCCESS.getCode().equals(innerTransferResponse.getStatusCode())) {
+//                    if (AccountEnum.TRAN_PROFIT_CASH_BACK.getKey().equals(e.getTradeType())) {
+//                        // 更新提现状态
+//                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+//                    } else if (AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey().equals(e.getTradeType())) {
+//                        // 更新提现状态
+//                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.COST_TRANSFER_SUCCESS);
+//                    } else if (AccountEnum.TRAN_PROFIT_TAX_COST.getKey().equals(e.getTradeType())) {
+//                        // 更新提现状态
+//                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.TAX_TRANSFER_SUCCESS);
+//                    } else if (AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey().equals(e.getTradeType())) {
+//                        // 更新提现状态
+//                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.PROFIT_TRANSFER_SUCCESS);
+//                    } else if (AccountEnum.TRAN_PROFIT_CASH_DEDUCTION.getKey().equals(e.getTradeType())) {
+//                        // 更新提现状态
+//                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+//                    } else if (AccountEnum.TRAN_PROFIT_CASH_BACK_FROM_ORIGINAL_PROFIT.getKey().equals(e.getTradeType())) {
+//                        // 更新提现状态
+//                        this.publishProfitPressentStatusChangeEvent(e.getId(), ProfitPressentStatusChangeEvent.CASH_BACK_SUCCESS);
+//                    }
+//                } else {
+//                    // 接口返回“不成功”，则报异常，TODO 后续改为银行接口调用失败
+//                    throw exception(ACC_PRESENT_PROFIT_RECORDED_ERROR);
+//                }
+//
+//            });
 //        }
     }
+
+
 }

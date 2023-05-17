@@ -149,12 +149,5 @@ uctp:
     enable: false
   demo: false # 关闭演示模式
 
-  spdb:
-    clientId: @spdb.clientId@
-    secret: @spdb.secret@
-    privateKey: @spdb.privateKey@
-    spdbPublicKey: @spdb.spdbPublicKey@
-    host: @spdb.host@
-
 qys:
   server-url: @qys.server-url@ #获取契约锁请求地址

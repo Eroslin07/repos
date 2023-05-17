@@ -12,21 +12,16 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantAccountMapper;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
 import com.newtouch.uctp.module.business.enums.bank.BankConstants;
-import com.newtouch.uctp.module.business.enums.bank.SPDBBankTrans;
-import com.newtouch.uctp.module.business.enums.bank.CertificationType;
 import com.newtouch.uctp.module.business.service.account.AccountService;
 import com.newtouch.uctp.module.business.service.account.MerchantBankService;
 import com.newtouch.uctp.module.business.service.bank.TransactionLogService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
-import com.newtouch.uctp.module.business.service.bank.request.NominalAccountRequest;
-import com.newtouch.uctp.module.business.service.bank.response.NominalAccountResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 
 @Service
 @Validated
@@ -57,18 +52,9 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantAccount.setMerchantId(accountDTO.getMerchantId());
             merchantAccount.setTenantId(accountDTO.getTenantId());
 
-            // 创建银行保证经充值子账号
-            NominalAccountRequest requestCash = buildNominalAccountRequest(accountDTO, AccountEnum.BUSINESS_TYPE_CASH.getKey());
-            NominalAccountResponse bankAccountNoCash = transactionService.nominalAccountGenerate(requestCash);
-
-            // 创建银行对公利润提现子账号
-            NominalAccountRequest requestProfit = buildNominalAccountRequest(accountDTO, AccountEnum.BUSINESS_TYPE_PROFIT.getKey());
-            NominalAccountResponse bankAccountNoProfit = transactionService.nominalAccountGenerate(requestProfit);
-
-
             save(merchantAccount);
-            saveMerchantBank(bankAccountNoCash, AccountEnum.BUSINESS_TYPE_CASH.getKey(), accountDTO, accountNo);
-            saveMerchantBank(bankAccountNoProfit, AccountEnum.BUSINESS_TYPE_PROFIT.getKey(), accountDTO, accountNo);
+            saveMerchantBank( AccountEnum.BUSINESS_TYPE_CASH.getKey(), accountDTO, accountNo);
+            saveMerchantBank( AccountEnum.BUSINESS_TYPE_PROFIT.getKey(), accountDTO, accountNo);
             return true;
         } catch (BankException e) {
             log.error(e.getMessage());
@@ -87,41 +73,14 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         return merchantAccountDO != null;
     }
 
-    private NominalAccountRequest buildNominalAccountRequest(AccountDTO accountDTO, String busType) {
-        LocalDateTime now = LocalDateTime.now();
-        NominalAccountRequest request = new NominalAccountRequest();
-        request.setTranDate(SPDBBankTrans.TRAN_DATE_FORMAT.get(now));
-        request.setTranTime(SPDBBankTrans.TRAN_TIME_FORMAT.get(now));
-        request.setChannelSeqNo(UUID.randomUUID().toString(true));
-        request.setAreaCode(BankConstants.AREA_CODE);
-        request.setAcctNo(BankConstants.ACCT_NO);
-        request.setBidsSnglFlgCd(UUID.randomUUID().toString(true));
-        request.setOpenBrNo(BankConstants.OPEN_BANK_NO);
-        request.setOpenBranchName(BankConstants.OPEN_BRANCH_NAME);
-        if (AccountEnum.BUSINESS_TYPE_PROFIT.getKey().equals(busType)) {
-            request.setBscAcctNo(accountDTO.getBankNo());
-            request.setAcctName(accountDTO.getBusinessName());
-            request.setCtfType(CertificationType.BUSINESS_LICENSE.getCode());
-            request.setCtfId(accountDTO.getTaxNum());
-            request.setClientName(accountDTO.getBusinessName());
-        } else if (AccountEnum.BUSINESS_TYPE_CASH.getKey().equals(busType)) {
-            request.setBscAcctNo(accountDTO.getCashBankNo());
-            request.setAcctName(accountDTO.getLegalRepresentative());
-            request.setCtfType(CertificationType.ID_CARD.getCode());
-            request.setCtfId(accountDTO.getIdCard());
-            request.setClientName(accountDTO.getLegalRepresentative());
-        }
-        return request;
-    }
-
-    private void saveMerchantBank(NominalAccountResponse response, String busType, AccountDTO accountDTO, String accountNo) {
+    private void saveMerchantBank( String busType, AccountDTO accountDTO, String accountNo) {
         MerchantBankDO merchantBankDO = new MerchantBankDO();
         merchantBankDO.setAccountNo(accountNo);
         merchantBankDO.setBusinessType(busType);
-        merchantBankDO.setChildAcctNo(response.getChildAcctNo());
-        merchantBankDO.setAuthCode(response.getAuthrCd());
-        merchantBankDO.setChildAcctName(response.getChildAcctNm());
-        merchantBankDO.setPcpCustNo(response.getPcpClntNo());
+        merchantBankDO.setChildAcctNo(UUID.randomUUID().toString(true));
+        merchantBankDO.setAuthCode(UUID.randomUUID().toString(true));
+        merchantBankDO.setChildAcctName(UUID.randomUUID().toString(true));
+        merchantBankDO.setPcpCustNo(UUID.randomUUID().toString(true));
         if (AccountEnum.BUSINESS_TYPE_PROFIT.getKey().equals(busType)) {
             merchantBankDO.setBankNo(accountDTO.getBankNo());
             merchantBankDO.setBankName(accountDTO.getBankName());

@@ -103,11 +103,4 @@ public interface AccountCashService {
      * @return MerchantBankRespVO 商户银行信息
      */
     MerchantBankRespVO bankInfo(String accountNo, String busType);
-
-    /**
-     * 商户保证金银行APP充值
-     *
-     * @return
-     */
-    AppTransferRespVO appTransfer(AppTransferReqVO appTransferReqVO);
 }

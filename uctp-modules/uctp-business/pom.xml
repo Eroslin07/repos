@@ -199,19 +199,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.spdb</groupId>
-            <artifactId>spdb-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>bocom</groupId>
+            <artifactId>openapi-sdk</artifactId>
+            <version>2.1.2</version>
             <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/spdb-api-1.0-SNAPSHOT.jar</systemPath>
-        </dependency>
-        <!-- 新大陆POS机SDK       -->
-        <dependency>
-            <groupId>com.newland</groupId>
-            <artifactId>pospp-lib</artifactId>
-            <version>1.0.03</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/lib-1.0.03.jar</systemPath>
+            <systemPath>${pom.basedir}/lib/bocom-openapi-sdk-2.1.2.jar</systemPath>
         </dependency>
     </dependencies>
 
