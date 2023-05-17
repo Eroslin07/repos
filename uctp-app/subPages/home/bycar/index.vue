@@ -1392,7 +1392,12 @@
 				}
 				this.seriesList = [];
 				getCarSeriesList(data).then((res) => {
-					this.seriesList = res.series_list;
+					if (res.resultCode == '0000') {
+						this.seriesList = res.resultData;
+					} else {
+						this.$modal.msg(res.resultMsg);
+					}
+					// this.seriesList = res.series_list;
 				})
 			},
 			// 查询所有品牌
@@ -1436,9 +1441,14 @@
 				}
 				this.seriesList = [];
 				getCarSeriesList(data1).then((res) => {
-					this.seriesList = res.series_list;
-					this.showModel = true;
-					this.brandShow = false;
+					if (res.resultCode == '0000') {
+						this.seriesList = res.resultData;
+						this.showModel = true;
+						this.brandShow = false;
+					} else {
+						this.$modal.msg(res.resultMsg);
+					}
+					// this.seriesList = res.series_list;
 				})
 			},
 			// 关闭选择车型
