@@ -54,7 +54,8 @@
 
 <script>
 	import {
-		getSellPage
+		getSellPage,
+		getPosList
 	} from '@/api/home/sellingCar.js'
 	import {
 		parseTime
@@ -78,6 +79,7 @@
 				loadStatus: 'loadmore',
 				isSHowTip:'',
 				carId:'',
+				posList: [],
 			}
 		},
 		components: {
@@ -97,6 +99,7 @@
 		},
 		mounted() {
 			this.getList(this.formData);
+			this.getPosList();
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
@@ -117,6 +120,12 @@
 			// 页面返回
 			back() {
 				this.$tab.switchTab('/pages/index');
+			},
+			// 获取pos列表
+			getPosList() {
+				getPosList({ deptId: this.$store.state.user.deptId }).then((res) => {
+					this.posList = res.data;
+				})
 			},
 			// 获取list
 			getList(obj) {
@@ -202,7 +211,23 @@
 					this.show = true;
 					return
 				}
-				this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
+				if (this.posList.length == 0) {
+					let _this = this;
+					uni.showModal({
+						title: '提示',
+						showCancel: false,
+						content: '您尚未录入POS机设备，请联系商户主账号维护。',
+						confirmText: '知道了',
+						confirmColor: '#fa6401',
+						success: function (res) {
+							if (res.confirm) {
+								_this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
+							}
+						}
+					})
+				} else {
+					this.$tab.navigateTo('/subPages/home/sellingCar/carInfo?id=' + item.id);
+				}
 			},
 			// 上传检测报告
 			handleConfirm() {

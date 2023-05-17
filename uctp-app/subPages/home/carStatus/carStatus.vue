@@ -140,6 +140,9 @@
 	import {
 		delCarInfoWithCollect
 	} from '@/api/home/bycar.js'
+	import {
+		getPosList
+	} from '@/api/home/sellingCar.js'
 	import AbnormalPage from '@/subPages/common/abnormaPage/index.vue'
 	export default {
 		data() {
@@ -271,6 +274,7 @@
 				type: null,
 				// 提示信息
 				isSHowTip: '',
+				posList: [],
 			}
 		},
 		components: {
@@ -290,6 +294,7 @@
 		},
 		mounted() {
 			this.getList(this.formData)
+			this.getPosList();
 		},
 		onShow(){
 			
@@ -339,6 +344,12 @@
 			// 页面返回
 			back() {
 				this.$tab.switchTab('/pages/index');
+			},
+			// 获取pos列表
+			getPosList() {
+				getPosList({ deptId: this.$store.state.user.deptId }).then((res) => {
+					this.posList = res.data;
+				})
 			},
 			// 获取list数据
 			getList(params) {
@@ -470,7 +481,23 @@
 					})
 				} else {
 					if (item.status === 31) {
-						this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
+						if (this.posList.length == 0) {
+							let _this = this;
+							uni.showModal({
+								title: '提示',
+								showCancel: false,
+								content: '您尚未录入POS机设备，请联系管理员新增。',
+								confirmText: '知道了',
+								confirmColor: '#fa6401',
+								success: function (res) {
+									if (res.confirm) {
+										_this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
+									}
+								}
+							})
+						} else {
+							this.$tab.navigateTo(`/subPages/home/sellingCar/carInfo?id=${item.id}&&status=${item.status}`);
+						}
 						return;
 					} else if (item.status == 11) {
 						this.$tab.navigateTo('/subPages/home/bycar/index?id=' + item.id)

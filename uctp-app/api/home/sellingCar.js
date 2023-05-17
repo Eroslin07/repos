@@ -52,3 +52,12 @@ export function FindBuyAndWTContract(id){
 		method:'GET'
 	})
 }
+
+// 获取pos机设备列表
+export function getPosList(data) {
+	return request({
+		url: '/uctp/pos/getPosListDrop',
+		method: 'GET',
+		params: data
+	})
+}

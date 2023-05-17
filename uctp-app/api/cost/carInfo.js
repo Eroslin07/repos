@@ -15,3 +15,12 @@ export function contractInvalid(query){
 		method:'POST'
 	})
 }
+
+// 修改POS机设备
+export function setSavePos(data) {
+	return request({
+		url: '/uctp/car-info/save/updatePos',
+		'method': 'POSt',
+		data: data
+	})
+}
