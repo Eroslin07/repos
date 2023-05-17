@@ -1,7 +1,7 @@
 <template>
 	<view class="add-staff">
 		<uni-card :is-shadow="false" is-full style="border: none;">
-			<u--form labelPosition="left" :model="staffForm" :rules="rules" ref="staffForm" labelWidth="160rpx"
+			<u--form labelPosition="left" :model="staffForm" :rules="rules" ref="staffForm" labelWidth="180rpx"
 				:labelStyle="{fonsSzie:'28rpx',color:'#222222'}">
 				<u-form-item label="POS机名称" prop="posName" borderBottom>
 					<u-input v-model="staffForm.posName" border="none" placeholder="请输入POS机名称"></u-input>
@@ -40,7 +40,6 @@
 					remark: '',
 					status: '0'
 				},
-				oldData: {},
 				rules: {
 					posName: {
 						type: 'string',
@@ -79,9 +78,7 @@
 		onLoad(options) {
 			// console.log(options)
 			if (options.data) {
-				this.oldData = {};
 				this.staffForm = JSON.parse(decodeURIComponent(options.data));
-				this.oldData = JSON.parse(decodeURIComponent(options.data));
 			}
 			if (options.type == 'add') {
 				uni.setNavigationBarTitle({
