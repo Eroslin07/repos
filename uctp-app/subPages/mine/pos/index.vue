@@ -76,12 +76,22 @@
 			},
 			// 删除
 			removeItem(item) {
-				this.$modal.confirm('确定删除该POS机设备吗？').then(() => {
-					deletePos({ userId: item.id }).then((res) => {
-						this.$modal.msg("删除成功")
-						this.getList();
+				if (item.status == '0') {
+					uni.showModal({
+						title: '提示',
+						showCancel: false,
+						content: '请先停用再删除',
+						confirmText: '知道了',
+						confirmColor: '#fa6401',
 					})
-				})
+				} else {
+					this.$modal.confirm('确定删除该POS机设备吗？').then(() => {
+						deletePos({ userId: item.id }).then((res) => {
+							this.$modal.msg("删除成功")
+							this.getList();
+						})
+					})
+				}
 			}
 		}
 	}
