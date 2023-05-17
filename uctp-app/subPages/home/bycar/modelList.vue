@@ -67,8 +67,13 @@
 						seriesId: val.series_id
 					}
 					getCarModelList(data).then((res) => {
-						this.status = false;
-						this.modelList = res.model_list;
+						if (res.resultCode == '0000') {
+							this.status = false;
+							this.modelList = res.resultData;
+						} else {
+							this.$modal.msg(res.resultMsg);
+						}
+						// this.modelList = res.model_list;
 					})
 				} else {
 					this.$emit('handleClose', val);

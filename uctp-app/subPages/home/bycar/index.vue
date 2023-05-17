@@ -1230,6 +1230,7 @@
 						this.carForm.brandType = '';
 						this.carForm.firstRegistDate = dateTime;
 						this.carForm.drivingLicenseUrl = [];
+						this.brandStatus = true;
 					}
 					if (this.fileList4.length == 0 && this.fileList8.length == 0) {
 						this.sellerForm.sellerIdCard = '';
