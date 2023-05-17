@@ -2,6 +2,7 @@ package com.newtouch.uctp.module.business.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.newtouch.uctp.module.business.dal.mysql.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -30,10 +31,6 @@ import com.newtouch.uctp.module.business.controller.app.carInfo.vo.*;
 import com.newtouch.uctp.module.business.convert.carInfo.CarInfoConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.*;
 import com.newtouch.uctp.module.business.dal.dataobject.user.AdminUserDO;
-import com.newtouch.uctp.module.business.dal.mysql.CarInfoDetailsMapper;
-import com.newtouch.uctp.module.business.dal.mysql.CarInfoMapper;
-import com.newtouch.uctp.module.business.dal.mysql.ContractMapper;
-import com.newtouch.uctp.module.business.dal.mysql.InvoiceTitleMapper;
 import com.newtouch.uctp.module.business.dal.mysql.user.UserMapper;
 import com.newtouch.uctp.module.business.enums.CarStatus;
 import com.newtouch.uctp.module.business.service.*;
@@ -89,6 +86,9 @@ public class CarInfoServiceImpl implements CarInfoService {
 
     @Resource
     private InvoiceTitleMapper invoiceTitleMapper;
+
+    @Resource
+    private PosMapper posMapper;
 
     @Override
     public Long createCarInfo(AppCarInfoCreateReqVO createReqVO) {
@@ -431,6 +431,10 @@ public class CarInfoServiceImpl implements CarInfoService {
             }
         }
         AppSellCarInfoRespVO carInfoRespVO = CarInfoConvert.INSTANCE.convertSell(carInfo,carPicList,drivingPicList,registerPicList,idCardsPicList,carInfoDetailsDO);
+        PosDO posDO = new PosDO();
+        posDO.setPosName(carInfo.getPosName());
+        posDO.setPosId(carInfo.getPosId());
+        carInfoRespVO.setPosDO(posDO);
         return carInfoRespVO;
     }
 
@@ -574,6 +578,8 @@ public class CarInfoServiceImpl implements CarInfoService {
         carInfo.setStatus(CarStatus.SELL_A.value());
         carInfo.setStatusThree(CarStatus.SELL_A_A.value());
         carInfo.setSellCarFair(reqVO.getSellCarFair());
+        carInfo.setPosId(reqVO.getPosId());
+        carInfo.setPosName(reqVO.getPosName());
         carInfoMapper.updateById(carInfo);
         CarInfoDetailsDO carInfoDetails = carInfoDetailsService.getCarInfoDetailsByCarId(reqVO.getId());
         carInfoDetails.setBuyerTel( reqVO.getBuyerTel() );
@@ -600,6 +606,14 @@ public class CarInfoServiceImpl implements CarInfoService {
         });
         //返回流程需要的对象
         return this.buildBmpVO(carInfo,carInfoDetails);
+    }
+
+    @Override
+    public int updateCarPos(AppSellCarInfoReqVO reqVO) {
+        CarInfoDO carInfoDO = carInfoMapper.selectById(reqVO.getId());
+        carInfoDO.setPosId(reqVO.getPosId());
+        carInfoDO.setPosName(reqVO.getPosName());
+        return carInfoMapper.updateById(carInfoDO);
     }
 
     private AppBpmCarInfoRespVO buildBmpVO(CarInfoDO carInfo,CarInfoDetailsDO carInfoDetails){

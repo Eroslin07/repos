@@ -29,6 +29,7 @@ public interface ErrorCodeConstants {
     ErrorCode AUTH_POS_IS_EXIST = new ErrorCode(1002000017, "该POS机已存在");
     ErrorCode AUTH_ADDPOS_ERROR = new ErrorCode(1002000018, "新增POS机失败");
     ErrorCode AUTH_UPDATEPOS_ERROR = new ErrorCode(1002000019, "修改POS机失败");
+    ErrorCode AUTH_POS_IS_USED = new ErrorCode(1002000019, "该POS机已存在业务数据，无法修改删除");
 
     // ========== 菜单模块 1002001000 ==========
     ErrorCode MENU_NAME_DUPLICATE = new ErrorCode(1002001000, "已经存在该名字的菜单");

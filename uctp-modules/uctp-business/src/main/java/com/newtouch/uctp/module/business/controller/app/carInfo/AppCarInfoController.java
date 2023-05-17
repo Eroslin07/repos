@@ -140,6 +140,14 @@ public class AppCarInfoController {
         return success(carInfoService.saveSellCarInfo(reqVO));
     }
 
+    @PostMapping("/save/updatePos")
+    @Operation(summary = "卡片修改POS机编号")
+    public CommonResult<Integer> updateCarPos(@Valid @RequestBody AppSellCarInfoReqVO reqVO) {
+        return success(carInfoService.updateCarPos(reqVO));
+    }
+
+
+
     @GetMapping("/delete/sell/{id}")
     @Operation(summary = "删除卖车的草稿数据")
     public CommonResult<Boolean> deleteSell(@PathVariable @NotNull(message = "请传入Id") Long id) {

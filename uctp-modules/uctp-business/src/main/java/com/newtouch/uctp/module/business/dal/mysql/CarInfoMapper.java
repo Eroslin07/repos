@@ -101,4 +101,11 @@ public interface CarInfoMapper extends BaseMapperX<CarInfoDO> {
                 .eqIfPresent(CarInfoDO::getStatus, status)
         );
     }
+
+
+    default List<CarInfoDO> selectByPosId(String pos){//  status二级状态
+        return selectList(new LambdaQueryWrapperX<CarInfoDO>()
+                .eqIfPresent(CarInfoDO::getPosId,pos)
+        );
+    }
 }

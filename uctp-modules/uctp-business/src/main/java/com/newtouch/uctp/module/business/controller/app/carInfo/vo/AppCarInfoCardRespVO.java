@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDO;
 import com.newtouch.uctp.module.business.dal.dataobject.CarInfoDetailsDO;
 import com.newtouch.uctp.module.business.dal.dataobject.ContractDO;
+import com.newtouch.uctp.module.business.dal.dataobject.PosDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.ToString;

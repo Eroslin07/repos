@@ -157,6 +157,8 @@ public interface CarInfoService {
      */
     AppBpmCarInfoRespVO saveSellCarInfo(AppSellCarInfoReqVO reqVO);
 
+    int updateCarPos(AppSellCarInfoReqVO reqVO);
+
      AppCarInfoAndDetailVO getCarInfoAndDetail(String id);
     /**
      * 获得车辆部分明细信息

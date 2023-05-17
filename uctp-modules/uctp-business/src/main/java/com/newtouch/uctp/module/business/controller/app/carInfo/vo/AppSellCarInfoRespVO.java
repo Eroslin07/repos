@@ -1,10 +1,7 @@
 package com.newtouch.uctp.module.business.controller.app.carInfo.vo;
 
 import com.google.common.collect.Lists;
-import com.newtouch.uctp.module.business.dal.dataobject.FeesAndCommitments;
-import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareParts;
-import com.newtouch.uctp.module.business.dal.dataobject.ProceduresAndSpareSell;
-import com.newtouch.uctp.module.business.dal.dataobject.VehicleProblem;
+import com.newtouch.uctp.module.business.dal.dataobject.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -91,5 +88,7 @@ public class AppSellCarInfoRespVO extends AppCarInfoBaseVO {
     private String deposit;
     @Schema(description = "尾款")
     private String balancePayment;
+    @Schema(description = "pos机信息")
+    private PosDO posDO;
 
 }
