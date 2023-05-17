@@ -938,7 +938,7 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                     .contractNo(contractNo)
                     .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_IGNORE.getKey()) // 记录成不计入（冗余记录，不算收支）
                     .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_IGNORE.getValue())
-                    .profit(profitCalcResult.getCurrentProfitAmount())
+                    .profit(profitCalcResult.getCurrentRevenueAmount())
                     .tradeType(AccountEnum.TRAN_PROFIT_SALES_PROFIT.getKey())
                     .tradeTypeText(AccountEnum.TRAN_PROFIT_SALES_PROFIT.getValue())
                     .tradeTo(AccountEnum.TRADE_TO_MY_PROFIT.getKey())
