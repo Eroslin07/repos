@@ -1300,10 +1300,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 businessFileService.deleteByMainId(contractId);
                 //删除合同表数据
                 contractMapper.deleteByContractId(contractDO.getContractId());
-
-
             }
-
             ContractDO sellWTContrsctDo = new ContractDO();
             sellWTContrsctDo.setCarId(carInfo.getId());
             sellWTContrsctDo.setContractId(contractId);
@@ -1351,8 +1348,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                 businessFileService.deleteByMainId(contractId);
                 //删除合同表数据
                 contractMapper.deleteByContractId(contractDO.getContractId());
-
-
             }
 
             businessFile.setFileType("12");//卖车委托合同类型
@@ -1446,7 +1441,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public void companyAuth(Long userId) throws FileNotFoundException {
         AdminUserRespDTO userRespDTO = adminUserApi.getUser(userId).getCheckedData();
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectById(PLATFORM_ID);
+        QysConfigDO configDO = qysConfigMapper.selectById(SAAS_ID);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
         List<FileRespDTO> fileList = businessFileService.getDTOByMainId(deptRespDTO.getId());
         //获取营业执照图片
@@ -1496,9 +1491,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
-        QysConfigDO configDO = qysConfigMapper.selectById(PLATFORM_ID);
+//        QysConfigDO configDO1 = qysConfigMapper.selectById(PLATFORM_ID);
         QysConfigDO marketConfigDO = qysConfigMapper.selectById(MARKET_ID);
-        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(configDO.getId());
+        QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(SAAS_ID);
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile(),userRespDTO.getNickname(),userExtDO.getIdCard()).getCheckedData();
         String authId = checkedData.getAuthId();
         userExtDO.setAuthId(authId);
