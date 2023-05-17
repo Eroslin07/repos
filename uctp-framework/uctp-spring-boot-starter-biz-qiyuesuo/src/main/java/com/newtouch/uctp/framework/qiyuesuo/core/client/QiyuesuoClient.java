@@ -7,6 +7,7 @@ import com.qiyuesuo.sdk.v2.bean.TemplateParam;
 import com.qiyuesuo.sdk.v2.request.*;
 import com.qiyuesuo.sdk.v2.response.ContractPageResult;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
+import com.qiyuesuo.sdk.v2.response.EmployeeListResult;
 import com.qiyuesuo.sdk.v2.response.SealListResult;
 
 import java.io.FileOutputStream;
@@ -264,5 +265,11 @@ public interface QiyuesuoClient {
      * @return
      */
     QiyuesuoCommonResult<Contract> defaultContractInvalidSign(Long contractId);
+    /**
+     * 获取员工列表
+     *
+     * @return
+     */
+    QiyuesuoCommonResult<EmployeeListResult> defaultEmployeeList();
 
 }

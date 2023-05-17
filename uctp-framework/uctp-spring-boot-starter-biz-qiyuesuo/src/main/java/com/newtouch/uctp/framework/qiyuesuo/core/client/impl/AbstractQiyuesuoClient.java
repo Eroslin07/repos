@@ -303,6 +303,25 @@ public abstract class AbstractQiyuesuoClient implements QiyuesuoClient, Qiyuesuo
         return result;
     }
 
+    @Override
+    public QiyuesuoCommonResult<EmployeeListResult> defaultEmployeeList() {
+        QiyuesuoCommonResult<EmployeeListResult> result;
+        try {
+            EmployeeListRequest request = new EmployeeListRequest();
+            result = doDefaultEmployeeList(request);
+        } catch (Throwable ex) {
+            // 打印异常日志
+//            log.error("[draft][发起合同草稿异常，contract({}) ]",
+//                    contract, ex);
+            // 封装返回
+            return QiyuesuoCommonResult.error(ex);
+        }
+        return result;
+    }
+
+    protected abstract QiyuesuoCommonResult<EmployeeListResult> doDefaultEmployeeList(EmployeeListRequest request)
+            throws Throwable;
+
     protected abstract QiyuesuoCommonResult<Contract> doDefaultContractInvalidSign(ContractSignInvalidRequest request)
             throws Throwable;
 

@@ -101,6 +101,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.newtouch.uctp.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
@@ -401,10 +402,16 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.FALSE,
                                 Boolean.FALSE);
                         break;
-                    case REJECTED:
-                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态,此时作废收车委托合同
-                        //这是作废原因为：卖家已主动作废
-                        contractService.entrustContractInvalid(contractDO,"卖家已主动作废");
+//                    case REJECTED:
+//                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态,此时作废收车委托合同
+//                        //这是作废原因为：卖家已主动作废
+//                        contractService.entrustContractInvalid(contractDO,"卖家已主动作废");
+//                        break;
+                    case INVALIDING:
+                        //签署收车委托合同
+                        if (StrUtil.equals("SEND_INVALID", contractStatusDTO.getCallbackType())) {
+                            this.companyContractInvalidSign(contractDO.getContractId());
+                        }
                         break;
                 }
             } else if (contractDO.getContractType().equals(2)) {
@@ -470,7 +477,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                     case REJECTED:
                         //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态,此时作废收车委托合同
                         //这是作废原因为：买家已主动作废
-                        contractService.entrustContractInvalid(contractDO,"买家已主动作废");
+                        contractService.entrustContractInvalid(contractDO,"卖家已主动作废");
                         break;
                 }
             } else if (contractDO.getContractType().equals(3)) {
@@ -502,11 +509,16 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 CarStatus.SELL_A_A.value(),
                                 Boolean.FALSE,
                                 Boolean.FALSE);
-
                         break;
                     case SIGNING:
                         //签署中需要进行下一个企业静默签章
 //                        this.companySign(contractDO.getContractId());
+                        break;
+                    case INVALIDING:
+                        //签署卖车委托合同
+                        if (StrUtil.equals("SEND_INVALID", contractStatusDTO.getCallbackType())) {
+                            this.companyContractInvalidSign(contractDO.getContractId());
+                        }
                         break;
                 }
             } else if (contractDO.getContractType().equals(4)) {
@@ -539,8 +551,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                                 Boolean.FALSE,
                                 Boolean.TRUE);
                         this.sellCarContractInvalided(contractDO.getCarId());
-                        //释放收车保证金预占
-                        merchantMoneyService.releaseCash(contractDO.getContractId());
                         //下载合同签章文件
                         contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
                         //作废卖车委托合同
@@ -563,6 +573,11 @@ public class QysConfigServiceImpl implements QysConfigService {
                                     Boolean.FALSE);
                             this.companySign(contractDO.getContractId());
                         }
+                        break;
+                    case REJECTED:
+                        //这里合同是 “签署中” 状态时，撤回合同，合同变为 “已撤回” 状态,此时作废收车委托合同
+                        //这是作废原因为：买家已主动作废
+                        contractService.entrustContractInvalid(contractDO,"买家已主动作废");
                         break;
                 }
             }
@@ -1568,10 +1583,8 @@ public class QysConfigServiceImpl implements QysConfigService {
         Boolean existSeal = StrUtil.isBlank(configDO.getAccessKey()) ? Boolean.FALSE : Boolean.TRUE;
         TenantUtils.execute(configDO.getTenantId(), () -> {
             WebFrameworkUtils.getRequest().setAttribute(HEADER_TENANT_ID, configDO.getTenantId());
-            //设置当前登录人信息，免得保存报错
             List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
             WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), Long.valueOf(configDO.getCreator()));
-            //保存回调信息
             qysCallbackService.saveDO(json,
                     QysCallBackType.COMPANY_AUTH.value(), configDO.getBusinessId());
             if (existSeal) {
@@ -1599,11 +1612,9 @@ public class QysConfigServiceImpl implements QysConfigService {
             this.initLocalCache();
             DeptRespDTO deptRespDTO = deptApi.getDept(configDO.getBusinessId()).getCheckedData();
             List<AdminUserRespDTO> adminUserRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.toList(deptRespDTO.getId())).getCheckedData();
-            //这里先去生成一个企业公章
             QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
             Seal seal = client.defaultSealAutoCreate("公章", "").getCheckedData();
             configDO.setSealId(seal.getId());
-            //保存公章
             qysConfigMapper.updateById(configDO);
             if (CollUtil.isEmpty(adminUserRespDTOS)) {
                 log.error("授权印章业务时，没有获取到部门下主要员工");
@@ -1611,8 +1622,6 @@ public class QysConfigServiceImpl implements QysConfigService {
             }
             log.info("企业公章生成，企业:{},公章id:{}", deptRespDTO.getName(), seal.getId());
             QiyuesuoSaasClient saasClient = qiyuesuoClientFactory.getQiyuesuoSaasClient(1L);
-//            List<AdminUserRespDTO> userRespDTOS = adminUserApi.getUserListByDeptIds(ListUtil.of(configDO.getBusinessId())).getCheckedData();
-            //不存在token,企业印章自动签授权
             AdminUserRespDTO userRespDTO = adminUserRespDTOS.get(0);
             //5年期限
             DateTime authDeadline = DateUtil.offset(DateUtil.date(), DateField.YEAR, 5);
@@ -1620,7 +1629,6 @@ public class QysConfigServiceImpl implements QysConfigService {
                     companyId, DateUtil.formatDate(authDeadline), "授权盖章").getCheckedData();
             log.info("企业印章自动签授权,用户【{}】,授权地址【{}】", userRespDTO.getNickname(), authUrlResult.getPageUrl());
             List<String> urls1 = ShortUrlsUtil.shortUrls(ListUtil.of(authUrlResult.getPageUrl()));
-            //发送短信
             Map<String, String> map1 = MapUtil
                     .builder("title", "企业印章自动签授权")
                     .put("contentType", "43")
@@ -1878,7 +1886,11 @@ public class QysConfigServiceImpl implements QysConfigService {
             QysConfigDO configDO = getByDeptId(adminUserDO.getDeptId());
             if(null!=configDO){
                 QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
-                client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+                EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
+                List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
+                if (mobiles.contains(adminUserDO.getMobile())) {
+                    client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+                }
             }
         }
         return delete;

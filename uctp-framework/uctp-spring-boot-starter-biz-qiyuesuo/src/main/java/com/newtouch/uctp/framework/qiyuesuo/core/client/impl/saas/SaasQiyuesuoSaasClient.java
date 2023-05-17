@@ -39,6 +39,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<EmployeeListResult> doDefaultEmployeeList(EmployeeListRequest request) throws Throwable {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Contract> doDefaultContractInvalidSign(ContractSignInvalidRequest request) throws Throwable {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }

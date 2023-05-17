@@ -41,6 +41,16 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
     }
 
     @Override
+    protected QiyuesuoCommonResult<EmployeeListResult> doDefaultEmployeeList(EmployeeListRequest request) throws Throwable {
+        String response = this.client.service(request);
+        SdkResponse<EmployeeListResult> sdkResponse = JSONUtils.toQysResponse(response,EmployeeListResult.class);
+        return QiyuesuoCommonResult.build(sdkResponse.getCode().toString()
+                , sdkResponse.getMessage()
+                , sdkResponse.getResult()
+                , codeMapping);
+    }
+
+    @Override
     protected QiyuesuoCommonResult<Contract> doDefaultContractInvalidSign(ContractSignInvalidRequest request) throws Throwable {
         String response = this.client.service(request);
         SdkResponse<Contract> sdkResponse = JSONUtils.toQysResponse(response,Contract.class);

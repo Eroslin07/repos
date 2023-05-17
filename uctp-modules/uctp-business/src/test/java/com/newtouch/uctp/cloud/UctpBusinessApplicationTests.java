@@ -14,8 +14,10 @@ import com.qiyuesuo.sdk.v2.SdkClient;
 import com.qiyuesuo.sdk.v2.bean.*;
 import com.qiyuesuo.sdk.v2.json.JSONUtils;
 import com.qiyuesuo.sdk.v2.request.ContractPageRequest;
+import com.qiyuesuo.sdk.v2.request.EmployeeListRequest;
 import com.qiyuesuo.sdk.v2.response.ContractPageResult;
 import com.qiyuesuo.sdk.v2.response.DocumentAddResult;
+import com.qiyuesuo.sdk.v2.response.EmployeeListResult;
 import com.qiyuesuo.sdk.v2.response.SdkResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -173,6 +175,14 @@ class UctpBusinessApplicationTests {
         client.defaultDocumentDownload(fos, 3095639330459231123L);
 //        client.defaultContractDownload(fos, 3095639328445965188L, ListUtil.of("CONTRACT"), Boolean.FALSE).getCheckedData();
 
+    }
+    @Test
+    void emp() throws FileNotFoundException {
+        SdkClient sdkClient = new SdkClient("https://openapi.qiyuesuo.cn", "62bZtaGknb", "wWiTSWW6VmwllVlBVqwQJssvLNupeS");
+        EmployeeListRequest request = new EmployeeListRequest();
+        String response = sdkClient.service(request);
+        SdkResponse<EmployeeListResult> responseObj = JSONUtils.toQysResponse(response, EmployeeListResult.class);
+        System.out.println(responseObj.getResult());
     }
 
 }
