@@ -225,7 +225,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
-    @GlobalTransactional(propagation = Propagation.REQUIRES_NEW)
+//    @GlobalTransactional(propagation = Propagation.REQUIRES_NEW)
     public String saveNotice(Map<String,String> map) {
 
         NoticeInfoDO infoDO=new NoticeInfoDO();

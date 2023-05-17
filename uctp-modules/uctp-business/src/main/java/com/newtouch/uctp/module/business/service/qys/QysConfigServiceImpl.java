@@ -1866,6 +1866,24 @@ public class QysConfigServiceImpl implements QysConfigService {
         return map;
     }
 
+
+    @Override
+    @GlobalTransactional
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteAccount(Long id) {
+        AdminUserDO adminUserDO = userMapper.selectById(id);
+        userMapper.deleteById(id);
+        int delete = userExtMapper.deleteByUserId(id);
+        if (delete >= 1) {
+            QysConfigDO configDO = getByDeptId(adminUserDO.getDeptId());
+            if(null!=configDO){
+                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+                client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+            }
+        }
+        return delete;
+    }
+
     @Override
     public void companyContractInvalidSign(Long contractId) {
         ContractDO contractDO = contractService.getByContractId(contractId);

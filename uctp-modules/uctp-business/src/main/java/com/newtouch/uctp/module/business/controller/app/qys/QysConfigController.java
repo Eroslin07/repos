@@ -221,4 +221,11 @@ public class QysConfigController {
         Map map = qysConfigService.addAccount(reqVO);
         return success(map);
     }
+
+    @GetMapping("/deleteAccount")
+    @Operation(summary = "删除子账号")
+    @Parameter(name = "userId", description = "用户id", required = true, example = "1650085024672796674")
+    public CommonResult<Integer> deleteAccount(@RequestParam("userId") Long userId) {
+        return success(qysConfigService.deleteAccount(userId));
+    }
 }

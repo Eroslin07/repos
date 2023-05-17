@@ -205,6 +205,8 @@ public interface QysConfigService {
 
     Map addAccount(@Valid AddAccountDTO reqVO);
 
+    int deleteAccount(Long id);
+
     /**
      * 公司签署作废合同
      *
