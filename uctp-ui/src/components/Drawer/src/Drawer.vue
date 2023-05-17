@@ -5,7 +5,7 @@
       :direction="direction"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      size="80%"
+      :size="sizeWidth"
       append-to-body
       destroy-on-close
       :show-close="false"
@@ -101,6 +101,9 @@ import BaseFlowChart from '@/views/ApprovalProcess/BaseFlowChart.vue'
 import { ref, shallowRef } from 'vue'
 import { baseInfoData, completedVisible, tabName } from '@/views/workbench/basInfoValue'
 import { status } from 'nprogress'
+import { useAppStore } from '@/store/modules/app'
+const appStore = useAppStore()
+const collapse = computed(() => appStore.getCollapse)
 console.log(status)
 
 console.log(completedVisible, 'drawer')
@@ -250,6 +253,28 @@ const dravwerClose = () => {
   activeName.value = 'BaseInfo'
   emit('handleCloseDrawer')
 }
+// 监听窗口大小
+const screenWidths = ref<number>(
+  window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+)
+onMounted(() => {
+  window.onresize = () => {
+    return (() => {
+      screenWidths.value =
+        window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+    })()
+  }
+})
+watch(
+  () => screenWidths,
+  (val) => {
+    screenWidths.value = val
+  }
+)
+
+const sizeWidth = computed(() => {
+  return unref(collapse) ? unref(screenWidths) - 64 : unref(screenWidths) - 200
+})
 </script>
 <style lang="scss" scoped>
 .drawer_self {
