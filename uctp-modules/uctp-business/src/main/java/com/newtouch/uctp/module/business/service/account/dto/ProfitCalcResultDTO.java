@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
@@ -38,9 +37,9 @@ public class ProfitCalcResultDTO {
     // 本次总费用
     private Long currentFeeTotalAmount;
     // 本次费用明细
-    private List<CostDTO> currentCosts;
+    private Long currentCosts;
     // 本次税收明细
-    private List<TaxDTO> currentTaxes;
+    private Long currentTaxes;
     // 计算时间
     private LocalDateTime calcTime;
 }

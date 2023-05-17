@@ -5,6 +5,7 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.newtouch.uctp.module.business.enums.ExpenseConstants;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -642,8 +643,6 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * @param carSalesAmount                     卖车款
      * @param originalWaitForBackCashTotalAmount 原待回填保证金
      * @param originalProfitTotalAmount          原利润余额
-     * @param costs                              服务费用清单
-     * @param taxes                              税费清单
      * @return 利润计算结果
      */
     private ProfitCalcResultDTO calcProfit(String accountNo,
@@ -736,11 +735,9 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                 // 本次总费用
                 .currentFeeTotalAmount(currentFeeTotalAmount)
                 // 本次费用明细
-                .currentCosts(Arrays.asList(new CostDTO().setAmount(20000L)))
+                .currentCosts(currentCostTotalAmount)
                 // 本次税收明细
-                .currentTaxes(Arrays.asList(
-                        new TaxDTO().setAmount(carSalesAmount).setRate(new BigDecimal(0.005))
-                ))
+                .currentTaxes(currentTaxTotalAmount)
                 // 计算时间
                 .calcTime(LocalDateTime.now())
                 .build();
@@ -752,65 +749,20 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
      * 计算税费，并返回税费总和
      *
      * @param carSalesAmount 卖车价
-     * @param taxes          税
      * @return 剩总和
      */
     private Long calcTaxAmount(Long carSalesAmount) {
-        Double taxes = 0.005D;
-        Long taxTotalAmount = NumberUtil.mul(carSalesAmount, taxes).longValue();
-//        if (taxes != null && !taxes.isEmpty()) {
-//            Set<String> taxTypeSet = new HashSet<>();
-//            for (TaxDTO tax : taxes) {
-//                log.info("税费：{}", tax);
-//
-//                String taxType = tax.getType();
-//                if (taxTypeSet.contains(taxType)) {
-//                    throw exception(ACC_TAX_TYPE_REPEAT);
-//                }
-//                BigDecimal rate = tax.getRate();
-//                if (rate != null) {
-//                    // 金额为分，计算后取整数
-//                    Long taxAmount = rate.multiply(BigDecimal.valueOf(carSalesAmount)).longValue();
-//                    // 回写税收对象
-//                    tax.setAmount(taxAmount);
-//                    taxTotalAmouont = taxTotalAmouont + taxAmount;
-//                } else {
-//                    tax.setAmount(0L); // 税率为空时，税费为0
-//                }
-//            }
-//        }
+        Long taxTotalAmount = NumberUtil.mul(carSalesAmount, ExpenseConstants.TAX_RATE).longValue();
         return taxTotalAmount;
     }
 
     /**
      * 计算所有费用
      *
-     * @param costs 费用
      * @return 费用总和
      */
     private Long calcCostAmount() {
-        Long r = 20000L;
-//        if (costs != null && !costs.isEmpty()) {
-//            Set<String> costTypeSet = new HashSet<>();
-//            for (CostDTO cost : costs) {
-//                log.info("费用：{}", cost);
-//
-//                String costType = cost.getType();
-//                Long costAmount = cost.getAmount();
-//
-//                if (costTypeSet.contains(costType)) {
-//                    throw exception(ACC_COST_TYPE_REPEAT);
-//                }
-//
-//                costTypeSet.add(costType);
-//                if (costAmount != null) {
-//                    // 费用金额不为空时添加进总费用
-//                    r = r + costAmount;
-//                }
-//            }
-//        }
-
-        return r;
+        return ExpenseConstants.PLATFORM_SERVICE_FEE;
     }
 
     /**
@@ -917,74 +869,66 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
         }
 
         // 本次服务费用
-        if (profitCalcResult.getCurrentCosts() != null && !profitCalcResult.getCurrentCosts().isEmpty()) {
-            for (CostDTO cost : profitCalcResult.getCurrentCosts()) {
-                List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
-                PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
-                        .presentType(PRESENT_TYPE_PROFIT)
-                        .occurredTime(now)
-                        .status(AccountEnum.PRESENT_PROFIT_APPLY.getKey()) // 申请登记
-                        .statusText(AccountEnum.PRESENT_PROFIT_APPLY.getValue())
-                        .build();
-                psr.setDeleted(false);
+        if (profitCalcResult.getCurrentCosts() != null) {
+            List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+            PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                    .presentType(PRESENT_TYPE_PROFIT)
+                    .occurredTime(now)
+                    .status(AccountEnum.PRESENT_PROFIT_APPLY.getKey()) // 申请登记
+                    .statusText(AccountEnum.PRESENT_PROFIT_APPLY.getValue())
+                    .build();
+            psr.setDeleted(false);
 
-                presentStatusRecords.add(psr);
+            presentStatusRecords.add(psr);
 
-                MerchantProfitDO profit = MerchantProfitDO.builder()
-                        .accountNo(accountNo)
-                        .contractNo(contractNo)
-                        .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
-                        .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
-                        .profit(cost.getAmount() * -1) // 费用为支出，记录负数
-                        .tradeType(AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey())
-                        .tradeTypeText(AccountEnum.TRAN_PROFIT_SERVICE_COST.getValue() + "-" + cost.getType()) // 讨论决定使用”利润-服务费-“拼接传入的服务费用名称
-                        .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 费用去向为：市场方
-                        .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
-                        .presentState(psr.getStatus())
-                        .presentStateText(psr.getStatusText())
-                        .presentStatusRecords(presentStatusRecords)
-                        .tradeTime(now)
-                        .build();
-                profit.setDeleted(false);
-                profit.setRevision(0);
-
-                profitList.add(profit);
-            }
+            MerchantProfitDO profit = MerchantProfitDO.builder()
+                    .accountNo(accountNo)
+                    .contractNo(contractNo)
+                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
+                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
+                    .profit(profitCalcResult.getCurrentCosts() * -1) // 费用为支出，记录负数
+                    .tradeType(AccountEnum.TRAN_PROFIT_SERVICE_COST.getKey())
+                    .tradeTypeText(AccountEnum.TRAN_PROFIT_SERVICE_COST.getValue() + "-" + AccountEnum.TRAN_PROFIT_SERVICE_COST.getValue()) // 讨论决定使用”利润-服务费-“拼接传入的服务费用名称
+                    .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 费用去向为：市场方
+                    .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
+                    .presentState(psr.getStatus())
+                    .presentStateText(psr.getStatusText())
+                    .presentStatusRecords(presentStatusRecords)
+                    .tradeTime(now)
+                    .build();
+            profit.setDeleted(false);
+            profit.setRevision(0);
         }
 
         // 本次税费
-        if (profitCalcResult.getCurrentTaxes() != null && !profitCalcResult.getCurrentTaxes().isEmpty()) {
-            for (TaxDTO tax : profitCalcResult.getCurrentTaxes()) {
-                List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
-                PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
-                        .presentType(PRESENT_TYPE_PROFIT)
-                        .occurredTime(now)
-                        .status(AccountEnum.PRESENT_PROFIT_APPLY.getKey())
-                        .statusText(AccountEnum.PRESENT_PROFIT_APPLY.getValue())
-                        .build();
-                psr.setDeleted(false);
+        if (profitCalcResult.getCurrentTaxes() != null) {
+            List<PresentStatusRecordDO> presentStatusRecords = new ArrayList<>();
+            PresentStatusRecordDO psr = PresentStatusRecordDO.builder()
+                    .presentType(PRESENT_TYPE_PROFIT)
+                    .occurredTime(now)
+                    .status(AccountEnum.PRESENT_PROFIT_APPLY.getKey())
+                    .statusText(AccountEnum.PRESENT_PROFIT_APPLY.getValue())
+                    .build();
+            psr.setDeleted(false);
 
-                presentStatusRecords.add(psr);
+            presentStatusRecords.add(psr);
 
-                MerchantProfitDO profit = MerchantProfitDO.builder()
-                        .accountNo(accountNo)
-                        .contractNo(contractNo)
-                        .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
-                        .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
-                        .profit(tax.getAmount() * -1) // 税费为支出，记录负数
-                        .tradeType(AccountEnum.TRAN_PROFIT_TAX_COST.getKey())
-                        .tradeTypeText(AccountEnum.TRAN_PROFIT_TAX_COST.getValue() + "-" + tax.getType())
-                        .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 税费去向为：市场方
-                        .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
-                        .presentState(psr.getStatus())
-                        .presentStateText(psr.getStatusText())
-                        .tradeTime(now)
-                        .build();
-                profit.setDeleted(false);
-                profit.setRevision(0);
-
-                profitList.add(profit);
-            }
+            MerchantProfitDO profit = MerchantProfitDO.builder()
+                    .accountNo(accountNo)
+                    .contractNo(contractNo)
+                    .profitLossType(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getKey()) // 记录成支出
+                    .profitLossTypeText(AccountEnum.PROFIT_LOSS_TYPE_DISBURSEMENT.getValue())
+                    .profit(profitCalcResult.getCurrentTaxes() * -1) // 税费为支出，记录负数
+                    .tradeType(AccountEnum.TRAN_PROFIT_TAX_COST.getKey())
+                    .tradeTypeText(AccountEnum.TRAN_PROFIT_TAX_COST.getValue() + "-" + AccountEnum.TRAN_PROFIT_TAX_COST.getValue())
+                    .tradeTo(AccountEnum.TRADE_TO_MARKET.getKey()) // 税费去向为：市场方
+                    .tradeToText(AccountEnum.TRADE_TO_MARKET.getValue())
+                    .presentState(psr.getStatus())
+                    .presentStateText(psr.getStatusText())
+                    .tradeTime(now)
+                    .build();
+            profit.setDeleted(false);
+            profit.setRevision(0);
         }
 
         // 本次利润
