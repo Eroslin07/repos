@@ -1508,7 +1508,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         }
         DeptRespDTO deptRespDTO = deptApi.getDept(userRespDTO.getDeptId()).getCheckedData();
 //        QysConfigDO configDO1 = qysConfigMapper.selectById(PLATFORM_ID);
-        QysConfigDO marketConfigDO = qysConfigMapper.selectById(MARKET_ID);
+//        QysConfigDO marketConfigDO = qysConfigMapper.selectById(MARKET_ID);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(SAAS_ID);
         SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile(),userRespDTO.getNickname(),userExtDO.getIdCard()).getCheckedData();
         String authId = checkedData.getAuthId();
@@ -1519,7 +1519,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         Map<String, String> map = MapUtil
                 .builder("title", "个人认证")
                 .put("contentType", "45")
-                .put("name", marketConfigDO.getBusinessName())
+                .put("name", deptRespDTO.getName())
                 .put("userName", userRespDTO.getNickname())
                 .put("url", urls.get(0))
                 .put("phone", userRespDTO.getMobile())
@@ -1853,7 +1853,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 //                client.defaultEmployeeCreate(userRespDTO.getNickname(), userRespDTO.getMobile()).getCheckedData();
 //                //授权印章角色
 //                client.defaultRoleManage(ListUtil.of(userRespDTO.getMobile())).getCheckedData();
-                this.employeeCreate(configDO, userRespDTO.getMobile(), userRespDTO.getNickname(), Boolean.TRUE);
+                this.employeeCreate(configDO, userRespDTO.getMobile(), userRespDTO.getNickname());
             });
         } else {
             log.warn("个人认证失败，找不到数据，authId：{}", authId);
@@ -1869,9 +1869,9 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     @Override
-    public void employeeCreate(Long deptId, String mobile, String userName, Boolean isRole) {
+    public void employeeCreate(Long deptId, String mobile, String userName) {
         QysConfigDO configDO = this.getByDeptId(deptId);
-        this.employeeCreate(configDO,mobile,userName,isRole);
+        this.employeeCreate(configDO,mobile,userName);
     }
 
     @Override
@@ -1880,12 +1880,15 @@ public class QysConfigServiceImpl implements QysConfigService {
         EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
         List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
         if (mobiles.contains(mobile)) {
+            //删除授权印章角色
+            client.defaultRoleManageRemove(ListUtil.of(mobile)).getCheckedData();
+            //删除员工
             client.defaultEmployeeRemove(userName, mobile).getCheckedData();
         }
     }
 
     @Override
-    public void employeeCreate(QysConfigDO configDO, String mobile, String userName, Boolean isRole) {
+    public void employeeCreate(QysConfigDO configDO, String mobile, String userName) {
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
         List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
@@ -1893,9 +1896,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             //添加员工
             client.defaultEmployeeCreate(userName, mobile).getCheckedData();
             //授权印章角色
-            if (isRole) {
-                client.defaultRoleManage(ListUtil.of(mobile)).getCheckedData();
-            }
+            client.defaultRoleManage(ListUtil.of(mobile)).getCheckedData();
         }
     }
 
@@ -1915,7 +1916,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 this.employeeRemove(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName());
             }
             if (ObjectUtil.equals(CommonStatusEnum.ENABLE.getStatus(), reqVO.getStatus())) {
-                this.employeeCreate(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName(),Boolean.TRUE);
+                this.employeeCreate(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName());
             }
         }
         return map;

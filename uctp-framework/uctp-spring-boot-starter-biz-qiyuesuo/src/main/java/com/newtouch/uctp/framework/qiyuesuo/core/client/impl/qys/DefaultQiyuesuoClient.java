@@ -3,6 +3,7 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.property.QiyuesuoChannelProperties;
@@ -389,6 +390,18 @@ public class DefaultQiyuesuoClient extends AbstractQiyuesuoClient {
         ContractSignInvalidRequest request = new ContractSignInvalidRequest();
         request.setContractId(contractId);
         return this.defaultContractInvalidSign(request);
+    }
+
+    @Override
+    public CommonResult<Object> defaultRoleManageRemove(List<String> contacts) {
+        Assert.notEmpty(contacts, "contacts不能为空");
+        List<User> list = ListUtil.list(false);
+        for (String contact : contacts) {
+            list.add(new User(contact, "MOBILE"));
+        }
+        RoleManagementRequest request = new RoleManagementRequest("SEAL_ADMIN",list);
+        request.setOperate("REMOVE");
+        return this.defaultRoleManage(request);
     }
 
 

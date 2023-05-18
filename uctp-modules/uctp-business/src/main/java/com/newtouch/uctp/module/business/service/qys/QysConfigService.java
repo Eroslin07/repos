@@ -211,7 +211,7 @@ public interface QysConfigService {
     /**
      * 契约锁员工创建
      */
-    void employeeCreate(Long deptId,String mobile,String userName,Boolean isRole);
+    void employeeCreate(Long deptId,String mobile,String userName);
     /**
      * 契约锁员工删除
      */
@@ -220,7 +220,7 @@ public interface QysConfigService {
     /**
      * 契约锁员工创建
      */
-    void employeeCreate(QysConfigDO configDO,String mobile,String userName,Boolean isRole);
+    void employeeCreate(QysConfigDO configDO,String mobile,String userName);
 
 
     Map addAccount(@Valid AddAccountDTO reqVO);

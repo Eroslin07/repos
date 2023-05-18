@@ -70,8 +70,7 @@ public class QysConfigApiImpl implements QysConfigApi{
         if (ObjectUtil.equals(employeeCreateOrRemoveDTO.getStatus(), CommonStatusEnum.ENABLE)) {
             qysConfigService.employeeCreate(employeeCreateOrRemoveDTO.getDeptId(),
                     employeeCreateOrRemoveDTO.getMobile(),
-                    employeeCreateOrRemoveDTO.getNickname(),
-                    employeeCreateOrRemoveDTO.getIsRole());
+                    employeeCreateOrRemoveDTO.getNickname());
         }
         return success(Boolean.TRUE);
     }

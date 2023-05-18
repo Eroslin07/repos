@@ -1,5 +1,6 @@
 package com.newtouch.uctp.framework.qiyuesuo.core.client;
 
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.qiyuesuo.sdk.v2.bean.Contract;
 import com.qiyuesuo.sdk.v2.bean.Employee;
 import com.qiyuesuo.sdk.v2.bean.Seal;
@@ -272,4 +273,10 @@ public interface QiyuesuoClient {
      */
     QiyuesuoCommonResult<EmployeeListResult> defaultEmployeeList();
 
+    /**
+     * 删除员工角色
+     * @param contacts
+     * @return
+     */
+    CommonResult<Object> defaultRoleManageRemove(List<String> contacts);
 }

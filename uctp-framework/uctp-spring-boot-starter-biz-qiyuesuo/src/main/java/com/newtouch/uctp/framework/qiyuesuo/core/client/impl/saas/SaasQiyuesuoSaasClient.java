@@ -3,6 +3,7 @@ package com.newtouch.uctp.framework.qiyuesuo.core.client.impl.saas;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.QiyuesuoCommonResult;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.AbstractQiyuesuoClient;
 import com.newtouch.uctp.framework.qiyuesuo.core.client.impl.qys.DefaultCodeMapping;
@@ -325,6 +326,11 @@ public class SaasQiyuesuoSaasClient extends AbstractQiyuesuoClient {
 
     @Override
     public QiyuesuoCommonResult<Contract> defaultContractInvalidSign(Long contractId) {
+        throw new UnsupportedOperationException("saas的client不支持调用此方法");
+    }
+
+    @Override
+    public CommonResult<Object> defaultRoleManageRemove(List<String> contacts) {
         throw new UnsupportedOperationException("saas的client不支持调用此方法");
     }
 
