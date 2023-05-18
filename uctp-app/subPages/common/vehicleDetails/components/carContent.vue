@@ -599,7 +599,7 @@
 							'carId': _this.carInfoAll.carInfo.id
 						},
 						success: (ress) => {
-							_this.$modal.closeLoading();
+							_this.$modal.closeLoading2();
 							setTimeout(() => {
 								let fileListLen = 0;
 								let data = JSON.parse(ress.data).data;
@@ -699,7 +699,7 @@
 							success: function(res) {
 								console.log('打开文档成功');
 								_this.hetongStatus = false;
-								_this.$modal.closeLoading();
+								_this.$modal.closeLoading2();
 							}
 						});
 					},

@@ -106,7 +106,7 @@
 					this.indexList = res.data.cashDetails;
 					this.revision = res.data.revision;
 					this.status = true;
-					this.$modal.closeLoading();
+					this.$modal.closeLoading2();
 				}).catch((error) => {
 					this.status = true;
 					this.$modal.closeLoading();

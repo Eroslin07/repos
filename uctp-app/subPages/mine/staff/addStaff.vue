@@ -166,7 +166,7 @@
 					_this.$modal.loading("数据保存中，请耐心等待...");
 					if (_this.type == 'add') {
 						setAccount(data).then((res) => {
-							_this.$modal.closeLoading();
+							_this.$modal.closeLoading2();
 							_this.showOverlay = false;
 							if (res.data.code) {
 								uni.showModal({
@@ -208,7 +208,7 @@
 						})
 					} else {
 						setAccount(data).then((res) => {
-							_this.$modal.closeLoading();
+							_this.$modal.closeLoading2();
 							_this.showOverlay = false;
 							if (res.data.code) {
 								uni.showModal({
@@ -274,7 +274,7 @@
 				_this.showOverlay = true;
 				_this.$modal.loading("重新认证中，请耐心等待...");
 				getAuth(data).then((res) => {
-					_this.$modal.closeLoading();
+					_this.$modal.closeLoading2();
 					_this.showOverlay = false;
 					uni.showModal({
 						title: '提示',

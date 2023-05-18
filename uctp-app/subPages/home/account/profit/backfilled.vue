@@ -105,7 +105,7 @@
 						this.status = 'nomore'
 					}
 					this.status2 = true;
-					this.$modal.closeLoading();
+					this.$modal.closeLoading2();
 					uni.stopPullDownRefresh();
 				}).catch((error) => {
 					this.status = 'nomore'

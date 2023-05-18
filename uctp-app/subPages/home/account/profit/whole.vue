@@ -163,7 +163,7 @@
 						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
-					this.$modal.closeLoading();
+					this.$modal.closeLoading2();
 				}).catch((error) => {
 					this.status[this.tabCur] = 'nomore'
 					this.status2 = true;
@@ -205,7 +205,7 @@
 						this.status[this.tabCur] = 'nomore'
 					}
 					this.status2 = true;
-					this.$modal.closeLoading();
+					this.$modal.closeLoading2();
 					uni.stopPullDownRefresh();
 				}).catch((error) => {
 					this.status[this.tabCur] = 'nomore'

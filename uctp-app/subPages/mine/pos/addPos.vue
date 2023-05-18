@@ -109,7 +109,7 @@
 					_this.$modal.loading("数据保存中，请耐心等待...");
 					if (_this.type == 'add') {
 						addPos(data).then((res) => {
-							_this.$modal.closeLoading();
+							_this.$modal.closeLoading2();
 							_this.showOverlay = false;
 							if (res.data.code) {
 								uni.showModal({
@@ -145,13 +145,10 @@
 						}).catch((error) => {
 							_this.$modal.closeLoading();
 							_this.showOverlay = false;
-						}).finally(() => {
-							_this.$modal.closeLoading();
-							_this.showOverlay = false;
 						})
 					} else {
 						addPos(data).then((res) => {
-							_this.$modal.closeLoading();
+							_this.$modal.closeLoading2();
 							_this.showOverlay = false;
 							if (res.data.code) {
 								uni.showModal({
@@ -185,9 +182,6 @@
 								}
 							})
 						}).catch((error) => {
-							_this.$modal.closeLoading();
-							_this.showOverlay = false;
-						}).finally(() => {
 							_this.$modal.closeLoading();
 							_this.showOverlay = false;
 						})

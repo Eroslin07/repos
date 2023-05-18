@@ -881,7 +881,7 @@
 				getCarInfoDetail({
 					ID: options.id
 				}).then((res) => {
-					this.$modal.closeLoading()
+					this.$modal.closeLoading2()
 					this.showOverlay = false;
 					// 数据回显
 					this.getInfo(res.data);
@@ -1056,7 +1056,7 @@
 												VIN: vin,
 												deptId: _this.$store.state.user.deptId
 											}).then((result) => {
-												_this.$modal.closeLoading();
+												_this.$modal.closeLoading2();
 												if (result.data['1']) {
 													// 数据回显
 													_this.getInfo(result.data['1']);
@@ -1635,7 +1635,7 @@
 				this.showOverlay = true;
 				this.$modal.loading("提交中，请耐心等待...")
 				setCarInfo(data).then((res) => {
-					this.$modal.closeLoading()
+					this.$modal.closeLoading2()
 					this.showOverlay = false;
 					if (val == 'step') {
 						// 保存车辆信息并进行下一步
@@ -1757,14 +1757,14 @@
 				setSellerInfo(data).then((res) => {
 					if (val == 'entrust') {
 						// 保存卖家信息并确认发起
-						this.$modal.closeLoading()
+						this.$modal.closeLoading2()
 						this.showOverlay = false;
 						this.$tab.navigateTo(
 							`/subPages/home/bycar/agreement?carId=${res.data.carInfoDetails.carId}&data=${JSON.stringify(res.data)}&fairValue=${JSON.stringify(this.fairValue)}&available=${this.available}&fairVisible=${this.fairVisible}`
 						);
 					} else {
 						// 保存卖家草稿信息返回首页
-						this.$modal.closeLoading()
+						this.$modal.closeLoading2()
 						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
 						this.$tab.switchTab('/pages/index');

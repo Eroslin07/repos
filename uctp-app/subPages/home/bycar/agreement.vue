@@ -214,7 +214,7 @@
 					variables
 				};
 				setCreate(createData).then((ress) => {
-					this.$modal.closeLoading()
+					this.$modal.closeLoading2()
 					this.showOverlay = false;
 					this.$modal.msg("已提交审核");
 					this.$tab.switchTab('/pages/index');

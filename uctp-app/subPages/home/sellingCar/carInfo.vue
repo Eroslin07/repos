@@ -1492,18 +1492,18 @@
 							duration: 300
 						});
 						this.showOverlay = false;
-						this.$modal.closeLoading()
+						this.$modal.closeLoading2()
 						// this.getFairValue();
 					} else if (val == 'entrust') {
 						// 保存买家信息并确认发起
-						this.$modal.closeLoading()
+						this.$modal.closeLoading2()
 						this.showOverlay = false;
 						this.$tab.navigateTo(
 							`/subPages/home/sellingCar/agreement?carId=${res.data.carInfoDetails.carId}&fairValue=${JSON.stringify(this.fairValue)}&data=${JSON.stringify(res.data)}&gxzStatus=${this.gxzStatus}`
 						);
 					} else {
 						// 保存车辆草稿信息返回首页
-						this.$modal.closeLoading()
+						this.$modal.closeLoading2()
 						this.showOverlay = false;
 						this.$modal.msg("保存草稿成功");
 						this.$tab.switchTab('/pages/index');

@@ -684,7 +684,7 @@
 							variables
 						};
 						setCreate(createData).then((ress) => {
-							this.$modal.closeLoading()
+							this.$modal.closeLoading2()
 							this.showOverlay = false;
 							let _this = this;
 							uni.showModal({

@@ -146,7 +146,7 @@
 			// 密码登录
 			async pwdLogin() {
 				this.$store.dispatch('Login', this.loginForm).then(() => {
-					this.$modal.closeLoading()
+					this.$modal.closeLoading2()
 					this.loginSuccess()
 				})
 			},
