@@ -75,6 +75,6 @@ export default {
   closeLoading() {
     setTimeout(function () {
       uni.hideLoading();
-    }, 3000);
+    }, 2000);
   }
 }
