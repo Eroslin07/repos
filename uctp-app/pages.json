@@ -68,7 +68,9 @@
 		}, {
 			"path": "home/bycar/agreement",
 			"style": {
-				"navigationBarTitleText": "委托收车合同签章"
+				"navigationBarTitleText": "委托收车合同签章",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 150
 			}
 		}, {
 			"path": "common/agreement/index",
