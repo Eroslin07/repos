@@ -479,7 +479,7 @@ public class CarInfoServiceImpl implements CarInfoService {
         if (ObjectUtil.isNull(carInfo)) {
             throw exception(CAR_INFO_NOT_EXISTS);
         }
-        AdminUserDO adminUserDO = userMapper.selectById(carInfo.getCreator());
+        AdminUserDO adminUserDO = userMapper.selectById(carInfo.getUpdater());
         carInfo.setCreator(adminUserDO.getNickname());
         CarInfoDetailsDO carInfoDetailsDO = carInfoDetailsService.getCarInfoDetailsByCarId(id);
         if (ObjectUtil.isNull(carInfoDetailsDO)) {
