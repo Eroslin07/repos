@@ -73,6 +73,8 @@ export default {
   },
   // 关闭遮罩层
   closeLoading() {
-    uni.hideLoading()
+    setTimeout(function () {
+      uni.hideLoading();
+    }, 3000);
   }
 }
