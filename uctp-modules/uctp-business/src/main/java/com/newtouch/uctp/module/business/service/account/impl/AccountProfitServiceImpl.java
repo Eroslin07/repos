@@ -898,6 +898,8 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                     .build();
             profit.setDeleted(false);
             profit.setRevision(0);
+
+            profitList.add(profit);
         }
 
         // 本次税费
@@ -929,6 +931,8 @@ public class AccountProfitServiceImpl extends ServiceImpl<MerchantProfitMapper, 
                     .build();
             profit.setDeleted(false);
             profit.setRevision(0);
+
+            profitList.add(profit);
         }
 
         // 本次利润
