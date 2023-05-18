@@ -61,7 +61,7 @@
 				</view>
 				<view class="list-cell list-cell-arrow" @click="handleToPos" v-if="type=='1'">
 					<view class="menu-item-box">
-						<image src="../../static/images/mine/staff.png"
+						<image src="../../static/images/mine/pos.png"
 							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
 						<view>POS机管理</view>
 					</view>
