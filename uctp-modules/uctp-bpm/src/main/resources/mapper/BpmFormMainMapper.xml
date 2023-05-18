@@ -77,6 +77,7 @@
                  left join system_users u on res.assignee_ = u.id
                  left join system_users cu on fm.start_user_id = cu.id
         where res.assignee_ = #{loginUserId} and (res.end_time_ is not null or te.result = -1)
+          and (res.DELETE_REASON_ is null or res.DELETE_REASON_ not in ('MI_END'))
         <if test="doneReqVO.startUserName != null and doneReqVO.startUserName != ''">
             and cu.nickname like concat('%', #{doneReqVO.startUserName}, '%')
         </if>

@@ -59,7 +59,7 @@ public class JacksonConfiguration implements WebMvcConfigurer {
         @Override
         public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             //gen.writeNumber(value.toInstant(ZoneOffset.of("+8")).toEpochMilli());
-            System.out.println("日期：" + value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+            //System.out.println("日期：" + value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             gen.writeNumber(value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         }
     }
