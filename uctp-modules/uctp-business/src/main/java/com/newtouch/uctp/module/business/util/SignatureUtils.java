@@ -74,10 +74,10 @@ public class SignatureUtils {
     public static void main(String[] args) throws Exception {
         Map<String, Object> param = new HashMap<>();
         param.put("channel", "tywg");
-        param.put("modelId", "1133712");
-        param.put("carNo", "川KSW298");
-        param.put("mile", "16");
-        param.put("regDate", "2017-12-12");
+//        param.put("modelId", "1133712");
+//        param.put("carNo", "川KSW298");
+//        param.put("mile", "16");
+//        param.put("regDate", "2017-12-12");
 
         System.out.println(SignatureUtils.generateSignature(param, "B82pho2ts3HPTHvfg8JaU7cB322kTxDE"));
     }
