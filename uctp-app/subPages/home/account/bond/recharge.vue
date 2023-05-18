@@ -71,7 +71,8 @@
 		methods: {
 			// 页面返回
 			back() {
-				this.$tab.redirectTo('/subPages/home/account/bond/bond');
+				// this.$tab.redirectTo('/subPages/home/account/bond/bond');
+				this.$tab.navigateBack();
 			},
 			// 输入金额回调
 			handleInput(val) {
