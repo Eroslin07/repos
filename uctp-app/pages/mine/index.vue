@@ -63,7 +63,7 @@
 					<view class="menu-item-box">
 						<image src="../../static/images/mine/staff.png"
 							style="width: 30rpx;height: 30rpx;margin-right: 20rpx;"></image>
-						<view>POS机设备</view>
+						<view>POS机管理</view>
 					</view>
 				</view>
 				<!-- <view class="list-cell list-cell-arrow" @click="handleToStore">

@@ -278,7 +278,7 @@
 		}, {
 			"path": "mine/pos/index",
 			"style": {
-				"navigationBarTitleText": "POS机设备",
+				"navigationBarTitleText": "POS机管理",
 				"navigationStyle": "custom",
 				"enablePullDownRefresh": true
 			}

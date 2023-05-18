@@ -7,7 +7,7 @@
 					<u-input v-model="staffForm.posName" border="none" placeholder="请输入POS机名称"></u-input>
 				</u-form-item>
 				<u-form-item label="POS机编号" prop="posId" borderBottom>
-					<u--input v-model="staffForm.posId" type="number" border="none" placeholder="请输入POS机编号"></u--input>
+					<u--input v-model="staffForm.posId" type="number" maxlength="15" border="none" placeholder="请输入POS机编号"></u--input>
 				</u-form-item>
 				<u-form-item label="备注" prop="remark" borderBottom>
 					<u--input v-model="staffForm.remark" type="idcard" border="none" placeholder="请输入备注"></u--input>
