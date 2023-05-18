@@ -154,7 +154,7 @@ public class UctpCarInfoSearchUtils {
                 //  add():加法， subtract():减法:, multiply():乘法; divide():除法，
                 Recommended_low_sold_price = String.format("%.2f", new BigDecimal(dealer_low_sold_price).multiply(new BigDecimal(1 - coefficient)));
                 Recommended_high_sold_price = String.format("%.2f", new BigDecimal(dealer_high_sold_price).multiply(new BigDecimal(1 + coefficient)));
-                Recommended_low_buy_price = String.format("%.2f", new BigDecimal(dealer_low_buy_price).multiply(new BigDecimal(1 + coefficient)));
+                Recommended_low_buy_price = String.format("%.2f", new BigDecimal(dealer_low_buy_price).multiply(new BigDecimal(1 - coefficient)));
                 Recommended_buy_price = String.format("%.2f", new BigDecimal(dealer_buy_price).multiply(new BigDecimal(1 + coefficient)));
 
                 mapinfo.put("dealer_low_sold_price", dealer_low_sold_price);
