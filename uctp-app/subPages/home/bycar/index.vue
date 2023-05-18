@@ -834,8 +834,8 @@
 					}
 				},
 				fairValue: {
-					value1: 10,
-					value2: 20
+					value1: '',
+					value2: ''
 				},
 				showSex: false,
 				range: [
@@ -1668,8 +1668,8 @@
 				}
 				getFairValue(data).then((res) => {
 					if (res.msg == 'success') {
-						this.fairValue.value1 = res.Recommended_low_sold_price;
-						this.fairValue.value2 = res.Recommended_high_sold_price;
+						this.fairValue.value1 = res.Recommended_low_buy_price;
+						this.fairValue.value2 = res.Recommended_buy_price;
 						this.handleDraft('step');
 					} else {
 						this.$modal.msg(res.msg);
