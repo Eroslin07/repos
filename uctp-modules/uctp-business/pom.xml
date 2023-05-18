@@ -149,7 +149,13 @@
             <artifactId>uctp-spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <!--json解析-->
+        <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>2.6.0</version>
+        </dependency>
         <!-- 监控相关 -->
         <dependency>
             <groupId>com.newtouch.uctp.cloud</groupId>
