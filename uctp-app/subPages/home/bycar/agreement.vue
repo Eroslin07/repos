@@ -55,7 +55,9 @@
 				// 委托选中
 				entrustChecked: false,
 				// 合同选中
-				contractChecked: false
+				contractChecked: false,
+				// 是否点击合同
+				hetongStatus: false
 			}
 		},
 		components: {
@@ -99,7 +101,11 @@
 			},
 			// 查看合同
 			handleViewContract(text) {
+				if (this.hetongStatus) {
+					return
+				}
 				this.$modal.msg('正在加载，请稍等...')
+				this.hetongStatus = true;
 				let _this = this
 				let url = this.contractDtail.find(v => v.contractType == text)?.url
 				uni.downloadFile({
@@ -111,6 +117,7 @@
 							showMenu: false,
 							success: function(res) {
 								console.log('打开文档成功');
+								_this.hetongStatus = false;
 								setTimeout(() => {
 									if (text == '1') {
 										_this.entrustChecked = true;
@@ -122,7 +129,8 @@
 						});
 					},
 					fail: () => {
-						this.$modal.msg('加载失败！')
+						_this.$modal.msg('加载失败！')
+						_this.hetongStatus = false;
 					}
 				});
 			},
