@@ -18,8 +18,9 @@
 		</uni-card>
 		<!-- 提示信息 -->
 		<AbnormalPage v-else :isSHowTip="isSHowTip" />
-		<button v-show="isSHowTip=='createFail' || isSHowTip=='signFail'" @click="failBtn"  class="button confitmBtn">确定</button>
-		<button v-show="isSHowTip=='signSuccess'" @click="signSucessBtn"  class="button confitmBtn">确定</button>
+		<button v-show="isSHowTip=='createFail' || isSHowTip=='signFail'" @click="failBtn"
+			class="button confitmBtn">确定</button>
+		<button v-show="isSHowTip=='signSuccess'" @click="signSucessBtn" class="button confitmBtn">确定</button>
 	</view>
 </template>
 
@@ -52,9 +53,9 @@
 				},
 				available: '',
 				// 委托选中
-				entrustChecked:false,
+				entrustChecked: false,
 				// 合同选中
-				contractChecked:false
+				contractChecked: false
 			}
 		},
 		components: {
@@ -63,11 +64,11 @@
 		onShow() {
 			let pages = getCurrentPages();
 			let currPage = pages[pages.length - 1];
-			if(currPage.__data__.isRefresh){
+			if (currPage.__data__.isRefresh) {
 				// 重新获取数据
 				this.getAvailableCash()
 				// 每一次需要清除，否则会参数会缓存
-				currPage.__data__.isRefresh=false
+				currPage.__data__.isRefresh = false
 			}
 		},
 		onLoad(options) {
@@ -80,20 +81,26 @@
 			// 1650784037801914369
 			this.getContractUrl()
 		},
+		// 下拉刷新
+		onPullDownRefresh() {
+			// 重新获取数据
+			this.getAvailableCash();
+		},
 		methods: {
 			// 查询可用保证金余额
 			getAvailableCash() {
-				console.log(1)
 				getDetail({
 					accountNo: this.$store.state.user.accountNo
 				}).then((res) => {
 					this.available = res.data.availableCash / 100;
+				}).finally(() => {
+					uni.stopPullDownRefresh()
 				})
 			},
 			// 查看合同
 			handleViewContract(text) {
 				this.$modal.msg('正在加载，请稍等...')
-				let _this=this
+				let _this = this
 				let url = this.contractDtail.find(v => v.contractType == text)?.url
 				uni.downloadFile({
 					url: url,
@@ -122,17 +129,32 @@
 			// 合同签章
 			handleAffirm() {
 				let _this = this
-				if(!this.entrustChecked || !this.contractChecked) return this.$modal.msg('请查看协议和合同！')
-				if (this.jsonData.carInfo.vehicleReceiptAmount > this.available) return uni.showModal({
-					title: '提示',
-					content: `收车金额${this.$amount.getComdify(this.jsonData.carInfo.vehicleReceiptAmount)}元超过保证金余额${this.$amount.getComdify(this.available)}元，余额不足，不能发起收车，请充值后再发起收车操作。`,
-					cancelText: '取消',
-					confirmText: '前往充值',
-					confirmColor: '#fa6401',
-					success(res){
-						_this.$tab.navigateTo('/subPages/home/account/bond/recharge');
+				if (!this.entrustChecked || !this.contractChecked) return this.$modal.msg('请查看协议和合同！')
+				if (this.jsonData.carInfo.vehicleReceiptAmount > this.available) {
+					if (_this.$store.state.user.staffType == 1) {
+						// 主账户
+						uni.showModal({
+							title: '提示',
+							content: `收车金额${_this.$amount.getComdify(_this.jsonData.carInfo.vehicleReceiptAmount)}元超过保证金余额${_this.$amount.getComdify(_this.available)}元，余额不足，不能发起收车，请充值后再发起收车操作。`,
+							cancelText: '取消',
+							confirmText: '前往充值',
+							confirmColor: '#fa6401',
+							success(res) {
+								_this.$tab.navigateTo('/subPages/home/account/bond/recharge');
+							}
+						})
+					} else {
+						// 子账户
+						uni.showModal({
+							title: '提示',
+							showCancel: false,
+							content: `收车金额${_this.$amount.getComdify(_this.jsonData.carInfo.vehicleReceiptAmount)}元超过保证金余额${_this.$amount.getComdify(_this.available)}元，余额不足，不能发起收车，请联系商户主账号充值。`,
+							confirmText: '知道了',
+							confirmColor: '#fa6401'
+						})
 					}
-				})
+					return
+				}
 				if (this.fairVisible == 0) return uni.showModal({
 					title: '提示',
 					content: '您的收车价格不在市场评估价格之内，继续提交会触发平台方审核，是否继续提交？',
@@ -146,20 +168,20 @@
 					}
 				})
 				// this.$modal.msg('正在加载，请稍等...')
-				this.isSHowTip='signing'
+				this.isSHowTip = 'signing'
 				let data = {
 					...this.contractDtail.find(v => v.contractType == '1')
 				}
 				getQiyuesuo(data).then((res) => {
 					if (res.data) {
 						// this.$modal.msg("合同已签章");
-						this.isSHowTip='signSuccess'
+						this.isSHowTip = 'signSuccess'
 						// this.$tab.switchTab('/pages/index');
 						// this.$tab.navigateTo(`/subPages/common/webview/index?title=收车合同签章&url=${res.data}`);
 					}
 				}).catch(() => {
 					// this.$modal.msg('加载失败！')
-					this.isSHowTip='signFail'
+					this.isSHowTip = 'signFail'
 				})
 			},
 			handleFair() {
@@ -215,12 +237,12 @@
 				})
 			},
 			// 合同生成失败
-			failBtn(){
+			failBtn() {
 				this.$tab.navigateBack();
 				this.isSHowTip = ''
 			},
 			// 合同签属成功
-			signSucessBtn(){
+			signSucessBtn() {
 				this.$tab.switchTab('/pages/index');
 				this.isSHowTip = ''
 			}
@@ -244,34 +266,39 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-around;
+
 		.text {
-			margin:200rpx auto;
+			margin: 200rpx auto;
 			font-size: 30rpx;
 			text-align: center;
 			color: #fa6400;
-			position:relative;
+			position: relative;
+
 			.hetong_image {
 				width: 170rpx;
 				height: 190rpx;
 			}
-			.badge{
-				position:absolute;
-				width:38rpx;
+
+			.badge {
+				position: absolute;
+				width: 38rpx;
 				height: 38rpx;
-				top:0;
-				left:0;
+				top: 0;
+				left: 0;
 			}
 		}
-		
+
 	}
+
 	.button {
 		margin-top: 10px;
 		background-color: #fa6400;
 		color: #fff;
 	}
-	.confitmBtn{
-		margin:80rpx 30rpx 0;
-		color:#000;
+
+	.confitmBtn {
+		margin: 80rpx 30rpx 0;
+		color: #000;
 		background-color: #fff;
 		font-size: 32rpx;
 	}
