@@ -228,6 +228,7 @@ public class RegisterController {
             JSONObject openIdResult1 = JSON.parseObject(openIdResult);
             String openid = openIdResult1.getString("openid");
             stringRedisTemplate.opsForValue().set(openid,phoneNumber,7,TimeUnit.DAYS);
+            stringRedisTemplate.opsForValue().set(phoneNumber,openid,7,TimeUnit.DAYS);
 
         } catch (Exception e) {
             System.err.printf("获取token失败！");
@@ -260,9 +261,7 @@ public class RegisterController {
             JSONObject openIdResult1 = JSON.parseObject(openIdResult);
             String openid = openIdResult1.getString("openid");
             String s = stringRedisTemplate.opsForValue().get(openid);
-            if(null==s){
-
-            }else{
+            if(null!=s){
                 reqVO.setUsername(s);
                 respVO = authService.wxLogin(reqVO);
             }
@@ -316,8 +315,12 @@ public class RegisterController {
         String openIdResult = HttpRequest.get(getOpenIdUrl).execute().body();
         JSONObject openIdResult1 = JSON.parseObject(openIdResult);
         String openid = openIdResult1.getString("openid");
+        String phone = stringRedisTemplate.opsForValue().get(openid);
         if(null!=openid){
             stringRedisTemplate.delete(openid);
+        }
+        if(null!=phone){
+            stringRedisTemplate.delete(phone);
         }
         return success(true);
     }

@@ -25,7 +25,7 @@ public interface UserExtMapper extends BaseMapperX<UserExtDO> {
 
     default List<UserExtDO> selectByIDCard(String IDCard) {
         return selectList(new LambdaQueryWrapperX<UserExtDO>()
-                .likeIfPresent(UserExtDO::getIdCard,IDCard));
+                .eqIfPresent(UserExtDO::getIdCard,IDCard));
     }
 
     default List<UserExtDO> selectByUserId(Long userId) {

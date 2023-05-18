@@ -15,6 +15,7 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,6 +106,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Resource
     @Lazy
     private QiyuesuoClientFactory qiyuesuoClientFactory;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 验证码的开关，默认为 true
@@ -320,6 +324,10 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             if(userDOS.size()>0){
                 throw exception(AUTH_MOBILE_IS_EXIST);
             }
+            //查询身份证是否注册
+            if(userExtService.selectByIDCard(reqVO.getIdCard()).size()>0){
+                throw exception(AUTH_IDCARD_IS_EXIST);
+            }
             try {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
@@ -390,6 +398,10 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             if(userDOS.size()>0){
                 throw exception(AUTH_MOBILE_IS_EXIST);
             }
+            //查询身份证是否注册
+            if(userExtService.selectByIDCard(reqVO.getIdCard()).size()>0){
+                throw exception(AUTH_IDCARD_IS_EXIST);
+            }
             try {
                 userDO.setUsername(reqVO.getPhone());
                 userDO.setMobile(reqVO.getPhone());
@@ -441,7 +453,14 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                     map.put("type","1");
                     map.put("userId",user.getId());
                 }
+                //停用删除openId,防止账号一直登录
+                if(user.getStatus()==1){
+                    String openId = stringRedisTemplate.opsForValue().get(reqVO.getPhone());
+                    if(null!=openId){
+                        stringRedisTemplate.delete(reqVO.getPhone());
+                    }
 
+                }
             }catch (Exception e){
                 throw exception(AUTH_UPDATEACCOUNT_ERROR);
             }
