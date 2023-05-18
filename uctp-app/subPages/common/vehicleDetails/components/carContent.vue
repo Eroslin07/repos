@@ -17,8 +17,7 @@
 					<view v-else class="upload-text">
 						<image src="../../../../static/images/home/checkmark.svg"></image>
 						<text @click="handleImage(carInfoAll.fileF)">您已经上传检测报告!</text>
-						<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30" @click="handleDelete"
-							class="icon-right-box">
+						<view v-if="carInfoAll.carInfo&&carInfoAll.carInfo.status<30" @click="handleDelete" class="icon-right-box">
 							<u-icon name="trash" color="#333333">
 							</u-icon>
 						</view>
@@ -72,8 +71,7 @@
 			</view>
 			<view id="carRegister" v-if="carInfoAll.fileC && carInfoAll.fileC.length" class="driving-image">
 				<!-- <image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image> -->
-				<u-album :urls="carInfoAll.fileC" :singleSize="rpxToPx(232)" keyName="url"
-					singleModex="scaleToFill"></u-album>
+				<u-album :urls="carInfoAll.fileC" :singleSize="rpxToPx(232)" keyName="url" singleModex="scaleToFill"></u-album>
 			</view>
 			<view v-else class="driving-image">
 				<image :src="drivingImg" mode="" style="width: 232rpx;height: 166rpx;"></image>
@@ -138,7 +136,7 @@
 					<!-- <text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==1) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==3)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text> -->
 				</view>
 				<view v-else class="flex contrart-info__row">
-					<view >
+					<view>
 						<text class="contract-link" @click="handleContact(contract.url)">{{contract.contractDO.contractName}}</text>
 						<!-- <view class="flex selInfo">
 							<text
@@ -146,9 +144,11 @@
 							<u-icon name="arrow-right" size="24rpx" color="#FA6400"></u-icon>
 						</view> -->
 					</view>
-					<text v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==2) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==4)" class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
+					<text
+						v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==2) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==4)"
+						class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
-				
+
 			</view>
 			<view v-if="!carInfoAll.contractCardVOS.length" class="empty-info">
 				<text>暂无合同</text>
@@ -165,8 +165,7 @@
 					<u-icon name="download" style="width: 30rpx;height: 30rpx;" color="#FA6400"></u-icon>
 				</view> -->
 			</view>
-			<view v-for="(contract,index) in carInfoAll.contractCardNOS" :key="index"
-				class="contrart-info contrart-bottom">
+			<view v-for="(contract,index) in carInfoAll.contractCardNOS" :key="index" class="contrart-info contrart-bottom">
 				<view v-if="contract.contractDO.contractType==1 || contract.contractDO.contractType==3"
 					class="flex contrart-info__row">
 					<view class=" contart-info__" style="font-size:26rpx;">
@@ -212,18 +211,33 @@
 					</view>
 				</view>
 			</view> -->
-			<view class="car-upload" style="margin-bottom: 44rpx;" v-show="posShow">
+			<view class="car-upload" style="margin-bottom: 44rpx;" v-if="posShow">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/bank-card.svg"></image>
 					<text class="car-upload-title__title">收款POS机设备</text>
+					<!-- <view style="position: absolute;right: 16rpx;">
+						<button
+							style="background-color: #FA6400;width: 120rpx;height: 52rpx;font-size: 28rpx;line-height: 52rpx;color: #fff"
+							@click="handleTongbu">同步</button>
+					</view> -->
 				</view>
 				<view class="upload-content" style="margin: 0 34rpx 0 22rpx;" @click="showPos = true">
 					<u--input v-model="carInfoAll.carInfo.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
 						border="none"></u--input>
 					<u-icon slot="right" name="arrow-right"></u-icon>
 				</view>
-				<u-picker :show="showPos" :columns="rangePos" keyName="posNewName" @confirm="posConfirm"
-					@cancel="posCancel" :defaultIndex="findIndex(carInfoAll.carInfo.posId, rangePos[0])"></u-picker>
+				<u-picker :show="showPos" :columns="rangePos" keyName="posNewName" @confirm="posConfirm" @cancel="posCancel"
+					:defaultIndex="findIndex(carInfoAll.carInfo.posId, rangePos[0])"></u-picker>
+			</view>
+			<view class="car-upload" style="margin-bottom: 44rpx;" v-if="posShow2">
+				<view class="car-upload-title">
+					<image src="../../../../static/images/home/bank-card.svg"></image>
+					<text class="car-upload-title__title">收款POS机设备</text>
+				</view>
+				<view class="upload-content" style="margin: 0 34rpx 0 22rpx;">
+					<u-input v-model="carInfoAll.carInfo.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
+						border="none"></u-input>
+				</view>
 			</view>
 			<view class="car-fund-info">
 				<view class="car-fund-info-title">
@@ -238,8 +252,8 @@
 							<text v-else class="iconfont icon-close-eye eye-icon-box" @click="eyeIsShow=!eyeIsShow"></text>
 						</view>
 					</view>
-					<image style="width: 206rpx;height: 212rpx;" src="../../../../static/images/home/car-money.svg"
-						mode=""></image>
+					<image style="width: 206rpx;height: 212rpx;" src="../../../../static/images/home/car-money.svg" mode="">
+					</image>
 					<view class="flex car-profit">
 						<text>
 							实际利润
@@ -256,8 +270,7 @@
 					<view class="flex">
 						<view class="flex">
 							<text>收车款</text>
-							<text
-								v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vehicleReceiptAmount | transMoney}}元</text>
+							<text v-if="eyeIsShow">{{carInfoAll.appCarInfoAmountRespVO.vehicleReceiptAmount | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
 							<!-- <view class="flex">
 								<text>公允价值-通过</text>
@@ -278,15 +291,13 @@
 					<view class="flex">
 						<view class="flex">
 							<text>税</text>
-							<text
-								v-if="eyeIsShow">{{type==1?carInfoAll.appCarInfoAmountRespVO.vat:'--' | transMoney }}元</text>
+							<text v-if="eyeIsShow">{{type==1?carInfoAll.appCarInfoAmountRespVO.vat:'--' | transMoney }}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 						<u-line direction="col" length="76rpx" style="width: 2rpx;"></u-line>
 						<view class="flex">
 							<text>服务费</text>
-							<text
-								v-if="eyeIsShow">{{type==1?carInfoAll.appCarInfoAmountRespVO.operation:'--' | transMoney}}元</text>
+							<text v-if="eyeIsShow">{{type==1?carInfoAll.appCarInfoAmountRespVO.operation:'--' | transMoney}}元</text>
 							<text v-else>{{'****'}}元</text>
 						</view>
 					</view>
@@ -330,8 +341,8 @@
 			</view>
 		</view>
 		<!-- 作废理由 -->
-		<u-modal :show="cancelModal" :closeOnClickOverlay="false" :showCancelButton="true" :negativeTop="100"
-			width="700rpx" @cancel="cancelBtn" @confirm="confirmBtn">
+		<u-modal :show="cancelModal" :closeOnClickOverlay="false" :showCancelButton="true" :negativeTop="100" width="700rpx"
+			@cancel="cancelBtn" @confirm="confirmBtn">
 			<view slot-content style="width:100%">
 				<u--form labelPosition="top" :model="form" :rules="rules" ref="uForm" errorType="toast">
 					<u-form-item label="理由:" prop="reason" required>
@@ -440,8 +451,17 @@
 				let {
 					statusThree
 				} = this.carInfoAll.carInfo
-				if (statusThree == 321 || statusThree == 322 || statusThree == 323 || statusThree == 324 || statusThree == 331
-					|| statusThree == 411 || statusThree == 421 || statusThree == 431 || statusThree == 412) {
+				if (statusThree == 321 || statusThree == 322 || statusThree == 323 || statusThree == 324 || statusThree == 331) {
+					return true
+				} else {
+					return false
+				}
+			},
+			posShow2() {
+				let {
+					statusThree
+				} = this.carInfoAll.carInfo
+				if (statusThree == 411 || statusThree == 421 || statusThree == 431 || statusThree == 412) {
 					return true
 				} else {
 					return false
@@ -481,7 +501,9 @@
 			// 获取pos列表
 			getPosList() {
 				this.rangePos = [];
-				getPosList({ deptId: this.$store.state.user.deptId }).then((res) => {
+				getPosList({
+					deptId: this.$store.state.user.deptId
+				}).then((res) => {
 					res.data.forEach((item) => {
 						item.posNewName = item.posName + ' ' + item.posId.substr(-4);
 					})
@@ -506,7 +528,10 @@
 						id: this.carInfoAll.carInfo.id
 					}
 					setSavePos(data).then((res) => {
-						uni.$emit('refresh', { refresh: true, data: val })
+						uni.$emit('refresh', {
+							refresh: true,
+							data: val
+						})
 						this.showPos = false;
 					})
 				}
@@ -514,6 +539,10 @@
 			// pos机选择框取消
 			posCancel() {
 				this.showPos = false;
+			},
+			// 同步
+			handleTongbu() {
+				console.log('同步')
 			},
 			// 上传检测报告
 			photograph(index) {
@@ -685,12 +714,12 @@
 				this.$refs.uForm.validate().then(res => {
 					let data = `id=${this.contractId}&reason=${this.form.reason}`
 					contractInvalid(data).then(res => {
-						if(res.code !=0){
+						if (res.code != 0) {
 							this.$modal.msg(res.msg);
-						}else{
+						} else {
 							this.$modal.msg('合同作废成功');
 						}
-						
+
 						this.cancelModal = false;
 						this.form.reason = '';
 						this.$emit('inviladContract')
@@ -956,11 +985,13 @@
 					justify-content: space-between;
 					align-items: center;
 				}
-				.contract-link{
-					color:#2979FF;
-					text-decoration:underline;
-					font-size:28rpx;
+
+				.contract-link {
+					color: #2979FF;
+					text-decoration: underline;
+					font-size: 28rpx;
 				}
+
 				.contrart-info__text {
 					width: 106rpx;
 					height: 32rpx;
@@ -1028,11 +1059,12 @@
 					.eye-show {
 						position: relative;
 						z-index: 10;
-						.eye-icon-box{
-							padding:0 10rpx 0 50rpx;
+
+						.eye-icon-box {
+							padding: 0 10rpx 0 50rpx;
 						}
 					}
-					
+
 					>image {
 						position: absolute;
 						right: -26rpx;
