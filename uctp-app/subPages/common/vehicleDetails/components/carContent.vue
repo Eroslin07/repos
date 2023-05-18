@@ -405,6 +405,8 @@
 				// POS机设备列表
 				rangePos: [],
 				showPos: false,
+				// 是否点击合同
+				hetongStatus: false,
 			}
 		},
 		props: {
@@ -680,7 +682,11 @@
 			// 预览合同
 			handleContact(url) {
 				// console.log(url)
+				if (this.hetongStatus) {
+					return
+				}
 				let _this = this
+				_this.hetongStatus = true;
 				_this.$modal.loading('正在打开...')
 				uni.downloadFile({
 					url: url,
@@ -692,9 +698,13 @@
 							showMenu: true,
 							success: function(res) {
 								console.log('打开文档成功');
+								_this.hetongStatus = false;
 								_this.$modal.closeLoading();
 							}
 						});
+					},
+					fail: () => {
+						_this.hetongStatus = false;
 					}
 				});
 			},
