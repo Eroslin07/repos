@@ -1,19 +1,6 @@
 package com.newtouch.uctp.module.business.service.contract;
 
 import cn.hutool.core.util.ObjectUtil;
-import io.seata.spring.annotation.GlobalTransactional;
-import lombok.extern.slf4j.Slf4j;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.TransactionRecordReqVO;
@@ -26,6 +13,16 @@ import com.newtouch.uctp.module.business.dal.mysql.MerchantAccountMapper;
 import com.newtouch.uctp.module.business.service.CarInfoService;
 import com.newtouch.uctp.module.business.service.account.AccountCashService;
 import com.newtouch.uctp.module.business.service.account.AccountProfitService;
+import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author helong
@@ -67,13 +64,13 @@ public class MerchantMoneyServiceImpl implements MerchantMoneyService {
     @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     public Boolean releaseCash(Long contractId) {
-        /*if (true) {
+        if (true) {
             return true;
-        }*/
+        }
         // 1.拼装保证金释放的数据
         TransactionRecordReqVO transactionRecordReqVO = this.getTransactionRecordReqByContractId(contractId);
         // 2.进行释放
-        Boolean hasRelease = accountCashService.release(transactionRecordReqVO);
+        Boolean  hasRelease = accountCashService.release(transactionRecordReqVO);
 
         return hasRelease;
     }

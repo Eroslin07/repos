@@ -356,7 +356,7 @@ public class ContractServiceImpl implements ContractService {
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
         }finally {
 //            FileUtil.del(tempFile);
-            if (tempFile.exists()) {
+            if (ObjectUtil.isNotNull(tempFile)) {
                 tempFile.delete();
             }
             IOUtils.safeClose(fos);
@@ -403,7 +403,7 @@ public class ContractServiceImpl implements ContractService {
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
         }finally {
 //            FileUtil.del(tempFile);
-            if (tempFile.exists()) {
+            if (ObjectUtil.isNotNull(tempFile)) {
                 tempFile.delete();
             }
             IOUtils.safeClose(fos);
