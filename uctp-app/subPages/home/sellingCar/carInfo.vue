@@ -155,14 +155,16 @@
 						</u-input>
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
-					<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
-						<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @input="amountInput" @blur="handleBlur" placeholder="0.00"
-							:maxlength="maxlength">
-							<template slot="suffix">
-								<view>元</view>
-							</template>
-						</u-input>
-					</u-form-item>
+					<view class="sellAmount">
+						<u-form-item label="卖车金额" :required="true" prop="sellAmount" borderBottom>
+							<u-input v-model="sellerForm.sellAmount" type="digit" border="none" @input="amountInput" @blur="handleBlur" placeholder="0.00"
+								:maxlength="maxlength">
+								<template slot="suffix">
+									<view>元</view>
+								</template>
+							</u-input>
+						</u-form-item>
+					</view>
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'公允值范围：'+$amount.getComdify(fairValue.value1)+'万元-'+$amount.getComdify(fairValue.value2)+'万元'" color="#e26e1f"></u--text>
@@ -181,17 +183,21 @@
 						</u-radio-group>
 					</u-form-item>
 					<view style="height: 30rpx;padding-left: 120px;">{{depositText}}</view>
-					<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
-						<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" :maxlength="depositMaxlength"
-							type="digit" @input="depositInput">
-							<template slot="suffix">
-								<view>元</view>
-							</template>
-						</u-input>
-					</u-form-item>
+					<view class="deposit">
+						<u-form-item label="定金" :required="true" prop="deposit" borderBottom>
+							<u-input v-model="sellerForm.deposit" border="none" placeholder="0.00" :maxlength="depositMaxlength"
+								type="digit" @input="depositInput">
+								<template slot="suffix">
+									<view>元</view>
+								</template>
+							</u-input>
+						</u-form-item>
+					</view>
 					<u-form-item label="收款POS设备" :required="true" prop="posNewName" borderBottom @click="showPos = true">
-						<u--input v-model="sellerForm.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
-							border="none"></u--input>
+						<view class="posNewName">
+							<u--input v-model="sellerForm.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
+								border="none"></u--input>
+						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
@@ -200,10 +206,12 @@
 						<view class="text">买家信息</view>
 					</view>
 					<u-form-item label="身份证号" :required="true" prop="buyerIdCard" borderBottom>
-						<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
+						<view class="buyerIdCard">
+							<u--input v-model="sellerForm.buyerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item borderBottom prop="buyerIdCardUrl">
-						<view class="image">
+						<view class="image buyerIdCardUrl">
 							<u-grid col="2">
 								<u-grid-item>
 									<u-upload v-if="fileList4.length" :fileList="fileList4" @delete="deletePic" name="4"
@@ -225,15 +233,20 @@
 						</view>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="buyerName" borderBottom>
-						<u--input v-model="sellerForm.buyerName" border="none" placeholder="请输入姓名">
-						</u--input>
+						<view class="buyerName">
+							<u--input v-model="sellerForm.buyerName" border="none" placeholder="请输入姓名"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="联系地址" :required="true" prop="buyerAdder" borderBottom>
-						<u--input v-model="sellerForm.buyerAdder" border="none" placeholder="请输入联系地址"></u--input>
+						<view class="buyerAdder">
+							<u--input v-model="sellerForm.buyerAdder" border="none" placeholder="请输入联系地址"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="buyerTel" borderBottom>
-						<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号"
-							@change="handleChange2"></u--input>
+						<view class="buyerTel">
+							<u--input v-model="sellerForm.buyerTel" type="number" border="none" placeholder="请输入11位手机号"
+								@change="handleChange2"></u--input>
+						</view>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
@@ -250,7 +263,7 @@
 					</view>
 					<view class="text"><text style="color:#fa6400;margin-right: 1px;">*</text> 车辆手续及备件</view>
 				</view>
-				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
+				<view style="color: #f56c6c;" v-if="chebi" class="chebi">请选择车辆手续及备件</view>
 				<u--form :model="carForm" labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="changeValue">
@@ -1345,6 +1358,15 @@
 				this.$refs.feesForm.validate().then(res => {
 					if (this.chebi == false) {
 						this.handleDraft('step');
+					} else {
+						const query = uni.createSelectorQuery()
+						query.select('.chebi').boundingClientRect((data) => {
+							let pageScrollTop = Math.round(data.top)
+							uni.pageScrollTo({
+								scrollTop: pageScrollTop - 70, //滚动的距离
+								duration: 300, //过渡时间
+							})
+						}).exec()
 					}
 				}).catch((error) => {
 					let key = '.' + error[0].field;
@@ -1532,6 +1554,17 @@
 							confirmColor: '#fa6401'
 						})
 					}
+				}).catch((error) => {
+					console.log(error)
+					let key = '.' + error[0].field;
+					const query = uni.createSelectorQuery()
+					query.select(key).boundingClientRect((data) => {
+						let pageScrollTop = Math.round(data.top)
+						uni.pageScrollTo({
+							scrollTop: pageScrollTop - 70, //滚动的距离
+							duration: 300, //过渡时间
+						})
+					}).exec()
 				})
 			},
 			// 点击卖家信息保存

@@ -226,14 +226,16 @@
 						<view class="text">车辆价款及交易方式</view>
 					</view>
 					<view style="height: 30rpx;padding-left: 120px;">{{amountText}}</view>
-					<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
-						<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none" placeholder="0.00"
-							@input="handleInput" :maxlength="maxlength">
-							<template slot="suffix">
-								<view>元</view>
-							</template>
-						</u-input>
-					</u-form-item>
+					<view class="vehicleReceiptAmount">
+						<u-form-item label="收车金额" :required="true" prop="vehicleReceiptAmount" borderBottom>
+							<u-input v-model="sellerForm.vehicleReceiptAmount" type="digit" border="none" placeholder="0.00"
+								@input="handleInput" :maxlength="maxlength">
+								<template slot="suffix">
+									<view>元</view>
+								</template>
+							</u-input>
+						</u-form-item>
+					</view>
 					<view>
 						<u--text style="font-size:12px;" prefixIcon="info-circle" iconStyle="font-size: 16px; color: #e26e1f"
 							:text="'保证金可用余额'+$amount.getComdify(available)+'元'" color="#e26e1f"></u--text>
@@ -265,10 +267,12 @@
 						</u-radio-group>
 					</u-form-item>
 					<u-form-item label="身份证号" :required="true" prop="sellerIdCard" borderBottom>
-						<u--input v-model="sellerForm.sellerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
+						<view class="sellerIdCard">
+							<u--input v-model="sellerForm.sellerIdCard" type="idcard" border="none" placeholder="请输入身份证号"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item borderBottom prop="sellerIdCardUrl">
-						<view class="image">
+						<view class="image sellerIdCardUrl">
 							<u-grid col="2">
 								<u-grid-item>
 									<u-upload v-if="fileList4.length" :fileList="fileList4" @delete="deletePic" name="4"
@@ -290,19 +294,26 @@
 						</view>
 					</u-form-item>
 					<u-form-item label="姓名" :required="true" prop="sellerName" borderBottom>
-						<u--input v-model="sellerForm.sellerName" border="none" placeholder="请输入姓名">
-						</u--input>
+						<view class="sellerName">
+							<u--input v-model="sellerForm.sellerName" border="none" placeholder="请输入姓名"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="联系地址" :required="true" prop="sellerAdder" borderBottom>
-						<u--input v-model="sellerForm.sellerAdder" border="none" placeholder="请输入联系地址"></u--input>
+						<view class="sellerAdder">
+							<u--input v-model="sellerForm.sellerAdder" border="none" placeholder="请输入联系地址"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="电话" :required="true" prop="sellerTel" borderBottom>
-						<u--input v-model="sellerForm.sellerTel" type="number" border="none" placeholder="请输入11位手机号"
-							@change="handleChange1"></u--input>
+						<view class="sellerTel">
+							<u--input v-model="sellerForm.sellerTel" type="number" border="none" placeholder="请输入11位手机号"
+								@change="handleChange1"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="第三方姓名" :required="true" prop="thirdSellerName" borderBottom
 						v-if="sellerForm.collection == 1">
-						<u--input v-model="sellerForm.thirdSellerName" border="none" placeholder="请输入第三方姓名"></u--input>
+						<view class="thirdSellerName">
+							<u--input v-model="sellerForm.thirdSellerName" border="none" placeholder="请输入第三方姓名"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="收款方式" :required="true" prop="remitType" borderBottom @click="showSex = true">
 						<u--input v-model="sellerForm.remitType" disabled disabledColor="#ffffff" placeholder="请选择收款方式"
@@ -310,16 +321,22 @@
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
 					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
-						<u--input v-model="sellerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
+						<view class="bankName">
+							<u--input v-model="sellerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="银行卡号" :required="true" prop="bankCard" borderBottom v-if="sellerForm.collection == 0">
-						<u--input v-model="sellerForm.bankCard" type="number" border="none" placeholder="请输入银行卡号"
-							@change="handleChange"></u--input>
+						<view class="bankCard">
+							<u--input v-model="sellerForm.bankCard" type="number" border="none" placeholder="请输入银行卡号"
+								@change="handleChange"></u--input>
+						</view>
 					</u-form-item>
 					<u-form-item label="第三方银行卡号" :required="true" prop="thirdBankCard" borderBottom
 						v-if="sellerForm.collection == 1">
-						<u--input v-model="sellerForm.thirdBankCard" type="number" border="none" placeholder="请输入银行卡号"
-							@change="handleChange"></u--input>
+						<view class="thirdBankCard">
+							<u--input v-model="sellerForm.thirdBankCard" type="number" border="none" placeholder="请输入银行卡号"
+								@change="handleChange"></u--input>
+						</view>
 					</u-form-item>
 				</u--form>
 				<view style="margin: 20px 0;">
@@ -349,7 +366,7 @@
 						</view> -->
 					</view>
 				</view>
-				<view style="color: #f56c6c;" v-if="chebi">请选择车辆手续及备件</view>
+				<view style="color: #f56c6c;" v-if="chebi" class="chebi">请选择车辆手续及备件</view>
 				<u--form labelPosition="left" labelWidth="120px">
 					<u-checkbox-group v-model="carForm.checkboxValue" placement="column" activeColor="#fd6404"
 						@change="handelKey">
@@ -1503,6 +1520,15 @@
 					if (this.modelId) {
 						if (this.chebi == false) {
 							this.getFairValue();
+						} else {
+							const query = uni.createSelectorQuery()
+							query.select('.chebi').boundingClientRect((data) => {
+								let pageScrollTop = Math.round(data.top)
+								uni.pageScrollTo({
+									scrollTop: pageScrollTop - 70, //滚动的距离
+									duration: 300, //过渡时间
+								})
+							}).exec()
 						}
 					} else {
 						this.$modal.msg("请选择车型");
@@ -1669,8 +1695,18 @@
 						let bankCardStatus = error.some((s) => { return s.field == 'bankCard' });
 						if (bankCardStatus && error.length == 1) {
 							this.handleSubmit('entrust');
+							return
 						}
 					}
+					let key = '.' + error[0].field;
+					const query = uni.createSelectorQuery()
+					query.select(key).boundingClientRect((data) => {
+						let pageScrollTop = Math.round(data.top)
+						uni.pageScrollTo({
+							scrollTop: pageScrollTop - 70, //滚动的距离
+							duration: 300, //过渡时间
+						})
+					}).exec()
 				})
 			},
 			handleSubmit(val) {
