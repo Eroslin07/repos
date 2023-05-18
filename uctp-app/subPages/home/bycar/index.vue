@@ -1663,6 +1663,14 @@
 			handleEntrust() {
 				this.$refs.sellerForm.validate().then(res => {
 					this.handleSubmit('entrust');
+				}).catch((error) => {
+					console.log(error)
+					if (this.sellerForm.collection == 1) {
+						let bankCardStatus = error.some((s) => { return s.field == 'bankCard' });
+						if (bankCardStatus && error.length == 1) {
+							this.handleSubmit('entrust');
+						}
+					}
 				})
 			},
 			handleSubmit(val) {
