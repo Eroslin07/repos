@@ -139,15 +139,15 @@ public class UctpCarInfoSearchUtils {
                         }
                         if (!StringUtil.isEmpty(map.get("condition")) && map.get("condition").equals("normal")) {
                             dealer_low_sold_price = map.get("dealer_low_sold_price");
-                            System.out.println("dealer_low_sold_price" + dealer_low_sold_price);
+//                            System.out.println("dealer_low_sold_price" + dealer_low_sold_price);
                             dealer_low_buy_price = map.get("dealer_low_buy_price");
-                            System.out.println("dealer_low_buy_price" + dealer_low_buy_price);
+//                            System.out.println("dealer_low_buy_price" + dealer_low_buy_price);
                         }
                         if (!StringUtil.isEmpty(map.get("condition")) && map.get("condition").equals("excellent")) {
                             dealer_high_sold_price = map.get("dealer_high_sold_price");
-                            System.out.println("dealer_high_sold_price" + dealer_high_sold_price);
+//                            System.out.println("dealer_high_sold_price" + dealer_high_sold_price);
                             dealer_buy_price = map.get("dealer_buy_price");
-                            System.out.println("dealer_buy_price" + dealer_buy_price);
+//                            System.out.println("dealer_buy_price" + dealer_buy_price);
                         }
                     }
                 }
