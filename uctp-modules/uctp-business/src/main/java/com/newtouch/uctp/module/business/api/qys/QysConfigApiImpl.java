@@ -1,6 +1,9 @@
 package com.newtouch.uctp.module.business.api.qys;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.qys.dto.EmployeeCreateOrRemoveDTO;
 import com.newtouch.uctp.module.business.api.qys.dto.QysConfigDTO;
 import com.newtouch.uctp.module.business.convert.qys.QysConfigConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.qys.QysConfigDO;
@@ -55,5 +58,21 @@ public class QysConfigApiImpl implements QysConfigApi{
     public CommonResult<QysConfigDTO> getByDeptId(Long deptId) {
         QysConfigDO configDO = qysConfigService.getByDeptId(deptId);
         return success(QysConfigConvert.INSTANCE.convert02(configDO));
+    }
+
+    @Override
+    public CommonResult<Boolean> employeeCreateOrRemove(EmployeeCreateOrRemoveDTO employeeCreateOrRemoveDTO) {
+        if (ObjectUtil.equals(employeeCreateOrRemoveDTO.getStatus(), CommonStatusEnum.DISABLE)) {
+            qysConfigService.employeeRemove(employeeCreateOrRemoveDTO.getDeptId(),
+                    employeeCreateOrRemoveDTO.getMobile(),
+                    employeeCreateOrRemoveDTO.getNickname());
+        }
+        if (ObjectUtil.equals(employeeCreateOrRemoveDTO.getStatus(), CommonStatusEnum.ENABLE)) {
+            qysConfigService.employeeCreate(employeeCreateOrRemoveDTO.getDeptId(),
+                    employeeCreateOrRemoveDTO.getMobile(),
+                    employeeCreateOrRemoveDTO.getNickname(),
+                    employeeCreateOrRemoveDTO.getIsRole());
+        }
+        return success(Boolean.TRUE);
     }
 }

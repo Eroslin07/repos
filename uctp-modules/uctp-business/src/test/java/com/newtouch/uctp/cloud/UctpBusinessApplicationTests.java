@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SpringBootTest(classes =UctpBusinessApplicationTests.class )
 class UctpBusinessApplicationTests {
@@ -182,7 +183,12 @@ class UctpBusinessApplicationTests {
         EmployeeListRequest request = new EmployeeListRequest();
         String response = sdkClient.service(request);
         SdkResponse<EmployeeListResult> responseObj = JSONUtils.toQysResponse(response, EmployeeListResult.class);
-        System.out.println(responseObj.getResult());
+        List<String> mobiles = responseObj.getResult().getList().stream().map(Employee::getMobile).collect(Collectors.toList());
+        if (mobiles.contains("17396202169")) {
+            System.out.println("牛逼");
+        }else {
+            System.out.println("哦哦");
+        }
     }
 
 }

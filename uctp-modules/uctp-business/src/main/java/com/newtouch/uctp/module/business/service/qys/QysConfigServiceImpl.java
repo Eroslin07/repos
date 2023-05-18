@@ -17,6 +17,7 @@ import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.newtouch.uctp.framework.common.enums.CommonStatusEnum;
 import com.newtouch.uctp.framework.common.pojo.CommonResult;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -1847,17 +1848,55 @@ public class QysConfigServiceImpl implements QysConfigService {
 //                userDO.setStatus(0);
 //                userMapper.updateById(userDO);
                 QysConfigDO configDO = qysConfigMapper.selectOne(QysConfigDO::getBusinessId, userRespDTO.getDeptId());
-                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
-                //添加员工
-                client.defaultEmployeeCreate(userRespDTO.getNickname(), userRespDTO.getMobile()).getCheckedData();
-                //授权印章角色
-                client.defaultRoleManage(ListUtil.of(userRespDTO.getMobile())).getCheckedData();
+//                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+//                //添加员工
+//                client.defaultEmployeeCreate(userRespDTO.getNickname(), userRespDTO.getMobile()).getCheckedData();
+//                //授权印章角色
+//                client.defaultRoleManage(ListUtil.of(userRespDTO.getMobile())).getCheckedData();
+                this.employeeCreate(configDO, userRespDTO.getMobile(), userRespDTO.getNickname(), Boolean.TRUE);
             });
         } else {
             log.warn("个人认证失败，找不到数据，authId：{}", authId);
             return "fail";
         }
         return "success";
+    }
+
+    @Override
+    public void employeeRemove(Long deptId, String mobile, String userName) {
+        QysConfigDO configDO = this.getByDeptId(deptId);
+        this.employeeRemove(configDO,mobile,userName);
+    }
+
+    @Override
+    public void employeeCreate(Long deptId, String mobile, String userName, Boolean isRole) {
+        QysConfigDO configDO = this.getByDeptId(deptId);
+        this.employeeCreate(configDO,mobile,userName,isRole);
+    }
+
+    @Override
+    public void employeeRemove(QysConfigDO configDO, String mobile, String userName) {
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+        EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
+        List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
+        if (mobiles.contains(mobile)) {
+            client.defaultEmployeeRemove(userName, mobile).getCheckedData();
+        }
+    }
+
+    @Override
+    public void employeeCreate(QysConfigDO configDO, String mobile, String userName, Boolean isRole) {
+        QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+        EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
+        List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
+        if (!mobiles.contains(mobile)) {
+            //添加员工
+            client.defaultEmployeeCreate(userName, mobile).getCheckedData();
+            //授权印章角色
+            if (isRole) {
+                client.defaultRoleManage(ListUtil.of(mobile)).getCheckedData();
+            }
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -1870,6 +1909,14 @@ public class QysConfigServiceImpl implements QysConfigService {
             Long userId = Long.valueOf(String.valueOf(map.get("userId")));
             userAuth(userId);
             map.put("success","0");
+        }
+        if (ObjectUtil.isNotNull(reqVO.getId())) {
+            if (ObjectUtil.equals(CommonStatusEnum.DISABLE.getStatus(), reqVO.getStatus())) {
+                this.employeeRemove(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName());
+            }
+            if (ObjectUtil.equals(CommonStatusEnum.ENABLE.getStatus(), reqVO.getStatus())) {
+                this.employeeCreate(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName(),Boolean.TRUE);
+            }
         }
         return map;
     }
@@ -1884,13 +1931,14 @@ public class QysConfigServiceImpl implements QysConfigService {
         int delete = userExtMapper.deleteByUserId(id);
         if (delete >= 1) {
             QysConfigDO configDO = getByDeptId(adminUserDO.getDeptId());
-            if(null!=configDO){
-                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
-                EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
-                List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
-                if (mobiles.contains(adminUserDO.getMobile())) {
-                    client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
-                }
+            if (null != configDO) {
+//                QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
+//                EmployeeListResult employeeList = client.defaultEmployeeList().getCheckedData();
+//                List<String> mobiles = employeeList.getList().stream().map(Employee::getMobile).collect(Collectors.toList());
+//                if (mobiles.contains(adminUserDO.getMobile())) {
+//                    client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
+//                }
+                this.employeeRemove(configDO,adminUserDO.getMobile(),adminUserDO.getUsername());
             }
         }
         return delete;

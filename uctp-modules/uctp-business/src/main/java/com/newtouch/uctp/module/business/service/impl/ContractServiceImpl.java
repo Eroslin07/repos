@@ -169,7 +169,8 @@ public class ContractServiceImpl implements ContractService {
             throw exception(CONTRACT_INVALIDING_SUCCESS);
         }
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.DRAFT.value())) {
-            client.defaultContractInvalid(contractDO.getContractId()).getCheckedData();
+            //如果这里删除合同就没有了
+//            client.defaultContractInvalid(contractDO.getContractId()).getCheckedData();
         }
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.SIGNING.value())) {
             client.defaultContractInvalid(contractDO.getContractId(),reason).getCheckedData();

@@ -203,6 +203,26 @@ public interface QysConfigService {
      */
     String callbackCertificationPerson(String signature, String timestamp, String content) throws Exception;
 
+    /**
+     * 契约锁员工删除
+     */
+    void employeeRemove(Long deptId,String mobile,String userName);
+
+    /**
+     * 契约锁员工创建
+     */
+    void employeeCreate(Long deptId,String mobile,String userName,Boolean isRole);
+    /**
+     * 契约锁员工删除
+     */
+    void employeeRemove(QysConfigDO configDO,String mobile,String userName);
+
+    /**
+     * 契约锁员工创建
+     */
+    void employeeCreate(QysConfigDO configDO,String mobile,String userName,Boolean isRole);
+
+
     Map addAccount(@Valid AddAccountDTO reqVO);
 
     int deleteAccount(Long id);

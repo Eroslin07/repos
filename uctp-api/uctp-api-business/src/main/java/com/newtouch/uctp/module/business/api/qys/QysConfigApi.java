@@ -1,20 +1,17 @@
 package com.newtouch.uctp.module.business.api.qys;
 
+import com.newtouch.uctp.framework.common.pojo.CommonResult;
+import com.newtouch.uctp.module.business.api.qys.dto.EmployeeCreateOrRemoveDTO;
+import com.newtouch.uctp.module.business.api.qys.dto.QysConfigDTO;
+import com.newtouch.uctp.module.business.enums.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import javax.validation.constraints.NotNull;
-
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import com.newtouch.uctp.framework.common.pojo.CommonResult;
-import com.newtouch.uctp.module.business.api.qys.dto.QysConfigDTO;
-import com.newtouch.uctp.module.business.enums.ApiConstants;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * 契约锁接口
@@ -55,4 +52,8 @@ public interface QysConfigApi {
     @Operation(summary ="获取契约锁")
     @Parameter(name = "deptId", description = "部门ID", example = "1024", required = true)
     CommonResult<QysConfigDTO> getByDeptId(@PathVariable("deptId") @NotNull Long deptId);
+
+    @GetMapping(PREFIX + "/createOrRemove")
+    @Operation(summary ="添加/删除契约锁员工")
+    CommonResult<Boolean> employeeCreateOrRemove(@Valid @RequestBody EmployeeCreateOrRemoveDTO employeeCreateOrRemoveDTO);
 }

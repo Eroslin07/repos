@@ -1,6 +1,6 @@
 package com.newtouch.uctp.module.system.convert.auth;
 
-import com.newtouch.uctp.framework.common.util.collection.CollectionUtils;
+import com.newtouch.uctp.module.business.api.qys.dto.EmployeeCreateOrRemoveDTO;
 import com.newtouch.uctp.module.system.api.sms.dto.code.SmsCodeSendReqDTO;
 import com.newtouch.uctp.module.system.api.sms.dto.code.SmsCodeUseReqDTO;
 import com.newtouch.uctp.module.system.api.social.dto.SocialUserBindReqDTO;
@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.*;
+import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.convertSet;
+import static com.newtouch.uctp.framework.common.util.collection.CollectionUtils.filterList;
 import static com.newtouch.uctp.module.system.dal.dataobject.permission.MenuDO.ID_ROOT;
 
 @Mapper
@@ -86,4 +87,5 @@ public interface AuthConvert {
     SmsCodeUseReqDTO convert(AuthSmsLoginReqVO reqVO, Integer scene, String usedIp);
 
 
+    EmployeeCreateOrRemoveDTO convertDTO(AdminUserDO user,Boolean isRole);
 }
