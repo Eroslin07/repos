@@ -211,15 +211,10 @@
 					</view>
 				</view>
 			</view> -->
-			<view class="car-upload" style="margin-bottom: 44rpx;" v-if="posShow">
+			<!-- <view class="car-upload" style="margin-bottom: 44rpx;" v-if="posShow">
 				<view class="car-upload-title">
 					<image src="../../../../static/images/home/bank-card.svg"></image>
 					<text class="car-upload-title__title">收款POS机设备</text>
-					<!-- <view style="position: absolute;right: 16rpx;">
-						<button
-							style="background-color: #FA6400;width: 120rpx;height: 52rpx;font-size: 28rpx;line-height: 52rpx;color: #fff"
-							@click="handleTongbu">同步</button>
-					</view> -->
 				</view>
 				<view class="upload-content" style="margin: 0 34rpx 0 22rpx;" @click="showPos = true">
 					<u--input v-model="carInfoAll.carInfo.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
@@ -238,7 +233,7 @@
 					<u-input v-model="carInfoAll.carInfo.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
 						border="none"></u-input>
 				</view>
-			</view>
+			</view> -->
 			<view class="car-fund-info">
 				<view class="car-fund-info-title">
 					<view class="">
@@ -541,10 +536,6 @@
 			// pos机选择框取消
 			posCancel() {
 				this.showPos = false;
-			},
-			// 同步
-			handleTongbu() {
-				console.log('同步')
 			},
 			// 上传检测报告
 			photograph(index) {

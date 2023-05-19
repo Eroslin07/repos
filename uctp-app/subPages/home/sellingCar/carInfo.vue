@@ -193,13 +193,13 @@
 							</u-input>
 						</u-form-item>
 					</view>
-					<u-form-item label="收款POS设备" :required="true" prop="posNewName" borderBottom @click="showPos = true">
+					<!-- <u-form-item label="收款POS设备" :required="true" prop="posNewName" borderBottom @click="showPos = true">
 						<view class="posNewName">
 							<u--input v-model="sellerForm.posNewName" disabled disabledColor="#ffffff" placeholder="请选择POS机设备"
 								border="none"></u--input>
 						</view>
 						<u-icon slot="right" name="arrow-right"></u-icon>
-					</u-form-item>
+					</u-form-item> -->
 					<view style="color: #A6A6A6;position: relative;margin: 0 0 0 26rpx;">
 						<view style="position: absolute;top: 3rpx;height: 30rpx;border: 5rpx solid #fa6400;left: -23rpx;">
 						</view>
@@ -1542,18 +1542,7 @@
 						_this.gxzStatus = 0;
 					}
 					// _this.gxzStatus = 0;
-					let posStatus = _this.rangePos[0].some((f) => { return f.posId == _this.sellerForm.posId });
-					if (posStatus) {
-						_this.handleDraft('entrust');
-					} else {
-						uni.showModal({
-							title: '提示',
-							showCancel: false,
-							content: `POS机设备${_this.sellerForm.posName} ${_this.sellerForm.posId.substr(-4)}已被停用，请重新选择。`,
-							confirmText: '知道了',
-							confirmColor: '#fa6401'
-						})
-					}
+					_this.handleDraft('entrust');
 				}).catch((error) => {
 					console.log(error)
 					let key = '.' + error[0].field;
