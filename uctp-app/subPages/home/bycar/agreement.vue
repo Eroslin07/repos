@@ -247,13 +247,17 @@
 			// 合同生成失败
 			failBtn() {
 				this.$tab.navigateBack();
-				this.isSHowTip = ''
 			},
 			// 合同签属成功
 			signSucessBtn() {
 				this.$tab.switchTab('/pages/index');
-				this.isSHowTip = ''
 			}
+		},
+		onUnload() {
+			if (this.isSHowTip == 'signSuccess') {
+				this.$tab.switchTab('/pages/index');
+			}
+			this.isSHowTip = ''
 		}
 	}
 </script>
