@@ -71,6 +71,9 @@ public class AuthRegisterReqVO {
     @Schema(description = "保证金充值卡号")
     private String bondBankAccount;
 
+    @Schema(description = "交易方式")
+    private Integer paymentType;
+
 
 
 //    @Schema(description = "密码", required = true, example = "buzhidao")

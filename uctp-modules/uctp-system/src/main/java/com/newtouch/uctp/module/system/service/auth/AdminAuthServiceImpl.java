@@ -259,6 +259,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 //            deptDO.setBusiness_license_url(reqVO.getBusinessLicense());//营业执照url
             deptDO.setSort(2);
             deptDO.setStatus(2);//未激活
+            deptDO.setPaymentType(reqVO.getPaymentType());
             deptService.insertDept(deptDO);
 
             //用户主表

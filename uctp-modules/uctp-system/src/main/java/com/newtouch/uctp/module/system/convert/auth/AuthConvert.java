@@ -42,7 +42,7 @@ public interface AuthConvert {
                 .user(AuthPermissionInfoRespVO.UserVO.builder().id(user.getId()).staffType(userExt.getStaffType())
                         .nickname(user.getNickname()).tenantId(user.getTenantId()).deptId(user.getDeptId())
                         .deptName(dept.getName()).tenantName(tenant.getName()).avatar(user.getAvatar())
-                        .registerType(userExt.getStatus()).accountNo(accountNo).build())
+                        .registerType(userExt.getStatus()).accountNo(accountNo).paymentType(dept.getPaymentType()).build())
                 .build();
     }
 

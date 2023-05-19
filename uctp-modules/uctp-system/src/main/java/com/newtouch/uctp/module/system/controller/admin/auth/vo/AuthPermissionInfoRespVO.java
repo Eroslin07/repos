@@ -62,6 +62,9 @@ public class AuthPermissionInfoRespVO {
         @Schema(description = "虚拟账号")
         private String accountNo;
 
+        @Schema(description = "交易方式")
+        private Integer paymentType;
+
     }
 
 }
