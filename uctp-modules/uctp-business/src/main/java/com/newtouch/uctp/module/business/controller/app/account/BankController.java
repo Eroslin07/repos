@@ -1,4 +1,4 @@
-package com.newtouch.uctp.module.business.service.bank.impl;
+package com.newtouch.uctp.module.business.controller.app.account;
 
 import com.newtouch.uctp.module.business.service.bank.PosAPIService;
 import com.newtouch.uctp.module.business.service.bank.request.PosNonPayOrderRequest;
@@ -6,25 +6,29 @@ import com.newtouch.uctp.module.business.service.bank.request.PosPayNoticeReques
 import com.newtouch.uctp.module.business.service.bank.response.PosNonPayOrderResponse;
 import com.newtouch.uctp.module.business.service.bank.response.PosPayNoticeResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 
-@Service
+@RestController
 @Slf4j
-public class PosAPIServiceImpl implements PosAPIService {
+@RequestMapping("/merchant")
+public class BankController {
 
+    @Resource
+    private PosAPIService posAPIService;
 
-    @Override
+    @PostMapping("/pay/orders")
     public List<PosNonPayOrderResponse> getNonPayOrders(PosNonPayOrderRequest request) {
-        List<PosNonPayOrderResponse> list = new ArrayList<>();
-        list.add(PosNonPayOrderResponse.builder().orderNo("1234567899").amount(0.01D).vin("1234567890987654321").build());
-        return list;
+        return posAPIService.getNonPayOrders(request);
     }
 
-    @Override
+    @PostMapping("/pay/notice")
     public PosPayNoticeResponse payNotice(PosPayNoticeRequest request) {
-        return PosPayNoticeResponse.builder().code("0").message("").build();
+        return posAPIService.payNotice(request);
     }
 }

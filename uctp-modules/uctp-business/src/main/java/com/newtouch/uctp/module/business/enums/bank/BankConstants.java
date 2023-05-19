@@ -2,34 +2,14 @@ package com.newtouch.uctp.module.business.enums.bank;
 
 public class BankConstants {
 
-    // 请求URL地址前缀，后续配置文件设置测试与生产
-    public final static String API_URL = "https://etest4.spdb.com.cn/spdb/uat";
-
-    public final static String tranDateFormat = "yyyyMMdd";
-    public final static String tranTimeFormat = "HHmmss";
-
-    /**
-     * 银行合作商户号 todo 合共银行评审后提供
-     */
-    public final static String MERCHANT_ID = "";
-
     // 市场方母账号
-    public final static String ACCT_NO = "88010078801200000403";
-    // 交易地区代码
-    public final static String AREA_CODE = "tyesc001";
+    public final static String ACCT_NO = "41141221013002507487";
+
     // 母账号名称
-    public final static String ACCT_NAME = "自动化测试438114";
-    // 充值保证金默认开户行
-    public final static String CASH_OPEN_BANK_NAME = "浦发银行";
+    public final static String ACCT_NAME = "山西车友通汽车销售有限公司";
 
-    public final static String OTHER_BANK_NAME = "其他银行";
-
-    public final static String OTHER_BANK_NO = "9999";
-
-    // 开户行号
-    public final static String OPEN_BANK_NO = "310221000129";
     // 开户行名称
-    public final static String OPEN_BRANCH_NAME = "上海浦东发展银行沈阳兴工支行";
+    public final static String OPEN_BRANCH_NAME = "交行新建南路支行";
 
 
     // 子账号互转API
@@ -52,4 +32,21 @@ public class BankConstants {
     public final static String REQUEST_METHOD_GET = "GET";
 
     public final static int BANK_STATUS_CODE_SUCCESS = 200;
+
+    /**
+     * 银行交易币种代码
+     */
+    public final static String CURRENCY_CODE = "CNY";
+
+    /**
+     * 企业代码 todo bank
+     */
+    public final static String CORP_NO = "";
+
+    /**
+     * 企业用户号 todo bank
+     */
+    public final static String USER_NO = "";
+
+
 }

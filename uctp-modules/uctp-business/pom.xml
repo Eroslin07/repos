@@ -211,6 +211,12 @@
             <scope>system</scope>
             <systemPath>${pom.basedir}/lib/bocom-openapi-sdk-2.1.2.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.13.5</version>
+        </dependency>
     </dependencies>
 
     <build>

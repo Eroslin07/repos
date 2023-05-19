@@ -53,8 +53,8 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantAccount.setTenantId(accountDTO.getTenantId());
 
             save(merchantAccount);
-            saveMerchantBank( AccountEnum.BUSINESS_TYPE_CASH.getKey(), accountDTO, accountNo);
-            saveMerchantBank( AccountEnum.BUSINESS_TYPE_PROFIT.getKey(), accountDTO, accountNo);
+            saveMerchantBank(AccountEnum.BUSINESS_TYPE_CASH.getKey(), accountDTO, accountNo);
+            saveMerchantBank(AccountEnum.BUSINESS_TYPE_PROFIT.getKey(), accountDTO, accountNo);
             return true;
         } catch (BankException e) {
             log.error(e.getMessage());
@@ -73,7 +73,7 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
         return merchantAccountDO != null;
     }
 
-    private void saveMerchantBank( String busType, AccountDTO accountDTO, String accountNo) {
+    private void saveMerchantBank(String busType, AccountDTO accountDTO, String accountNo) {
         MerchantBankDO merchantBankDO = new MerchantBankDO();
         merchantBankDO.setAccountNo(accountNo);
         merchantBankDO.setBusinessType(busType);
@@ -86,7 +86,7 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantBankDO.setBankName(accountDTO.getBankName());
         } else if (AccountEnum.BUSINESS_TYPE_CASH.getKey().equals(busType)) {
             merchantBankDO.setBankNo(accountDTO.getCashBankNo());
-            merchantBankDO.setBankName(BankConstants.CASH_OPEN_BANK_NAME);
+            merchantBankDO.setBankName(BankConstants.OPEN_BRANCH_NAME);
         }
         merchantBankService.save(merchantBankDO);
     }

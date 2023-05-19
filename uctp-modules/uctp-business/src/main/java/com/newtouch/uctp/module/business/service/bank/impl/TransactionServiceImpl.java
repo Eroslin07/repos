@@ -1,9 +1,8 @@
 package com.newtouch.uctp.module.business.service.bank.impl;
 
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
-import com.newtouch.uctp.module.business.service.bank.request.BillNoticeRequestV1;
-import com.newtouch.uctp.module.business.service.bank.request.CreateTrsCusAcRequestV1;
-import com.newtouch.uctp.module.business.service.bank.request.ForwardGetTokenRequestV1;
+import com.newtouch.uctp.module.business.service.bank.request.*;
+import com.newtouch.uctp.module.business.service.bank.request.xml.BankRequest;
 import com.newtouch.uctp.module.business.service.bank.response.BillNoticeResponseV1;
 import com.newtouch.uctp.module.business.service.bank.response.CreateTrsCusAcResponseV1;
 import com.newtouch.uctp.module.business.service.bank.response.ForwardGetTokenResponseV1;
@@ -30,5 +29,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ForwardGetTokenResponseV1 getToken(ForwardGetTokenRequestV1 request) {
         return null;
+    }
+
+    @Override
+    public boolean outTransfer(BankRequest<OutTransferRequest> request) {
+        return false;
+    }
+
+    @Override
+    public boolean getTransferResult(BankRequest<TransferResultRequest> request) {
+        return false;
     }
 }
