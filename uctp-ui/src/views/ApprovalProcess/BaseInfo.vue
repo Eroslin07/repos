@@ -18,6 +18,10 @@
     <Profit v-if="status == 'LRTX'" />
     <!-- 车辆是否已过户至买家 -->
     <VehicleTransferBuyer v-if="status == 'MCGH'" />
+    <!-- 保证金充值代办 -->
+    <BondRecharge v-if="status == 'ZJCZ'" />
+    <!-- 保证金提现代办 -->
+    <BondWithdrawal v-if="status == 'ZJTX'" />
   </div>
 </template>
 <script setup lang="ts">

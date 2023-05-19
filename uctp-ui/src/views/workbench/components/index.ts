@@ -8,6 +8,8 @@ import Profit from './profit.vue'
 import AgreementFrame from './agreementFrame.vue'
 import VehicleReceiptTransfer from './vehicleReceiptTransfer.vue'
 import VehicleTransferBuyer from './vehicleTransferBuyer.vue'
+import BondRecharge from './BondRecharge.vue'
+import BondWithdrawal from './BondWithdrawal.vue'
 
 export {
   MerchantApprovalPending,
@@ -19,5 +21,7 @@ export {
   Profit,
   AgreementFrame,
   VehicleReceiptTransfer,
-  VehicleTransferBuyer
+  VehicleTransferBuyer,
+  BondRecharge,
+  BondWithdrawal
 }
