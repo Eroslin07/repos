@@ -97,7 +97,6 @@
 				}
 			},
 			getphonenumber(e) {
-				console.log(e)
 				let _this = this;
 				if (e.detail.errMsg.indexOf('deny') > -1) {
 					uni.showToast({
@@ -132,7 +131,7 @@
 			async phoneLogin(captchaParams) {
 			  // 执行登录
 				this.$store.dispatch('phoneLogin', this.phone).then(() => {
-					this.$modal.closeLoading()
+					this.$modal.closeLoading2()
 					this.loginSuccess()
 				}).catch((error) => {
 					if (error == 1002000012) {
