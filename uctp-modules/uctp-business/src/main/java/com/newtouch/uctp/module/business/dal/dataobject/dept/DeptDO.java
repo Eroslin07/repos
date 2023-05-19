@@ -91,4 +91,9 @@ public class DeptDO extends TenantBaseDO {
      * 是否经过契约锁认证(0-认证中，1-认证成功，2-认证失败,3-未认证)
      */
     private Integer auth;
+
+    /**
+     * 交易方式（1线上  2线下）
+     */
+    private Integer paymentType;
 }
