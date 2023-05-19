@@ -8,13 +8,15 @@
 			<view>
 				<view>提现金额</view>
 				<view style="height: 30rpx;">{{amountText}}</view>
-				<u-input border="none" v-model="amount" type="digit" :focus="true" clearable
-					:customStyle="{'height': '50px'}" @input="handleInput" fontSize="24px" :maxlength='maxlength'>
-					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
-					<template slot="suffix">
-						<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
-					</template>
-				</u-input>
+				<view @tap="handleFocus">
+					<u-input border="none" v-model="amount" type="digit" readonly :focus="true" clearable :customStyle="{'height': '50px'}"
+						@input="handleInput" fontSize="24px" :maxlength='maxlength'>
+						<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
+						<template slot="suffix">
+							<view style="color: #fa6401;" @click="handleQuanbu">全部提现</view>
+						</template>
+					</u-input>
+				</view>
 			</view>
 			<view style="height: 30rpx;color: red;font-size: 20rpx;">{{amountVisible?'输入金额超过保证金余额':''}}</view>
 			<view>可用保证金余额{{ $amount.getComdify(allAmount) }}元。</view>
@@ -22,6 +24,8 @@
 		<view style="padding: 20px;">
 			<button class="button" @click="handleDefine">提现</button>
 		</view>
+		<u-keyboard ref="uKeyboard" mode="number" :show="show" :showTips="false" :overlay="false" @change="valChange"
+			@backspace="backspace" @cancel="show = false" @confirm="show = false"></u-keyboard>
 	</view>
 </template>
 
@@ -40,7 +44,8 @@
 				revision: 0,
 				amountText: '',
 				amountVisible: false,
-				maxlength: 12
+				maxlength: 12,
+				show: true
 			}
 		},
 		onLoad(options) {
@@ -50,6 +55,7 @@
 			uni.setNavigationBarTitle({
 				title: '保证金提现'
 			});
+			uni.hideKeyboard();
 		},
 		methods: {
 			// 查询保证金银行账户
@@ -62,6 +68,60 @@
 					this.bankName = res.data.bankName;
 					this.bankNo = res.data.bankNo;
 				})
+			},
+			handleFocus() {
+				uni.hideKeyboard();
+				this.show = true;
+			},
+			// 按键被点击(点击退格键不会触发此事件)
+			valChange(val) {
+				// 将每次按键的值拼接到value变量中，注意+=写法
+				if (this.amount) {
+					this.amount = this.amount.toString();
+					if (this.amount.indexOf('.') > -1) {
+						let arr = this.amount.split('.');
+						if (arr[1].length == 2) {
+							return
+						}
+					}
+					if (this.amount.substring(0, 1) == 0) {
+						if (val != 0 && val != '.') {
+							if (this.amount.indexOf('.') != -1) {
+								this.amount += val;
+							} else {
+								this.amount = val;
+							}
+						} else if (val == '.') {
+							this.amount += val;
+						} else if (this.amount.indexOf('.') != -1) {
+							this.amount += val;
+						}
+					} else {
+						if (val == '.') {
+							if (this.amount.indexOf('.') == -1) {
+								this.amount += val;
+							}
+						} else {
+							this.amount += val;
+						}
+					}
+				} else {
+					if (val == ".") {
+						this.amount = "0.";
+					} else {
+						this.amount += val;
+					}
+				}
+				this.handleInput(this.amount.toString())
+			},
+			// 退格键被点击
+			backspace() {
+				// 删除value的最后一个字符
+				this.amount = this.amount.toString();
+				if (this.amount.length) {
+					this.amount = this.amount.substr(0, this.amount.length - 1);
+					this.handleInput(this.amount.toString());
+				}
 			},
 			// 输入金额回调
 			handleInput(val) {
