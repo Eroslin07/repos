@@ -78,6 +78,14 @@
 			<uni-list-item v-if="type=='1'">
 				<template v-slot:body>
 					<view class="list-item">
+						<text>交易类型</text>
+						<text>{{user.paymentType == 2 ? '线下' : '线上' || ''}}</text>
+					</view>
+				</template>
+			</uni-list-item>
+			<uni-list-item v-if="type=='1'">
+				<template v-slot:body>
+					<view class="list-item">
 						<text>开户行</text>
 						<text>{{user.bankName || ''}}</text>
 					</view>
@@ -94,6 +102,14 @@
 					<view class="right">
 						<text v-if="eyeIsShow2" class="iconfont icon-open-eye" @click="eyeIsShow2=!eyeIsShow2"></text>
 						<text v-else class="iconfont icon-close-eye" @click="eyeIsShow2=!eyeIsShow2"></text>
+					</view>
+				</template>
+			</uni-list-item>
+			<uni-list-item v-if="type=='1'">
+				<template v-slot:body>
+					<view class="list-item">
+						<text>保证金开户行</text>
+						<text>{{user.bondBankName || ''}}</text>
 					</view>
 				</template>
 			</uni-list-item>
