@@ -22,7 +22,8 @@ const user = {
     accountNo: uni.getStorageSync('ACCOUNT_NO') || storage.get(constant.accountNo),
     staffType: uni.getStorageSync('SET_STAFFTYPE') || storage.get(constant.staffType),
     loginStatus: true,
-    registerType: uni.getStorageSync('SET_REGISTERTYPE') || storage.get(constant.registerType)
+    registerType: uni.getStorageSync('SET_REGISTERTYPE') || storage.get(constant.registerType),
+    paymentType: uni.getStorageSync('PAYMENT_TYPE') || storage.get(constant.paymentType)
   },
 
   mutations: {
@@ -89,6 +90,11 @@ const user = {
       state.accountNo = accountNo
       storage.set(constant.accountNo, accountNo)
       uni.setStorageSync('ACCOUNT_NO', accountNo)
+    },
+    PAYMENT_TYPE: (state, paymentType) => {
+      state.paymentType = paymentType
+      storage.set(constant.paymentType, paymentType)
+      uni.setStorageSync('PAYMENT_TYPE', paymentType)
     }
   },
 
@@ -151,6 +157,7 @@ const user = {
           commit('SET_STAFFTYPE', user.staffType)
           commit('SET_REGISTERTYPE', user.registerType)
           commit('ACCOUNT_NO', accountNo)
+          commit('PAYMENT_TYPE', user.paymentType)
           resolve(res)
         }).catch(error => {
           reject(error)

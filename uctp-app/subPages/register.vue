@@ -81,6 +81,13 @@
 							placeholder="请选择市场场地编号" border="none"></u--input>
 						<u-icon slot="right" name="arrow-right"></u-icon>
 					</u-form-item>
+					<u-form-item label="交易类型" :required="true" prop="paymentType" borderBottom>
+						<u-radio-group v-model="registerForm.paymentType" activeColor="#fd6404">
+							<u-radio shape="circle" label="线上" :name="1"></u-radio>
+							<text style="margin: 0 5px;"></text>
+							<u-radio shape="circle" label="线下" :name="2"></u-radio>
+						</u-radio-group>
+					</u-form-item>
 					<u-form-item label="联系地址" :required="true" prop="address" borderBottom>
 						<u--input v-model="registerForm.address" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
@@ -90,6 +97,9 @@
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
 						<u--input v-model="registerForm.bankAccount" type="number" border="none" placeholder="请输入对公银行账号"
 							@change="handleChange"></u--input>
+					</u-form-item>
+					<u-form-item label="保证金开户行" :required="true" prop="bondBankName" borderBottom v-if="registerForm.paymentType == 2">
+						<u--input v-model="registerForm.bondBankName" border="none" placeholder="请输入保证金开户行"></u--input>
 					</u-form-item>
 					<u-form-item label="保证金充值卡号" :required="true" prop="bondBankAccount" borderBottom>
 						<u--input v-model="registerForm.bondBankAccount" type="number" border="none" placeholder="请输入保证金充值卡号"
@@ -176,9 +186,11 @@
 					legal_representative: "", // 法定代表人
 					marketLocation: "", // 市场所在地id
 					marketLocationValue: "", // 市场所在地
+					paymentType: 2, // 交易类型
 					address: "", // 联系地址
 					bankName: "", // 开户行
 					bankAccount: "", // 对公银行账号
+					bondBankName: "", // 保证金开户行
 					bondBankAccount: "", // 保证金充值卡号
 					password: "", // 密码
 					confirmPassword: "" // 确认密码
@@ -256,6 +268,12 @@
 						message: '请选择市场场地',
 						trigger: ['blur', 'change']
 					},
+					paymentType: {
+						type: 'number',
+						required: true,
+						message: '请选择交易类型',
+						trigger: ['blur', 'change']
+					},
 					bankAccount: [{
 						type: 'string',
 						required: true,
@@ -276,6 +294,12 @@
 						trigger: ['blur', 'change']
 					}],
 					bankName: {
+						type: 'string',
+						required: true,
+						message: '请填写开户行',
+						trigger: ['blur', 'change']
+					},
+					bondBankName: {
 						type: 'string',
 						required: true,
 						message: '请填写开户行',
@@ -649,11 +673,13 @@
 						}),
 						marketLocation: this.registerForm.marketLocation,
 						marketLocationValue: this.registerForm.marketLocationValue,
+						paymentType: this.registerForm.paymentType,
 						address: this.registerForm.address,
 						bankNumber: this.registerForm.bankAccount.replace(/\s*/g, ""),
 						businessName: this.registerForm.businessName,
 						legal_representative: this.registerForm.legal_representative,
 						bankName: this.registerForm.bankName,
+						bondBankName: this.registerForm.paymentType == 2 ? this.registerForm.bondBankName : '',
 						bondBankAccount: this.registerForm.bondBankAccount.replace(/\s*/g, ""),
 					}
 					if (data.idCardUrl.length != 2) {
