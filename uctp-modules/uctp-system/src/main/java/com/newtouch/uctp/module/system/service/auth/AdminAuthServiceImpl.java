@@ -279,6 +279,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             extDO.setIdCard(reqVO.getIdCard());
             extDO.setBankName(reqVO.getBankName());//开户行
             extDO.setBankAccount(reqVO.getBankNumber());//对公银行账号
+            extDO.setBondBankName(reqVO.getBankName());//保证金开户行
             extDO.setBondBankAccount(reqVO.getBondBankAccount());//保证金充值账号
             extDO.setStaffType("1");//主账号
             extDO.setStatus(1);//未激活
