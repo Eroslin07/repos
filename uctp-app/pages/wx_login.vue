@@ -72,7 +72,7 @@
 					}).catch((error) => {
 						_this.showToken = false;
 					}).finally(() => {
-						_this.$modal.closeLoading()
+						_this.$modal.closeLoading2()
 					})
 				}
 			})
