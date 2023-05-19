@@ -11,6 +11,11 @@
 					<u--text text="￥" slot="prefix" margin="0 3px 0 0" type="tips"></u--text>
 				</u-input>
 			</view>
+			<view style="margin-top: 10px;" v-if="type == 2">上传银行电子回单</view>
+			<view style="margin-top: 10px;" v-if="type == 2">
+				<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple
+					:maxCount="3"></u-upload>
+			</view>
 		</uni-card>
 		<u-popup :show="show" @close="close" :customStyle="{ 'height': '240px' }">
 			<view style="position: absolute;top: 10px;left: 10px;" @click="close"><u-icon name="close"></u-icon></view>
@@ -45,6 +50,10 @@
 </template>
 
 <script>
+	import config from '@/config'
+	import {
+		deleteImage
+	} from '@/api/register'
 	import {
 		getRecharge,
 		getDetail
@@ -56,7 +65,8 @@
 				show: false,
 				revision: 0,
 				amountText: '',
-				maxlength: 12
+				maxlength: 12,
+				fileList1: [],
 			}
 		},
 		onLoad(options) {
@@ -66,6 +76,11 @@
 				getDetail({ accountNo: this.$store.state.user.accountNo }).then((res) => {
 					this.revision = res.data.revision;
 				})
+			}
+		},
+		computed: {
+			type() {
+				return this.$store.state.user.paymentType
 			}
 		},
 		methods: {
@@ -104,15 +119,64 @@
 					this.amountText = ''
 				}
 			},
+			async afterRead(event) {
+				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+				let lists = [].concat(event.file)
+				let fileListLen = this[`fileList${event.name}`].length
+				lists.map((item) => {
+					this[`fileList${event.name}`].push({
+						...item,
+						status: 'uploading',
+						message: '上传中'
+					})
+				})
+				for (let i = 0; i < lists.length; i++) {
+					const result = await this.uploadFilePromise(lists[i].url)
+					let item = this[`fileList${event.name}`][fileListLen]
+					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
+						status: 'success',
+						message: '',
+						url: result[0].url,
+						id: result[0].id
+					}))
+					fileListLen++
+				}
+			},
+			uploadFilePromise(url) {
+				return new Promise((resolve, reject) => {
+					let a = uni.uploadFile({
+						url: config.uploadUrl, // 仅为示例，非真实的接口地址
+						filePath: url,
+						name: 'file',
+						success: (res) => {
+							setTimeout(() => {
+								let data = JSON.parse(res.data).data
+								resolve(data)
+							}, 1000)
+						}
+					});
+				})
+			},
 			// 确定
 			handleDefine() {
 				if (this.amount == '' || !this.amount) {
 					this.$modal.msg("请输入需要充值的金额");
 				} else {
+					if (this.fileList1.length == 0 && this.type == 2) {
+						this.$modal.msg("请上传银行电子回单");
+						return
+					}
+					let file = this.fileList1.map((item) => {
+						return {
+							fileId: item.id,
+							fileUrl: item.url
+						}
+					})
 					let data = {
 						accountNo: this.$store.state.user.accountNo,
 						tranAmount: Number(this.amount * 100),
-						revision: this.revision
+						revision: this.revision,
+						invoiceFiles: this.type == 2 ? file : []
 					}
 					getRecharge(data).then((res) => {
 						this.$modal.msg("充值成功");
