@@ -34,10 +34,14 @@ public class AuthUserInfoRespVO {
     private String bankName;
     @Schema(description = "对公银行账号")
     private String bankAccount;
+    @Schema(description = "保证金开户行")
+    private String bondBankName;
     @Schema(description = "保证金充值卡号")
     private String bondBankAccount;
     @Schema(description = "联系地址")
     private String address;
+    @Schema(description = "交易方式")
+    private Integer paymentType;
 
 
 

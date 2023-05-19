@@ -196,6 +196,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         infoRespVO.setTenantName(parentDept.getName());
         infoRespVO.setBankName(userExtDO.getBankName());
         infoRespVO.setBankAccount(userExtDO.getBankAccount());
+        infoRespVO.setBondBankName(userExtDO.getBondBankName());
+        infoRespVO.setPaymentType(dept.getPaymentType());
         infoRespVO.setBondBankAccount(userExtDO.getBondBankAccount());
         infoRespVO.setAddress(dept.getAddress());
         return infoRespVO;
