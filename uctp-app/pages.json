@@ -197,7 +197,7 @@
 				"navigationBarTitleText": "保证金实扣明细"
 			}
 		}, {
-			"path": "home/account/bond/actualDeduction",
+			"path": "home/account/bond/actualCollection",
 			"style": {
 				"navigationBarTitleText": "收车手续费实扣明细"
 			}
