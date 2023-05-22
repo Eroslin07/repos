@@ -37,4 +37,6 @@ public class MerchantCashRespVo extends BaseDO {
 
     private Long carId;//车辆id
 
+    private String contractCode;//合同code
+
 }

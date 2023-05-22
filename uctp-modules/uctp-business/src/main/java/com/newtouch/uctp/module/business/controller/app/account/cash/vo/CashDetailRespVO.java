@@ -74,8 +74,11 @@ public class CashDetailRespVO {
     @Schema(description = "VIN")
     private String vin;
 
-    @Schema(description = "carId")
+    @Schema(description = "车辆id")
     private Long carId;
+
+    @Schema(description = "合同code")
+    private String contractCode;
 
     private List<PresentStatusRecordRespVO> presentStatusRecords;
 

@@ -59,6 +59,7 @@
         select
         umc.*,
         uci.VIN vin,
+        uc.CODE contractCode,
         uci.id carId
         from
         uctp_merchant_cash umc
