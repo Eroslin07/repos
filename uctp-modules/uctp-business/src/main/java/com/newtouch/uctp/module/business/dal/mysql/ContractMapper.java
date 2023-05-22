@@ -46,7 +46,8 @@ public interface ContractMapper extends BaseMapperX<ContractDO> {
     default ContractDO findCollectDraft(Long carId, Integer contractType){
         return selectOne(new LambdaQueryWrapperX<ContractDO>()
                 .eq(ContractDO::getCarId,carId)
-                .eq(ContractDO::getContractType,contractType));
+                .eq(ContractDO::getContractType,contractType)
+                .eq(ContractDO::getInvalided,0));
     }
 
     void updateContractByContractId(@Param("status") String status,@Param("contractId") Long contractId);

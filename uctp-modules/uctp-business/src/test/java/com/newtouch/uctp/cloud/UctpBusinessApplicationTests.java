@@ -165,7 +165,7 @@ class UctpBusinessApplicationTests {
 
     @Test
     void contractPage(){
-        ContractPageResult pageResult = client.defaultdeContractPage(3098148948951507300L, "15328756760").getCheckedData();
+        ContractPageResult pageResult = client.defaultdeContractPage(3098102276800119450L, "15328756760").getCheckedData();
         System.out.println(pageResult.getPageUrl());
     }
 
@@ -173,7 +173,7 @@ class UctpBusinessApplicationTests {
     void contractDownload() throws FileNotFoundException {
         File file = FileUtil.file("D:/usr/contract3.pdf");
         FileOutputStream fos = new FileOutputStream(file);
-        client.defaultDocumentDownload(fos, 3095639330459231123L);
+        client.defaultDocumentDownload(fos, 3098172673964974838L);
 //        client.defaultContractDownload(fos, 3095639328445965188L, ListUtil.of("CONTRACT"), Boolean.FALSE).getCheckedData();
 
     }

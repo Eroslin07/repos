@@ -403,7 +403,6 @@ public class ContractServiceImpl implements ContractService {
             log.error("契约锁合同下载失败",e);
             throw exception(QYS_CONFIG_DOCUMENT_DOWNLOAD_FAIL);
         }finally {
-//            FileUtil.del(tempFile);
             if (ObjectUtil.isNotNull(tempFile)) {
                 tempFile.delete();
             }

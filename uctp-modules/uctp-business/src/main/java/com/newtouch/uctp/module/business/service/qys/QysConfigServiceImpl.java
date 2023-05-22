@@ -108,7 +108,7 @@ import static com.newtouch.uctp.framework.common.exception.util.ServiceException
 import static com.newtouch.uctp.framework.web.core.util.WebFrameworkUtils.HEADER_TENANT_ID;
 import static com.newtouch.uctp.module.business.enums.ErrorCodeConstants.*;
 import static com.newtouch.uctp.module.business.enums.QysConstants.*;
-import static com.newtouch.uctp.module.business.enums.QysContractStatus.INVALIDED;
+import static com.newtouch.uctp.module.business.enums.QysContractStatus.*;
 
 /**
  * 契约锁 Service 实现类
@@ -178,7 +178,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void initLocalCache() {
         // 注意：忽略自动多租户，因为要全局初始化缓存
-        TenantUtils.executeIgnore(()->{
+        TenantUtils.executeIgnore(() -> {
             // 第一步：查询数据
             List<QysConfigDO> configDOS = qysConfigMapper.selectListAuth();
             log.info("[initLocalCache][缓存契约锁client，数量为:{}]", configDOS.size());
@@ -269,7 +269,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 //设置当前登录人信息，免得保存报错
                 List<AdminUserRespDTO> adminUserRespDTOs = adminUserApi.getUserListByDeptIds(ListUtil.of(deptDO.getId())).getCheckedData();
                 if (CollUtil.isEmpty(adminUserRespDTOs)) {
-                    log.error("认证公司失败，因为第一位员工不存在，公司：{},公司Id",deptDO.getName(),deptDO.getId());
+                    log.error("认证公司失败，因为第一位员工不存在，公司：{},公司Id", deptDO.getName(), deptDO.getId());
                 }
                 WebFrameworkUtils.setLoginUserId(WebFrameworkUtils.getRequest(), adminUserRespDTOs.get(0).getId());
                 QysConfigDO configDO = qysConfigMapper.selectOne("COMPANY_ID", companyId);
@@ -373,31 +373,31 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //A-1 合同已完成
                         //A-2 车辆状态合同发起
                         //A-3 发起收车合同，
-                        this.doService(contractDO, carInfo, 2,null
-                                , CarStatus.COLLECT.value(),
+                        this.doService(contractDO, carInfo, 2, null,
+                                CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_B.value(),
                                 CarStatus.COLLECT_B_C.value(),
                                 Boolean.TRUE,
                                 Boolean.FALSE);
                         //下载合同签章文件
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //B 收车委托已作废->
                         //B-1 合同作废
                         //B-2 车辆状态
-                        this.doService(contractDO, carInfo, null,1
-                                , CarStatus.COLLECT.value(),
+                        this.doService(contractDO, carInfo, null, 1,
+                                CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_A.value(),
                                 CarStatus.COLLECT_A_A.value(),
                                 Boolean.FALSE,
                                 Boolean.FALSE);
                         //下载合同签章文件
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                     case SIGNING:
-                        this.doService(contractDO, carInfo, 1,null
-                                , CarStatus.COLLECT.value(),
+                        this.doService(contractDO, carInfo, 1, null,
+                                CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_A.value(),
                                 CarStatus.COLLECT_A_A.value(),
                                 Boolean.FALSE,
@@ -422,8 +422,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //C 收车合同已完成->
                         //C-1 合同已完成，
                         //C-2 车辆状态待支付
-                        this.doService(contractDO, carInfo, 2,null
-                                , CarStatus.COLLECT.value(),
+                        this.doService(contractDO, carInfo, 2, null,
+                                CarStatus.COLLECT.value(),
                                 CarStatus.COLLECT_B.value(),
                                 CarStatus.COLLECT_B_D.value(),
                                 Boolean.FALSE,
@@ -433,41 +433,42 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //实占保证金
                         Boolean deductionCash = merchantMoneyService.deductionCash(contractDO.getContractId());
                         if (!deductionCash) {
-                            log.warn("实占保证金失败，contractId：{}",contractDO.getContractId());
+                            log.warn("实占保证金失败，contractId：{}", contractDO.getContractId());
                         }
                         this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.SCKP.name()).getCheckedData();
                         //下载签章合同
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //D 收车合同已作废->
                         //D-1 合同作废
                         //D-2 车辆状态
-                        this.doService(contractDO, carInfo, null,1
-                                , null,
+                        this.doService(contractDO, carInfo, null, 1,
+                                null,
                                 null,
                                 null,
                                 Boolean.FALSE,
                                 Boolean.FALSE);
-                        this.colCarContractInvalided(contractDO.getCarId());
+                        //这是比较稳妥的方式
+                        this.colCarContractInvalided(carInfo);
                         //释放收车保证金预占
                         merchantMoneyService.releaseCash(contractDO.getContractId());
                         //下载合同签章文件
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         //发起委托收车合同作废
-                        contractService.entrustContractInvalid(contractDO,contractDO.getInvalidedReason());
+                        contractService.entrustContractInvalid(contractDO, contractDO.getInvalidedReason());
                         break;
                     case INVALIDING:
                         //个人签署作废中
-                        if (StrUtil.equals(contractStatusDTO.getTenantType(),"PERSONAL")) {
+                        if (StrUtil.equals(contractStatusDTO.getTenantType(), "PERSONAL")) {
                             this.companyContractInvalidSign(contractDO.getContractId());
                         }
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("PERSONAL", contractStatusDTO.getTenantType())) {
-                            this.doService(contractDO, carInfo, 1,null
-                                    , CarStatus.COLLECT.value(),
+                            this.doService(contractDO, carInfo, 1, null,
+                                    CarStatus.COLLECT.value(),
                                     CarStatus.COLLECT_B.value(),
                                     CarStatus.COLLECT_B_C.value(),
                                     Boolean.FALSE,
@@ -476,16 +477,20 @@ public class QysConfigServiceImpl implements QysConfigService {
                         }
                         break;
                     case REJECTED:
-                        this.doService(contractDO,carInfo,null,1,
-                                null,null,null,
-                                Boolean.FALSE,Boolean.FALSE);
-                        contractService.entrustContractInvalid(contractDO,"卖家已主动作废");
+                        this.doService(contractDO, carInfo, null, 1,
+                                null, null, null,
+                                Boolean.FALSE, Boolean.FALSE);
+                        contractService.entrustContractInvalid(contractDO, "卖家已主动作废");
+                        //下载合同签章文件,怀疑如果合同是草稿，就不会回调已作废
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                     case RECALLED:
-                        this.doService(contractDO,carInfo,null,1,
-                                null,null,null,
-                                Boolean.FALSE,Boolean.FALSE);
-                        contractService.entrustContractInvalid(contractDO,contractDO.getInvalidedReason());
+                        this.doService(contractDO, carInfo, null, 1,
+                                null, null, null,
+                                Boolean.FALSE, Boolean.FALSE);
+                        contractService.entrustContractInvalid(contractDO, contractDO.getInvalidedReason());
+                        //下载合同签章文件,怀疑如果合同是草稿，就不会回调已作废
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                 }
             } else if (contractDO.getContractType().equals(3)) {
@@ -496,23 +501,23 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //E-1 合同已完成
                         //E-2 车辆状态合同已发起
                         //E-3 发起卖车合同
-                        this.doService(contractDO, carInfo, 2,null,
+                        this.doService(contractDO, carInfo, 2, null,
                                 CarStatus.SELL.value(),
                                 CarStatus.SELL_B.value(),
                                 CarStatus.SELL_B_C.value(),
                                 Boolean.TRUE,
                                 Boolean.FALSE);
                         //下载签章合同
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //下载合同签章文件
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         //F 卖车委托合同已作废->
                         //F-1 合同作废
                         //F-2 车辆状态
-                        this.doService(contractDO, carInfo, null,1
-                                , CarStatus.SELL.value(),
+                        this.doService(contractDO, carInfo, null, 1,
+                                CarStatus.SELL.value(),
                                 CarStatus.SELL_A.value(),
                                 CarStatus.SELL_A_A.value(),
                                 Boolean.FALSE,
@@ -536,7 +541,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                         //G 卖车合同已完成->
                         //G-1 合同已完成
                         //G-2 车辆状态合同已发起
-                        this.doService(contractDO, carInfo, 2,null
+                        this.doService(contractDO, carInfo, 2, null
                                 , CarStatus.SELL.value(),
                                 CarStatus.SELL_C.value(),
                                 CarStatus.SELL_C_A.value(),
@@ -546,34 +551,34 @@ public class QysConfigServiceImpl implements QysConfigService {
                         log.info("[status]卖车合同完成：signature【{}】,timestamp【{}】,content【{}】", signature, timestamp, content);
                         this.bpmOpenInvoiceApi.createOpenInvoiceBpm(contractDO.getContractId(), BpmDefTypeEnum.MCKP.name()).getCheckedData();
                         //下载签章合同
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         break;
                     case INVALIDED:
                         //H 卖车合同已作废->
                         //H-1 合同作废
                         //H-2 车辆状态
-                        this.doService(contractDO, carInfo, null,1
-                                , null,
+                        this.doService(contractDO, carInfo, null, 1,
+                                null,
                                 null,
                                 null,
                                 Boolean.FALSE,
                                 Boolean.TRUE);
                         this.sellCarContractInvalided(contractDO.getCarId());
                         //下载合同签章文件
-                        contractService.contractDownload(contractDO.getContractId(),contractDO.getDocumentId(),contractDO.getContractName());
+                        contractService.contractDownload(contractDO.getContractId(), contractDO.getDocumentId(), contractDO.getContractName());
                         //作废卖车委托合同
-                        contractService.entrustContractInvalid(contractDO,contractDO.getInvalidedReason());
+                        contractService.entrustContractInvalid(contractDO, contractDO.getInvalidedReason());
                         break;
                     case INVALIDING:
                         //个人签署作废中
-                        if (StrUtil.equals(contractStatusDTO.getTenantType(),"PERSONAL")) {
+                        if (StrUtil.equals(contractStatusDTO.getTenantType(), "PERSONAL")) {
                             this.companyContractInvalidSign(contractDO.getContractId());
                         }
                         break;
                     case SIGNING:
                         //如果是个人签署，进行企业静默签章
                         if (ObjectUtil.equals("PERSONAL", contractStatusDTO.getTenantType())) {
-                            this.doService(contractDO, carInfo, 1,null
+                            this.doService(contractDO, carInfo, 1, null
                                     , CarStatus.SELL.value(),
                                     CarStatus.SELL_B.value(),
                                     CarStatus.SELL_B_C.value(),
@@ -583,16 +588,16 @@ public class QysConfigServiceImpl implements QysConfigService {
                         }
                         break;
                     case REJECTED:
-                        this.doService(contractDO,carInfo,null,1,
-                                null,null,null,
-                                Boolean.FALSE,Boolean.FALSE);
-                        contractService.entrustContractInvalid(contractDO,"买家已主动作废");
+                        this.doService(contractDO, carInfo, null, 1,
+                                null, null, null,
+                                Boolean.FALSE, Boolean.FALSE);
+                        contractService.entrustContractInvalid(contractDO, "买家已主动作废");
                         break;
                     case RECALLED:
-                        this.doService(contractDO,carInfo,null,1,
-                                null,null,null,
-                                Boolean.FALSE,Boolean.FALSE);
-                        contractService.entrustContractInvalid(contractDO,contractDO.getInvalidedReason());
+                        this.doService(contractDO, carInfo, null, 1,
+                                null, null, null,
+                                Boolean.FALSE, Boolean.FALSE);
+                        contractService.entrustContractInvalid(contractDO, contractDO.getInvalidedReason());
                         break;
                 }
             }
@@ -601,38 +606,49 @@ public class QysConfigServiceImpl implements QysConfigService {
     }
 
     /**
+     * 判断车辆草稿是不是业务方主动作废的草稿
+     *
+     * @param carInfo
+     * @return
+     */
+    private Boolean isBusinessDraft(CarInfoDO carInfo) {
+        if (ObjectUtil.equals(carInfo.getStatusThree(), CarStatus.COLLECT_A_B) ||
+                ObjectUtil.equals(carInfo.getStatusThree(), CarStatus.COLLECT_A_C) ||
+                ObjectUtil.equals(carInfo.getStatusThree(), CarStatus.COLLECT_A_D)) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
      * 车辆收车合同作废并释放保证金预占
      */
-    private void colCarContractInvalided(Long carId) {
+    private void colCarContractInvalided(CarInfoDO carInfo) {
         List<ContractDO> contractDOS = contractMapper.selectList(new LambdaQueryWrapper<ContractDO>()
-                .eq(ContractDO::getCarId, carId)
-                .in(ContractDO::getStatus, 1, 2)
-                .in(ContractDO::getContractType, 1, 2));
+                .eq(ContractDO::getCarId, carInfo.getId())
+//                .in(ContractDO::getStatus, 1, 2)
+//                .in(ContractDO::getContractType, 1, 2)
+                .eq(ContractDO::getInvalided,0));
         if (CollUtil.isEmpty(contractDOS)) {
             throw exception(CONTRACT_NOT_EXISTS);
         }
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(PLATFORM_ID);
+        List<String> invalidedStatus = ListUtil.of(INVALIDED.value(), RECALLED.value(), REJECTED.value());
         for (int i = 0; i < contractDOS.size(); i++) {
             ContractDO contractDO = contractDOS.get(i);
             Contract contract = client.defaultContractDetail(contractDO.getContractId()).getCheckedData();
-            if (!ObjectUtil.equals(INVALIDED.value(), contract.getStatus())) {
-                //合同作废完成
-                log.info("合同不是作废状态,合同id:{}",contractDO.getContractId());
+            if (!invalidedStatus.contains(contract.getStatus())) {
+                log.info("合同不是作废状态,合同id:{}", contractDO.getContractId());
                 return;
             }
-            if (ObjectUtil.equals(i,contractDOS.size())) {
-                //修改合同作废，车辆变为草稿
-                CarInfoDO carInfo = carInfoService.getCarInfo(carId);
-                if (ObjectUtil.isNotNull(carInfo)) {
-                    carInfo.setSalesStatus(CarStatus.COLLECT.value());
-                    carInfo.setStatus(CarStatus.COLLECT_A.value());
-                    carInfo.setStatusThree(CarStatus.COLLECT_A_A.value());
-                    carInfoService.update(carInfo);
-                }
-                contractDO.setInvalided(1);
-                contractMapper.updateById(contractDO);
-            }
         }
+        //修改合同作废，车辆变为草稿
+        carInfo.setSalesStatus(CarStatus.COLLECT.value());
+        carInfo.setStatus(CarStatus.COLLECT_A.value());
+        carInfo.setStatusThree(CarStatus.COLLECT_A_A.value());
+        carInfoService.update(carInfo);
+//            contractDO.setInvalided(1);
+//            contractMapper.updateById(contractDO);
     }
 
     /**
@@ -652,10 +668,10 @@ public class QysConfigServiceImpl implements QysConfigService {
             Contract contract = client.defaultContractDetail(contractDO.getContractId()).getCheckedData();
             if (!ObjectUtil.equals(INVALIDED.value(), contract.getStatus())) {
                 //合同作废完成
-                log.info("合同不是作废状态,合同id:{}",contractDO.getContractId());
+                log.info("合同不是作废状态,合同id:{}", contractDO.getContractId());
                 return;
             }
-            if (ObjectUtil.equals(i,contractDOS.size())) {
+            if (ObjectUtil.equals(i, contractDOS.size())) {
                 //修改合同作废，车辆变为草稿
                 CarInfoDO carInfo = carInfoService.getCarInfo(carId);
                 if (ObjectUtil.isNotNull(carInfo)) {
@@ -701,8 +717,8 @@ public class QysConfigServiceImpl implements QysConfigService {
                 contractDO.setSigningDate(LocalDateTime.now());
             }
         }
-        if (ObjectUtil.equals(contractDO.getContractType(),1)
-                || ObjectUtil.equals(contractDO.getContractType(),3)) {
+        if (ObjectUtil.equals(contractDO.getContractType(), 1)
+                || ObjectUtil.equals(contractDO.getContractType(), 3)) {
             //委托合同设置签署时间
             if (ObjectUtil.isNull(contractDO.getSigningDate())) {
                 contractDO.setSigningDate(LocalDateTime.now());
@@ -823,12 +839,12 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else if (type.equals(5)) {
             userAuthProducer.sendUserAuthMessage(666L, "17396202169", UserAuthProducer.FIVE_MINUTES);
         } else if (type.equals(6)) {
-            contractService.contractDownload(id,0L,"二手车委托合同");
+            contractService.contractDownload(id, 3098172669674201797L, "二手车委托合同");
         } else if (type.equals(7)) {
             this.companyContractInvalidSign(id);
         } else if (type.equals(8)) {
             ContractDO contractDO = contractService.getByContractId(id);
-            contractService.entrustContractInvalid(contractDO,"我要作废");
+            contractService.entrustContractInvalid(contractDO, "我要作废");
         }
     }
 
@@ -837,7 +853,7 @@ public class QysConfigServiceImpl implements QysConfigService {
     public String send(Long contractId, Boolean hasReserve) {
         ContractDO contractDO = contractMapper.selectOne(ContractDO::getContractId, contractId);
         if (ObjectUtil.equals(1, contractDO.getContractType()) && hasReserve) {
-           // ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
+            // ContractDO contractDO1 = contractMapper.selectOne(ContractDO::getCarId, contractDO.getCarId(), ContractDO::getContractType, 2);
             ContractDO contractDO1 = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, contractDO.getCarId()).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
             //保证金预占
             Boolean reserveCash = merchantMoneyService.reserveCash(contractDO1.getContractId());
@@ -854,8 +870,7 @@ public class QysConfigServiceImpl implements QysConfigService {
             carInfo.setSalesStatus(CarStatus.COLLECT.value());
             carInfo.setStatus(CarStatus.COLLECT_B.value());
             carInfo.setStatusThree(CarStatus.COLLECT_B_B.value());
-        }
-        else if (ObjectUtil.equals(3, contractDO.getContractType())) {
+        } else if (ObjectUtil.equals(3, contractDO.getContractType())) {
             carInfo.setSalesStatus(CarStatus.SELL.value());
             carInfo.setStatus(CarStatus.SELL_B.value());
             carInfo.setStatusThree(CarStatus.SELL_B_B.value());
@@ -1108,11 +1123,11 @@ public class QysConfigServiceImpl implements QysConfigService {
 
     @Override
     public List<QYSContractVO> FindQYSContract(Long carId) {
-        List<QYSContractVO> qysContractVOList =new ArrayList<>();
-        QYSContractVO qysContractVO1=new QYSContractVO();
-        QYSContractVO qysContractVO=new QYSContractVO();
+        List<QYSContractVO> qysContractVOList = new ArrayList<>();
+        QYSContractVO qysContractVO1 = new QYSContractVO();
+        QYSContractVO qysContractVO = new QYSContractVO();
         //收车委托合同
-       // ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
+        // ContractDO buyWTContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 1);
         ContractDO buyWTContractDO = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, 1).eq(ContractDO::getInvalided, 0));
         BusinessFileDO byWTBusinessFile = businessFileMapper.selectOne("main_id", buyWTContractDO.getContractId());
         List<Long> contractIds = new ArrayList<>();
@@ -1126,7 +1141,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 
         }
         //收车合同
-       // ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
+        // ContractDO buyContractDO = contractMapper.selectOne("car_id", carId, "contract_type", 2);
         ContractDO buyContractDO = contractMapper.selectOne(new LambdaQueryWrapper<ContractDO>().eq(ContractDO::getCarId, carId).eq(ContractDO::getContractType, 2).eq(ContractDO::getInvalided, 0));
         BusinessFileDO buyBusinessFile = businessFileMapper.selectOne("main_id", buyContractDO.getContractId());
         List<Long> contractIdList = new ArrayList<>();
@@ -1441,7 +1456,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 //        QysConfigDO configDO1 = qysConfigMapper.selectById(PLATFORM_ID);
 //        QysConfigDO marketConfigDO = qysConfigMapper.selectById(MARKET_ID);
         QiyuesuoSaasClient client = qiyuesuoClientFactory.getQiyuesuoSaasClient(SAAS_ID);
-        SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile(),userRespDTO.getNickname(),userExtDO.getIdCard()).getCheckedData();
+        SaaSUserAuthPageResult checkedData = client.saasUserAuthPage(userRespDTO.getMobile(), userRespDTO.getNickname(), userExtDO.getIdCard()).getCheckedData();
         String authId = checkedData.getAuthId();
         userExtDO.setAuthId(authId);
         userExtMapper.updateById(userExtDO);
@@ -1530,7 +1545,7 @@ public class QysConfigServiceImpl implements QysConfigService {
                 }
                 UserExtDO userExtDO = userExtMapper.selectOne(
                         new LambdaQueryWrapperX<UserExtDO>().eq(UserExtDO::getUserId,
-                        adminUserRespDTOS.get(0).getId()));
+                                adminUserRespDTOS.get(0).getId()));
                 userExtDO.setStatus(0);
                 userExtMapper.updateById(userExtDO);
                 return;
@@ -1653,12 +1668,12 @@ public class QysConfigServiceImpl implements QysConfigService {
         return keyword;
     }
 
-    private void companySign(QysConfigDO configDO, ContractDO contractDO, List<String> keywords,String dateKeyword) {
+    private void companySign(QysConfigDO configDO, ContractDO contractDO, List<String> keywords, String dateKeyword) {
 //      //如果是收/卖车合同，需要等待个人签署完成后，自动签署
 //        if (ObjectUtil.equals(2,contractDO.getContractType()) || ObjectUtil.equals(4,contractDO.getContractType())) {
 //            return;
 //        }
-        log.info("开始自动盖章-盖章公司：{},关键字:{}",configDO.getBusinessName(),keywords.get(0));
+        log.info("开始自动盖章-盖章公司：{},关键字:{}", configDO.getBusinessName(), keywords.get(0));
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(configDO.getId());
         //获取签署方公章
         Long sealId = null;
@@ -1676,7 +1691,7 @@ public class QysConfigServiceImpl implements QysConfigService {
         } else {
             sealId = configDO.getSealId();
         }
-        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords,dateKeyword).getCheckedData();
+        client.defaultCompanysign(contractDO.getContractId(), contractDO.getDocumentId(), sealId, keywords, dateKeyword).getCheckedData();
     }
 
     @Override
@@ -1796,13 +1811,13 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public void employeeRemove(Long deptId, String mobile, String userName) {
         QysConfigDO configDO = this.getByDeptId(deptId);
-        this.employeeRemove(configDO,mobile,userName);
+        this.employeeRemove(configDO, mobile, userName);
     }
 
     @Override
     public void employeeCreate(Long deptId, String mobile, String userName) {
         QysConfigDO configDO = this.getByDeptId(deptId);
-        this.employeeCreate(configDO,mobile,userName);
+        this.employeeCreate(configDO, mobile, userName);
     }
 
     @Override
@@ -1836,18 +1851,18 @@ public class QysConfigServiceImpl implements QysConfigService {
     @Override
     public Map addAccount(AddAccountDTO reqVO) {
         Map map = adminUserApi.addAccount(reqVO);
-        String type =String.valueOf(map.get("type"));
-        if("1".equals(type)){
+        String type = String.valueOf(map.get("type"));
+        if ("1".equals(type)) {
             Long userId = Long.valueOf(String.valueOf(map.get("userId")));
             userAuth(userId);
-            map.put("success","0");
+            map.put("success", "0");
         }
         if (ObjectUtil.isNotNull(reqVO.getId())) {
             if (ObjectUtil.equals(CommonStatusEnum.DISABLE.getStatus(), reqVO.getStatus())) {
-                this.employeeRemove(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName());
+                this.employeeRemove(reqVO.getDeptId(), reqVO.getPhone(), reqVO.getName());
             }
             if (ObjectUtil.equals(CommonStatusEnum.ENABLE.getStatus(), reqVO.getStatus())) {
-                this.employeeCreate(reqVO.getDeptId(),reqVO.getPhone(),reqVO.getName());
+                this.employeeCreate(reqVO.getDeptId(), reqVO.getPhone(), reqVO.getName());
             }
         }
         return map;
@@ -1870,7 +1885,7 @@ public class QysConfigServiceImpl implements QysConfigService {
 //                if (mobiles.contains(adminUserDO.getMobile())) {
 //                    client.defaultEmployeeRemove(adminUserDO.getUsername(), adminUserDO.getMobile()).getCheckedData();
 //                }
-                this.employeeRemove(configDO,adminUserDO.getMobile(),adminUserDO.getUsername());
+                this.employeeRemove(configDO, adminUserDO.getMobile(), adminUserDO.getUsername());
             }
         }
         return delete;
@@ -2129,13 +2144,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             if (parts.getSpecification() != null && parts.getSpecification()) {
                 result += "说明书、";
             }
-            if (parts.getVehicleKey() != null&&parts.getVehicleKey()!=0) {
+            if (parts.getVehicleKey() != null && parts.getVehicleKey() != 0) {
                 result += "钥匙数量:" + parts.getVehicleKey() + "组、";
             }
             if (StringUtils.isNotEmpty(parts.getAccidentVehicle())) {
-                result += parts.getAccidentVehicle()+"、";
+                result += parts.getAccidentVehicle() + "、";
             }
-            result=result.substring(0,result.length()-1);
+            result = result.substring(0, result.length() - 1);
         }
         return result;
     }
@@ -2173,13 +2188,13 @@ public class QysConfigServiceImpl implements QysConfigService {
             if (parts.getSpecification() != null && parts.getSpecification()) {
                 result += "说明书、";
             }
-            if (parts.getVehicleKey() != null&&parts.getVehicleKey()!=0) {
+            if (parts.getVehicleKey() != null && parts.getVehicleKey() != 0) {
                 result += "钥匙数量:" + parts.getVehicleKey() + "组、";
             }
             if (StringUtils.isNotEmpty(parts.getAccidentVehicle())) {
-                result += parts.getAccidentVehicle()+"、";
+                result += parts.getAccidentVehicle() + "、";
             }
-            result=result.substring(0,result.length()-1);
+            result = result.substring(0, result.length() - 1);
         }
         return result;
     }

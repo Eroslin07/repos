@@ -60,7 +60,6 @@ public class QiyuesuoClientFactoryImpl implements QiyuesuoClientFactory {
     private AbstractQiyuesuoClient createQiyuesuoClient(QiyuesuoChannelProperties properties) {
         QiyuesuoChannelEnum channelEnum = QiyuesuoChannelEnum.getByCode(properties.getCode());
         Assert.notNull(channelEnum, String.format("渠道类型(%s) 为空", channelEnum));
-        System.out.println(channelEnum.getCode()+"-"+channelEnum.getName());
         if (StrUtil.isBlank(properties.getServerUrl())) {
             properties.setServerUrl(StrUtil.isBlank(this.serverUrl)?this.defaultServerUrl:this.serverUrl);
         }
