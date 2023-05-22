@@ -58,7 +58,8 @@
             resultType="com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashRespVo">
         select
         umc.*,
-        uci.VIN vin
+        uci.VIN vin,
+        uci.id carId
         from
         uctp_merchant_cash umc
         left join uctp_contract uc on uc.CONTRACT_ID  =umc .contract_no

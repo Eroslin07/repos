@@ -35,4 +35,6 @@ public class MerchantCashRespVo extends BaseDO {
 
     private String vin;//车架号
 
+    private Long carId;//车辆id
+
 }

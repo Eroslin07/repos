@@ -74,6 +74,9 @@ public class CashDetailRespVO {
     @Schema(description = "VIN")
     private String vin;
 
+    @Schema(description = "carId")
+    private Long carId;
+
     private List<PresentStatusRecordRespVO> presentStatusRecords;
 
     public static CashDetailRespVO build(MerchantCashDO merchantCashDO) {
