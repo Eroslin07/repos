@@ -9,35 +9,23 @@
             <span>商户电话：{{ baseInfoData.data.variables.startUserMobile }}</span>
           </div>
         </div>
-        <div class="xinxi">利润提取信息</div>
+        <div class="xinxi">保证金充值明细</div>
         <div class="content-box">
           <el-row>
-            <el-col :span="2" class="bg-yell">商户：</el-col>
-            <el-col :span="4"> {{ mainValue.formDataJson.merchantName || '暂无数据' }}</el-col>
-            <el-col :span="2" class="bg-yell">手机号：</el-col>
-            <el-col :span="4">{{ mainValue.formDataJson.telNo || '暂无数据' }}</el-col>
-            <el-col :span="2" class="bg-yell">提取金额： </el-col>
-            <el-col :span="4">{{
-              mainValue.formDataJson.amount
-                ? moneyFormat(mainValue.formDataJson.amount / 100) + '元'
-                : '0.00元'
-            }}</el-col>
-            <el-col :span="2" class="bg-yell">剩余金额： </el-col>
-            <el-col :span="4">{{
-              mainValue.formDataJson.balanceAmount
-                ? moneyFormat(mainValue.formDataJson.balanceAmount / 100) + '元'
-                : '0.00元'
-            }}</el-col>
+            <el-col :span="4" class="bg-yell">商户名称：</el-col>
+            <el-col :span="8"> {{ mainValue.formDataJson.merchantName || '暂无数据' }}</el-col>
+            <el-col :span="4" class="bg-yell">充值金额：</el-col>
+            <el-col :span="8">{{ mainValue.formDataJson.telNo || '暂无数据' }}</el-col>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-col :span="2" class="bg-yell">收款账号： </el-col>
             <el-col :span="4">{{ mainValue.formDataJson.bankNo || '暂无数据' }}</el-col>
             <el-col :span="2" class="bg-yell">开户行： </el-col>
             <el-col :span="16">{{ mainValue.formDataJson.bankName || '暂无数据' }}</el-col>
-          </el-row>
+          </el-row> -->
           <el-row>
-            <el-col :span="2" class="bg-yell" style="height: 100px">发票照片： </el-col>
-            <el-col :span="22" style="height: 100px">
+            <el-col :span="4" class="bg-yell" style="height: 100px">银行电子回单： </el-col>
+            <el-col :span="20" style="height: 100px">
               <el-image
                 v-for="(item, index) in mainValue.formDataJson.invoiceFiles"
                 :key="item.fileId"
@@ -51,7 +39,7 @@
             </el-col>
           </el-row>
         </div>
-        <div class="xinxi" style="margin-top: 16px">利润明细</div>
+        <!-- <div class="xinxi" style="margin-top: 16px">利润明细</div>
         <el-table :data="mainValue.formDataJson.profitDetails" style="width: 100%" height="250">
           <el-table-column prop="idx" label="序号" align="center" width="60" />
           <el-table-column prop="merchantName" label="商户名称" align="center" min-width="180" />
@@ -82,7 +70,7 @@
             align="center"
             min-width="180"
           />
-        </el-table>
+        </el-table> -->
       </el-main>
     </el-container>
   </ContentWrap>
@@ -109,11 +97,11 @@ const props = defineProps({
   type: propTypes.bool.def(undefined)
 })
 console.log(props)
-const moneyFormat = (num) => {
-  return Number(num)
-    .toFixed(2)
-    .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
-}
+// const moneyFormat = (num) => {
+//   return Number(num)
+//     .toFixed(2)
+//     .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+// }
 // 详情
 let mainValue = reactive({
   formDataJson: { invoiceFiles: [{ fileUrl: '' }] }

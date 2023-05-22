@@ -22,6 +22,10 @@
     <BondRecharge v-if="status == 'ZJCZ'" />
     <!-- 保证金提现代办 -->
     <BondWithdrawal v-if="status == 'ZJTX'" />
+    <!-- 收车支付流程 -->
+    <CollPayment v-if="status == 'SCZF'" />
+    <!-- 卖车支付流程 -->
+    <SellPayment v-if="status == 'SMCSK'" />
   </div>
 </template>
 <script setup lang="ts">
@@ -34,7 +38,11 @@ import {
   SellCarPending,
   Profit,
   VehicleReceiptTransfer,
-  VehicleTransferBuyer
+  VehicleTransferBuyer,
+  CollPayment,
+  SellPayment,
+  BondRecharge,
+  BondWithdrawal
 } from '@/views/workbench/components'
 import { defineProps } from 'vue'
 import { baseInfoData } from '@/views/workbench/basInfoValue'
