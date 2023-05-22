@@ -89,7 +89,7 @@ public interface ContractService {
      * @param type
      * @return
      */
-    String GenerateCode(Integer type);
+    String generateCode(Integer type);
 
     void draft(Long carId);
 

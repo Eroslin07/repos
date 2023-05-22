@@ -165,7 +165,8 @@ public class ContractServiceImpl implements ContractService {
         //直接获取发起方client
         QiyuesuoClient client = qiyuesuoClientFactory.getQiyuesuoClient(PLATFORM_ID);
         Contract contract = client.defaultContractDetail(contractDO.getContractId()).getCheckedData();
-        if (StrUtil.equals(contract.getStatus(), QysContractStatus.INVALIDING.value())) {
+        if (StrUtil.equals(contract.getStatus(), QysContractStatus.INVALIDING.value())
+        || StrUtil.equals(contract.getStatus(), QysContractStatus.INVALIDED.value())) {
             throw exception(CONTRACT_INVALIDING_SUCCESS);
         }
         if (StrUtil.equals(contract.getStatus(), QysContractStatus.DRAFT.value())) {
@@ -224,7 +225,7 @@ public class ContractServiceImpl implements ContractService {
         return appContractarVO;
     }
 
-    public String GenerateCode(Integer type){
+    public String generateCode(Integer type){
         String busiTypeCode = "";
         switch (type){
 //            1收车委托合同   2收车合同  3卖车委托合同  4卖车合同
@@ -593,7 +594,7 @@ public class ContractServiceImpl implements ContractService {
         if (carInfo != null && carInfoDetailsDO != null && userDept != null && platformDept != null & invoiceTitleDO != null & platformUserDO != null & pUserDO != null) {
             //收车委托合同
             if ("1".equals(type)) {
-                params.add(new TemplateParam("合同编号", this.GenerateCode(1)));
+                params.add(new TemplateParam("合同编号", this.generateCode(1)));
                 if (StringUtils.isEmpty(platformDept.getName()))
                     params.add(new TemplateParam("受托人", platformDept.getName()));
                 params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
@@ -636,7 +637,7 @@ public class ContractServiceImpl implements ContractService {
                 //params.add(new TemplateParam("甲方收款账号", "6228 4804 8172 3886 810"));
             } else if ("2".equals(type)) {
                 //卖车委托合同-直接付款
-                params.add(new TemplateParam("合同编号", this.GenerateCode(Integer.valueOf(type))));
+                params.add(new TemplateParam("合同编号", this.generateCode(Integer.valueOf(type))));
 
                 params.add(new TemplateParam("受托人", platformDept.getName()));
                 params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
@@ -679,7 +680,7 @@ public class ContractServiceImpl implements ContractService {
                 params.add(new TemplateParam("剩余车款小写", NullReplaceUtil.nullReplace(String.valueOf(carInfo.getBalancePayment()))));
             } else if ("21".equals(type)) {
                 //卖车委托合同-按揭付款
-                params.add(new TemplateParam("合同编号", this.GenerateCode(4)));
+                params.add(new TemplateParam("合同编号", this.generateCode(4)));
 
                 params.add(new TemplateParam("受托人", platformDept.getName()));
                 params.add(new TemplateParam("甲方营业执照号", platformDept.getTaxNum()));
@@ -723,7 +724,7 @@ public class ContractServiceImpl implements ContractService {
 //            params.add(new TemplateParam("尾款小写", "0"));
             } else if ("3".equals(type)) {
                 //s收车合同
-                params.add(new TemplateParam("合同编号", this.GenerateCode(Integer.valueOf(type))));
+                params.add(new TemplateParam("合同编号", this.generateCode(Integer.valueOf(type))));
                 params.add(new TemplateParam("卖方受托人", carInfoDetailsDO.getSellerName()));
                 params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getSellerIdCard()));
                 params.add(new TemplateParam("甲方法定代表人", carInfoDetailsDO.getSellerName()));
@@ -755,7 +756,7 @@ public class ContractServiceImpl implements ContractService {
                 //  params.add(new TemplateParam("付款方式", "全款"));
             } else if ("4".equals(type)) {
                 //卖车合同-直接付款
-                params.add(new TemplateParam("合同编号", this.GenerateCode(Integer.valueOf(type))));
+                params.add(new TemplateParam("合同编号", this.generateCode(Integer.valueOf(type))));
 
                 params.add(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
                 params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));
@@ -809,7 +810,7 @@ public class ContractServiceImpl implements ContractService {
 
             } else if ("41".equals(type)) {
                 //卖车合同-按揭付款
-                params.add(new TemplateParam("合同编号", this.GenerateCode(4)));
+                params.add(new TemplateParam("合同编号", this.generateCode(4)));
 
                 params.add(new TemplateParam("买方受托人", carInfoDetailsDO.getBuyerName()));
                 params.add(new TemplateParam("甲方身份证号", carInfoDetailsDO.getBuyerIdCard()));

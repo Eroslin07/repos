@@ -11,6 +11,9 @@ public enum CarStatus {
     COLLECT(1,"收车中"),
     COLLECT_A(11,"草稿"),
     COLLECT_A_A(111,"草稿"),
+    COLLECT_A_B(112,"卖家作废草稿"),
+    COLLECT_A_C(113,"商户作废草稿"),
+    COLLECT_A_D(114,"平台作废草稿"),
 
     COLLECT_B(12,"合同已发起"),
     COLLECT_B_A(121,"公允审核"),
@@ -37,6 +40,9 @@ public enum CarStatus {
     SELL(3,"卖车中"),
     SELL_A(31,"草稿"),
     SELL_A_A(311,"草稿"),
+    SELL_A_B(312,"卖家作废草稿"),
+    SELL_A_C(313,"商户作废草稿"),
+    SELL_A_D(314,"平台作废草稿"),
 
     SELL_B(32,"合同已发起"),
     SELL_B_A(321,"公允审核"),

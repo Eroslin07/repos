@@ -190,7 +190,7 @@ public class QysConfigController {
         return success(true);
     }
     @PostMapping("/company/sign/{contractId}")
-    @Operation(summary ="公司静默签章")
+    @Operation(summary ="公司默静签章")
     public CommonResult<Boolean> companySign(@PathVariable("contractId") @NotNull  Long contractId) {
         qysConfigService.companySign(contractId);
         return success(true);
