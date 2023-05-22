@@ -54,4 +54,25 @@
         group by contract_no
     </select>
 
+    <select id="selectAppHomePage"
+            resultType="com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashRespVo">
+        select
+        umc.*,
+        uci.VIN vin
+        from
+        uctp_merchant_cash umc
+        left join uctp_contract uc on uc.CONTRACT_ID  =umc .contract_no
+        left join uctp_car_info uci on uc.CAR_ID =uci.ID
+        <where>
+            umc.DELETED = 0
+            and umc.account_no=#{merchantCashReq.accountNo}
+            <if test="merchantCashReq.getType() == 2  ">
+                and umc.trade_type in ( #{param} )
+            </if>
+            <if test="merchantCashReq.getType() == 3 ||merchantCashReq.getType() == 4">
+                and umc.profit_loss_type in ( #{param} )
+            </if>
+        </where>
+        order by umc.CREATE_TIME desc
+    </select>
 </mapper>

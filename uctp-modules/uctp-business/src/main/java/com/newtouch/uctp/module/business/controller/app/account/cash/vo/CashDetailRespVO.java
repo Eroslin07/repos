@@ -71,6 +71,9 @@ public class CashDetailRespVO {
     @Schema(description = "到账银行卡")
     private String payeeBankAccount;
 
+    @Schema(description = "VIN")
+    private String vin;
+
     private List<PresentStatusRecordRespVO> presentStatusRecords;
 
     public static CashDetailRespVO build(MerchantCashDO merchantCashDO) {

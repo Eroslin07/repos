@@ -2,9 +2,13 @@ package com.newtouch.uctp.module.business.dal.mysql;
 
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.mapper.BaseMapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashRespVo;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppHomeCarInfoPageReqVO;
+import com.newtouch.uctp.module.business.controller.app.carInfo.vo.AppHomeCarInfoRespVO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,6 +19,10 @@ import java.util.List;
 @InterceptorIgnore(tenantLine = "true")
 @Mapper
 public interface MerchantCashMapper extends BaseMapperX<MerchantCashDO> {
+
+
+    Page<MerchantCashRespVo> selectAppHomePage(@Param("pg") Page<MerchantCashRespVo> page, @Param("param") String param,
+                                               @Param("merchantCashReq") MerchantCashReqVO merchantCashReq);
 
     default PageResult<MerchantCashDO> queryPageByAccountNo(MerchantCashReqVO merchantCashReq) {
         LambdaQueryWrapper<MerchantCashDO> queryWrapper = new LambdaQueryWrapper<MerchantCashDO>()

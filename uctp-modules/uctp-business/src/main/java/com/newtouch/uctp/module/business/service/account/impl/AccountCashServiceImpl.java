@@ -1,6 +1,7 @@
 package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -11,6 +12,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
+import com.newtouch.uctp.module.business.convert.app.MerchantCashConvert;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -25,6 +27,7 @@ import com.newtouch.uctp.module.business.service.account.MerchantCashService;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,8 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 
 @Slf4j
 @Service
@@ -92,11 +97,12 @@ public class AccountCashServiceImpl implements AccountCashService {
     @SuppressWarnings("unchecked")
     public PageResult<CashDetailRespVO> list(MerchantCashReqVO merchantCashReqVO) {
         log.info("保证金明交易明细查询 req:{}", JSON.toJSONString(merchantCashReqVO));
-        PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
+//        PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
+        PageResult<MerchantCashRespVo> merchantCashDOPageResult = merchantCashService.queryPageByAccountNos(merchantCashReqVO);
 
         PageResult<CashDetailRespVO> page = new PageResult<>();
         page.setTotal(merchantCashDOPageResult.getTotal());
-        List<MerchantCashDO> list = merchantCashDOPageResult.getList();
+        List<MerchantCashRespVo> list = merchantCashDOPageResult.getList();
         List<CashDetailRespVO> voList = new ArrayList<>();
 
         if (CollectionUtil.isEmpty(list)) {
@@ -107,12 +113,12 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         List<Long> withdrawIds = new ArrayList<>();
         //List<String> tranRecordNos = new ArrayList<>();
-        for (MerchantCashDO merchantCashDO : list) {
-            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashDO.getTradeType())) {
+        for (MerchantCashRespVo merchantCashRespVo : list) {
+            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashRespVo.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashRespVo.getTradeType())) {
                 //保证金提取明细ID，后续填充保证金提取流程明细
-                withdrawIds.add(merchantCashDO.getId());
+                withdrawIds.add(merchantCashRespVo.getId());
 
-                if (StringUtils.isNotEmpty(merchantCashDO.getTranRecordNo())) {
+                if (StringUtils.isNotEmpty(merchantCashRespVo.getTranRecordNo())) {
                     //保证金交易流水，后续查询银行交易信息
                     //tranRecordNos.add(merchantCashDO.getTranRecordNo());
                 }
@@ -139,10 +145,18 @@ public class AccountCashServiceImpl implements AccountCashService {
 //                        .collect(Collectors.toMap(TransactionRecordDO::getTranNo, TransactionRecordDO::getPayeeBankAccount, (o1, o2) -> o2));
 //            }
 
-        for (MerchantCashDO merchantCashDO : list) {
-            CashDetailRespVO build = CashDetailRespVO.build(merchantCashDO);
-            build.setPresentStatusRecords(statusRecordMap.get(merchantCashDO.getId()));
-            //build.setPayeeBankAccount(transactionRecordMap.get(merchantCashDO.getTranRecordNo()));
+        for (MerchantCashRespVo merchantCashRespVo : list) {
+            CashDetailRespVO build = MerchantCashConvert.INSTANCE.convert(merchantCashRespVo);
+            BeanUtils.copyProperties(merchantCashRespVo, build);
+            build.setPayChannelName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getPayChannel()));
+            build.setProfitLossTypeName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getProfitLossType()));
+            build.setTradeTypeName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getTradeType()));
+            build.setTradeToName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getTradeTo()));
+            build.setPresentStateName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getPresentState()));
+
+            if (merchantCashRespVo.getCreateTime() != null) {
+                build.setCreateTime(DateUtil.format(merchantCashRespVo.getCreateTime(), NORM_DATETIME_PATTERN));
+            }
             //TODO:查询提现银行卡号
             build.setPayeeBankAccount("3141592654");
             voList.add(build);
@@ -151,6 +165,71 @@ public class AccountCashServiceImpl implements AccountCashService {
         page.setList(voList);
         return page;
     }
+//
+//    //保证金明交易明细查询
+//    @Override
+//    @SuppressWarnings("unchecked")
+//    public PageResult<CashDetailRespVO> list(MerchantCashReqVO merchantCashReqVO) {
+//        log.info("保证金明交易明细查询 req:{}", JSON.toJSONString(merchantCashReqVO));
+//        PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
+//
+//        PageResult<CashDetailRespVO> page = new PageResult<>();
+//        page.setTotal(merchantCashDOPageResult.getTotal());
+//        List<MerchantCashDO> list = merchantCashDOPageResult.getList();
+//        List<CashDetailRespVO> voList = new ArrayList<>();
+//
+//        if (CollectionUtil.isEmpty(list)) {
+//            log.info("保证金明交易明细查询-未查询到当前账户交易信息明细 accountNo:{}", merchantCashReqVO.getAccountNo());
+//            page.setList(voList);
+//            return page;
+//        }
+//
+//        List<Long> withdrawIds = new ArrayList<>();
+//        //List<String> tranRecordNos = new ArrayList<>();
+//        for (MerchantCashDO merchantCashDO : list) {
+//            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashDO.getTradeType())) {
+//                //保证金提取明细ID，后续填充保证金提取流程明细
+//                withdrawIds.add(merchantCashDO.getId());
+//
+//                if (StringUtils.isNotEmpty(merchantCashDO.getTranRecordNo())) {
+//                    //保证金交易流水，后续查询银行交易信息
+//                    //tranRecordNos.add(merchantCashDO.getTranRecordNo());
+//                }
+//            }
+//        }
+//
+//        // 查寻提现状态记录
+//        Map<Long, List<PresentStatusRecordRespVO>> statusRecordMap = new HashMap<>();
+//        Map<String, String> transactionRecordMap = new HashMap<>();
+//        if (CollectionUtil.isNotEmpty(withdrawIds)) {
+//            statusRecordMap = merchantPresentStatusRecordMapper.selectList(new LambdaQueryWrapper<PresentStatusRecordDO>()
+//                            .in(PresentStatusRecordDO::getPresentNo, withdrawIds)
+//                            .eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
+//                            .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId))
+//                    .stream()
+//                    .map(PresentStatusRecordRespVO::build)
+//                    .collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
+//        }
+//
+////            if (CollectionUtil.isNotEmpty(tranRecordNos)) {
+////                transactionRecordMap = transactionRecordMapper.selectList(new LambdaQueryWrapper<TransactionRecordDO>()
+////                        .in(TransactionRecordDO::getTranNo, tranRecordNos))
+////                        .stream()
+////                        .collect(Collectors.toMap(TransactionRecordDO::getTranNo, TransactionRecordDO::getPayeeBankAccount, (o1, o2) -> o2));
+////            }
+//
+//        for (MerchantCashDO merchantCashDO : list) {
+//            CashDetailRespVO build = CashDetailRespVO.build(merchantCashDO);
+//            build.setPresentStatusRecords(statusRecordMap.get(merchantCashDO.getId()));
+//            //build.setPayeeBankAccount(transactionRecordMap.get(merchantCashDO.getTranRecordNo()));
+//            //TODO:查询提现银行卡号
+//            build.setPayeeBankAccount("3141592654");
+//            voList.add(build);
+//        }
+//
+//        page.setList(voList);
+//        return page;
+//    }
 
     //保证金充值
     @Override

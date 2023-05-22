@@ -3,6 +3,7 @@ package com.newtouch.uctp.module.business.service.account;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashReqVO;
+import com.newtouch.uctp.module.business.controller.app.account.cash.vo.MerchantCashRespVo;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 
@@ -12,6 +13,8 @@ import java.util.List;
 public interface MerchantCashService  extends IService<MerchantCashDO> {
 
     PageResult<MerchantCashDO> queryPageByAccountNo(MerchantCashReqVO merchantCashReq);
+
+    PageResult<MerchantCashRespVo> queryPageByAccountNos(MerchantCashReqVO merchantCashReq);
 
     int insert(MerchantCashDO merchantCashDO);
 
