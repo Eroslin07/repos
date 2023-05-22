@@ -40,7 +40,7 @@
               plain
               type="success"
               @click="submitBtn('不同意')"
-              v-if="props.status == 'SKZH'"
+              v-if="props.status == 'SKZH' || props.status == 'SCZF' || props.status == 'SMCSK'"
               >提交作废</el-button
             >
             <!-- <el-button plain type="danger">作废</el-button> -->
@@ -112,7 +112,7 @@ const message = useMessage()
 const emit = defineEmits(['handleCloseDrawer', 'handleUpdateList'])
 // const emit = defineEmits(['handleUpdataList'])
 const activeName = ref('BaseInfo')
-const statusList = ['SCKP', 'MCGH', 'SCGH', 'SKZH', 'MCKP']
+const statusList = ['SCKP', 'MCGH', 'SCGH', 'SKZH', 'MCKP', 'SCZF', 'SMCSK']
 const comps = shallowRef([
   {
     label: '基本信息',
@@ -246,6 +246,12 @@ const successText = (i) => {
     return '重新支付'
   } else if (i == 'LRTX') {
     return '在线转账'
+  } else if (i == 'ZJCZ' || i == 'ZJTX') {
+    return '确认'
+  } else if (i == 'SCZF') {
+    return '确认支付'
+  } else if (i == 'SMCSK') {
+    return '确认收款'
   }
 }
 // 关闭抽屉

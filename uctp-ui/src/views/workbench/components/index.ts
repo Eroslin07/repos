@@ -10,7 +10,8 @@ import VehicleReceiptTransfer from './vehicleReceiptTransfer.vue'
 import VehicleTransferBuyer from './vehicleTransferBuyer.vue'
 import BondRecharge from './BondRecharge.vue'
 import BondWithdrawal from './BondWithdrawal.vue'
-
+import CollPayment from './CollPayment.vue'
+import SellPayment from './SellPayment.vue'
 export {
   MerchantApprovalPending,
   CollectCarPending,
@@ -23,5 +24,7 @@ export {
   VehicleReceiptTransfer,
   VehicleTransferBuyer,
   BondRecharge,
-  BondWithdrawal
+  BondWithdrawal,
+  CollPayment,
+  SellPayment
 }
