@@ -80,6 +80,9 @@ public class CashDetailRespVO {
     @Schema(description = "合同code")
     private String contractCode;
 
+    @Schema(description = "银行电子回单")
+    private List<String> backSingleUrls;
+
     private List<PresentStatusRecordRespVO> presentStatusRecords;
 
     public static CashDetailRespVO build(MerchantCashDO merchantCashDO) {

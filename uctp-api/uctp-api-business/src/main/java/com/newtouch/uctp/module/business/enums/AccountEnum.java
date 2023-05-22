@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
  */
 public enum AccountEnum {
     // 保证金：交易类型
+    TRADE_TYPE_RECHARGE_CFM("10011000", "保证金充值确认中"),
     TRADE_TYPE_RECHARGE("10011001", "保证金充值"),
     TRADE_TYPE_BACK("10011002", "保证金回填"),
     TRADE_TYPE_PROFIT_BACK("10011003", "保证金回填(利润)"),
@@ -95,6 +96,9 @@ public enum AccountEnum {
 
     BUSINESS_TYPE_CASH("1", "个人-保证金"),
     BUSINESS_TYPE_PROFIT("2", "对公-利润"),
+
+    ASS_TYPE_CASH("1", "保证金"),
+    ASS_TYPE_PROFIT("2", "利润"),
 
     //银行返回码
     BANK_RESULT_CODE_SUCCESS("0000", "交易成功"),

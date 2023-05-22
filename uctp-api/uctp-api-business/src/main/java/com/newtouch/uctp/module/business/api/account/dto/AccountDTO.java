@@ -40,4 +40,8 @@ public class AccountDTO {
     @Schema(description = "保证金充值银行账号")
     @NotNull(message = "保证金充值银行账号不能为空")
     private String cashBankNo;
+
+    @Schema(description = "商户交易方式")
+    @NotNull(message = "商户交易方式不能为空!")
+    private Integer tranWay;
 }

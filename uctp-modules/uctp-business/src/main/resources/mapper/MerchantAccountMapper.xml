@@ -16,10 +16,14 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="updater" jdbcType="VARCHAR" property="updater"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="tran_way" property="tranWay"/>
+        <result column="dev_sn" property="devSn"/>
+        <result column="tenant_id" property="tenantId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,
+        id
+        ,
         merchant_id,
         account_no,
         cash,
@@ -32,7 +36,10 @@
         creator,
         create_time,
         updater,
-        update_time
+        update_time,
+        tenant_id,
+    tran_way,
+dev_sn
     </sql>
 
     <update id="updateCash">

@@ -1,7 +1,6 @@
 package com.newtouch.uctp.module.business.service.account.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -12,7 +11,7 @@ import com.newtouch.uctp.framework.common.pojo.PageResult;
 import com.newtouch.uctp.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.newtouch.uctp.module.business.controller.app.account.cash.vo.*;
 import com.newtouch.uctp.module.business.controller.app.account.vo.PresentStatusRecordRespVO;
-import com.newtouch.uctp.module.business.convert.app.MerchantCashConvert;
+import com.newtouch.uctp.module.business.dal.dataobject.account.BankBackSingleDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.MerchantBankDO;
 import com.newtouch.uctp.module.business.dal.dataobject.account.PresentStatusRecordDO;
 import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantAccountDO;
@@ -20,14 +19,12 @@ import com.newtouch.uctp.module.business.dal.dataobject.cash.MerchantCashDO;
 import com.newtouch.uctp.module.business.dal.mysql.MerchantPresentStatusRecordMapper;
 import com.newtouch.uctp.module.business.enums.AccountConstants;
 import com.newtouch.uctp.module.business.enums.AccountEnum;
-import com.newtouch.uctp.module.business.service.account.AccountCashService;
-import com.newtouch.uctp.module.business.service.account.MerchantAccountService;
-import com.newtouch.uctp.module.business.service.account.MerchantBankService;
-import com.newtouch.uctp.module.business.service.account.MerchantCashService;
+import com.newtouch.uctp.module.business.enums.AccountTranWayEnum;
+import com.newtouch.uctp.module.business.enums.bank.BankConstants;
+import com.newtouch.uctp.module.business.service.account.*;
 import com.newtouch.uctp.module.business.service.bank.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -38,8 +35,6 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 
 @Slf4j
 @Service
@@ -57,6 +52,9 @@ public class AccountCashServiceImpl implements AccountCashService {
     private TransactionService transactionService;
     @Resource
     private MerchantBankService merchantBankService;
+
+    @Resource
+    private BankBackSingleService bankBackSingleService;
 
     //保证金详情
     @Override
@@ -97,14 +95,27 @@ public class AccountCashServiceImpl implements AccountCashService {
     @SuppressWarnings("unchecked")
     public PageResult<CashDetailRespVO> list(MerchantCashReqVO merchantCashReqVO) {
         log.info("保证金明交易明细查询 req:{}", JSON.toJSONString(merchantCashReqVO));
-//        PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
-        PageResult<MerchantCashRespVo> merchantCashDOPageResult = merchantCashService.queryPageByAccountNos(merchantCashReqVO);
+        PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
 
         PageResult<CashDetailRespVO> page = new PageResult<>();
         page.setTotal(merchantCashDOPageResult.getTotal());
-        List<MerchantCashRespVo> list = merchantCashDOPageResult.getList();
+        List<MerchantCashDO> list = merchantCashDOPageResult.getList();
         List<CashDetailRespVO> voList = new ArrayList<>();
+        List<Long> ids = list.stream().map(i -> i.getId()).collect(Collectors.toList());
+        Map<Long, List<String>> map = new HashMap<>();
+        List<BankBackSingleDO> backSingleDOList = bankBackSingleService.list(
+                new LambdaQueryWrapperX<BankBackSingleDO>().eq(
+                                BankBackSingleDO::getAssociationType, AccountEnum.ASS_TYPE_CASH.getKey()
+                        ).eq(BankBackSingleDO::getDeleted, Boolean.FALSE)
+                        .in(BankBackSingleDO::getAssociationId, ids)
+        );
 
+        if (CollectionUtil.isNotEmpty(backSingleDOList)) {
+            map = backSingleDOList.stream().collect(Collectors.groupingBy(
+                    BankBackSingleDO::getAssociationId,
+                    Collectors.mapping(BankBackSingleDO::getUrl, Collectors.toList())
+            ));
+        }
         if (CollectionUtil.isEmpty(list)) {
             log.info("保证金明交易明细查询-未查询到当前账户交易信息明细 accountNo:{}", merchantCashReqVO.getAccountNo());
             page.setList(voList);
@@ -113,12 +124,12 @@ public class AccountCashServiceImpl implements AccountCashService {
 
         List<Long> withdrawIds = new ArrayList<>();
         //List<String> tranRecordNos = new ArrayList<>();
-        for (MerchantCashRespVo merchantCashRespVo : list) {
-            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashRespVo.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashRespVo.getTradeType())) {
+        for (MerchantCashDO merchantCashDO : list) {
+            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashDO.getTradeType())) {
                 //保证金提取明细ID，后续填充保证金提取流程明细
-                withdrawIds.add(merchantCashRespVo.getId());
+                withdrawIds.add(merchantCashDO.getId());
 
-                if (StringUtils.isNotEmpty(merchantCashRespVo.getTranRecordNo())) {
+                if (StringUtils.isNotEmpty(merchantCashDO.getTranRecordNo())) {
                     //保证金交易流水，后续查询银行交易信息
                     //tranRecordNos.add(merchantCashDO.getTranRecordNo());
                 }
@@ -145,18 +156,11 @@ public class AccountCashServiceImpl implements AccountCashService {
 //                        .collect(Collectors.toMap(TransactionRecordDO::getTranNo, TransactionRecordDO::getPayeeBankAccount, (o1, o2) -> o2));
 //            }
 
-        for (MerchantCashRespVo merchantCashRespVo : list) {
-            CashDetailRespVO build = MerchantCashConvert.INSTANCE.convert(merchantCashRespVo);
-            BeanUtils.copyProperties(merchantCashRespVo, build);
-            build.setPayChannelName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getPayChannel()));
-            build.setProfitLossTypeName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getProfitLossType()));
-            build.setTradeTypeName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getTradeType()));
-            build.setTradeToName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getTradeTo()));
-            build.setPresentStateName(AccountEnum.accountEnumMap.get(merchantCashRespVo.getPresentState()));
-
-            if (merchantCashRespVo.getCreateTime() != null) {
-                build.setCreateTime(DateUtil.format(merchantCashRespVo.getCreateTime(), NORM_DATETIME_PATTERN));
-            }
+        for (MerchantCashDO merchantCashDO : list) {
+            CashDetailRespVO build = CashDetailRespVO.build(merchantCashDO);
+            build.setPresentStatusRecords(statusRecordMap.get(merchantCashDO.getId()));
+            build.setBackSingleUrls(map.get(merchantCashDO.getId()));
+            //build.setPayeeBankAccount(transactionRecordMap.get(merchantCashDO.getTranRecordNo()));
             //TODO:查询提现银行卡号
             build.setPayeeBankAccount("3141592654");
             voList.add(build);
@@ -165,101 +169,96 @@ public class AccountCashServiceImpl implements AccountCashService {
         page.setList(voList);
         return page;
     }
-//
-//    //保证金明交易明细查询
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public PageResult<CashDetailRespVO> list(MerchantCashReqVO merchantCashReqVO) {
-//        log.info("保证金明交易明细查询 req:{}", JSON.toJSONString(merchantCashReqVO));
-//        PageResult<MerchantCashDO> merchantCashDOPageResult = merchantCashService.queryPageByAccountNo(merchantCashReqVO);
-//
-//        PageResult<CashDetailRespVO> page = new PageResult<>();
-//        page.setTotal(merchantCashDOPageResult.getTotal());
-//        List<MerchantCashDO> list = merchantCashDOPageResult.getList();
-//        List<CashDetailRespVO> voList = new ArrayList<>();
-//
-//        if (CollectionUtil.isEmpty(list)) {
-//            log.info("保证金明交易明细查询-未查询到当前账户交易信息明细 accountNo:{}", merchantCashReqVO.getAccountNo());
-//            page.setList(voList);
-//            return page;
-//        }
-//
-//        List<Long> withdrawIds = new ArrayList<>();
-//        //List<String> tranRecordNos = new ArrayList<>();
-//        for (MerchantCashDO merchantCashDO : list) {
-//            if (AccountConstants.TRADE_TYPE_WITHDRAW.equals(merchantCashDO.getTradeType()) || AccountConstants.TRADE_TYPE_WITHDRAWING.equals(merchantCashDO.getTradeType())) {
-//                //保证金提取明细ID，后续填充保证金提取流程明细
-//                withdrawIds.add(merchantCashDO.getId());
-//
-//                if (StringUtils.isNotEmpty(merchantCashDO.getTranRecordNo())) {
-//                    //保证金交易流水，后续查询银行交易信息
-//                    //tranRecordNos.add(merchantCashDO.getTranRecordNo());
-//                }
-//            }
-//        }
-//
-//        // 查寻提现状态记录
-//        Map<Long, List<PresentStatusRecordRespVO>> statusRecordMap = new HashMap<>();
-//        Map<String, String> transactionRecordMap = new HashMap<>();
-//        if (CollectionUtil.isNotEmpty(withdrawIds)) {
-//            statusRecordMap = merchantPresentStatusRecordMapper.selectList(new LambdaQueryWrapper<PresentStatusRecordDO>()
-//                            .in(PresentStatusRecordDO::getPresentNo, withdrawIds)
-//                            .eq(PresentStatusRecordDO::getPresentType, AccountConstants.PRESENT_TYPE_CASH)
-//                            .orderByAsc(PresentStatusRecordDO::getOccurredTime, PresentStatusRecordDO::getId))
-//                    .stream()
-//                    .map(PresentStatusRecordRespVO::build)
-//                    .collect(Collectors.groupingBy(PresentStatusRecordRespVO::getPresentNo));
-//        }
-//
-////            if (CollectionUtil.isNotEmpty(tranRecordNos)) {
-////                transactionRecordMap = transactionRecordMapper.selectList(new LambdaQueryWrapper<TransactionRecordDO>()
-////                        .in(TransactionRecordDO::getTranNo, tranRecordNos))
-////                        .stream()
-////                        .collect(Collectors.toMap(TransactionRecordDO::getTranNo, TransactionRecordDO::getPayeeBankAccount, (o1, o2) -> o2));
-////            }
-//
-//        for (MerchantCashDO merchantCashDO : list) {
-//            CashDetailRespVO build = CashDetailRespVO.build(merchantCashDO);
-//            build.setPresentStatusRecords(statusRecordMap.get(merchantCashDO.getId()));
-//            //build.setPayeeBankAccount(transactionRecordMap.get(merchantCashDO.getTranRecordNo()));
-//            //TODO:查询提现银行卡号
-//            build.setPayeeBankAccount("3141592654");
-//            voList.add(build);
-//        }
-//
-//        page.setList(voList);
-//        return page;
-//    }
 
     //保证金充值
     @Override
     @Transactional
-    public AccountCashRespVO recharge(TransactionRecordReqVO transactionRecordReqVO) {
+    public CashRechargeRespVO recharge(TransactionRecordReqVO transactionRecordReqVO) {
         log.info("账户保证金充值 req:{}", JSON.toJSONString(transactionRecordReqVO));
-        String accountNo = transactionRecordReqVO.getAccountNo();
-        Long tranAmount = transactionRecordReqVO.getTranAmount();
-        //增加保证金金额，版本号加1
-        int count = merchantAccountService.updateCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), 1);
-        if (count <= 0) {
-            log.info("账户保证金充值充值失败，请求版本号错误。 Revision:{}", transactionRecordReqVO.getRevision());
+        CashRechargeRespVO cashRechargeRespVO = new CashRechargeRespVO();
+        MerchantAccountDO account = merchantAccountService.queryByAccountNo(transactionRecordReqVO.getAccountNo());
+        if (null == account) {
+            log.info("账户保证金充值充值失败，虚拟账户号不存在!");
             //数据修改失败
-            throw new ServiceException(AccountConstants.ERROR_CODE_REVERSION_ERROR, AccountConstants.ERROR_MESSAGE_REVERSION_ERROR);
+            throw new ServiceException(AccountConstants.ERROR_CODE_ACCOUNT_NOT_FOUND, AccountConstants.ERROR_MESSAGE_ACCOUNT_NOT_FOUND);
         }
+        Integer way = account.getTranWay();
+        if (AccountTranWayEnum.ONLINE.getCode() == way) {
+            // 线上处理，生成APP跳转链接
+            String url = getBankAppToken();
+            cashRechargeRespVO.setResult(url);
+        } else if (AccountTranWayEnum.OFFLINE.getCode() == way) {
+            if (CollectionUtil.isEmpty(transactionRecordReqVO.getBackSingleUrls())) {
+                throw new ServiceException(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), "请上传银行电子回单!");
+            }
+            cashRechargeRespVO.setResult(StringUtils.EMPTY);
+            // 线下处理，记录充值记录为
+            MerchantCashDO cashDO = saveRechargeRecord(transactionRecordReqVO, account, AccountConstants.TRADE_TYPE_RECHARGE_CFM);
+            List<BankBackSingleDO> list = new ArrayList<>();
+            for (String url : transactionRecordReqVO.getBackSingleUrls()) {
+                BankBackSingleDO bankBackSingleDO = new BankBackSingleDO();
 
-        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
-
-        boolean flag = Boolean.TRUE;
-        //TODO: 调用转账接口及uctp_transaction_log日志记录
-        if (!flag) {
-            //转账接口调用失败
-            throw new ServiceException(AccountConstants.ERROR_CODE_INTERFACE_CALL_FAILURE, AccountConstants.ERROR_MESSAGE_INTERFACE_CALL_FAILURE);
+                bankBackSingleDO.setAccountNo(transactionRecordReqVO.getAccountNo());
+                bankBackSingleDO.setAssociationId(cashDO.getId());
+                bankBackSingleDO.setType(BankBackSingleDO.Type.CASH_RECHARGE.getType());
+                bankBackSingleDO.setUrl(url);
+                list.add(bankBackSingleDO);
+            }
+            saveBankBackSingles(list);
         }
+        cashRechargeRespVO.setCode(way);
 
-        //新增保证金变动记录
-        String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
-        merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_RECHARGE, tradeRecordNo, null);
-        return this.detail(accountNo);
+//        //增加保证金金额，版本号加1
+//        int count = merchantAccountService.updateCash(accountNo, tranAmount, transactionRecordReqVO.getRevision(), 1);
+//        if (count <= 0) {
+//            log.info("账户保证金充值充值失败，请求版本号错误。 Revision:{}", transactionRecordReqVO.getRevision());
+//            //数据修改失败
+//            throw new ServiceException(AccountConstants.ERROR_CODE_REVERSION_ERROR, AccountConstants.ERROR_MESSAGE_REVERSION_ERROR);
+//        }
+//
+//        MerchantAccountDO merchantAccountDO = merchantAccountService.queryByAccountNo(accountNo);
+
+//        boolean flag = Boolean.TRUE;
+//        //TODO: 调用转账接口及uctp_transaction_log日志记录
+//        if (!flag) {
+//            //转账接口调用失败
+//            throw new ServiceException(AccountConstants.ERROR_CODE_INTERFACE_CALL_FAILURE, AccountConstants.ERROR_MESSAGE_INTERFACE_CALL_FAILURE);
+//        }
+//
+//        //新增保证金变动记录
+//        String tradeRecordNo = "" + System.currentTimeMillis();//支付流水
+//        merchantCashService.insertCash(merchantAccountDO, tranAmount, AccountConstants.TRADE_TYPE_RECHARGE, tradeRecordNo, null);
+        return cashRechargeRespVO;
     }
+
+    @Override
+    public Boolean rechargeSuccess() {
+        return null;
+    }
+
+    /**
+     * @param transactionRecordReqVO
+     * @param account
+     */
+    private MerchantCashDO saveRechargeRecord(TransactionRecordReqVO transactionRecordReqVO, MerchantAccountDO account, String type) {
+        return merchantCashService.insertCash(account, transactionRecordReqVO.getTranAmount(),
+                type, ""
+                , null);
+    }
+
+    private void saveBankBackSingles(List<BankBackSingleDO> list) {
+        bankBackSingleService.saveBatch(list);
+    }
+
+    /**
+     * @return
+     */
+    private String getBankAppToken() {
+        return StringUtils.EMPTY;
+    }
+
+
+
 
     //保证金提取
     @Override
@@ -497,5 +496,10 @@ public class AccountCashServiceImpl implements AccountCashService {
         presentStatusRecord.setDeleted(Boolean.FALSE);
         presentStatusRecord.setPresentNo(cashId);
         return presentStatusRecord;
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(AccountEnum.getName("10011000"));
     }
 }

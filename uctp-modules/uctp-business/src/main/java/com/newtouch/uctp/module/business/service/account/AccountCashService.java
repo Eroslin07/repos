@@ -27,9 +27,16 @@ public interface AccountCashService {
      * 保证金充值
      *
      * @param transactionRecordReqVO 账户号/交易金额/版本号
-     * @return 返回我的保证金页面模型数据 {@link AccountCashService#detail}
+     * @return
      */
-    AccountCashRespVO recharge(TransactionRecordReqVO transactionRecordReqVO);
+    CashRechargeRespVO recharge(TransactionRecordReqVO transactionRecordReqVO);
+
+    /**
+     * 线下版保证金充值 确认到账 todo helong 沟通交互
+     *
+     * @return
+     */
+    Boolean rechargeSuccess();
 
     /**
      * 保证金提取

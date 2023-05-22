@@ -42,4 +42,7 @@ public class MerchantAccountDO extends BaseDO {
      */
     private Integer devSn;
 
+
+    private Integer tranWay;// 交易方式
+
 }

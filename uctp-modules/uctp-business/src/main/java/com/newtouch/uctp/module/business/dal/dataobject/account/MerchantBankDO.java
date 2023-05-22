@@ -25,5 +25,5 @@ public class MerchantBankDO extends BaseDO {
     private String authCode;//子账号授权码
     private String childAcctName; //子账号名
     private String pcpCustNo;// 银行客户号
-
+    
 }

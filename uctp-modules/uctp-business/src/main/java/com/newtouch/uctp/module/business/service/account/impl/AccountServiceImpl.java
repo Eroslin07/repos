@@ -51,6 +51,7 @@ public class AccountServiceImpl extends ServiceImpl<MerchantAccountMapper, Merch
             merchantAccount.setAccountNo(accountNo);
             merchantAccount.setMerchantId(accountDTO.getMerchantId());
             merchantAccount.setTenantId(accountDTO.getTenantId());
+            merchantAccount.setTranWay(accountDTO.getTranWay());
 
             save(merchantAccount);
             saveMerchantBank(AccountEnum.BUSINESS_TYPE_CASH.getKey(), accountDTO, accountNo);

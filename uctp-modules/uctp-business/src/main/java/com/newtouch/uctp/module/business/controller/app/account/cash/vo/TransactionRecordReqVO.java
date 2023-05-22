@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Schema(description = "商户保证金管理接口 Request VO")
 @Data
@@ -31,5 +32,8 @@ public class TransactionRecordReqVO {
     @NotEmpty(message = "交易合同号不能为空",
             groups = {Reserve.class, Deduction.class, Back.class, ProfitBack.class, Release.class})
     private String contractNo;
+
+    @Schema(description = "银行回单图片URL")
+    private List<String> backSingleUrls;
 
 }

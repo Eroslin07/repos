@@ -2,6 +2,8 @@ package com.newtouch.uctp.module.business.enums;
 
 public class AccountConstants {
 
+    //交易类型：保证金充值-确认到账中 线下交易版本使用
+    public static final String TRADE_TYPE_RECHARGE_CFM = "10011000";
     //交易类型：保证金-充值
     public static final String TRADE_TYPE_RECHARGE = "10011001";
     //交易类型：保证金-卖车款回填
@@ -27,7 +29,7 @@ public class AccountConstants {
     //支付渠道-浦发银行
     public static final String PAY_CHANNEL_DEFAULT = "10031001";
     //支付渠道-平台
-    public static final String PAY_CHANNEL_PLATFORM= "10031002";
+    public static final String PAY_CHANNEL_PLATFORM = "10031002";
 
     //交易去向-收车
     public static final String TRADE_TO_BUY_CARS = "10041001";

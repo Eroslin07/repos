@@ -35,7 +35,7 @@ public class AccountCashController {
 
     @PostMapping("/recharge")
     @Operation(summary = "保证金充值-充值成功后返回我的保证金页面模型数据")
-    public CommonResult<AccountCashRespVO> recharge(@Validated(ValidatedGroup.Recharge.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
+    public CommonResult<CashRechargeRespVO> recharge(@Validated(ValidatedGroup.Recharge.class) @RequestBody TransactionRecordReqVO transactionRecordReqVO) {
         return CommonResult.success(accountCashService.recharge(transactionRecordReqVO));
     }
 
