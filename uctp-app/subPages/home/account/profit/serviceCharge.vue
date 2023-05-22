@@ -20,7 +20,7 @@
 					<view class="text2">{{ data.tradeToText }}</view>
 					<view class="text2">{{ data.tradeDate }}</view>
 					<view class="text2">{{ data.contractNo }}</view>
-					<view @click="handleClick" class="text2">显示车架号</view>
+					<view @click="handleClick" class="text2">{{ data.vin }}</view>
 				</view>
 			</view>
 		</view>
@@ -40,7 +40,7 @@
 		},
 		methods: {
 			handleClick() {
-				this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails');
+				this.$tab.navigateTo('/subPages/common/vehicleDetails/vehicleDetails?id=' + this.data.carId);
 			}
 		}
 	}

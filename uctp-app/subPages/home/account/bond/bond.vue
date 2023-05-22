@@ -142,18 +142,54 @@
 				} else if (val == '保证金预扣') {
 					// 保证金预扣
 					this.$tab.navigateTo('/subPages/home/account/bond/withhold?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '收车手续费预扣') { // 线下
+					// 收车手续费预扣明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withholdCollection?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金充值') {
 					// 保证金充值
 					this.$tab.navigateTo('/subPages/home/account/bond/rechargeDetails?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金预扣释放') {
 					// 保证金预扣释放
 					this.$tab.navigateTo('/subPages/home/account/bond/release?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '收车手续费预扣释放') { // 线下
+					// 收车手续费预扣释放明细
+					this.$tab.navigateTo('/subPages/home/account/bond/releaseCollection?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金实扣') {
 					// 保证金实扣
 					this.$tab.navigateTo('/subPages/home/account/bond/actualDeduction?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '收车手续费实扣') { // 线下
+					// 收车手续费实扣明细
+					this.$tab.navigateTo('/subPages/home/account/bond/actualCollection?data='+encodeURIComponent(JSON.stringify(data)));
 				} else if (val == '保证金回填(利润)') {
 					// 保证金回填(利润)
 					this.$tab.navigateTo('/subPages/home/account/bond/info?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金充值中') { // 线下
+					// 保证金充值中明细
+					this.$tab.navigateTo('/subPages/home/account/bond/rechargeInfo?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金充值') { // 线下
+					// 保证金充值成功明细
+					this.$tab.navigateTo('/subPages/home/account/bond/rechargeSuccess?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金充值失败') { // 线下
+					// 保证金充值失败明细
+					this.$tab.navigateTo('/subPages/home/account/bond/rechargeFail?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金提现中') { // 线下
+					// 保证金提现中明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withdrawalInfo?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '提现手续费预扣') { // 线下
+					// 提现手续费预扣明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withdrawalWithhold?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金提现') { // 线下
+					// 保证金提现明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withdrawalSuccess?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '提现手续费实扣') { // 线下
+					// 提现手续费实扣明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withdrawalActual?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '保证金提现退回') { // 线下
+					// 保证金提现退回明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withdrawalFail?data='+encodeURIComponent(JSON.stringify(data)));
+				} else if (val == '提现手续费预扣释放') { // 线下
+					// 提现手续费预扣释放明细
+					this.$tab.navigateTo('/subPages/home/account/bond/withdrawalWithholdFail?data='+encodeURIComponent(JSON.stringify(data)));
 				}
 			}
 		}

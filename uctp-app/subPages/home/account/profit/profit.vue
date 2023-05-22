@@ -153,9 +153,21 @@
 					if (val == '利润提现中') {
 						// 利润提现中
 						this.$tab.navigateTo('/subPages/home/account/profit/progressDetile?data='+encodeURIComponent(JSON.stringify(res.data)));
+					} else if (val == '提现手续费预扣') {
+						// 提现手续费预扣明细
+						this.$tab.navigateTo('/subPages/home/account/profit/withdrawalWithhold?data='+encodeURIComponent(JSON.stringify(res.data)));
 					} else if (val == '10101002') {
 						// 利润提现
 						this.$tab.navigateTo('/subPages/home/account/profit/detailed?data='+encodeURIComponent(JSON.stringify(res.data)));
+					} else if (val == '提现手续费实扣') {
+						// 提现手续费实扣明细
+						this.$tab.navigateTo('/subPages/home/account/profit/withdrawalActual?data='+encodeURIComponent(JSON.stringify(res.data)));
+					} else if (val == '利润提现退回') {
+						// 利润提现退回明细
+						this.$tab.navigateTo('/subPages/home/account/profit/profitFail?data='+encodeURIComponent(JSON.stringify(res.data)));
+					} else if (val == '提现手续费预扣释放') {
+						// 提现手续费预扣释放明细
+						this.$tab.navigateTo('/subPages/home/account/profit/withdrawalWithholdFail?data='+encodeURIComponent(JSON.stringify(res.data)));
 					} else if (val == '10101001' || val == '10101006') {
 						// 卖车利润
 						this.$tab.navigateTo('/subPages/home/account/profit/info?data='+encodeURIComponent(JSON.stringify(res.data)));

@@ -2,8 +2,8 @@
 	<view class="info">
 		<uni-card :is-shadow="false" is-full>
 			<view style="overflow: hidden;margin-bottom: 20px;text-align: center;">
-				<view class="text" style="font-size: 16px;">待回填金额</view>
-				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(data.amount / 100 || 0) }}<text style="font-size: 14px;">元</text></view>
+				<view class="text" style="font-size: 16px;">预扣释放金额</view>
+				<view class="text" style="margin-top: 10px;">{{ $amount.getComdify(data.payAmount / 100 || 0) }}<text style="font-size: 14px;">元</text></view>
 			</view>
 		</uni-card>
 		<view style="padding: 20px;">
@@ -16,9 +16,9 @@
 					<view class="text1">关联车辆明细</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">{{ data.typeText }}</view>
-					<view class="text2">{{ data.tradeToText }}</view>
-					<view class="text2">{{ data.occurredTime }}</view>
+					<view class="text2">{{ data.tradeTypeName }}</view>
+					<view class="text2">{{ data.tradeToName }}</view>
+					<view class="text2">{{ data.createTime }}</view>
 					<view class="text2">{{ data.contractNo }}</view>
 					<view @click="handleClick" class="text2">{{ data.vin }}</view>
 				</view>

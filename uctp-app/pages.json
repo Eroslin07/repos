@@ -152,9 +152,44 @@
 				"navigationBarTitleText": "保证金提现明细"
 			}
 		}, {
+			"path": "home/account/bond/withdrawalInfo",
+			"style": {
+				"navigationBarTitleText": "保证金提现中明细"
+			}
+		}, {
+			"path": "home/account/bond/withdrawalWithhold",
+			"style": {
+				"navigationBarTitleText": "提现手续费预扣明细"
+			}
+		}, {
+			"path": "home/account/bond/withdrawalSuccess",
+			"style": {
+				"navigationBarTitleText": "保证金提现明细"
+			}
+		}, {
+			"path": "home/account/bond/withdrawalActual",
+			"style": {
+				"navigationBarTitleText": "提现手续费实扣明细"
+			}
+		}, {
+			"path": "home/account/bond/withdrawalFail",
+			"style": {
+				"navigationBarTitleText": "保证金提现退回明细"
+			}
+		}, {
+			"path": "home/account/bond/withdrawalWithholdFail",
+			"style": {
+				"navigationBarTitleText": "提现手续费预扣释放明细"
+			}
+		}, {
 			"path": "home/account/bond/withhold",
 			"style": {
 				"navigationBarTitleText": "保证金预扣明细"
+			}
+		}, {
+			"path": "home/account/bond/withholdCollection",
+			"style": {
+				"navigationBarTitleText": "收车手续费预扣明细"
 			}
 		}, {
 			"path": "home/account/bond/actualDeduction",
@@ -162,14 +197,39 @@
 				"navigationBarTitleText": "保证金实扣明细"
 			}
 		}, {
+			"path": "home/account/bond/actualDeduction",
+			"style": {
+				"navigationBarTitleText": "收车手续费实扣明细"
+			}
+		}, {
 			"path": "home/account/bond/release",
 			"style": {
 				"navigationBarTitleText": "保证金预扣释放明细"
 			}
 		}, {
+			"path": "home/account/bond/releaseCollection",
+			"style": {
+				"navigationBarTitleText": "收车手续费预扣释放明细"
+			}
+		}, {
 			"path": "home/account/bond/rechargeDetails",
 			"style": {
 				"navigationBarTitleText": "保证金充值明细"
+			}
+		}, {
+			"path": "home/account/bond/rechargeInfo",
+			"style": {
+				"navigationBarTitleText": "保证金充值中明细"
+			}
+		}, {
+			"path": "home/account/bond/rechargeSuccess",
+			"style": {
+				"navigationBarTitleText": "保证金充值明细"
+			}
+		}, {
+			"path": "home/account/bond/rechargeFail",
+			"style": {
+				"navigationBarTitleText": "保证金充值失败明细"
 			}
 		}, {
 			"path": "home/account/bond/freeze",
@@ -224,6 +284,11 @@
 				"navigationBarTitleText": "利润提现中明细"
 			}
 		}, {
+			"path": "home/account/profit/withdrawalWithhold",
+			"style": {
+				"navigationBarTitleText": "提现手续费预扣明细"
+			}
+		}, {
 			"path": "home/account/profit/info",
 			"style": {
 				"navigationBarTitleText": "卖车利润"
@@ -232,6 +297,21 @@
 			"path": "home/account/profit/detailed",
 			"style": {
 				"navigationBarTitleText": "利润提现明细"
+			}
+		}, {
+			"path": "home/account/profit/withdrawalActual",
+			"style": {
+				"navigationBarTitleText": "提现手续费实扣明细"
+			}
+		}, {
+			"path": "home/account/profit/profitFail",
+			"style": {
+				"navigationBarTitleText": "利润提现退回明细"
+			}
+		}, {
+			"path": "home/account/profit/withdrawalWithholdFail",
+			"style": {
+				"navigationBarTitleText": "提现手续费预扣释放明细"
 			}
 		}, {
 			"path": "home/account/profit/backfilledDetile",
