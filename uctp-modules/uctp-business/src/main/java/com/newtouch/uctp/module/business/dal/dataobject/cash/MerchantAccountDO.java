@@ -38,9 +38,9 @@ public class MerchantAccountDO extends BaseDO {
     private Integer revision;//乐观锁
 
     /**
-     * POS机设备号
+     * POS机商户编号
      */
-    private Integer devSn;
+    private String posMrhNo;
 
 
     private Integer tranWay;// 交易方式

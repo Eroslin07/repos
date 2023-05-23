@@ -83,6 +83,9 @@ public class CashDetailRespVO {
     @Schema(description = "银行电子回单")
     private List<String> backSingleUrls;
 
+    @Schema(description = "到账时间")
+    private String accountingTime;
+
     private List<PresentStatusRecordRespVO> presentStatusRecords;
 
     public static CashDetailRespVO build(MerchantCashDO merchantCashDO) {

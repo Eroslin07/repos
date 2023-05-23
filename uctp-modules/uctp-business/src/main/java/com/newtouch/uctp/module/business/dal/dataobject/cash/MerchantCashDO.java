@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.newtouch.uctp.framework.mybatis.core.dataobject.BaseDO;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @TableName("uctp_merchant_cash")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -40,5 +42,7 @@ public class MerchantCashDO extends BaseDO {
     private String presentState;//提现状态
 
     private Integer revision;//乐观锁
+
+    private LocalDateTime accountingTime;
 
 }

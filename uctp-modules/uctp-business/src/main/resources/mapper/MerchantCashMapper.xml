@@ -9,7 +9,7 @@
         <result column="pay_channel" property="payChannel"/>
         <result column="profit_loss_type" property="profitLossType"/>
         <result column="tran_record_no" property="tranRecordNo"/>
-        <result column="pay_amount"  property="payAmount"/>
+        <result column="pay_amount" property="payAmount"/>
         <result column="trade_type" property="tradeType"/>
         <result column="trade_to" property="tradeTo"/>
         <result column="contract_no" property="contractNo"/>
@@ -20,6 +20,7 @@
         <result column="updater" property="updater"/>
         <result column="update_time" property="updateTime"/>
         <result column="deleted" property="deleted"/>
+        <result column="accounting_time" property="accountingTime"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -34,6 +35,7 @@
         trade_to,
         contract_no,
         account_balance,
+        accounting_time,
         revision,
         creator,
         create_time,
@@ -63,7 +65,7 @@
         uci.id carId
         from
         uctp_merchant_cash umc
-        left join uctp_contract uc on uc.CONTRACT_ID  =umc .contract_no
+        left join uctp_contract uc on uc.CONTRACT_ID =umc .contract_no
         left join uctp_car_info uci on uc.CAR_ID =uci.ID
         <where>
             umc.DELETED = 0

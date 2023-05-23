@@ -17,7 +17,7 @@
         <result column="updater" jdbcType="VARCHAR" property="updater"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="tran_way" property="tranWay"/>
-        <result column="dev_sn" property="devSn"/>
+        <result column="pos_mrh_no" property="posMrhNo"/>
         <result column="tenant_id" property="tenantId"/>
     </resultMap>
 

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PosNameReqVO {
+public class PosBindReqVO {
 
     /**
      * 商户号
@@ -23,7 +23,7 @@ public class PosNameReqVO {
     /**
      * POS机名称
      */
-    @Schema(description = "POS机名称")
-    @NotNull(message = "POS机名称不能为空")
-    private String posName;
+    @Schema(description = "POS机商户编号")
+    @NotNull(message = "POS机商户编号不能为空")
+    private String posMrhNo;
 }
