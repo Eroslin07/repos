@@ -146,7 +146,7 @@
 					</view>
 					<text
 						v-if="(carInfoAll.carInfo.salesStatus==1&&contract.contractDO.contractType==2) || (carInfoAll.carInfo.salesStatus==3&&contract.contractDO.contractType==4)"
-						class="button" @click="handleCancle(contract.contractDO.id)">作废</text>
+						class="button" :class="contractZuofei ? 'button1' : 'button2'" @click="handleCancle(contract.contractDO.id)">作废</text>
 				</view>
 
 			</view>
@@ -402,6 +402,8 @@
 				showPos: false,
 				// 是否点击合同
 				hetongStatus: false,
+				// 是否作废成功
+				contractZuofei: false,
 			}
 		},
 		props: {
@@ -708,6 +710,9 @@
 			},
 			// 作废
 			handleCancle(id) {
+				if (this.contractZuofei) {
+					return
+				}
 				this.contractId = id;
 				this.cancelModal = true;
 			},
@@ -719,6 +724,7 @@
 							this.$modal.msg(res.msg);
 						} else {
 							this.$modal.msg('合同作废成功');
+							this.contractZuofei = true;
 						}
 
 						this.cancelModal = false;
@@ -1174,10 +1180,18 @@
 						height: 46rpx;
 						font-size: 24rpx;
 						line-height: 46rpx;
-						color: #FA6400;
 						border-radius: 8rpx;
 						background: none;
 						text-align: center;
+					}
+					
+					.button1 {
+						color: #ddd;
+						border: 2rpx solid #ddd;
+					}
+					
+					.button2 {
+						color: #FA6400;
 						border: 2rpx solid #FA6400;
 					}
 				}
