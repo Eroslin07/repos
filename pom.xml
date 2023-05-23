@@ -128,16 +128,32 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Nacos 命名空间 -->
+                <nacos.namespace>uctp_dev</nacos.namespace>
                 <!-- Redis 地址 -->
-                <!--<redis.host>61.172.179.55</redis.host>-->
-                <redis.host>127.0.0.1</redis.host>
+                <redis.host>61.172.179.55</redis.host>
+                <!--<redis.host>127.0.0.1</redis.host>-->
                 <!-- Redis 端口 -->
                 <redis.port>6379</redis.port>
                 <!-- Redis 密码 -->
                 <redis.password>j47qendm4bA7f7k</redis.password>
                 <!--<redis.password>123456</redis.password>-->
-                <!-- Nacos 命名空间 -->
-                <nacos.namespace>uctp_dev</nacos.namespace>
+                <!-- RocketMQ NameServer 地址 -->
+                <rocketmq.name-server>61.172.179.54:29876</rocketmq.name-server>
+                <!-- RocketMQ 认证账号的 Access Key -->
+                <rocketmq.access-key>RocketMQ</rocketmq.access-key>
+                <!-- RocketMQ 认证账号的 Secret Key -->
+                <rocketmq.secret-key>7F3bw4hdn4h7Nkbn</rocketmq.secret-key>
+                <!-- 数据库服务地址（IP + 端口） -->
+                <ds.server-addr>61.172.179.55:3306</ds.server-addr>
+                <!-- 数据库名称 -->
+                <ds.name>uctp-cloud</ds.name>
+                <!-- 数据库用户名 -->
+                <ds.username>uctp</ds.username>
+                <!-- 数据库密码 -->
+                <ds.password>Ab123456..</ds.password>
+                <!-- MinIO 文件服务器预览地址前缀配置 -->
+                <minio.preview.endpoint-url>https://miniapp.wanguo.net:28001</minio.preview.endpoint-url>
                 <!-- 契约锁请求地址  -->
                 <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
             </properties>
@@ -152,14 +168,30 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Nacos 命名空间 -->
+                <nacos.namespace>uctp_test</nacos.namespace>
                 <!-- Redis 地址 -->
                 <redis.host>61.172.179.55</redis.host>
                 <!-- Redis 端口 -->
                 <redis.port>6379</redis.port>
                 <!-- Redis 密码 -->
                 <redis.password>j47qendm4bA7f7k</redis.password>
-                <!-- Nacos 命名空间 -->
-                <nacos.namespace>uctp_test</nacos.namespace>
+                <!-- RocketMQ NameServer 地址 -->
+                <rocketmq.name-server>61.172.179.54:29876</rocketmq.name-server>
+                <!-- RocketMQ 认证账号的 Access Key -->
+                <rocketmq.access-key>RocketMQ</rocketmq.access-key>
+                <!-- RocketMQ 认证账号的 Secret Key -->
+                <rocketmq.secret-key>7F3bw4hdn4h7Nkbn</rocketmq.secret-key>
+                <!-- 数据库服务地址（IP + 端口） -->
+                <ds.server-addr>61.172.179.55:3306</ds.server-addr>
+                <!-- 数据库名称 -->
+                <ds.name>uctp-cloud</ds.name>
+                <!-- 数据库用户名 -->
+                <ds.username>uctp</ds.username>
+                <!-- 数据库密码 -->
+                <ds.password>Ab123456..</ds.password>
+                <!-- MinIO 文件服务器预览地址前缀配置 -->
+                <minio.preview.endpoint-url>https://miniapp.wanguo.net:28001</minio.preview.endpoint-url>
                 <!-- 契约锁请求地址  -->
                 <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
             </properties>
@@ -174,14 +206,30 @@
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
                 <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
+                <!-- Nacos 命名空间 -->
+                <nacos.namespace>uctp_uat</nacos.namespace>
                 <!-- Redis 地址 -->
                 <redis.host>61.172.179.55</redis.host>
                 <!-- Redis 端口 -->
                 <redis.port>6379</redis.port>
                 <!-- Redis 密码 -->
                 <redis.password>j47qendm4bA7f7k</redis.password>
-                <!-- Nacos 命名空间 -->
-                <nacos.namespace>uctp_uat</nacos.namespace>
+                <!-- RocketMQ NameServer 地址 -->
+                <rocketmq.name-server>61.172.179.54:29876</rocketmq.name-server>
+                <!-- RocketMQ 认证账号的 Access Key -->
+                <rocketmq.access-key>RocketMQ</rocketmq.access-key>
+                <!-- RocketMQ 认证账号的 Secret Key -->
+                <rocketmq.secret-key>7F3bw4hdn4h7Nkbn</rocketmq.secret-key>
+                <!-- 数据库服务地址（IP + 端口） -->
+                <ds.server-addr>61.172.179.55:3306</ds.server-addr>
+                <!-- 数据库名称 -->
+                <ds.name>uctp-cloud</ds.name>
+                <!-- 数据库用户名 -->
+                <ds.username>uctp</ds.username>
+                <!-- 数据库密码 -->
+                <ds.password>Ab123456..</ds.password>
+                <!-- MinIO 文件服务器预览地址前缀配置 -->
+                <minio.preview.endpoint-url>https://miniapp.wanguo.net:28001</minio.preview.endpoint-url>
                 <!-- 契约锁请求地址  -->
                 <qys.server-url>https://openapi.qiyuesuo.cn</qys.server-url>
             </properties>
@@ -191,19 +239,35 @@
             <id>prod</id>
             <properties>
                 <!-- Nacos 服务地址 -->
-                <nacos.server-addr>61.172.179.55:8848</nacos.server-addr>
+                <nacos.server-addr>182.151.52.197:18848</nacos.server-addr>
                 <!-- Nacos 服务登录名 -->
                 <nacos.username>nacos</nacos.username>
                 <!-- Nacos 服务登录密码 -->
-                <nacos.password>c8ntx4xp8EuA6bW4</nacos.password>
-                <!-- Redis 地址 -->
-                <redis.host>61.172.179.55</redis.host>
-                <!-- Redis 端口 -->
-                <redis.port>6379</redis.port>
-                <!-- Redis 密码 -->
-                <redis.password>j47qendm4bA7f7k</redis.password>
+                <nacos.password>4kp4+kh6w6EDdup4</nacos.password>
                 <!-- Nacos 命名空间 -->
                 <nacos.namespace>uctp_prod</nacos.namespace>
+                <!-- Redis 地址 -->
+                <redis.host>110.185.104.16</redis.host>
+                <!-- Redis 端口 -->
+                <redis.port>26379</redis.port>
+                <!-- Redis 密码 -->
+                <redis.password>8C6uFW6b^wu877tY</redis.password>
+                <!-- RocketMQ NameServer 地址 -->
+                <rocketmq.name-server>182.151.52.197:19876</rocketmq.name-server>
+                <!-- RocketMQ 认证账号的 Access Key -->
+                <rocketmq.access-key>RocketMQ</rocketmq.access-key>
+                <!-- RocketMQ 认证账号的 Secret Key -->
+                <rocketmq.secret-key>3NR6c6he6yyNbt8w</rocketmq.secret-key>
+                <!-- 数据库服务地址（IP + 端口） -->
+                <ds.server-addr>110.185.104.16:23306</ds.server-addr>
+                <!-- 数据库名称 -->
+                <ds.name>uctp-cloud</ds.name>
+                <!-- 数据库用户名 -->
+                <ds.username>uctp-prod</ds.username>
+                <!-- 数据库密码 -->
+                <ds.password>w6et3h$aqr7aN3ym</ds.password>
+                <!-- MinIO 文件服务器预览地址前缀配置 -->
+                <minio.preview.endpoint-url>http://118.122.78.20:39000</minio.preview.endpoint-url>
                 <!-- 契约锁请求地址  -->
                 <qys.server-url>https://openapi.qiyuesuo.com</qys.server-url>
             </properties>

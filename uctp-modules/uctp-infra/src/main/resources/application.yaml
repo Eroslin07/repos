@@ -160,6 +160,6 @@ uctp:
       - /admin/instances
 minio:
   preview:
-    endpoint-url: https://miniapp.wanguo.net:28001
+    endpoint-url: @minio.preview.endpoint-url@
 
 debug: false
