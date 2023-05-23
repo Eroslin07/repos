@@ -15,10 +15,10 @@
 					<view class="text1">交易单号</view>
 				</view>
 				<view style="float: right;">
-					<view class="text2">{{ data.tradeTypeName }}</view>
-					<view class="text2">{{ data.tradeToName }}</view>
-					<view class="text2">{{ data.createTime }}</view>
-					<view class="text2">{{ data.contractNo }}</view>
+					<view class="text2">{{ data.tradeTypeName || '' }}</view>
+					<view class="text2">{{ data.tradeToName || '' }}</view>
+					<view class="text2">{{ data.createTime || '' }}</view>
+					<view class="text2">{{ data.contractCode || '' }}</view>
 				</view>
 			</view>
 		</view>

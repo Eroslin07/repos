@@ -23,8 +23,8 @@
 				</view>
 				<view style="float: right;">
 					<view class="text2"></view>
-					<view class="text2">{{ data.presentStatusRecords[0].occurredTime }}</view>
-					<view class="text2">{{ data.presentStatusRecords[data.presentStatusRecords.length - 1].occurredTime }}</view>
+					<view class="text2">{{ data.presentStatusRecords[0].occurredTime || '' }}</view>
+					<view class="text2">{{ data.presentStatusRecords[data.presentStatusRecords.length - 1].occurredTime || '' }}</view>
 					<view class="text2"></view>
 				</view>
 			</view>
