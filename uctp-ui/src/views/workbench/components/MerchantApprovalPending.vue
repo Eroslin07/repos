@@ -33,7 +33,7 @@
             }}</el-col>
           </el-row>
           <el-row>
-            <el-col :span="2" class="bg-yell">开户行：</el-col>
+            <el-col :span="2" class="bg-yell">对公开户行：</el-col>
             <el-col :span="4">
               <div>{{ mainValue.formDataJson.bankName || '暂无数据' }}</div>
             </el-col>
@@ -41,8 +41,12 @@
             <el-col :span="4">
               <div>{{ mainValue.formDataJson.bankNumber || '暂无数据' }}</div>
             </el-col>
+            <el-col :span="2" class="bg-yell">保证金开户行：</el-col>
+            <el-col :span="4">
+              <div>{{ mainValue.formDataJson.bondBankName || '暂无数据' }}</div>
+            </el-col>
             <el-col :span="2" class="bg-yell">保证金充值卡号：</el-col>
-            <el-col :span="10">
+            <el-col :span="4">
               <div>{{ mainValue.formDataJson.bondBankAccount || '暂无数据' }}</div>
             </el-col>
           </el-row>

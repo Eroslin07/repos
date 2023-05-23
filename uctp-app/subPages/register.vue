@@ -91,7 +91,7 @@
 					<u-form-item label="联系地址" :required="true" prop="address" borderBottom>
 						<u--input v-model="registerForm.address" border="none" placeholder="请输入联系地址"></u--input>
 					</u-form-item>
-					<u-form-item label="开户行" :required="true" prop="bankName" borderBottom>
+					<u-form-item label="对公开户行" :required="true" prop="bankName" borderBottom>
 						<u--input v-model="registerForm.bankName" border="none" placeholder="请输入开户行"></u--input>
 					</u-form-item>
 					<u-form-item label="对公银行账号" :required="true" prop="bankAccount" borderBottom>
